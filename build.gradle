@@ -1,0 +1,71 @@
+buildscript {
+    ext.kotlin_version = '1.1.3'
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+plugins {
+    id "org.jetbrains.intellij" version "0.1.10"
+    id "org.jetbrains.kotlin.jvm" version "1.1.3"
+}
+
+apply plugin: 'idea'
+apply plugin: 'kotlin'
+apply plugin: 'java'
+
+intellij {
+    type 'IC'
+    version '2017.1' //'172-SNAPSHOT' // https://www.jetbrains.com/intellij-repository/[releases|snapshots]
+    pluginName 'PowerShell'
+    updateSinceUntilBuild = false
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs 'src/main/gen'
+        }
+    }
+}
+
+group 'com.intellij.plugin'
+version '0.0.1'
+
+repositories {
+    flatDir {
+        dirs 'lib'
+    }
+    mavenCentral()
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8"
+    testCompile "org.jetbrains.kotlin:kotlin-test-junit"
+    testCompile 'junit:junit:4.11'
+    testCompile name: 'PsiViewer'
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        apiVersion = '1.1'
+        languageVersion = '1.1'
+        jvmTarget = '1.8'
+    }
+}
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}

@@ -1,0 +1,500 @@
+{
+  parserClass="com.intellij.plugin.powershell.lang.parser.PwShellParser"
+  parserImports=["static com.intellij.lang.parser.GeneratedParserUtilBase.*;"]
+
+  psiImplUtilClass="com.intellij.plugin.powershell.psi.impl.PwShellPsiImplUtil"
+
+//  parserUtilClass="com.intellij.plugin.powershell.lang.parser.PwShellGeneratedParserUtil" //external grammar
+
+    extends="com.intellij.plugin.powershell.psi.impl.PwShellPsiElementImpl"
+    implements="com.intellij.plugin.powershell.psi.PwShellPsiElement"
+
+    psiClassPrefix="PwShell"
+    psiImplClassSuffix="ImplGen"
+    psiPackage="com.intellij.plugin.powershell.psi"
+    psiImplPackage="com.intellij.plugin.powershell.psi.impl"
+
+    elementTypeHolderClass="com.intellij.plugin.powershell.psi.PowerShellTypes"
+    elementTypeClass="com.intellij.plugin.powershell.lang.parser.PwShellElementType"
+    tokenTypeClass="com.intellij.plugin.powershell.lang.lexer.PowerShellTokenType"
+    tokens = [
+
+    // comparison operators
+    OP_C = 'regexp:(_as|_ccontains|_ceq|_cge|_cgt|_cle|_clike|_clt|_cmatch|_cne|_cnotcontains|_cnotlike|_cnotmatch|_contains|_creplace|_csplit|_eq|_ge|_gt|_icontains|_ieq|_ige|_igt|_ile|_ilike|_ilt|_imatch|_in|_ine|_inotcontains|_inotlike|_inotmatch|_ireplace|_is|_isnot|_isplit|_join|_le|_like|_lt|_match|_ne|_notcontains|_notin|_notlike|_notmatch|_replace|_shl|_shr|_split)'
+
+    OP_MR='regexp:(*>&1|2>&1|3>&1|4>&1|5>&1|6>&1|*>&2|1>&2|3>&2|4>&2|5>&2|6>&2)'
+    OP_FR='regesp:(>|>>|2>|2>>3>|3>>4>|4>>|5>|5>>6>|6>>*>|*>>|<)'
+
+  // NewLines and spaces //
+    NLS ='regexp:(\r|\n|\r\n)( (\r|\n|\r\n)|([\ \t\f]) )*'
+    LF = 'regexp:(\r|\n|\r\n)+'                                   // NewLines
+
+    LP='('
+    RP=')'
+
+    DQ='regexp:("|“ |” |„)'
+    SIMPLE_NAME_CHARS='regexp:(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\_)(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\p{Nd}|\_)+'
+    EXP_STR_CHARS='regexp:[^$"`]+'
+    EXP_HERE_STR='regexp:[^$\n\r]'//todo
+    BRACED_VAR='regexp:([^\({"`] | ($`.) | (`.) )+'
+    ESCAPED_CHAR='regexp:`.'//2.3.7 Escaped characters p.30
+    VERBATIM_STR="regexp:[^'‘’‚‛]['‘’‚‛]['‘’‚‛]" //todo
+
+    //verbatim_here_string_part
+    VERBATIM_HERE_STR='regexp:[^\n\r]'
+
+    //commands
+    GENERIC_TOKEN_CHARS='([^\{\}\(\);,\|&$`"''\n\r]|(`.))+'
+//    private command_parameter ::= dash   first_parameter_char   parameter_char ':'?//todo dash
+    CMD_PARAMETER_CHARS='regexp:-( \p{Lu}|\p{Ll}|\p{Lm}|\p{Lo} | [\_\?] ) [^\{\}\(\);,\|&\.\[:\n\r]+'
+    VERBATIM_ARG_CHARS='regexp:("[^"]*") | (&[^&])+ | [^\|\n\r]+'
+
+//variable-character:
+//  A Unicode character of classes Lu, Ll, Lt, Lm, Lo, or Nd
+//  _   (The underscore character U+005F)
+//  ?
+    VAR_CHARS='regexp:(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\p{Nd}|\_|\?)+'
+
+    ALNUM='regexp:p{Alnum}'
+    LETTERS='regexp:[a-zA-Z]+'
+
+    STRING_LITERAL_DQ='regexp:"([^"\\]|\\.)*"'
+    STRING_LITERAL_SQ="regexp:'[^']*'"
+    DIGITS='regexp:[0_9]+'
+
+    DEC_EXPONENT='regexp:[Ee][+_]?[0_9]+'
+    var_identifier='regexp:([_a_zA_Z][a_zA_Z0_9_$\_]*)|(\|(([^\|])|(\\\|))*[^\\]\|)'
+
+  //todo nested comments (lexer states...)
+    COMMENT='regexp:((#.*)|(__.*)|((\(\*[^\*](([^\*]*(\*+[^\*\)])?)*(\*+\))?))|\(\*))'
+    RAW_LBR='«'
+    RAW_RBR='»'
+    MULTI_LINE_COMMENT_START='(*'
+    MULTI_LINE_COMMENT_END='*)'
+    WHITE_SPACE='regexp:[\ \t\f]'
+
+    COMMA=','
+    LCURLY='{'
+    RCURLY='}'
+    COLON=':'
+    DS='$'
+    AT='@'
+    EQ='='
+    PIPE='|'
+
+
+//    CMDLET_NAME ='regexp:([^$0_9(@"''][^ \t]*)' //todo
+//    PARAM_ARGUMENT='regexp:([^_($0_9]\w*)' //todo
+    PARAM_ARGUMENT='regexp:([\w][\w$0_9\_]*)' //todo
+    ALNUM='regexp:p{Alnum}'
+    LETTERS='regexp:[a_zA_Z]+'
+    DS_ALNUM='regexp:\$\p{Alnum}+'
+    DSQ_ANYCHAR='regexp:\$\{.*\}'
+    PARAM_TOKEN='regexp:\_[a_zA_Z]+:?'//_[:letter:]+[:]{0 |1}
+  ]
+    extends(".*expression")="expression"
+    consumeTokenMethod(".*(expression|recover|condition)")="consumeTokenFast"
+}
+
+
+private top_level_element ::= statement_list | script_block
+
+private script_block ::= param_block? statement_terminators? script_block_body
+private param_block ::= nls? attribute_list? nls? 'param' nls? '(' parameter_list? nls? ')'
+
+private nls ::= new_line_char+
+
+private attribute_list ::= (attribute nls?)+
+private attribute ::= '[' nls? attribute_name '(' attribute_arguments   nls? ')'  nls? ']' | type_literal
+private attribute_name ::= type_spec
+
+private attribute_arguments ::= attribute_argument (nls? attribute_argument)*
+private attribute_argument ::= nls? ( expression | simple_name | simple_name '=' nls? expression )
+
+
+private parameter_list ::= script_parameter (nls? ',' script_parameter)*
+
+private script_parameter ::= nls? attribute_list? nls? variable script_parameter_default?
+private script_parameter_default ::= nls? '=' nls? expression
+
+private script_block_body ::= named_block_list | statement_list
+
+private named_block_list ::= named_block (statement_terminators named_block? )*
+private named_block ::= block_name statement_block statement_terminators?
+private block_name ::= 'dynamicparam' | 'begin' | 'process' | 'end'//todo move to cmdletBody
+
+statement_block ::= nls? LCURLY statement_list nls? RCURLY
+private statement_list ::= statement ( statement_terminators statement? )*
+
+statement ::=   if_statement
+              | label? labeled_statement
+              | function_statement
+              | flow_control_statement sep
+              | trap_statement
+              | try_statement
+              | data_statement
+              | inlinescript_statement
+              | parallel_statement
+              | sequence_statement
+              | pipeline sep
+
+private pipeline ::=   assignment_expression
+                     | expression redirections? pipeline_tail?
+                     | command verbatim_command_argument? pipeline_tail?
+
+private assignment_expression ::= simple_name /*expression*/ assignment_operator pipeline /*statement*/
+
+//B.1.11 Operators and punctuators
+private assignment_operator ::= '=' | '_=' | '+=' '*=' | '/='| '%='
+private merging_redirection_operator ::= OP_MR
+private file_redirection_operator ::= OP_FR
+private comparison_operator ::=  OP_C
+private format_operator ::= '_f'
+//private dash ::= '–'
+
+//B.1.10 Type Names
+private type_name ::= type_identifier ('.' type_identifier)*
+
+//  A Unicode character of classes Lu, Ll, Lt, Lm, Lo, or Nd
+//  _   (The underscore character U+005F)
+private type_identifier ::= TYPE_CHARS
+private array_type_name ::= type_name '['
+private generic_type_name ::= type_name '['
+
+//B.1.9 Simple Names
+private simple_name ::=  name_identifier
+private name_identifier ::= SIMPLE_NAME_CHARS //simple_name_first_char   simple_name_char+
+
+//B.1.8 Literals
+ private literal ::= integer_literal | real_literal | string_literal
+
+//Integer Literals
+private integer_literal ::= decimal_integer_literal //| hexadecimal_integer_literal
+
+private decimal_integer_literal ::= decimal_digits numeric_type_suffix? numeric_multiplier?
+
+private decimal_digits ::=  decimal_digit+
+
+private decimal_digit ::= '0' | '1' //0   1   2   3   4   5   6   7   8   9
+
+private numeric_type_suffix ::=  long_type_suffix | decimal_type_suffix
+
+private hexadecimal_integer_literal ::= '0x'   hexadecimal_digit+   long_type_suffix?   numeric_multiplier? //todo
+private hexadecimal_digit ::= '0' | '1' //   one of 0   1   2   3   4   5   6   7   8   9   a   b   c   d   e   f
+private long_type_suffix ::= 'l'
+private numeric_multiplier ::= 'kb' | 'mb'| 'gb' | 'tb' | 'pb'
+
+//Real Literals
+private real_literal ::=   decimal_digits '.' decimal_digits exponent_part? decimal_type_suffix? numeric_multiplier?
+                         |  '.' decimal_digits exponent_part? decimal_type_suffix? numeric_multiplier?
+                         | decimal_digits exponent_part decimal_type_suffix? numeric_multiplier?
+private exponent_part ::= 'e' sign? decimal_digits
+private sign ::= '+' | '_'
+private decimal_type_suffix ::= 'd' | 'l'
+
+//String literals
+private string_literal ::= expandable_string_literal //| expandable_here_string_literal | verbatim_string_literal | verbatim_here_string_literal
+expandable_string_literal ::= STRING_LITERAL_DQ //dq_char expandable_string_characters? '$'* dq_char
+private dq_char ::= DQ
+
+private expandable_string_characters ::= EXP_STR_CHARS
+private braced_variable ::= '${' variable_scope? braced_variable_characters '}' //BRACED_VAR
+private braced_variable_characters ::= BRACED_VAR
+
+//B.1.5 Keywords
+private keyword ::=   'begin' | 'break' | 'catch' | 'class' | 'continue' | 'data' | 'define' | 'do' | 'dynamicparam' | 'else' | 'elseif' | 'end'
+                    | 'exit' | 'filter' | 'finally' | 'for' | 'foreach' | 'from' | 'function' | 'if' | 'in' | 'inlinescript' | 'parallel' | 'param'
+                    | 'process' | 'return' | 'switch' | 'throw' | 'trap' | 'try' | 'until' | 'using' | 'var' | 'while' | 'workflow'
+
+////tokens
+//private token ::=   keyword | variable | command | command_parameter | command_argument_token | integer_literal | real_literal | string_literal
+//                  | type_literal | operator_or_punctuator
+
+
+private expandable_here_string_literal ::= '@' dq_char WHITE_SPACE? new_line_char
+                                               expandable_here_string_characters?   new_line_char dq_char   '@'
+private expandable_here_string_characters ::= EXP_HERE_STR
+
+private expandable_string_with_subexpr_start ::= dq_char expandable_string_characters? '$('
+private expandable_string_with_subexpr_end ::= double_quote_char
+
+private expandable_here_string_with_subexpr_start ::= '@' dq_char WHITE_SPACE? new_line_char expandable_here_string_chars? '$('
+private expandable_here_string_with_subexpr_end ::= new_line_char dq_char '@'
+private verbatim_string_literal ::=  single_quote_character  verbatim_string_characters? single_quote_char
+private single_quote_character ::= "'" | "‘" | "’" | "‚" | "‛"
+
+private verbatim_string_characters ::= verbatim_string_part
+
+private verbatim_string_part ::= VERBATIM_STR
+
+private verbatim_here_string_literal ::= '@' single_quote_character WHITE_SPACE? new_line_char
+                                             verbatim_here_string_characters? new_line_char   single_quote_character '@'
+private verbatim_here_string_characters ::= verbatim_here_string_part
+private verbatim_here_string_part ::= VERBATIM_HERE_STR
+
+
+//B.1.7 Commands
+private generic_token ::= generic_token_part+
+private generic_token_part ::= expandable_string_literal | verbatim_here_string_literal | variable | generic_token_chars
+private generic_token_chars ::= GENERIC_TOKEN_CHARS
+private generic_token_with_subexpr_start ::= generic_token_part+ '$('
+command_parameter ::= CMD_PARAMETER_CHARS ':'? //dash   first_parameter_char   parameter_char ':'? //todo dash (can be whitespace or not?)
+private verbatim_command_argument_chars ::= VERBATIM_ARG_CHARS //verbatim_command_argument_part+
+
+
+//B.1.6 Variables
+ variable ::= '$$' | '$?' | '$^' | '$' variable_scope? variable_characters | '@' variable_scope? variable_characters | braced_variable
+private variable_scope ::= 'global:' | 'local:' | 'private:' | 'script:' | 'using:' | 'workflow:' | variable_namespace
+private variable_namespace ::= variable_characters ':'
+private variable_characters ::= VAR_CHARS
+
+//expressions
+private expression ::= logical_expression
+private logical_expression ::=   bitwise_expression ( ( '_and' | '_or' | '_xor' ) nls? bitwise_expression )*
+
+private bitwise_expression ::=  comparison_expression ( ('_band' | '_bor' | '_bxor' )  nls? comparison_expression )*
+
+private comparison_expression ::= additive_expression ( comparison_operator nls? additive_expression )*
+
+
+private additive_expression ::= multiplicative_expression ( ( '+' | '-' ) nls? multiplicative_expression )*
+
+
+private multiplicative_expression ::= format_expression ( ( '*' | '/' | '%') nls? format_expression )*
+
+private format_expression ::= range_expression ( format_operator nls? range_expression )*
+
+private range_expression ::= array_literal_expression ( '..' nls? array_literal_expression )*
+
+private array_literal_expression ::= unary_expression ( ',' nls? unary_expression )*
+
+private unary_expression ::= primary_expression |  expression_with_unary_operator
+private expression_with_unary_operator ::=   ','     nls? unary_expression
+                                           | '_not'  nls? unary_expression
+                                           | '!'     nls? unary_expression
+                                           | '_bnot' nls? unary_expression
+                                           | '+'     nls? unary_expression
+                                           | '-'    nls? unary_expression
+                                           | pre_increment_expression
+                                           | pre_decrement_expression
+                                           | cast_expression
+                                           | '_split' nls? unary_expression
+                                           | '_join'  nls? unary_expression
+
+private pre_increment_expression ::= '++' nls? unary_expression
+private pre_decrement_expression ::= '--' nls? unary_expression
+
+private cast_expression ::= type_literal unary_expression
+
+private attributed_expression ::= type_literal variable
+
+
+private redirections ::= redirection+
+private pipeline_tail ::= ( '|' nls? command )+
+
+private command ::=   command_name command_elements? | command_invocation_operator command_module? command_name_expr command_elements?
+private command_name ::= generic_token |  generic_token_with_subexpr
+
+
+//todo No whitespace is allowed between ) and command_name.
+private generic_token_with_subexpr ::= generic_token_with_subexpr_start statement_list? ')'command_name
+
+
+private command_elements ::= command_element+
+private command_element ::= command_parameter | command_argument | redirection
+private redirection ::= merging_redirection_operator | file_redirection_operator  redirected_file_name
+
+
+private redirected_file_name ::= command_argument | primary_expression
+
+
+
+private command_invocation_operator ::= '&' | '.'
+private command_module ::= primary_expression
+
+private sequence_statement ::= 'sequence' statement_block
+
+private parallel_statement ::= 'parallel' statement_block
+
+private inlinescript_statement ::= 'inlinescript' statement_block
+
+
+private data_statement ::= 'data' nls? data_name data_commands_allowed? statement_block
+private data_name ::= simple_name
+private data_commands_allowed ::= nls? '_supportedcommand' data_commands_list
+private data_commands_list ::= nls? data_command ( ',' nls? data_command nls? )*
+private data_command ::= command_name_expr
+private command_name_expr ::= command_name | primary_expression
+
+
+
+
+private try_statement ::=   'try' statement_block (catch_clause+ | finally_clause | catch_clause finally_clause)
+private catch_clause ::= nls? 'catch' catch_type_list? statement_block
+private catch_type_list ::= nls? type_literal nls? ( ',' nls? type_literal nls? )*
+private finally_clause ::= nls? 'finally' statement_block
+
+
+private trap_statement ::= 'trap' nls? type_literal? nls? statement_block
+private type_literal ::= '[' type_spec ']'
+private type_spec ::=   array_type_name nls? dimension? ']' | generic_type_name nls? generic_type_arguments ']' | type_name
+private dimension ::= ','+ //',' | dimension ','
+private generic_type_arguments ::= type_spec nls? (',' nls? type_spec)*
+
+//attributes
+
+
+private flow_control_statement ::= ('break' | 'continue') label_expression? | ('throw' | 'return' | 'exit') pipeline?
+private label_expression ::= simple_name | unary_expression
+
+
+private function_statement ::= ( 'function' | 'filter' | 'workflow' ) nls? function_name function_parameter_declaration? '{' script_block '}'
+private function_name ::= command_argument
+private function_parameter_declaration ::= nls? '(' parameter_list nls? ')'
+
+
+
+private labeled_statement ::=   switch_statement
+                              | foreach_statement
+                              | for_statement
+                              | while_statement
+                              | do_statement
+
+private switch_statement ::= 'switch' nls? switch_parameter* switch_condition switch_body
+private switch_parameter ::=   '_regex'
+                             | '_wildcard'
+                             | '_exact'
+                             | '_casesensitive'
+                             | '_parallel'
+
+private switch_condition ::= '(' nls? pipeline nls? ')' | '_file' nls? switch_filename
+private switch_filename ::= command_argument | primary_expression
+command_argument ::= command_name_expr
+private verbatim_command_argument ::= '__%' verbatim_command_argument_chars
+
+
+private primary_expression ::=   value
+                               | member_access
+                               | element_access
+                               | invocation_expression
+                               | post_increment_expression
+                               | post_decrement_expression
+
+private value ::=   parenthesized_expression
+                  | sub_expression
+                  | array_expression
+                  | script_block_expression
+                  | hash_literal_expression
+                  | literal
+                  | type_literal
+                  | variable
+
+private parenthesized_expression ::= '(' nls? pipeline nls? ')'
+
+private sub_expression ::= '$(' nls? statement_list? nls? ')'
+
+private array_expression ::= '@(' nls? statement_list? nls? ')'
+
+private script_block_expression ::= '{' nls? script_block nls? '}'
+
+private hash_literal_expression ::= '@{' nls? hash_literal_body? nls? '}'
+private hash_literal_body ::= hash_entry ( statement_terminators hash_entry )*
+private hash_entry ::= key_expression '=' nls? statement
+
+private key_expression ::= simple_name | unary_expression
+
+private post_increment_expression ::= primary_expression '++'
+
+private post_decrement_expression ::= primary_expression '__'
+
+// todo Note no whitespace is allowed after primary_expression.
+private member_access ::= primary_expression ( '.' | '::' ) member_name
+
+//todo  Note no whitespace is allowed between primary_expression and [.
+private element_access ::= primary_expression '[' nls? expression nls? ']'
+
+//todo  Note no whitespace is allowed after primary_expression.
+private invocation_expression ::= primary_expression ('.' | '::') member_name argument_list
+
+private argument_list ::= '(' argument_expression_list? nls? ')'
+private argument_expression_list ::= argument_expression ( ',' argument_expression)*
+
+private argument_expression ::=  nls? logical_argument_expression
+
+private logical_argument_expression ::= bitwise_argument_expression ( ('_and' | '_or' | '_xor') nls? bitwise_argument_expression )*
+
+private bitwise_argument_expression ::= comparison_argument_expression ( ('_band' | '_bor' | '_bxor') nls? comparison_argument_expression )*
+
+private comparison_argument_expression ::= additive_argument_expression ( comparison_operator nls? additive_argument_expression )*
+
+private additive_argument_expression ::= multiplicative_argument_expression ( ('+' | '_') nls? multiplicative_argument_expression )*
+
+private multiplicative_argument_expression ::= format_argument_expression ( ('*' | '/' | '%') nls? format_argument_expression )*
+
+private format_argument_expression ::= range_argument_expression ( format_operator nls? range_argument_expression )*
+
+private range_argument_expression ::= unary_expression ( '..' nls? unary_expression )*
+
+private member_name ::=   simple_name
+                        | string_literal
+                        | string_literal_with_subexpression
+                        | expression_with_unary_operator
+                        | value
+
+private string_literal_with_subexpression ::= expandable_string_literal_with_subexpr | expandable_here_string_literal_with_subexpr
+
+private expandable_string_literal_with_subexpr ::= expandable_string_with_subexpr_start statement_list? ')'
+        expandable_string_with_subexpr_characters expandable_string_with_subexpr_end
+  | expandable_here_string_with_subexpr_start  statement_list? ')'
+        expandable_here_string_with_subexpr_characters expandable_here_string_with_subexpr_end
+
+private expandable_string_with_subexpr_characters::=   expandable_string_with_subexpr_part
+                                                     | expandable_string_with_subexpr_characters   expandable_string_with_subexpr_part
+
+private expandable_string_with_subexpr_part ::=  sub_expression | expandable_string_part
+
+private expandable_here_string_with_subexpr_characters ::=   expandable_here_string_with_subexpr_part
+                                                           | expandable_here_string_with_subexpr_characters   expandable_here_string_with_subexpr_part
+
+private expandable_here_string_with_subexpr_part ::= sub_expression | expandable_here_string_part
+
+
+private switch_body ::= nls? '{' nls? switch_clause+ '}'
+private switch_clause ::= switch_clause_condition statement_block statement_terminators?
+private switch_clause_condition ::= command_argument | primary_expression
+
+
+private foreach_statement ::= 'foreach' nls? foreach_parameter? nls?
+                                '(' nls?   variable   nls? 'in' nls? pipeline nls? ')' statement_block
+private foreach_parameter ::= '_parallel'
+
+//todo simplify
+private for_statement ::=   'for' nls? '('
+                                    nls? for_initializer? sep
+                                    nls? for_condition? sep
+                                    nls? for_iterator?
+                                    nls? ')' statement_block
+
+private for_initializer ::= pipeline
+private for_condition ::= pipeline
+private for_iterator ::= pipeline
+
+
+private while_statement ::= 'while' nls? '(' nls? while_condition nls? ')' statement_block
+private while_condition ::= nls? pipeline
+
+
+private do_statement ::= 'do' statement_block nls? ( 'while' | 'until' ) nls? '(' while_condition nls? ')'
+
+
+private if_statement ::= 'if' nls? '(' nls? pipeline nls? ')' statement_block elseif_clause* else_clause?
+private elseif_clause ::= nls? 'elseif' nls? '(' nls? pipeline nls? ')' statement_block
+private else_clause ::= nls? 'else' statement_block
+
+sep ::= ';' |  new_line_char
+
+private new_line_char ::= LF
+private statement_terminators ::= sep+
+
+private label ::= ':' LETTERS ALNUM?
+
