@@ -25,9 +25,14 @@
   -->
 
   <extensions defaultExtensionNs="com.intellij">
+
     <fileTypeFactory implementation="com.intellij.plugin.powershell.PowerShellFileTypeFactory"/>
 
-    <lang.parserDefinition language="PowerShell" implementationClass="com.intellij.plugin.powershell.lang.parser.PowerShellParserDefinition"/>
+    <lang.parserDefinition language="PowerShell"
+                           implementationClass="com.intellij.plugin.powershell.lang.parser.PowerShellParserDefinition"/>
+
+    <lang.syntaxHighlighterFactory language="PowerShell"
+                                   implementationClass="com.intellij.plugin.powershell.ide.highlighting.PowerShellSyntaxHighlighterFactory"/>
 
   </extensions>
 

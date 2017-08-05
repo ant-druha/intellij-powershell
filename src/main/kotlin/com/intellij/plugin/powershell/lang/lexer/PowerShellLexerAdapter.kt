@@ -1,10 +1,10 @@
 package com.intellij.plugin.powershell.lang.lexer
 
 import com.intellij.lexer.FlexAdapter
-import com.intellij.plugin.powershell._PwShellLexer
+import com.intellij.plugin.powershell._PowerShellLexer
 
 /**
  * Andrey 17/07/17.
  */
-class PowerShellLexerAdapter : FlexAdapter(_PwShellLexer()) {
+class PowerShellLexerAdapter : FlexAdapter(_PowerShellLexer()) {
 }

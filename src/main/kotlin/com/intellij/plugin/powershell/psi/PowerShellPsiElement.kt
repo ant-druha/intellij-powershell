@@ -5,5 +5,5 @@ import com.intellij.psi.NavigatablePsiElement
 /**
  * Andrey 26/06/17.
  */
-interface PwShellPsiElement : NavigatablePsiElement {
+interface PowerShellPsiElement : NavigatablePsiElement {
 }

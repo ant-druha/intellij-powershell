@@ -21,7 +21,7 @@ import com.intellij.psi.tree.TokenSet
  */
 class PowerShellParserDefinition : ParserDefinition {
 
-    val FILE = IFileElementType(PowerShellLanguage.INSTANCE)
+  private val FILE = IFileElementType(PowerShellLanguage.INSTANCE)
 
     override fun createFile(viewProvider: FileViewProvider): PsiFile {
         return PowerShellFile(viewProvider)
@@ -56,7 +56,7 @@ class PowerShellParserDefinition : ParserDefinition {
     }
 
     override fun createParser(project: Project?): PsiParser {
-        return PwShellParser()
+      return PowerShellParser()
     }
 
 }

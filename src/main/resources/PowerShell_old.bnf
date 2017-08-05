@@ -1,13 +1,13 @@
 {
-  parserClass="com.intellij.plugin.powershell.lang.parser.PwShellParser"
+  parserClass="com.intellij.plugin.powershell.lang.parser.PowerShellParser"
   parserImports=["static com.intellij.lang.parser.GeneratedParserUtilBase.*;"]
 
-  psiImplUtilClass="com.intellij.plugin.powershell.psi.impl.PwShellPsiImplUtil"
+  psiImplUtilClass="com.intellij.plugin.powershell.psi.impl.PowerShellPsiImplUtil"
 
 //  parserUtilClass="PwShellGeneratedParserUtil" //external grammar
 
-    extends="com.intellij.plugin.powershell.psi.impl.PwShellPsiElementImpl"
-    implements="com.intellij.plugin.powershell.psi.PwShellPsiElement"
+    extends="com.intellij.plugin.powershell.psi.impl.PowerShellPsiElementImpl"
+    implements="com.intellij.plugin.powershell.psi.PowerShellPsiElement"
 
     psiClassPrefix="PwShell"
     psiImplClassSuffix="ImplGen"
@@ -15,7 +15,7 @@
     psiImplPackage="com.intellij.plugin.powershell.psi.impl"
 
     elementTypeHolderClass="com.intellij.plugin.powershell.psi.PowerShellTypes"
-    elementTypeClass="com.intellij.plugin.powershell.lang.parser.PwShellElementType"
+    elementTypeClass="com.intellij.plugin.powershell.lang.parser.PowerShellElementType"
     tokenTypeClass="com.intellij.plugin.powershell.lang.lexer.PowerShellTokenType"
     tokens = [
 
