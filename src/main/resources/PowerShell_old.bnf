@@ -4,7 +4,7 @@
 
   psiImplUtilClass="com.intellij.plugin.powershell.psi.impl.PowerShellPsiImplUtil"
 
-//  parserUtilClass="PwShellGeneratedParserUtil" //external grammar
+//  parserUtilClass="PowerShellGeneratedParserUtil" //external grammar
 
     extends="com.intellij.plugin.powershell.psi.impl.PowerShellPsiElementImpl"
     implements="com.intellij.plugin.powershell.psi.PowerShellPsiElement"

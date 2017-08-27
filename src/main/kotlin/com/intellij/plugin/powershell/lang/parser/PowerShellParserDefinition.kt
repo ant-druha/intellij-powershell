@@ -32,7 +32,7 @@ class PowerShellParserDefinition : ParserDefinition {
     }
 
     override fun getStringLiteralElements(): TokenSet {
-        return TokenSet.create(PowerShellTypes.STRING_LITERAL)
+      return TokenSet.create(PowerShellTypes.STRING_LITERAL_EXPRESSION)
     }
 
     override fun getFileNodeType(): IFileElementType {

@@ -1,17 +1,15 @@
 <idea-plugin>
-  <id>com.your.company.unique.plugin.id</id>
-  <name>Plugin display name here</name>
+  <id>com.intellij.plugin.adernov.powershell</id>
+  <name>PowerShell</name>
   <version>1.0</version>
-  <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
+  <vendor email="andrey.dernov@gmail.com" url="http://www.yourcompany.com">YourCompany</vendor>
 
   <description><![CDATA[
-    Enter short description for your plugin here.<br>
-    <em>most HTML tags may be used</em>
+    PowerShell intellisense support for IntelliJ Editor<br>
     ]]></description>
 
   <change-notes><![CDATA[
-    Add change notes here.<br>
-    <em>most HTML tags may be used</em>
+    1.0 - Initial intellisense support.<br>
     ]]>
   </change-notes>
 
@@ -32,7 +30,29 @@
                            implementationClass="com.intellij.plugin.powershell.lang.parser.PowerShellParserDefinition"/>
 
     <lang.syntaxHighlighterFactory language="PowerShell"
-                                   implementationClass="com.intellij.plugin.powershell.ide.highlighting.PowerShellSyntaxHighlighterFactory"/>
+                                   implementationClass="com.intellij.plugin.powershell.ide.editor.highlighting.PowerShellSyntaxHighlighterFactory"/>
+
+    <colorSettingsPage
+        implementation="com.intellij.plugin.powershell.ide.editor.highlighting.PowerShellColorSettingsPage"/>
+
+    <annotator language="PowerShell"
+               implementationClass="com.intellij.plugin.powershell.lang.PowerShellAnnotator"/>
+
+    <lang.formatter language="PowerShell"
+                    implementationClass="com.intellij.plugin.powershell.ide.editor.formatting.PowerShellFormattingModelBuilder"/>
+
+    <langCodeStyleSettingsProvider
+        implementation="com.intellij.plugin.powershell.ide.editor.formatting.PowerShellLanguageCodeStyleSettingsProvider"/>
+
+    <codeStyleSettingsProvider
+        implementation="com.intellij.plugin.powershell.ide.editor.formatting.PowerShellCodeStyleSettingsProviderProvider"/>
+
+
+    <lang.commenter language="PowerShell" implementationClass="com.intellij.plugin.powershell.ide.editor.PowerShellCommenter"/>
+
+
+    <lang.findUsagesProvider language="PowerShell" implementationClass="com.intellij.plugin.powershell.ide.search.PowerShellUsagesProvider"/>
+
 
   </extensions>
 

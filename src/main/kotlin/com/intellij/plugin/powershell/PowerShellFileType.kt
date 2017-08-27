@@ -8,6 +8,12 @@ import javax.swing.Icon
  * Andrey 17/07/17.
  */
 class PowerShellFileType : LanguageFileType(PowerShellLanguage.INSTANCE) {
+
+  companion object {
+    @JvmStatic
+    val INSTANCE = PowerShellFileType()
+  }
+
     override fun getIcon(): Icon? {
         return PowerShellIcons.FILE
     }

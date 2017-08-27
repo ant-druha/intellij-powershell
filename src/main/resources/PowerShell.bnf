@@ -4,7 +4,7 @@
 
   psiImplUtilClass="com.intellij.plugin.powershell.psi.impl.PowerShellPsiImplUtil"
 
-  parserUtilClass="com.intellij.plugin.powershell.lang.parser.PwShellGeneratedParserUtil" //external grammar
+  parserUtilClass="com.intellij.plugin.powershell.lang.parser.PowerShellGeneratedParserUtil" //external grammar
 
     extends="com.intellij.plugin.powershell.psi.impl.PowerShellPsiElementImpl"
     implements="com.intellij.plugin.powershell.psi.PowerShellPsiElement"
@@ -150,16 +150,21 @@
 }
 
 
-private top_level_element ::= (script_block | statement_list)?
+private top_level_element ::= ( nls? top_script_block | statement_list)?
 
-statement_block ::= LCURLY nls? statement_list nls? RCURLY
+private statement_block ::= LCURLY nls? block_body nls? RCURLY
+block_body ::= statement_list
+
 private statement_list ::= statement ( statement_terminators statement? )*
 
-script_block ::= param_block? statement_terminators? script_block_body
-private param_block ::= nls? attribute_list? nls? 'param' nls? LP script_parameter_list? nls? RP
+private top_script_block ::= param_block? statement_terminators? script_block_body
+script_block ::= top_script_block //nls? param_block? statement_terminators? script_block_body
+{elementType=block_body}
+
+private param_block ::= attribute_list? nls? 'param' nls? LP script_parameter_list? nls? RP
 
 private attribute_list ::= (attribute nls?)+
-attribute ::= SQBR_L nls? attribute_name LP attribute_arguments nls? RP nls? SQBR_R | type_literal
+attribute ::= SQBR_L nls? attribute_name LP attribute_arguments nls? RP nls? SQBR_R | type_literal_expression
 private attribute_name ::= type_spec
 
 private attribute_arguments ::= attribute_argument (nls? COMMA attribute_argument)*
@@ -168,7 +173,7 @@ private attribute_argument ::= nls? ( simple_name '=' nls? expression | expressi
 
 private script_parameter_list ::= script_parameter (nls? COMMA script_parameter)*
 
-private script_parameter ::= attribute_list? nls? variable nls? script_parameter_default?
+private script_parameter ::= attribute_list? nls? target_variable_expression nls? script_parameter_default?
 private script_parameter_default ::= '=' nls? expression
 
 private script_block_body ::= named_block_list | statement_list
@@ -189,9 +194,10 @@ private statement ::=   if_statement
                       | sequence_statement
                       | pipeline //sep
 
-pipeline ::= assignment_expression | expression redirection* pipeline_tail? | command verbatim_command_argument? pipeline_tail?
+private pipeline ::= assignment_statement | expression redirection* pipeline_tail? | command_call_expression verbatim_command_argument? pipeline_tail?
 
-assignment_expression ::= /*lvalue_expression*/ expression assignment_operator statement
+assignment_statement ::= /*lvalue_expression*/ expression assignment_operator statement
+{methods=[getTargetVariables]}
 
 //B.1.11 Operators and punctuators
 private assignment_operator ::= '=' | '-=' | '+=' | '*=' | '/='| '%='
@@ -209,19 +215,19 @@ private array_type_name ::= type_name SQBR_L
 private generic_type_name ::= type_name SQBR_L
 
 //B.1.9 Simple Names
-private simple_name ::= SIMPLE_ID //| SIMPLE_NAME
-
+simple_name ::= SIMPLE_ID //| SIMPLE_NAME
+{elementType=identifier}
 //B.1.8 Literals
-private literal ::= integer_literal | real_literal | string_literal
+private literal ::= integer_literal_expression | real_literal_expression | string_literal_expression
 
 //Integer Literals
-integer_literal ::= DIGITS
+integer_literal_expression ::= DIGITS
 
 //Real Literals
-real_literal ::=  DIGITS
+real_literal_expression ::=  DIGITS
 
 //String literals
-string_literal ::= expandable_string_literal | verbatim_string_literal | expandable_here_string_literal | verbatim_here_string_literal
+string_literal_expression ::= expandable_string_literal | verbatim_string_literal | expandable_here_string_literal | verbatim_here_string_literal
 private expandable_string_literal ::= STRING_DQ //".*"
 private verbatim_string_literal ::= STRING_SQ//'.*'
 private verbatim_here_string_literal ::= VERBATIM_HERE_STRING //todo create proper char goups
@@ -233,13 +239,23 @@ private expandable_here_string_literal ::= EXPANDABLE_HERE_STRING //todo create 
 
 //B.1.6 Variables
 // variable ::= simple_lvalue //simple_name
- variable ::= '$$' | '$?' | '$^' |  simple_variable | braced_variable
+private variable ::= '$$' | '$?' | '$^' |  simple_variable | braced_variable
+
+referenceVariable ::= variable
+
+target_variable_expression ::= variable //'$$' | '$?' | '$^' |  simple_variable | braced_variable
+{mixin="com.intellij.plugin.powershell.psi.impl.PowerShellTargetVariableImpl"
+implements="com.intellij.plugin.powershell.psi.PowerShellVariable"}
+
 private simple_variable ::= (DS | AT) variable_scope? variable_name_simple
+
 private variable_scope ::= 'global:' | 'local:' | 'private:' | 'script:' | 'using:' | 'workflow:' | variable_namespace
-private variable_namespace ::= variable_name_simple ':'
-private variable_name_simple ::= SIMPLE_ID //| VAR_ID
-private braced_variable ::= DS LCURLY variable_name_braced RCURLY
-private variable_name_braced ::= SIMPLE_ID  | BRACED_ID //todo: create regex for `BRACED_ID` and use it
+private variable_namespace ::= SIMPLE_ID ':'
+variable_name_simple ::= SIMPLE_ID //| VAR_ID
+{elementType=identifier}
+private braced_variable ::= DS LCURLY variable_scope? variable_name_braced RCURLY
+variable_name_braced ::= SIMPLE_ID  | BRACED_ID //todo: create regex for `BRACED_ID` and use it
+{elementType=identifier}
 //private nws ::= NWS
 
 //expressions
@@ -269,7 +285,7 @@ array_literal_expression ::= unary_expression ( ',' nls? unary_expression )*
 //
 
 private prefix_op ::= '-not' | '!' | '-bnot' | MM | PP | '-split' | '-join' | COMMA | '+' | '-'
-unary_expression ::= expression_with_unary_operator | primary_expression
+private unary_expression ::= expression_with_unary_operator | primary_expression
 expression_with_unary_operator ::= prefix_op nls? primary_expression | cast_expression //lvalue
 //                                            ','     nls? lvalue //unary_expression
 //                                           | '-not'  nls? lvalue //unary_expression
@@ -287,17 +303,25 @@ expression_with_unary_operator ::= prefix_op nls? primary_expression | cast_expr
 //private pre_increment_expression ::= '++' nls? lvalue //unary_expression
 //private pre_decrement_expression ::= '--' nls? lvalue //unary_expression
 
-private cast_expression ::= type_literal unary_expression //lvalue
+private cast_expression ::= type_literal_expression unary_expression //lvalue
 
 //private attributed_expression ::= type_literal variable
 
-private pipeline_tail ::= ( '|' nls? command )+
+private pipeline_tail ::= ( '|' nls? command_call_expression )+
 
-command ::= command_invocation_operator? command_module? command_name_expr command_element*
+command_call_expression ::= command_invocation_operator? command_module? command_name_expr command_element*
+{mixin="com.intellij.plugin.powershell.psi.impl.PowerShellCallableReferenceExpression"
+implements="com.intellij.plugin.powershell.psi.PowerShellReference"}
+
 command_name ::= generic_token_with_sub_expr | generic_token_part//generic_token
+
+
+//command_name ::= generic_ref_token_with_sub_expr | generic_token_part//generic_token
 private generic_token_with_sub_expr ::= generic_token_with_subexpr_start statement_list? RP nws command_name
+//private generic_ref_token_with_sub_expr ::= generic_ref_token_with_subexpr_start statement_list? RP nws command_name
 private generic_token_with_subexpr_start ::= generic_token_part DS nws LP
-private generic_token_part ::= expandable_string_literal | verbatim_here_string_literal | variable | generic_token_chars
+//private generic_ref_token_with_subexpr_start ::= generic_token_part DS nws LP
+private generic_token_part ::= expandable_string_literal | verbatim_here_string_literal | referenceVariable | generic_token_chars
 
 //private generic_token ::= variable | generic_token_chars
 private generic_token_chars ::= SIMPLE_ID | GENERIC_ID //todo in lexer?
@@ -329,12 +353,12 @@ private command_name_expr ::= primary_expression | command_name
 
 try_statement ::=   'try' statement_block (catch_clause+ | finally_clause | catch_clause finally_clause)
 private catch_clause ::= nls? 'catch' catch_type_list? statement_block
-private catch_type_list ::= nls? type_literal nls? ( ',' nls? type_literal nls? )*
+private catch_type_list ::= nls? type_literal_expression nls? ( ',' nls? type_literal_expression nls? )*
 private finally_clause ::= nls? 'finally' statement_block
 
 
-trap_statement ::= 'trap' nls? type_literal? nls? statement_block
-type_literal ::= SQBR_L type_spec SQBR_R
+trap_statement ::= 'trap' nls? type_literal_expression? nls? statement_block
+type_literal_expression ::= SQBR_L type_spec SQBR_R
 private type_spec ::=   array_type_name nls? dimension? SQBR_R | generic_type_name nls? generic_type_arguments SQBR_R | type_name
 private dimension ::= ','+ //',' | dimension ','
 private generic_type_arguments ::= type_spec nls? (',' nls? type_spec)*
@@ -346,10 +370,16 @@ flow_control_statement ::= ('break' | 'continue') label_expression? | ('throw' |
 private label_expression ::= simple_name | unary_expression
 
 
-function_statement ::= ('function' | 'filter' | 'workflow') nls? function_name function_parameter_declaration? '{' script_block '}'
-private function_name ::= command_argument
+function_statement ::= ('function' | 'filter' | 'workflow') nls? function_name nls? function_parameter_declaration? nls? LCURLY nls? script_block RCURLY
+{mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractComponent"
+implements="com.intellij.plugin.powershell.psi.PowerShellComponent"}
 
-private function_parameter_declaration ::= nls? LP parameter_list nls? RP
+private function_name ::= primary_expression | identifier //generic_token//command_name //command_argument
+identifier ::= generic_identifier
+private generic_identifier ::=  generic_token_with_sub_expr | generic_token_part
+
+
+private function_parameter_declaration ::= LP parameter_list nls? RP
 //private parameter_list ::= parameter_with_initializer (COMMA parameter_with_initializer)*
 private parameter_list ::= script_parameter_list
 //private script_parameter_list ::= script_parameter (nls? ',' script_parameter)*
@@ -375,26 +405,26 @@ private switch_condition ::= LP nls? pipeline nls? RP | '-file' nls? switch_file
 private switch_filename ::= command_argument | primary_expression
 command_argument ::= command_name_expr //PARAM_ARGUMENT //command_name_expr
 command_parameter ::= PARAM_TOKEN
-verbatim_command_argument ::= /*'--%'*/MM <<nws>> PERS (verbatim_command_string | AMP_ARG /*|generic_token*/)+
+verbatim_command_argument ::= /*'--%'*/MM nws PERS (verbatim_command_string | AMP_ARG /*|generic_token*/)+
 private verbatim_command_string ::= STRING_DQ
 
 
-primary_expression ::= value (invocation_expression | member_access | element_access | post_increment_expression | post_decrement_expression)?
+private primary_expression ::= value (invocation_expression | member_access | element_access | post_increment_expression | post_decrement_expression)?
                                //| member_access
                                //| element_access
                                //| invocation_expression
                                //| post_increment_expression
                                //| post_decrement_expression
 
-left member_access ::= ( DOT | '::' ) member_name
-left element_access ::= SQBR_L nls? expression nls? SQBR_R
-left invocation_expression ::= (DOT | '::') member_name LP argument_expression_list? nls? RP
+private left member_access ::= nws ( DOT | COLON COLON ) member_name
+private left element_access ::= SQBR_L nls? expression nls? SQBR_R
+left invocation_expression ::= (DOT | COLON COLON ) member_name LP argument_expression_list? nls? RP
 private left argument_expression_list ::= expression ( ',' expression)*
 left post_increment_expression ::= PP
 left post_decrement_expression ::= MM
 
 private member_name ::=   simple_name
-                        | string_literal
+                        | string_literal_expression
 //->                        | string_literal_with_subexpression
                         | expression_with_unary_operator //prefix_op unary_expression //
 
@@ -406,10 +436,10 @@ private value ::=   parenthesized_expression
                   | script_block_expression
                   | hash_literal_expression
                   | literal
-                  | type_literal
+                  | type_literal_expression
 //                  | prefix_op lvalue
                   | cast_expression
-                  | variable
+                  | target_variable_expression
 
 parenthesized_expression ::= LP nls? pipeline nls? RP
 
@@ -460,7 +490,7 @@ private switch_clause_condition ::= command_argument | primary_expression
 
 
 foreach_statement ::= 'foreach' nls? '-parallel'? nls?
-                                LP nls?   variable   nls? 'in' nls? pipeline nls? RP nls? statement_block
+                                LP nls?   target_variable_expression   nls? 'in' nls? pipeline nls? RP nls? statement_block
 
 //todo simplify
 for_statement ::=   'for' nls? LP
@@ -485,7 +515,7 @@ if_statement ::= 'if' nls? LP nls? pipeline nls? RP statement_block elseif_claus
 private elseif_clause ::= nls? 'elseif' nls? LP nls? pipeline nls? RP statement_block
 private else_clause ::= nls? 'else' statement_block
 
-sep ::= SEMI |  NLS | new_line_char | comment //COMMENT //hide psi
+sep ::= SEMI |  NLS | new_line_char | !is_id comment //COMMENT //hide psi
 private nls ::= NLS
 private new_line_char ::= LF
 
@@ -497,4 +527,6 @@ private statement_terminators ::= sep+
 private label ::= ':' LETTERS ALNUM?
 
 private nws ::= <<isNotWhiteSpace>>
+//private nws_before ::=
 private ws ::= <<isWhiteSpace>>
+private is_id ::= <<isIdentifierBefore>>

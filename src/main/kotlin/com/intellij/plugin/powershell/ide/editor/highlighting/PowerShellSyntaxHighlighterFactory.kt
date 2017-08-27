@@ -1,4 +1,4 @@
-package com.intellij.plugin.powershell.ide.highlighting
+package com.intellij.plugin.powershell.ide.editor.highlighting
 
 import com.intellij.openapi.fileTypes.SyntaxHighlighter
 import com.intellij.openapi.fileTypes.SyntaxHighlighterFactory

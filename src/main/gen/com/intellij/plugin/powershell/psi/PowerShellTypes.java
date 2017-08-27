@@ -12,18 +12,18 @@ public interface PowerShellTypes {
 
   IElementType ADDITIVE_EXPRESSION = new PowerShellElementType("ADDITIVE_EXPRESSION");
   IElementType ARRAY_LITERAL_EXPRESSION = new PowerShellElementType("ARRAY_LITERAL_EXPRESSION");
-  IElementType ASSIGNMENT_EXPRESSION = new PowerShellElementType("ASSIGNMENT_EXPRESSION");
+  IElementType ASSIGNMENT_STATEMENT = new PowerShellElementType("ASSIGNMENT_STATEMENT");
   IElementType ATTRIBUTE = new PowerShellElementType("ATTRIBUTE");
   IElementType BITWISE_EXPRESSION = new PowerShellElementType("BITWISE_EXPRESSION");
-  IElementType COMMAND = new PowerShellElementType("COMMAND");
+  IElementType BLOCK_BODY = new PowerShellElementType("BLOCK_BODY");
   IElementType COMMAND_ARGUMENT = new PowerShellElementType("COMMAND_ARGUMENT");
+  IElementType COMMAND_CALL_EXPRESSION = new PowerShellElementType("COMMAND_CALL_EXPRESSION");
   IElementType COMMAND_NAME = new PowerShellElementType("COMMAND_NAME");
   IElementType COMMAND_PARAMETER = new PowerShellElementType("COMMAND_PARAMETER");
   IElementType COMMENT = new PowerShellElementType("COMMENT");
   IElementType COMPARISON_EXPRESSION = new PowerShellElementType("COMPARISON_EXPRESSION");
   IElementType DATA_STATEMENT = new PowerShellElementType("DATA_STATEMENT");
   IElementType DO_STATEMENT = new PowerShellElementType("DO_STATEMENT");
-  IElementType ELEMENT_ACCESS = new PowerShellElementType("ELEMENT_ACCESS");
   IElementType EXPRESSION = new PowerShellElementType("EXPRESSION");
   IElementType EXPRESSION_WITH_UNARY_OPERATOR = new PowerShellElementType("EXPRESSION_WITH_UNARY_OPERATOR");
   IElementType FLOW_CONTROL_STATEMENT = new PowerShellElementType("FLOW_CONTROL_STATEMENT");
@@ -31,32 +31,28 @@ public interface PowerShellTypes {
   IElementType FORMAT_EXPRESSION = new PowerShellElementType("FORMAT_EXPRESSION");
   IElementType FOR_STATEMENT = new PowerShellElementType("FOR_STATEMENT");
   IElementType FUNCTION_STATEMENT = new PowerShellElementType("FUNCTION_STATEMENT");
+  IElementType IDENTIFIER = new PowerShellElementType("IDENTIFIER");
   IElementType IF_STATEMENT = new PowerShellElementType("IF_STATEMENT");
   IElementType INLINESCRIPT_STATEMENT = new PowerShellElementType("INLINESCRIPT_STATEMENT");
-  IElementType INTEGER_LITERAL = new PowerShellElementType("INTEGER_LITERAL");
+  IElementType INTEGER_LITERAL_EXPRESSION = new PowerShellElementType("INTEGER_LITERAL_EXPRESSION");
   IElementType INVOCATION_EXPRESSION = new PowerShellElementType("INVOCATION_EXPRESSION");
   IElementType LOGICAL_EXPRESSION = new PowerShellElementType("LOGICAL_EXPRESSION");
-  IElementType MEMBER_ACCESS = new PowerShellElementType("MEMBER_ACCESS");
   IElementType MULTIPLICATIVE_EXPRESSION = new PowerShellElementType("MULTIPLICATIVE_EXPRESSION");
   IElementType PARALLEL_STATEMENT = new PowerShellElementType("PARALLEL_STATEMENT");
   IElementType PARENTHESIZED_EXPRESSION = new PowerShellElementType("PARENTHESIZED_EXPRESSION");
-  IElementType PIPELINE = new PowerShellElementType("PIPELINE");
   IElementType POST_DECREMENT_EXPRESSION = new PowerShellElementType("POST_DECREMENT_EXPRESSION");
   IElementType POST_INCREMENT_EXPRESSION = new PowerShellElementType("POST_INCREMENT_EXPRESSION");
-  IElementType PRIMARY_EXPRESSION = new PowerShellElementType("PRIMARY_EXPRESSION");
   IElementType RANGE_EXPRESSION = new PowerShellElementType("RANGE_EXPRESSION");
-  IElementType REAL_LITERAL = new PowerShellElementType("REAL_LITERAL");
-  IElementType SCRIPT_BLOCK = new PowerShellElementType("SCRIPT_BLOCK");
+  IElementType REAL_LITERAL_EXPRESSION = new PowerShellElementType("REAL_LITERAL_EXPRESSION");
+  IElementType REFERENCE_VARIABLE = new PowerShellElementType("REFERENCE_VARIABLE");
   IElementType SEP = new PowerShellElementType("SEP");
   IElementType SEQUENCE_STATEMENT = new PowerShellElementType("SEQUENCE_STATEMENT");
-  IElementType STATEMENT_BLOCK = new PowerShellElementType("STATEMENT_BLOCK");
-  IElementType STRING_LITERAL = new PowerShellElementType("STRING_LITERAL");
+  IElementType STRING_LITERAL_EXPRESSION = new PowerShellElementType("STRING_LITERAL_EXPRESSION");
   IElementType SWITCH_STATEMENT = new PowerShellElementType("SWITCH_STATEMENT");
+  IElementType TARGET_VARIABLE_EXPRESSION = new PowerShellElementType("TARGET_VARIABLE_EXPRESSION");
   IElementType TRAP_STATEMENT = new PowerShellElementType("TRAP_STATEMENT");
   IElementType TRY_STATEMENT = new PowerShellElementType("TRY_STATEMENT");
-  IElementType TYPE_LITERAL = new PowerShellElementType("TYPE_LITERAL");
-  IElementType UNARY_EXPRESSION = new PowerShellElementType("UNARY_EXPRESSION");
-  IElementType VARIABLE = new PowerShellElementType("VARIABLE");
+  IElementType TYPE_LITERAL_EXPRESSION = new PowerShellElementType("TYPE_LITERAL_EXPRESSION");
   IElementType VERBATIM_COMMAND_ARGUMENT = new PowerShellElementType("VERBATIM_COMMAND_ARGUMENT");
   IElementType WHILE_STATEMENT = new PowerShellElementType("WHILE_STATEMENT");
 
@@ -150,16 +146,18 @@ public interface PowerShellTypes {
         return new PowerShellAdditiveExpressionImplGen(node);
       } else if (type == ARRAY_LITERAL_EXPRESSION) {
         return new PowerShellArrayLiteralExpressionImplGen(node);
-      } else if (type == ASSIGNMENT_EXPRESSION) {
-        return new PowerShellAssignmentExpressionImplGen(node);
+      } else if (type == ASSIGNMENT_STATEMENT) {
+        return new PowerShellAssignmentStatementImplGen(node);
       } else if (type == ATTRIBUTE) {
         return new PowerShellAttributeImplGen(node);
       } else if (type == BITWISE_EXPRESSION) {
         return new PowerShellBitwiseExpressionImplGen(node);
-      } else if (type == COMMAND) {
-        return new PowerShellCommandImplGen(node);
+      } else if (type == BLOCK_BODY) {
+        return new PowerShellBlockBodyImplGen(node);
       } else if (type == COMMAND_ARGUMENT) {
         return new PowerShellCommandArgumentImplGen(node);
+      } else if (type == COMMAND_CALL_EXPRESSION) {
+        return new PowerShellCommandCallExpressionImplGen(node);
       } else if (type == COMMAND_NAME) {
         return new PowerShellCommandNameImplGen(node);
       } else if (type == COMMAND_PARAMETER) {
@@ -172,8 +170,6 @@ public interface PowerShellTypes {
         return new PowerShellDataStatementImplGen(node);
       } else if (type == DO_STATEMENT) {
         return new PowerShellDoStatementImplGen(node);
-      } else if (type == ELEMENT_ACCESS) {
-        return new PowerShellElementAccessImplGen(node);
       } else if (type == EXPRESSION_WITH_UNARY_OPERATOR) {
         return new PowerShellExpressionWithUnaryOperatorImplGen(node);
       } else if (type == FLOW_CONTROL_STATEMENT) {
@@ -186,58 +182,50 @@ public interface PowerShellTypes {
         return new PowerShellForStatementImplGen(node);
       } else if (type == FUNCTION_STATEMENT) {
         return new PowerShellFunctionStatementImplGen(node);
+      } else if (type == IDENTIFIER) {
+        return new PowerShellIdentifierImplGen(node);
       } else if (type == IF_STATEMENT) {
         return new PowerShellIfStatementImplGen(node);
       } else if (type == INLINESCRIPT_STATEMENT) {
         return new PowerShellInlinescriptStatementImplGen(node);
-      } else if (type == INTEGER_LITERAL) {
-        return new PowerShellIntegerLiteralImplGen(node);
+      } else if (type == INTEGER_LITERAL_EXPRESSION) {
+        return new PowerShellIntegerLiteralExpressionImplGen(node);
       } else if (type == INVOCATION_EXPRESSION) {
         return new PowerShellInvocationExpressionImplGen(node);
       } else if (type == LOGICAL_EXPRESSION) {
         return new PowerShellLogicalExpressionImplGen(node);
-      } else if (type == MEMBER_ACCESS) {
-        return new PowerShellMemberAccessImplGen(node);
       } else if (type == MULTIPLICATIVE_EXPRESSION) {
         return new PowerShellMultiplicativeExpressionImplGen(node);
       } else if (type == PARALLEL_STATEMENT) {
         return new PowerShellParallelStatementImplGen(node);
       } else if (type == PARENTHESIZED_EXPRESSION) {
         return new PowerShellParenthesizedExpressionImplGen(node);
-      } else if (type == PIPELINE) {
-        return new PowerShellPipelineImplGen(node);
       } else if (type == POST_DECREMENT_EXPRESSION) {
         return new PowerShellPostDecrementExpressionImplGen(node);
       } else if (type == POST_INCREMENT_EXPRESSION) {
         return new PowerShellPostIncrementExpressionImplGen(node);
-      } else if (type == PRIMARY_EXPRESSION) {
-        return new PowerShellPrimaryExpressionImplGen(node);
       } else if (type == RANGE_EXPRESSION) {
         return new PowerShellRangeExpressionImplGen(node);
-      } else if (type == REAL_LITERAL) {
-        return new PowerShellRealLiteralImplGen(node);
-      } else if (type == SCRIPT_BLOCK) {
-        return new PowerShellScriptBlockImplGen(node);
+      } else if (type == REAL_LITERAL_EXPRESSION) {
+        return new PowerShellRealLiteralExpressionImplGen(node);
+      } else if (type == REFERENCE_VARIABLE) {
+        return new PowerShellReferenceVariableImplGen(node);
       } else if (type == SEP) {
         return new PowerShellSepImplGen(node);
       } else if (type == SEQUENCE_STATEMENT) {
         return new PowerShellSequenceStatementImplGen(node);
-      } else if (type == STATEMENT_BLOCK) {
-        return new PowerShellStatementBlockImplGen(node);
-      } else if (type == STRING_LITERAL) {
-        return new PowerShellStringLiteralImplGen(node);
+      } else if (type == STRING_LITERAL_EXPRESSION) {
+        return new PowerShellStringLiteralExpressionImplGen(node);
       } else if (type == SWITCH_STATEMENT) {
         return new PowerShellSwitchStatementImplGen(node);
+      } else if (type == TARGET_VARIABLE_EXPRESSION) {
+        return new PowerShellTargetVariableExpressionImplGen(node);
       } else if (type == TRAP_STATEMENT) {
         return new PowerShellTrapStatementImplGen(node);
       } else if (type == TRY_STATEMENT) {
         return new PowerShellTryStatementImplGen(node);
-      } else if (type == TYPE_LITERAL) {
-        return new PowerShellTypeLiteralImplGen(node);
-      } else if (type == UNARY_EXPRESSION) {
-        return new PowerShellUnaryExpressionImplGen(node);
-      } else if (type == VARIABLE) {
-        return new PowerShellVariableImplGen(node);
+      } else if (type == TYPE_LITERAL_EXPRESSION) {
+        return new PowerShellTypeLiteralExpressionImplGen(node);
       } else if (type == VERBATIM_COMMAND_ARGUMENT) {
         return new PowerShellVerbatimCommandArgumentImplGen(node);
       } else if (type == WHILE_STATEMENT) {
