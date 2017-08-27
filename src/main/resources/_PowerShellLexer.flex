@@ -23,8 +23,9 @@ import static com.intellij.plugin.powershell.psi.PowerShellTypes.*;
 %unicode
 
 EOL=\R
-WHITE_SPACE_CHAR=[\ \t\f]
-WHITE_SPACE={WHITE_SPACE_CHAR}+
+WHITE_SPACE_CHAR=[\ \t\f]|{BACKTICK}{NL}
+BACKTICK="`"
+WHITE_SPACE={WHITE_SPACE_CHAR}+//|{BACKTICK}{NL}{WHITE_SPACE_CHAR}*//|{CC}
 
 OP_C=("-as"|"-ccontains"|"-ceq"|"-cge"|"-cgt"|"-cle"|"-clike"|"-clt"|"-cmatch"|"-cne"|"-cnotcontains"|"-cnotlike"|"-cnotmatch"|"-contains"
 |"-creplace"|"-csplit"|"-eq"|"-ge"|"-gt"|"-icontains"|"-ieq"|"-ige"|"-igt"|"-ile"|"-ilike"|"-ilt"|"-imatch"|"-in"|"-ine"|"-inotcontains"|"-inotlike"
@@ -55,7 +56,7 @@ SQBR_R="]"
 //_   (The underscore character U+005F)
 
 SIMPLE_ID_FIRST_CHAR=(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\_)
-SIMPLE_ID_CHAR={SIMPLE_ID_FIRST_CHAR}|(\p{Nd}|\_)
+SIMPLE_ID_CHAR={SIMPLE_ID_FIRST_CHAR}|(\p{Nd}|\_|{HASH})
 SIMPLE_ID={SIMPLE_ID_FIRST_CHAR}{SIMPLE_ID_CHAR}*
 
 //variable-character:
@@ -68,7 +69,7 @@ VAR_ID={VAR_ID_CHAR}+
 
 //GENERIC_ID_CHAR=([^\}\{\(\)\,\;\"\'\`\|\&\$\s\n\r]|(`.))
 //GENERIC_ID_CHAR={SIMPLE_ID_CHAR}|(\-|\?)
-GENERIC_ID_FIRST_CHAR=([^\=\[\]\%\-\}\{\(\)\,\;\"\'\|\&\$\s\n\r\#]|(`.))
+GENERIC_ID_FIRST_CHAR=([^\=\[\]\%\-\}\{\(\)\,\;\"\'\|\&\$\s\n\r\#\:\`]|(`.))
 GENERIC_ID_CHAR={GENERIC_ID_FIRST_CHAR}|(\-|\%)
 GENERIC_ID={GENERIC_ID_FIRST_CHAR}{GENERIC_ID_CHAR}*//[int] -> int] - generic_id
 
@@ -78,7 +79,7 @@ BRACED_ID={BRACED_ID_CHAR}+
 //GENERIC_ID=([^\}\{\(\)\,\;\"\`\|\&\$\s]|(`.))+
 TYPE_NAME=(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\p{Nd}|\_)+
 SINGLE_LINE_COMMENT_CHARS=[^\n\r]+
-SINGLE_LINE_COMMENT={HASH}({SINGLE_LINE_COMMENT_CHARS}?|{EOL})
+SINGLE_LINE_COMMENT={HASH}({SINGLE_LINE_COMMENT_CHARS}?|{EOL})//??todo: #\n
 DELIMITED_COMENT_START=<{HASH}
 DELIMITED_COMENT_END={HASH}+>
 DELIMITED_COMMENT_CHARS=({HASH}*[^#>]+)+
@@ -110,6 +111,10 @@ PARAM_TOKEN=\-(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\_|\?)[^\{\}\(\)\;\,\|\&\.\[\:
   {SEMI}                                                       { yybegin(YYINITIAL); return SEMI; }
   {DOT}                                                        { /*yybegin(YYINITIAL);*/ return DOT; }
   ","                                                          { yybegin(YYINITIAL); return COMMA; }
+  {SQBR_L}                                                     { yybegin(YYINITIAL); return SQBR_L; }
+  "++"                                                         { yybegin(YYINITIAL); return PP; }
+  "--"                                                         { yybegin(YYINITIAL); return MM; }
+  "="                                                          { yybegin(YYINITIAL); return EQ; }
 }
 <VAR_BRACED> {
   {BRACED_ID}                                                  { return BRACED_ID; }
