@@ -51,7 +51,7 @@ class PowerShellCallableResolveProcessor(ref: PowerShellCallableReference) : Pow
 
   override fun execute(element: PsiElement, state: ResolveState): Boolean {
     if (element is PowerShellComponent) {
-      if (element.name == myRef.canonicalText && (element !is PowerShellVariable || "function".equals(element.getNamespace(), true))) {
+      if (element.name.equals(myRef.canonicalText, true) && (element !is PowerShellVariable || "function".equals(element.getNamespace(), true))) {
 //      if (PowerShellResolveUtil.areNamesEqual(element, myRef)) {
         myResult = element
         return false
@@ -69,11 +69,11 @@ class PowerShellVariableResolveProcessor(ref: PowerShellReference) : PowerShellR
     if (element is PowerShellComponent) {
       val refName = myRef.canonicalText
       if (element is PowerShellVariable) {
-        if (element.getQualifiedName() == refName) {
+        if (element.getQualifiedName().equals(refName, true)) {
           myResult = element
           return false
         }
-      } else if (element.name == refName) {
+      } else if (element.name.equals(refName, true)) {
         myResult = element
         return false
       }
