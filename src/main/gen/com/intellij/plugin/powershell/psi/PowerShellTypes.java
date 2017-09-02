@@ -87,6 +87,7 @@ public interface PowerShellTypes {
   IElementType EXCL_MARK = new PowerShellTokenType("!");
   IElementType EXIT = new PowerShellTokenType("exit");
   IElementType EXPANDABLE_HERE_STRING = new PowerShellTokenType("EXPANDABLE_HERE_STRING");
+  IElementType EXPANDABLE_STRING = new PowerShellTokenType("EXPANDABLE_STRING");
   IElementType FILTER = new PowerShellTokenType("filter");
   IElementType FINALLY = new PowerShellTokenType("finally");
   IElementType FOR = new PowerShellTokenType("for");
@@ -135,8 +136,6 @@ public interface PowerShellTypes {
   IElementType SINGLE_LINE_COMMENT = new PowerShellTokenType("SINGLE_LINE_COMMENT");
   IElementType SQBR_L = new PowerShellTokenType("[");
   IElementType SQBR_R = new PowerShellTokenType("]");
-  IElementType STRING_DQ = new PowerShellTokenType("STRING_DQ");
-  IElementType STRING_SQ = new PowerShellTokenType("STRING_SQ");
   IElementType SWITCH = new PowerShellTokenType("switch");
   IElementType THROW = new PowerShellTokenType("throw");
   IElementType TRAP = new PowerShellTokenType("trap");
@@ -147,6 +146,7 @@ public interface PowerShellTypes {
   IElementType VAR = new PowerShellTokenType("var");
   IElementType VAR_ID = new PowerShellTokenType("VAR_ID");
   IElementType VERBATIM_HERE_STRING = new PowerShellTokenType("VERBATIM_HERE_STRING");
+  IElementType VERBATIM_STRING = new PowerShellTokenType("VERBATIM_STRING");
   IElementType WHILE = new PowerShellTokenType("while");
   IElementType WORKFLOW = new PowerShellTokenType("workflow");
 

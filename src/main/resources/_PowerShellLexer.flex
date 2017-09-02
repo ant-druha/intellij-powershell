@@ -1,4 +1,4 @@
-package com.intellij.plugin.powershell;
+package com.intellij.plugin.powershell.lang;
 
 import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
@@ -41,10 +41,18 @@ EXCL_MARK="!"
 
 NL=(\r|\n|\r\n)
 NLS={WHITE_SPACE}*{NL}({NL}|{WHITE_SPACE}*)*
-STRING_DQ=\"([^\"\\]|\\.)*\"
-STRING_SQ='[^']*'
-EXPANDABLE_HERE_STRING=@\"([ \t\n\x0B\f\r])*(\r|\n|\r\n)(([^\"\\]|\\.)+(\r|\n|\r\n))?([ \t\n\x0B\f\r])*\"@
-VERBATIM_HERE_STRING=@'([ \t\n\x0B\f\r])*(\r|\n|\r\n)(([^'\\]|\\.)+(\r|\n|\r\n))?([ \t\n\x0B\f\r])*'@
+CH_DQ=\"|\“|\”|\„
+CH_SQ=\'|\‘|\’|\‚|\‛
+VAR_SCOPE="global:" | "local:" | "private:" | "script:" | "using:" | "workflow:" | {SIMPLE_ID}":"
+BRACED_VAR="${"{VAR_SCOPE}?{WHITE_SPACE}?{BRACED_ID}"}"
+EXPAND_STRING_CHARS=([^\$\"\“\”\„\`\r\n]|{BRACED_VAR}|"$"[^\"\“\”\„\`\r\n]|"$"(\`.)|(\`.)|{CH_DQ}{CH_DQ})+//?subexpression'\(\)' in: '|"$"[^\(\)\"\“\”\„\`\r\n]|'
+EXPANDABLE_STRING={CH_DQ}{EXPAND_STRING_CHARS}?"$"*{CH_DQ}
+
+VERBATIM_STRING_CHARS=([^\'\‘\’\‚\‛\r\n]|{CH_SQ}{CH_SQ})+
+VERBATIM_STRING={CH_SQ}{VERBATIM_STRING_CHARS}?{CH_SQ}
+
+EXPANDABLE_HERE_STRING=@{CH_DQ}([ \t\n\x0B\f\r])*(\r|\n|\r\n)(([^\"\“\”\„\\]|\\.)+(\r|\n|\r\n))?([ \t\n\x0B\f\r])*{CH_DQ}@
+VERBATIM_HERE_STRING=@{CH_SQ}([ \t\n\x0B\f\r])*(\r|\n|\r\n)(([^\'\‘\’\‚\‛\\]|\\.)+(\r|\n|\r\n))?([ \t\n\x0B\f\r])*{CH_SQ}@
 DEC_DIGIT=[0-9]
 HEX_DIGIT={DEC_DIGIT}|[abcdef]
 DEC_DIGITS={DEC_DIGIT}+
@@ -206,8 +214,8 @@ PARAM_TOKEN=\-(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\_|\?)[^\{\}\(\)\;\,\|\&\.\[\:
   {OP_C}                           { return OP_C; }
   {EXCL_MARK}                      { return EXCL_MARK; }
   {NLS}                            { return NLS; }
-  {STRING_DQ}                      { return STRING_DQ; }
-  {STRING_SQ}                      { return STRING_SQ; }
+  {EXPANDABLE_STRING}              { return EXPANDABLE_STRING; }
+  {VERBATIM_STRING}                { return VERBATIM_STRING; }
   {EXPANDABLE_HERE_STRING}         { return EXPANDABLE_HERE_STRING; }
   {VERBATIM_HERE_STRING}           { return VERBATIM_HERE_STRING; }
   {REAL_NUM}                       { return REAL_NUM; }

@@ -40,8 +40,8 @@
     SQBR_L='['
     SQBR_R=']'
 
-    STRING_DQ='regexp:"([^"\\]|\\.)*"'
-    STRING_SQ="regexp:'[^']*'"
+    EXPANDABLE_STRING='regexp:"([^"\\]|\\.)*"'
+    VERBATIM_STRING="regexp:'[^']*'"
     EXPANDABLE_HERE_STRING='regexp:@"(\s)*(\r|\n|\r\n)(([^"\\]|\\.)+(\r|\n|\r\n))?(\s)*"@'
     VERBATIM_HERE_STRING="regexp:@\'(\s)*(\r|\n|\r\n)(([^'\\]|\\.)+(\r|\n|\r\n))?(\s)*\'@"
     DEC_INTEGER='regexp:[0-9abcdef][0-9]*(l|L|d|D)?(kb|mb|gb|tb|pb)?'
@@ -231,8 +231,8 @@ real_literal_expression ::= REAL_NUM
 
 //String literals
 string_literal_expression ::= expandable_string_literal | verbatim_string_literal | expandable_here_string_literal | verbatim_here_string_literal
-private expandable_string_literal ::= STRING_DQ //".*"
-private verbatim_string_literal ::= STRING_SQ//'.*'
+private expandable_string_literal ::= EXPANDABLE_STRING
+private verbatim_string_literal ::= VERBATIM_STRING
 private verbatim_here_string_literal ::= VERBATIM_HERE_STRING //todo create proper char goups
 private expandable_here_string_literal ::= EXPANDABLE_HERE_STRING //todo create proper char goups
 
@@ -403,18 +403,13 @@ private switch_parameter ::=   '-regex'
 
 private switch_condition ::= LP nls? pipeline nls? RP | '-file' nls? switch_filename
 private switch_filename ::= command_argument | primary_expression
-command_argument ::= command_name_expr //PARAM_ARGUMENT //command_name_expr
+command_argument ::= command_name_expr
 command_parameter ::= PARAM_TOKEN
 verbatim_command_argument ::= /*'--%'*/MM nws PERS (verbatim_command_string | AMP_ARG /*|generic_token*/)+
-private verbatim_command_string ::= STRING_DQ
+private verbatim_command_string ::= EXPANDABLE_STRING //TODO: 02/09/17 variable substitution:
 
 
 private primary_expression ::= value (invocation_expression | member_access | element_access | post_increment_expression | post_decrement_expression)?
-                               //| member_access
-                               //| element_access
-                               //| invocation_expression
-                               //| post_increment_expression
-                               //| post_decrement_expression
 
 private left member_access ::= nws ( DOT | COLON2 ) member_name
 private left element_access ::= SQBR_L nls? expression nls? SQBR_R
