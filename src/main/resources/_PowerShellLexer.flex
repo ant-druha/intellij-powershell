@@ -60,6 +60,7 @@ DEC_INTEGER={DEC_DIGITS}{DEC_SF}?{NUM_MULTIPLIER}?
 
 DOT="."
 SEMI=";"
+COLON2="::"
 PERS="%"
 HASH="#"
 SQBR_L="["
@@ -73,8 +74,8 @@ VAR_ID_CHAR={SIMPLE_ID_CHAR}|(\?)
 VAR_ID={VAR_ID_CHAR}+
 
 
-GENERIC_ID_FIRST_CHAR=([^\=\[\]\%\-\}\{\(\)\,\;\"\'\|\&\$\s\n\r\#\:\`0-9!]|(`.))
-GENERIC_ID_CHAR={GENERIC_ID_FIRST_CHAR}|(\-|\%|[0-9!])
+GENERIC_ID_FIRST_CHAR=([^\.\=\[\]\%\-\}\{\(\)\,\;\"\'\|\&\$\s\n\r\#\:\`0-9!\+]|(`.))
+GENERIC_ID_CHAR={GENERIC_ID_FIRST_CHAR}|([\+\-\%0-9!])
 GENERIC_ID={GENERIC_ID_FIRST_CHAR}{GENERIC_ID_CHAR}*//[int] -> int] - generic_id
 
 BRACED_ID_CHAR=([^\}\`]|(`.))
@@ -105,13 +106,14 @@ PARAM_TOKEN=\-(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\_|\?)[^\{\}\(\)\;\,\|\&\.\[\:
   {SIMPLE_ID}                                                  { /*yybegin(YYINITIAL);*/ return SIMPLE_ID; }
   {VAR_ID}                                                     { /*yybegin(YYINITIAL);*/ return VAR_ID; }
   ":"                                                          { /*yybegin(YYINITIAL);*/ return COLON; }
+  {COLON2}                                                     { yybegin(YYINITIAL); return COLON2; }
 //  "}"                                                          { return RCURLY; }
   "("                                                          { yybegin(YYINITIAL); return LP; }
   ")"                                                          { yybegin(YYINITIAL); return RP; }
   {WHITE_SPACE}                                                { yybegin(YYINITIAL); return WHITE_SPACE; }//todo WS can be after the colon $<scope name>: simple_id
   {NLS}                                                        { yybegin(YYINITIAL); return NLS; }
   {SEMI}                                                       { yybegin(YYINITIAL); return SEMI; }
-  {DOT}                                                        { /*yybegin(YYINITIAL);*/ return DOT; }
+  {DOT}                                                        { yybegin(YYINITIAL); return DOT; }
   ","                                                          { yybegin(YYINITIAL); return COMMA; }
   {SQBR_L}                                                     { yybegin(YYINITIAL); return SQBR_L; }
   "++"                                                         { yybegin(YYINITIAL); return PP; }
@@ -190,6 +192,7 @@ PARAM_TOKEN=\-(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\_|\?)[^\{\}\(\)\;\,\|\&\.\[\:
 
   {DOT}                            { return DOT; }
   {SEMI}                           { return SEMI; }
+  {COLON2}                         { return COLON2; }
   {PERS}                           { return PERS; }
 //  {HASH}                           { return HASH; }
   {SQBR_L}                         { return SQBR_L; }

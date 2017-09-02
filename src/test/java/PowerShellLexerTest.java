@@ -38,6 +38,11 @@ public class PowerShellLexerTest extends LexerTestCase {
     doTest("0x2002L", "HEX_INTEGER ('0x2002L')"); doTest("0x2003Lkb", "HEX_INTEGER ('0x2003Lkb')"); doTest("0x2003kb", "HEX_INTEGER ('0x2003kb')");
   }
 
+  public void testIntegerLiteralSign() {
+    doTest("+123", "+ ('+')\n" + "DEC_INTEGER ('123')"); doTest("-123", "- ('-')\n" + "DEC_INTEGER ('123')");
+
+  }
+
   public void testRealLiteral() {
     doTest("1.", "REAL_NUM ('1.')"); doTest("1.23", "REAL_NUM ('1.23')"); doTest(".45e35", "REAL_NUM ('.45e35')");
     doTest("32.e+12", "REAL_NUM ('32.e+12')"); doTest("1.2345e-3d", "REAL_NUM ('1.2345e-3d')"); doTest("123.456E-231", "REAL_NUM ('123.456E-231')");

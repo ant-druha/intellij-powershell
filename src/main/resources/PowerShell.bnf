@@ -120,6 +120,7 @@
     LCURLY='{'
     RCURLY='}'
     COLON=':'
+    COLON2='::'
     DS='$'
     AT='@'
     PERS='%'
@@ -415,9 +416,9 @@ private primary_expression ::= value (invocation_expression | member_access | el
                                //| post_increment_expression
                                //| post_decrement_expression
 
-private left member_access ::= nws ( DOT | COLON COLON ) member_name
+private left member_access ::= nws ( DOT | COLON2 ) member_name
 private left element_access ::= SQBR_L nls? expression nls? SQBR_R
-left invocation_expression ::= (DOT | COLON COLON ) member_name LP argument_expression_list? nls? RP
+left invocation_expression ::= (DOT | COLON2 ) member_name LP argument_expression_list? nls? RP
 private left argument_expression_list ::= expression ( ',' expression)*
 left post_increment_expression ::= PP
 left post_decrement_expression ::= MM

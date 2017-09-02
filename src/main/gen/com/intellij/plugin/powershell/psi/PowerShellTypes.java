@@ -66,6 +66,7 @@ public interface PowerShellTypes {
   IElementType CATCH = new PowerShellTokenType("catch");
   IElementType CLASS = new PowerShellTokenType("class");
   IElementType COLON = new PowerShellTokenType(":");
+  IElementType COLON2 = new PowerShellTokenType("::");
   IElementType COMMA = new PowerShellTokenType(",");
   IElementType CONTINUE = new PowerShellTokenType("continue");
   IElementType DATA = new PowerShellTokenType("data");
