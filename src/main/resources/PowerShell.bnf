@@ -4,7 +4,7 @@
 
   psiImplUtilClass="com.intellij.plugin.powershell.psi.impl.PowerShellPsiImplUtil"
 
-  parserUtilClass="com.intellij.plugin.powershell.lang.parser.PowerShellGeneratedParserUtil" //external grammar
+  parserUtilClass="com.intellij.plugin.powershell.lang.parser.PowerShellGeneratedParserUtil"
 
     extends="com.intellij.plugin.powershell.psi.impl.PowerShellPsiElementImpl"
     implements="com.intellij.plugin.powershell.psi.PowerShellPsiElement"
@@ -24,10 +24,15 @@
 
     OP_MR='regexp:(*>&1|2>&1|3>&1|4>&1|5>&1|6>&1|*>&2|1>&2|3>&2|4>&2|5>&2|6>&2)'
     OP_FR='regexp:(>|>>|2>|2>>3>|3>>4>|4>>|5>|5>>6>|6>>*>|*>>|<)'
+    OP_NOT='-not'
+    OP_BNOT='-bnot'
+    OP_SPLIT='-split'
+    OP_JOIN='-join'
+    EXCL_MARK='!'
 
   // NewLines and spaces //
     NLS ='regexp:[\ \t\f]*(\r|\n|\r\n)((\r|\n|\r\n)|([\ \t\f])*)*'
-    LF = 'regexp:(\r|\n|\r\n)+'                                   // NewLines
+    LF = 'regexp:(\r|\n|\r\n)+'
 
 
     LP='('
@@ -35,15 +40,15 @@
     SQBR_L='['
     SQBR_R=']'
 
-//->    DQ='regexp:("|“ |” |„)'
     STRING_DQ='regexp:"([^"\\]|\\.)*"'
     STRING_SQ="regexp:'[^']*'"
     EXPANDABLE_HERE_STRING='regexp:@"(\s)*(\r|\n|\r\n)(([^"\\]|\\.)+(\r|\n|\r\n))?(\s)*"@'
     VERBATIM_HERE_STRING="regexp:@\'(\s)*(\r|\n|\r\n)(([^'\\]|\\.)+(\r|\n|\r\n))?(\s)*\'@"
-    DIGITS='regexp:[0-9]+'
+    DEC_INTEGER='regexp:[0-9abcdef][0-9]*(l|L|d|D)?(kb|mb|gb|tb|pb)?'
+    HEX_INTEGER='regexp:[0-9abcdef][0-9]*(l|L)?(kb|mb|gb|tb|pb)?'
+    REAL_NUM='regexp:[0-9]+\.[0-9]*([Ee][+-]?[0-9])(l|L|d|D)?(kb|mb|gb|tb|pb)?|\.[0-9]+([Ee][+-]?[0-9])?(l|L|d|D)?(kb|mb|gb|tb|pb)?|[0-9]+[Ee][+-]?[0-9]+(l|L|d|D)?(kb|mb|gb|tb|pb)?'
 
     DEC_EXPONENT='regexp:[Ee][+-]?[0-9]+'
-//    var_identifier='regexp:([^$][_a-zA-Z][a-zA-Z0-9_$\-]*)|(\|(([^\|])|(\\\|))*[^\\]\|)'
 
     //keywords
     begin='begin'
@@ -104,7 +109,6 @@
     TYPE_NAME='regexp:(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\p{Nd}|\_)+'
 
 
-  //todo nested comments? (lexer states...)
     SINGLE_LINE_COMMENT='regexp:\#([^\n\r])*'
     DELIMITED_COMMENT='regexp:\<\#([#]*[^#>]+)*\#+\>'
     RAW_LBR='«'
@@ -131,15 +135,11 @@
     MM='--'
     DOT='.'
     SEMI=';'
-//    NOT_AMP='regexp:[^&]'
-
-
-//    CMDLET_NAME ='regexp:([^$0-9(@"''][^ \t]*)' //todo
-//    PARAM_ARGUMENT='regexp:([^-($0_9]\w*)' //todo
+    PLUS='+'
+    MINUS='-'
     PARAM_ARGUMENT='regexp:([\w][\w$0-9\-]*)' //todo
     ALNUM='regexp:p{Alnum}'
     LETTERS='regexp:[a-zA-Z]+'
-//    DS_ALNUM='regexp:\$\p{Alnum}+'
     ALNUM='regexp:\p{Alnum}+'
     PARAM_TOKEN='regexp:\-(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\_|\?)[^\{\}\(\)\;\,\|\&\.\[\:\s\n\r]+:?'
 
@@ -215,16 +215,18 @@ private array_type_name ::= type_name SQBR_L
 private generic_type_name ::= type_name SQBR_L
 
 //B.1.9 Simple Names
-simple_name ::= SIMPLE_ID //| SIMPLE_NAME
+simple_name ::= SIMPLE_ID
 {elementType=identifier}
 //B.1.8 Literals
-private literal ::= integer_literal_expression | real_literal_expression | string_literal_expression
+private literal ::= real_literal_expression | integer_literal_expression | string_literal_expression
 
 //Integer Literals
-integer_literal_expression ::= DIGITS
+integer_literal_expression ::= decimal_integer_literal | hexadecimal_integer_literal
+private decimal_integer_literal ::=  DEC_INTEGER
+private hexadecimal_integer_literal ::= HEX_INTEGER
 
 //Real Literals
-real_literal_expression ::=  DIGITS
+real_literal_expression ::= REAL_NUM
 
 //String literals
 string_literal_expression ::= expandable_string_literal | verbatim_string_literal | expandable_here_string_literal | verbatim_here_string_literal
@@ -238,7 +240,6 @@ private expandable_here_string_literal ::= EXPANDABLE_HERE_STRING //todo create 
 
 
 //B.1.6 Variables
-// variable ::= simple_lvalue //simple_name
 private variable ::= '$$' | '$?' | '$^' |  simple_variable | braced_variable
 
 referenceVariable ::= variable
@@ -256,7 +257,6 @@ variable_name_simple ::= SIMPLE_ID //| VAR_ID
 private braced_variable ::= DS LCURLY variable_scope? variable_name_braced RCURLY
 variable_name_braced ::= SIMPLE_ID  | BRACED_ID //todo: create regex for `BRACED_ID` and use it
 {elementType=identifier}
-//private nws ::= NWS
 
 //expressions
 expression ::= logical_expression
@@ -266,7 +266,7 @@ bitwise_expression ::=  comparison_expression ( ('-band' | '-bor' | '-bxor' )  n
 
 comparison_expression ::= additive_expression ( comparison_operator nls? additive_expression )*
 
-additive_expression ::= multiplicative_expression ( ( '+' | '-' ) nls? multiplicative_expression )*
+additive_expression ::= multiplicative_expression ( ( PLUS | MINUS ) nls? multiplicative_expression )*
 
 multiplicative_expression ::= format_expression ( ( '*' | '/' | '%') nls? format_expression )*
 
@@ -283,16 +283,15 @@ array_literal_expression ::= unary_expression ( ',' nls? unary_expression )*
 //private lvalue_expression ::= lvalue (PIPE lvalue)*
 //property_or_array_reference ::= value property_or_array_reference_op*
 //
-
-private prefix_op ::= '-not' | '!' | '-bnot' | MM | PP | '-split' | '-join' | COMMA | '+' | '-'
+private prefix_op ::= OP_NOT | EXCL_MARK | OP_BNOT | MM | PP | OP_SPLIT | OP_JOIN | COMMA | PLUS | MINUS
 private unary_expression ::= expression_with_unary_operator | primary_expression
 expression_with_unary_operator ::= prefix_op nls? primary_expression | cast_expression //lvalue
 //                                            ','     nls? lvalue //unary_expression
 //                                           | '-not'  nls? lvalue //unary_expression
 //                                           | '!'     nls? lvalue //unary_expression
 //                                           | '-bnot' nls? lvalue //unary_expression
-//                                           | '+'     nls? lvalue// unary_expression
-//                                           | '-'    nls? lvalue //unary_expression
+//                                           | PLUS     nls? lvalue// unary_expression
+//                                           | MINUS    nls? lvalue //unary_expression
 //                                           | PP nls? lvalue //pre_increment_expression
 //                                           | MM nls? lvalue //pre_decrement_expression
 //                                           | cast_expression
@@ -475,7 +474,7 @@ private key_expression ::= simple_name | unary_expression
 //->
 //->private comparison_argument_expression ::= additive_argument_expression ( comparison_operator nls? additive_argument_expression )*
 //->
-//->private additive_argument_expression ::= multiplicative_argument_expression ( ('+' | '-') nls? multiplicative_argument_expression )*
+//->private additive_argument_expression ::= multiplicative_argument_expression ( (PLUS | MINUS) nls? multiplicative_argument_expression )*
 //->
 //->private multiplicative_argument_expression ::= format_argument_expression ( ('*' | '/' | '%') nls? format_argument_expression )*
 //->

@@ -33,6 +33,11 @@ OP_C=("-as"|"-ccontains"|"-ceq"|"-cge"|"-cgt"|"-cle"|"-clike"|"-clt"|"-cmatch"|"
 |"-replace"|"-shl"|"-shr"|"-split")
 OP_MR=("*>&1"|"2>&1"|"3>&1"|"4>&1"|"5>&1"|"6>&1"|"*>&2"|"1>&2"|"3>&2"|"4>&2"|"5>&2"|"6>&2")
 OP_FR=(">"|">>"|"2>"|"2>>3>"|"3>>4>"|"4>>"|"5>"|"5>>6>"|"6>>*>"|"*>>"|"<")
+OP_NOT="-not"
+OP_BNOT="-bnot"
+OP_SPLIT="-split"
+OP_JOIN="-join"
+EXCL_MARK="!"
 
 NL=(\r|\n|\r\n)
 NLS={WHITE_SPACE}*{NL}({NL}|{WHITE_SPACE}*)*
@@ -40,43 +45,40 @@ STRING_DQ=\"([^\"\\]|\\.)*\"
 STRING_SQ='[^']*'
 EXPANDABLE_HERE_STRING=@\"([ \t\n\x0B\f\r])*(\r|\n|\r\n)(([^\"\\]|\\.)+(\r|\n|\r\n))?([ \t\n\x0B\f\r])*\"@
 VERBATIM_HERE_STRING=@'([ \t\n\x0B\f\r])*(\r|\n|\r\n)(([^'\\]|\\.)+(\r|\n|\r\n))?([ \t\n\x0B\f\r])*'@
-DIGITS=[0-9]+
+DEC_DIGIT=[0-9]
+HEX_DIGIT={DEC_DIGIT}|[abcdef]
+DEC_DIGITS={DEC_DIGIT}+
+HEX_DIGITS={HEX_DIGIT}{DEC_DIGIT}*
+
 DEC_EXPONENT=[Ee][+-]?[0-9]+
+DEC_SF=[dDlL]
+NUM_MULTIPLIER=(kb|mb|gb|tb|pb)
+
+REAL_NUM={DEC_DIGITS}"."{DEC_DIGITS}?{DEC_EXPONENT}?{DEC_SF}?{NUM_MULTIPLIER}?|"."{DEC_DIGITS}{DEC_EXPONENT}?{DEC_SF}?{NUM_MULTIPLIER}?|{DEC_DIGITS}{DEC_EXPONENT}{DEC_SF}?{NUM_MULTIPLIER}?
+HEX_INTEGER=0x{HEX_DIGITS}[lL]?{NUM_MULTIPLIER}?
+DEC_INTEGER={DEC_DIGITS}{DEC_SF}?{NUM_MULTIPLIER}?
+
 DOT="."
 SEMI=";"
 PERS="%"
 HASH="#"
 SQBR_L="["
 SQBR_R="]"
-//simple-name-first-char:
-//A Unicode character of classes Lu, Ll, Lt, Lm, or Lo
-//_   (The underscore character U+005F)
-//simple-name-char:
-//A Unicode character of classes Lu, Ll, Lt, Lm, Lo, or Nd
-//_   (The underscore character U+005F)
 
 SIMPLE_ID_FIRST_CHAR=(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\_)
 SIMPLE_ID_CHAR={SIMPLE_ID_FIRST_CHAR}|(\p{Nd}|\_|{HASH})
 SIMPLE_ID={SIMPLE_ID_FIRST_CHAR}{SIMPLE_ID_CHAR}*
 
-//variable-character:
-//  A Unicode character of classes Lu, Ll, Lt, Lm, Lo, or Nd
-//  _   (The underscore character U+005F)
-//  ?
 VAR_ID_CHAR={SIMPLE_ID_CHAR}|(\?)
 VAR_ID={VAR_ID_CHAR}+
 
 
-//GENERIC_ID_CHAR=([^\}\{\(\)\,\;\"\'\`\|\&\$\s\n\r]|(`.))
-//GENERIC_ID_CHAR={SIMPLE_ID_CHAR}|(\-|\?)
-GENERIC_ID_FIRST_CHAR=([^\=\[\]\%\-\}\{\(\)\,\;\"\'\|\&\$\s\n\r\#\:\`]|(`.))
-GENERIC_ID_CHAR={GENERIC_ID_FIRST_CHAR}|(\-|\%)
+GENERIC_ID_FIRST_CHAR=([^\=\[\]\%\-\}\{\(\)\,\;\"\'\|\&\$\s\n\r\#\:\`0-9!]|(`.))
+GENERIC_ID_CHAR={GENERIC_ID_FIRST_CHAR}|(\-|\%|[0-9!])
 GENERIC_ID={GENERIC_ID_FIRST_CHAR}{GENERIC_ID_CHAR}*//[int] -> int] - generic_id
 
 BRACED_ID_CHAR=([^\}\`]|(`.))
 BRACED_ID={BRACED_ID_CHAR}+
-//GENERIC_TOKEN_CHARS=([^\}\{\(\)\,\;\"\`\|\&\$\s]|(`.))+
-//GENERIC_ID=([^\}\{\(\)\,\;\"\`\|\&\$\s]|(`.))+
 TYPE_NAME=(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\p{Nd}|\_)+
 SINGLE_LINE_COMMENT_CHARS=[^\n\r]+
 SINGLE_LINE_COMMENT={HASH}({SINGLE_LINE_COMMENT_CHARS}?|{EOL})//??todo: #\n
@@ -115,6 +117,13 @@ PARAM_TOKEN=\-(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\_|\?)[^\{\}\(\)\;\,\|\&\.\[\:
   "++"                                                         { yybegin(YYINITIAL); return PP; }
   "--"                                                         { yybegin(YYINITIAL); return MM; }
   "="                                                          { yybegin(YYINITIAL); return EQ; }
+  "+"                                                          { yybegin(YYINITIAL); return PLUS; }
+  "-"                                                          { yybegin(YYINITIAL); return MINUS; }
+  {OP_NOT}                                                     { yybegin(YYINITIAL); return OP_NOT; }
+  {OP_BNOT}                                                    { yybegin(YYINITIAL); return OP_BNOT; }
+  {OP_SPLIT}                                                   { yybegin(YYINITIAL); return OP_SPLIT; }
+  {OP_JOIN}                                                    { yybegin(YYINITIAL); return OP_JOIN; }
+  {EXCL_MARK}                                                  { yybegin(YYINITIAL); return EXCL_MARK; }
 }
 <VAR_BRACED> {
   {BRACED_ID}                                                  { return BRACED_ID; }
@@ -176,6 +185,8 @@ PARAM_TOKEN=\-(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\_|\?)[^\{\}\(\)\;\,\|\&\.\[\:
   "&"                                                          { return AMP; }
   "++"                                                         { return PP; }
   "--"                                                         { return MM; }
+  "+"                                                          { return PLUS; }
+  "-"                                                          { return MINUS; }
 
   {DOT}                            { return DOT; }
   {SEMI}                           { return SEMI; }
@@ -183,15 +194,22 @@ PARAM_TOKEN=\-(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\_|\?)[^\{\}\(\)\;\,\|\&\.\[\:
 //  {HASH}                           { return HASH; }
   {SQBR_L}                         { return SQBR_L; }
   {SQBR_R}                         { return SQBR_R; }
-  {OP_C}                           { return OP_C; }
   {OP_MR}                          { return OP_MR; }
   {OP_FR}                          { return OP_FR; }
+  {OP_NOT}                         { return OP_NOT; }
+  {OP_BNOT}                        { return OP_BNOT; }
+  {OP_SPLIT}                       { return OP_SPLIT; }
+  {OP_JOIN}                        { return OP_JOIN; }
+  {OP_C}                           { return OP_C; }
+  {EXCL_MARK}                      { return EXCL_MARK; }
   {NLS}                            { return NLS; }
   {STRING_DQ}                      { return STRING_DQ; }
   {STRING_SQ}                      { return STRING_SQ; }
   {EXPANDABLE_HERE_STRING}         { return EXPANDABLE_HERE_STRING; }
   {VERBATIM_HERE_STRING}           { return VERBATIM_HERE_STRING; }
-  {DIGITS}                         { return DIGITS; }
+  {REAL_NUM}                       { return REAL_NUM; }
+  {HEX_INTEGER}                    { return HEX_INTEGER; }
+  {DEC_INTEGER}                    { return DEC_INTEGER; }
   {DEC_EXPONENT}                   { return DEC_EXPONENT; }
   {SIMPLE_ID}                      { return SIMPLE_ID; }
   {GENERIC_ID}                     { return GENERIC_ID; }
