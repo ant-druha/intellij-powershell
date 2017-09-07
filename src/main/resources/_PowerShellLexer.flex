@@ -33,10 +33,10 @@ OP_C=("-as"|"-ccontains"|"-ceq"|"-cge"|"-cgt"|"-cle"|"-clike"|"-clt"|"-cmatch"|"
 |"-replace"|"-shl"|"-shr"|"-split")
 OP_MR=("*>&1"|"2>&1"|"3>&1"|"4>&1"|"5>&1"|"6>&1"|"*>&2"|"1>&2"|"3>&2"|"4>&2"|"5>&2"|"6>&2")
 OP_FR=(">"|">>"|"2>"|"2>>3>"|"3>>4>"|"4>>"|"5>"|"5>>6>"|"6>>*>"|"*>>"|"<")
-OP_NOT="-not"
-OP_BNOT="-bnot"
-OP_SPLIT="-split"
-OP_JOIN="-join"
+OP_NOT={DASH}"not"
+OP_BNOT={DASH}"bnot"
+OP_SPLIT={DASH}"split"
+OP_JOIN={DASH}"join"
 EXCL_MARK="!"
 
 NL=(\r|\n|\r\n)
@@ -82,8 +82,8 @@ VAR_ID_CHAR={SIMPLE_ID_CHAR}|(\?)
 VAR_ID={VAR_ID_CHAR}+
 
 
-GENERIC_ID_FIRST_CHAR=([^\.\=\[\]\%\-\}\{\(\)\,\;\"\'\|\&\$\s\n\r\#\:\`0-9!\+]|(`.))
-GENERIC_ID_CHAR={GENERIC_ID_FIRST_CHAR}|([\+\-\%0-9!])
+GENERIC_ID_FIRST_CHAR=([^\.\=\[\]\%\-\–\—\―\}\{\(\)\,\;\"\'\|\&\$\s\n\r\#\:\`0-9!\+]|(`.))
+GENERIC_ID_CHAR={GENERIC_ID_FIRST_CHAR}|([\+\-\–\—\―\%0-9!])
 GENERIC_ID={GENERIC_ID_FIRST_CHAR}{GENERIC_ID_CHAR}*//[int] -> int] - generic_id
 
 BRACED_ID_CHAR=([^\}\`]|(`.))
@@ -96,11 +96,12 @@ DELIMITED_COMENT_END={HASH}+>
 DELIMITED_COMMENT_CHARS=({HASH}*[^#>]+)+
 DELIMITED_COMMENT={DELIMITED_COMENT_START}{DELIMITED_COMMENT_CHARS}?{DELIMITED_COMENT_END}
 
-AMP_ARG=\&[^&]
-PARAM_ARGUMENT=([\w][\w$0-9\-]*)
+AMP_ARG=\&[^&][\w]
+PARAM_ARGUMENT=([\w]([\w$0-9]|{DASH})*)
 ALNUM=([:letter:]|[:digit:])+
 LETTERS=[a-zA-Z]+
-PARAM_TOKEN=\-(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\_|\?)[^\{\}\(\)\;\,\|\&\.\[\:\s\n\r]+:?
+DASH=[\-\–\—\―]
+PARAM_TOKEN={DASH}(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\_|\?)[^\{\}\(\)\;\,\|\&\.\[\:\s\n\r]+:?
 
 %state VAR_START VAR_BRACED
 
@@ -128,7 +129,8 @@ PARAM_TOKEN=\-(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\_|\?)[^\{\}\(\)\;\,\|\&\.\[\:
   "--"                                                         { yybegin(YYINITIAL); return MM; }
   "="                                                          { yybegin(YYINITIAL); return EQ; }
   "+"                                                          { yybegin(YYINITIAL); return PLUS; }
-  "-"                                                          { yybegin(YYINITIAL); return MINUS; }
+//  "-"                                                          { yybegin(YYINITIAL); return MINUS; }
+  {DASH}                                                       { yybegin(YYINITIAL); return DASH; }
   {OP_NOT}                                                     { yybegin(YYINITIAL); return OP_NOT; }
   {OP_BNOT}                                                    { yybegin(YYINITIAL); return OP_BNOT; }
   {OP_SPLIT}                                                   { yybegin(YYINITIAL); return OP_SPLIT; }
@@ -196,8 +198,9 @@ PARAM_TOKEN=\-(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\_|\?)[^\{\}\(\)\;\,\|\&\.\[\:
   "++"                                                         { return PP; }
   "--"                                                         { return MM; }
   "+"                                                          { return PLUS; }
-  "-"                                                          { return MINUS; }
+//  "-"                                                          { return MINUS; }
 
+  {DASH}                           { return DASH; }
   {DOT}                            { return DOT; }
   {SEMI}                           { return SEMI; }
   {COLON2}                         { return COLON2; }

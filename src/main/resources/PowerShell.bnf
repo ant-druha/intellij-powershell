@@ -130,14 +130,14 @@
 
     EQ='='
     PIPE='|'
-    AMP_ARG='regexp:\&[^&]'
+    AMP_ARG='regexp:\&[^&\s]'
     AMP='&'
     PP='++'
     MM='--'
     DOT='.'
     SEMI=';'
     PLUS='+'
-    MINUS='-'
+    DASH='regexp:[\-\–\—\―]'
     PARAM_ARGUMENT='regexp:([\w][\w$0-9\-]*)' //todo
     ALNUM='regexp:p{Alnum}'
     LETTERS='regexp:[a-zA-Z]+'
@@ -153,8 +153,8 @@
 
 private top_level_element ::= ( nls? top_script_block | statement_list)?
 
-private statement_block ::= LCURLY nls? block_body nls? RCURLY
-block_body ::= statement_list
+private statement_block ::= LCURLY nls? block_body? nls? RCURLY
+block_body ::= sep* statement_list
 
 private statement_list ::= statement ( statement_terminators statement? )*
 
@@ -267,7 +267,7 @@ bitwise_expression ::=  comparison_expression ( ('-band' | '-bor' | '-bxor' )  n
 
 comparison_expression ::= additive_expression ( comparison_operator nls? additive_expression )*
 
-additive_expression ::= multiplicative_expression ( ( PLUS | MINUS ) nls? multiplicative_expression )*
+additive_expression ::= multiplicative_expression ( ( PLUS | DASH ) nls? multiplicative_expression )*
 
 multiplicative_expression ::= format_expression ( ( '*' | '/' | '%') nls? format_expression )*
 
@@ -284,7 +284,7 @@ array_literal_expression ::= unary_expression ( ',' nls? unary_expression )*
 //private lvalue_expression ::= lvalue (PIPE lvalue)*
 //property_or_array_reference ::= value property_or_array_reference_op*
 //
-private prefix_op ::= OP_NOT | EXCL_MARK | OP_BNOT | MM | PP | OP_SPLIT | OP_JOIN | COMMA | PLUS | MINUS
+private prefix_op ::= OP_NOT | EXCL_MARK | OP_BNOT | MM | PP | OP_SPLIT | OP_JOIN | COMMA | PLUS | DASH
 private unary_expression ::= expression_with_unary_operator | primary_expression
 expression_with_unary_operator ::= prefix_op nls? primary_expression | cast_expression //lvalue
 //                                            ','     nls? lvalue //unary_expression
@@ -309,7 +309,7 @@ private cast_expression ::= type_literal_expression unary_expression //lvalue
 
 private pipeline_tail ::= ( '|' nls? command_call_expression )+
 
-command_call_expression ::= command_invocation_operator? command_module? command_name_expr command_element*
+command_call_expression ::= command_invocation_operator? ( (command_module command_name_expr command_element* ) | command_name_expr command_element* )
 {mixin="com.intellij.plugin.powershell.psi.impl.PowerShellCallableReferenceExpression"
 implements="com.intellij.plugin.powershell.psi.PowerShellReference"}
 
@@ -370,7 +370,7 @@ flow_control_statement ::= ('break' | 'continue') label_expression? | ('throw' |
 private label_expression ::= simple_name | unary_expression
 
 
-function_statement ::= ('function' | 'filter' | 'workflow') nls? function_name nls? function_parameter_declaration? nls? LCURLY nls? script_block RCURLY
+function_statement ::= ('function' | 'filter' | 'workflow') nls? function_name nls? function_parameter_declaration? nls? LCURLY nls? script_block? nls? RCURLY
 {mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractComponent"
 implements="com.intellij.plugin.powershell.psi.PowerShellComponent"}
 
@@ -442,7 +442,7 @@ private sub_expression ::= DS LP statement_list? RP
 
 private array_expression ::= AT LP statement_list? RP
 
-private script_block_expression ::= LCURLY statement_list? RCURLY
+private script_block_expression ::= LCURLY nls? block_body? nls? RCURLY
 
 private hash_literal_expression ::= AT LCURLY hash_literal_body? RCURLY //'@{' nls? hash_literal_body? nls? '}'
 private hash_literal_body ::= hash_entry ( statement_terminators hash_entry )*

@@ -38,7 +38,7 @@ public class PowerShellLexerTest extends LexerTestCase {
   }
 
   public void testIntegerLiteralSign() {
-    doTest("+123", "+ ('+')\n" + "DEC_INTEGER ('123')"); doTest("-123", "- ('-')\n" + "DEC_INTEGER ('123')");
+    doTest("+123", "+ ('+')\n" + "DEC_INTEGER ('123')"); doTest("-123", "DASH ('-')\n" + "DEC_INTEGER ('123')");
 
   }
 
@@ -88,5 +88,10 @@ public class PowerShellLexerTest extends LexerTestCase {
     doTest("@'\n" + "'@", "VERBATIM_HERE_STRING ('@'\\n'@')"); doTest("@‚\n" + "‚@", "VERBATIM_HERE_STRING ('@‚\\n‚@')");
     doTest("@‘\n" + "'@", "VERBATIM_HERE_STRING ('@‘\\n'@')"); doTest("@‛\n" + "‛@", "VERBATIM_HERE_STRING ('@‛\\n‛@')");
     doTest("@'\n" + "line 1\n" + "'@", "VERBATIM_HERE_STRING ('@'\\n" + "line 1\\n" + "'@')");
+  }
+
+  public void testDash() throws Exception {
+    doTest("-3\n" + "–3\n" + "—3\n" + "―3", "DASH ('-')\n" + "DEC_INTEGER ('3')\n" + "NLS ('\\n')\n" + "DASH ('–')\n" + "DEC_INTEGER ('3')\n" +
+        "NLS ('\\n')\n" + "DASH ('—')\n" + "DEC_INTEGER ('3')\n" + "NLS ('\\n')\n" + "DASH ('―')\n" + "DEC_INTEGER ('3')");
   }
 }

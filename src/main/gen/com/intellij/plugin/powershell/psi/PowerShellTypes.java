@@ -69,6 +69,7 @@ public interface PowerShellTypes {
   IElementType COLON2 = new PowerShellTokenType("::");
   IElementType COMMA = new PowerShellTokenType(",");
   IElementType CONTINUE = new PowerShellTokenType("continue");
+  IElementType DASH = new PowerShellTokenType("DASH");
   IElementType DATA = new PowerShellTokenType("data");
   IElementType DEC_EXPONENT = new PowerShellTokenType("DEC_EXPONENT");
   IElementType DEC_INTEGER = new PowerShellTokenType("DEC_INTEGER");
@@ -104,7 +105,6 @@ public interface PowerShellTypes {
   IElementType LETTERS = new PowerShellTokenType("LETTERS");
   IElementType LF = new PowerShellTokenType("LF");
   IElementType LP = new PowerShellTokenType("(");
-  IElementType MINUS = new PowerShellTokenType("-");
   IElementType MM = new PowerShellTokenType("--");
   IElementType MULTI_LINE_COMMENT_END = new PowerShellTokenType("*)");
   IElementType MULTI_LINE_COMMENT_START = new PowerShellTokenType("(*");
