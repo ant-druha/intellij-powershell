@@ -20,6 +20,6 @@ public class PowerShellGeneratedParserUtil {
   }
 
   public static boolean isIdentifierBefore(PsiBuilder builder, int i) {
-    return builder.rawLookup(-1) == PowerShellTypes.SIMPLE_ID || builder.rawLookup(-1) == PowerShellTypes.GENERIC_ID;
+    return builder.rawLookup(-1) == PowerShellTypes.SIMPLE_ID || builder.rawLookup(-1) == PowerShellTypes.GENERIC_ID_PART;
   }
 }

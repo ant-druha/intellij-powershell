@@ -39,6 +39,7 @@
     RP=')'
     SQBR_L='['
     SQBR_R=']'
+    PATH_SEP='\'
 
     EXPANDABLE_STRING='regexp:"([^"\\]|\\.)*"'
     VERBATIM_STRING="regexp:'[^']*'"
@@ -127,10 +128,12 @@
     HASH='#'
     DEL_COMENT_START='regexp:\<\#'
     DEL_COMENT_END='regexp:\#+\>'
+    VERBATIM_ARG_START='--%'
+    VERBATIM_ARG_INPUT='regexp:[^\|\r\n]'
 
     EQ='='
     PIPE='|'
-    AMP_ARG='regexp:\&[^&\s]'
+//    AMP_ARG='regexp:\&[^&\s]'
     AMP='&'
     PP='++'
     MM='--'
@@ -307,9 +310,9 @@ private cast_expression ::= type_literal_expression unary_expression //lvalue
 
 //private attributed_expression ::= type_literal variable
 
-private pipeline_tail ::= ( '|' nls? command_call_expression )+
+private pipeline_tail ::= ( PIPE nls? command_call_expression )+
 
-command_call_expression ::= command_invocation_operator? ( (command_module command_name_expr command_element* ) | command_name_expr command_element* )
+command_call_expression ::= command_name command_element* | command_invocation_operator ( (command_module command_name_expr command_element* ) | command_name_expr command_element* )
 {mixin="com.intellij.plugin.powershell.psi.impl.PowerShellCallableReferenceExpression"
 implements="com.intellij.plugin.powershell.psi.PowerShellReference"}
 
@@ -323,8 +326,9 @@ private generic_token_with_subexpr_start ::= generic_token_part DS nws LP
 //private generic_ref_token_with_subexpr_start ::= generic_token_part DS nws LP
 private generic_token_part ::= expandable_string_literal | verbatim_here_string_literal | referenceVariable | generic_token_chars
 
-//private generic_token ::= variable | generic_token_chars
-private generic_token_chars ::= SIMPLE_ID | GENERIC_ID //todo in lexer?
+private generic_token_chars ::= generic_id_part_tokens_start ( nws generic_id_part_tokens )*
+private generic_id_part_tokens_start ::= SIMPLE_ID | GENERIC_ID_PART
+private generic_id_part_tokens ::= generic_id_part_tokens_start | DOT | PATH_SEP
 
 private command_element ::= command_parameter | command_argument | redirection
 private command_invocation_operator ::= '&' | DOT
@@ -360,7 +364,7 @@ private finally_clause ::= nls? 'finally' statement_block
 trap_statement ::= 'trap' nls? type_literal_expression? nls? statement_block
 type_literal_expression ::= SQBR_L type_spec SQBR_R
 private type_spec ::=   array_type_name nls? dimension? SQBR_R | generic_type_name nls? generic_type_arguments SQBR_R | type_name
-private dimension ::= ','+ //',' | dimension ','
+private dimension ::= COMMA+ //',' | dimension ','
 private generic_type_arguments ::= type_spec nls? (',' nls? type_spec)*
 
 
@@ -374,7 +378,7 @@ function_statement ::= ('function' | 'filter' | 'workflow') nls? function_name n
 {mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractComponent"
 implements="com.intellij.plugin.powershell.psi.PowerShellComponent"}
 
-private function_name ::= primary_expression | identifier //generic_token//command_name //command_argument
+private function_name ::= primary_expression | identifier //primary_expression | command_name
 identifier ::= generic_identifier
 private generic_identifier ::=  generic_token_with_sub_expr | generic_token_part
 
@@ -403,13 +407,24 @@ private switch_parameter ::=   '-regex'
 
 private switch_condition ::= LP nls? pipeline nls? RP | '-file' nls? switch_filename
 private switch_filename ::= command_argument | primary_expression
-command_argument ::= command_name_expr
+command_argument ::= path_expression | command_name_expr
+path_expression ::= provider? drive? containers? item
+private provider ::= ( module? COLON2 nws )+
+private module ::= module_name nws PATH_SEP nws
+private drive ::= drive_name nws COLON nws PATH_SEP nws
+private containers ::= (container nws PATH_SEP nws)+
+private module_name ::= simple_name | primary_expression
+private container ::= path_item_name
+drive_name ::= simple_name | primary_expression
+item ::= path_item_name
+private path_item_name ::= generic_id_part_tokens_start (nws path_name_part_tokens)* | primary_expression
+private path_name_part_tokens ::= generic_id_part_tokens_start | DOT
 command_parameter ::= PARAM_TOKEN
-verbatim_command_argument ::= /*'--%'*/MM nws PERS (verbatim_command_string | AMP_ARG /*|generic_token*/)+
-private verbatim_command_string ::= EXPANDABLE_STRING //TODO: 02/09/17 variable substitution:
+verbatim_command_argument ::= VERBATIM_ARG_START VERBATIM_ARG_INPUT //(verbatim_command_string | AMP_ARG | generic_token_chars )+
+//private verbatim_command_string ::= EXPANDABLE_STRING //TODO: 02/09/17 variable substitution:
 
 
-private primary_expression ::= value (invocation_expression | member_access | element_access | post_increment_expression | post_decrement_expression)?
+private primary_expression ::= value (invocation_expression | member_access | element_access | post_increment_expression | post_decrement_expression)*
 
 private left member_access ::= nws ( DOT | COLON2 ) member_name
 private left element_access ::= SQBR_L nls? expression nls? SQBR_R
@@ -506,8 +521,8 @@ private while_condition ::= nls? pipeline
 do_statement ::= 'do' statement_block nls? ( 'while' | 'until' ) nls? LP while_condition nls? RP
 
 
-if_statement ::= 'if' nls? LP nls? pipeline nls? RP statement_block elseif_clause* else_clause?
-private elseif_clause ::= nls? 'elseif' nls? LP nls? pipeline nls? RP statement_block
+if_statement ::= 'if' nls? LP nls? pipeline nls? RP nls? statement_block elseif_clause* else_clause?
+private elseif_clause ::= nls? 'elseif' nls? LP nls? pipeline nls? RP nls? statement_block
 private else_clause ::= nls? 'else' statement_block
 
 sep ::= SEMI |  NLS | new_line_char | !is_id comment //COMMENT //hide psi
@@ -522,6 +537,6 @@ private statement_terminators ::= sep+
 private label ::= ':' LETTERS ALNUM?
 
 private nws ::= <<isNotWhiteSpace>>
-//private nws_before ::=
+
 private ws ::= <<isWhiteSpace>>
 private is_id ::= <<isIdentifierBefore>>

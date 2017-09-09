@@ -28,7 +28,10 @@ public class PowerShellLexerTest extends LexerTestCase {
   }
 
   public void testGenericNames() {
-    doTest("Get-Power", "GENERIC_ID ('Get-Power')"); doTest("Get-Power2", "GENERIC_ID ('Get-Power2')"); doTest("Get-Power!2", "GENERIC_ID ('Get-Power!2')");
+    doTest("Get-Power", "GENERIC_ID_PART ('Get-Power')"); doTest("Get-Power2", "GENERIC_ID_PART ('Get-Power2')");
+    doTest("Get-Power!2", "GENERIC_ID_PART ('Get-Power!2')");
+    doTest("echoargs.exe --% \"%path%\"", "SIMPLE_ID ('echoargs')\n" + ". ('.')\n" + "SIMPLE_ID ('exe')\n" + "WHITE_SPACE (' ')\n" + "--% ('--%')"
+        + "\n" + "VERBATIM_ARG_INPUT (' \"%path%\"')");
   }
 
   public void testIntegerLiteral() {

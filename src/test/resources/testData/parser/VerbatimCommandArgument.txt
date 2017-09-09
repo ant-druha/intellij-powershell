@@ -1,0 +1,8 @@
+FILE(0,120)
+  PowerShellCommandCallExpressionImplGen(COMMAND_CALL_EXPRESSION)(0,9)
+    PowerShellCommandNameImplGen(COMMAND_NAME)(0,9)
+      PsiElement(SIMPLE_ID)('myCommand')(0,9)
+  PsiWhiteSpace(' ')(9,10)
+  PowerShellVerbatimCommandArgumentImplGen(VERBATIM_COMMAND_ARGUMENT)(10,120)
+    PsiElement(--%)('--%')(10,13)
+    PsiElement(VERBATIM_ARG_INPUT)(' action /mode %UserMode% /path:"location with spaces" /fancyparam { /dothis /dothat:"%userArgs%" } /verbose')(13,120)

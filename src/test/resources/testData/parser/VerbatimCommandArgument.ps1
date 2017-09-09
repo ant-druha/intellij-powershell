@@ -1,0 +1,1 @@
+myCommand --% action /mode %UserMode% /path:"location with spaces" /fancyparam { /dothis /dothat:"%userArgs%" } /verbose

@@ -82,9 +82,9 @@ VAR_ID_CHAR={SIMPLE_ID_CHAR}|(\?)
 VAR_ID={VAR_ID_CHAR}+
 
 
-GENERIC_ID_FIRST_CHAR=([^\.\=\[\]\%\-\–\—\―\}\{\(\)\,\;\"\'\|\&\$\s\n\r\#\:\`0-9!\+]|(`.))
-GENERIC_ID_CHAR={GENERIC_ID_FIRST_CHAR}|([\+\-\–\—\―\%0-9!])
-GENERIC_ID={GENERIC_ID_FIRST_CHAR}{GENERIC_ID_CHAR}*//[int] -> int] - generic_id
+GENERIC_ID_PART_FIRST_CHAR=([^\\\.\=\[\]\%\-\–\—\―\}\{\(\)\,\;\"\'\|\&\$\s\n\r\#\:\`0-9!\+]|(`.))
+GENERIC_ID_PART_CHAR={GENERIC_ID_PART_FIRST_CHAR}|([\+\-\–\—\―\%0-9!])
+GENERIC_ID_PART={GENERIC_ID_PART_FIRST_CHAR}{GENERIC_ID_PART_CHAR}*
 
 BRACED_ID_CHAR=([^\}\`]|(`.))
 BRACED_ID={BRACED_ID_CHAR}+
@@ -96,14 +96,17 @@ DELIMITED_COMENT_END={HASH}+>
 DELIMITED_COMMENT_CHARS=({HASH}*[^#>]+)+
 DELIMITED_COMMENT={DELIMITED_COMENT_START}{DELIMITED_COMMENT_CHARS}?{DELIMITED_COMENT_END}
 
-AMP_ARG=\&[^&][\w]
+//AMP_ARG=\&/*[^&]*/[\w]
 PARAM_ARGUMENT=([\w]([\w$0-9]|{DASH})*)
 ALNUM=([:letter:]|[:digit:])+
 LETTERS=[a-zA-Z]+
 DASH=[\-\–\—\―]
-PARAM_TOKEN={DASH}(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\_|\?)[^\{\}\(\)\;\,\|\&\.\[\:\s\n\r]+:?
+MM="--"
+PARAM_TOKEN={DASH}(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\_|\?)[^\{\}\(\)\;\,\|\&\.\[\:\s\n\r]*:?
+VERBATIM_ARG_START={MM}{PERS}
+VERBATIM_ARG_INPUT=[^\|\r\n]+
 
-%state VAR_START VAR_BRACED
+%state VAR_START VAR_BRACED VERBATIM_ARGUMENT
 
 
 %%
@@ -126,7 +129,7 @@ PARAM_TOKEN={DASH}(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\_|\?)[^\{\}\(\)\;\,\|\&\.
   ","                                                          { yybegin(YYINITIAL); return COMMA; }
   {SQBR_L}                                                     { yybegin(YYINITIAL); return SQBR_L; }
   "++"                                                         { yybegin(YYINITIAL); return PP; }
-  "--"                                                         { yybegin(YYINITIAL); return MM; }
+  {MM}                                                         { yybegin(YYINITIAL); return MM; }
   "="                                                          { yybegin(YYINITIAL); return EQ; }
   "+"                                                          { yybegin(YYINITIAL); return PLUS; }
 //  "-"                                                          { yybegin(YYINITIAL); return MINUS; }
@@ -141,6 +144,12 @@ PARAM_TOKEN={DASH}(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\_|\?)[^\{\}\(\)\;\,\|\&\.
   {BRACED_ID}                                                  { return BRACED_ID; }
 //  "{"                                                          { yybegin(IN_BRACED_VAR) return LCURLY; }
   "}"                                                          { yybegin(YYINITIAL); return RCURLY; }
+}
+
+<VERBATIM_ARGUMENT> {
+  {VERBATIM_ARG_INPUT}                                          { return VERBATIM_ARG_INPUT; }
+  "|"                                                           { yybegin(YYINITIAL); return PIPE; }
+  {NLS}                                                         { yybegin(YYINITIAL); return NLS; }
 }
 
 <YYINITIAL> {
@@ -196,9 +205,10 @@ PARAM_TOKEN={DASH}(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\_|\?)[^\{\}\(\)\;\,\|\&\.
   "|"                                                          { return PIPE; }
   "&"                                                          { return AMP; }
   "++"                                                         { return PP; }
-  "--"                                                         { return MM; }
+  {MM}                                                         { return MM; }
+  {VERBATIM_ARG_START}                                         { yybegin(VERBATIM_ARGUMENT); return VERBATIM_ARG_START; }
   "+"                                                          { return PLUS; }
-//  "-"                                                          { return MINUS; }
+  "\\"                                                         { return PATH_SEP; }
 
   {DASH}                           { return DASH; }
   {DOT}                            { return DOT; }
@@ -226,12 +236,11 @@ PARAM_TOKEN={DASH}(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\_|\?)[^\{\}\(\)\;\,\|\&\.
   {DEC_INTEGER}                    { return DEC_INTEGER; }
   {DEC_EXPONENT}                   { return DEC_EXPONENT; }
   {SIMPLE_ID}                      { return SIMPLE_ID; }
-  {GENERIC_ID}                     { return GENERIC_ID; }
+  {GENERIC_ID_PART}                { return GENERIC_ID_PART; }
   {TYPE_NAME}                      { return TYPE_NAME; }
-//  {SINGLE_LINE_COMMENT}             { return SINGLE_LINE_COMMENT; }
   {SINGLE_LINE_COMMENT}            { return COMMENT; }
   {DELIMITED_COMMENT}              { return COMMENT; }
-  {AMP_ARG}                        { return AMP_ARG; }
+//  {AMP_ARG}                        { return AMP_ARG; }
   {PARAM_ARGUMENT}                 { return PARAM_ARGUMENT; }
   {ALNUM}                          { return ALNUM; }
   {LETTERS}                        { return LETTERS; }

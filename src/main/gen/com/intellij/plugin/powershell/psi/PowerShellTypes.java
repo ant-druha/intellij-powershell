@@ -24,6 +24,7 @@ public interface PowerShellTypes {
   IElementType COMPARISON_EXPRESSION = new PowerShellElementType("COMPARISON_EXPRESSION");
   IElementType DATA_STATEMENT = new PowerShellElementType("DATA_STATEMENT");
   IElementType DO_STATEMENT = new PowerShellElementType("DO_STATEMENT");
+  IElementType DRIVE_NAME = new PowerShellElementType("DRIVE_NAME");
   IElementType EXPRESSION = new PowerShellElementType("EXPRESSION");
   IElementType EXPRESSION_WITH_UNARY_OPERATOR = new PowerShellElementType("EXPRESSION_WITH_UNARY_OPERATOR");
   IElementType FLOW_CONTROL_STATEMENT = new PowerShellElementType("FLOW_CONTROL_STATEMENT");
@@ -36,10 +37,12 @@ public interface PowerShellTypes {
   IElementType INLINESCRIPT_STATEMENT = new PowerShellElementType("INLINESCRIPT_STATEMENT");
   IElementType INTEGER_LITERAL_EXPRESSION = new PowerShellElementType("INTEGER_LITERAL_EXPRESSION");
   IElementType INVOCATION_EXPRESSION = new PowerShellElementType("INVOCATION_EXPRESSION");
+  IElementType ITEM = new PowerShellElementType("ITEM");
   IElementType LOGICAL_EXPRESSION = new PowerShellElementType("LOGICAL_EXPRESSION");
   IElementType MULTIPLICATIVE_EXPRESSION = new PowerShellElementType("MULTIPLICATIVE_EXPRESSION");
   IElementType PARALLEL_STATEMENT = new PowerShellElementType("PARALLEL_STATEMENT");
   IElementType PARENTHESIZED_EXPRESSION = new PowerShellElementType("PARENTHESIZED_EXPRESSION");
+  IElementType PATH_EXPRESSION = new PowerShellElementType("PATH_EXPRESSION");
   IElementType POST_DECREMENT_EXPRESSION = new PowerShellElementType("POST_DECREMENT_EXPRESSION");
   IElementType POST_INCREMENT_EXPRESSION = new PowerShellElementType("POST_INCREMENT_EXPRESSION");
   IElementType RANGE_EXPRESSION = new PowerShellElementType("RANGE_EXPRESSION");
@@ -58,7 +61,6 @@ public interface PowerShellTypes {
 
   IElementType ALNUM = new PowerShellTokenType("ALNUM");
   IElementType AMP = new PowerShellTokenType("&");
-  IElementType AMP_ARG = new PowerShellTokenType("AMP_ARG");
   IElementType AT = new PowerShellTokenType("@");
   IElementType BEGIN = new PowerShellTokenType("begin");
   IElementType BRACED_ID = new PowerShellTokenType("BRACED_ID");
@@ -95,7 +97,7 @@ public interface PowerShellTypes {
   IElementType FOREACH = new PowerShellTokenType("foreach");
   IElementType FROM = new PowerShellTokenType("from");
   IElementType FUNCTION = new PowerShellTokenType("function");
-  IElementType GENERIC_ID = new PowerShellTokenType("GENERIC_ID");
+  IElementType GENERIC_ID_PART = new PowerShellTokenType("GENERIC_ID_PART");
   IElementType HASH = new PowerShellTokenType("#");
   IElementType HEX_INTEGER = new PowerShellTokenType("HEX_INTEGER");
   IElementType IF = new PowerShellTokenType("if");
@@ -120,6 +122,7 @@ public interface PowerShellTypes {
   IElementType PARAM = new PowerShellTokenType("param");
   IElementType PARAM_ARGUMENT = new PowerShellTokenType("PARAM_ARGUMENT");
   IElementType PARAM_TOKEN = new PowerShellTokenType("PARAM_TOKEN");
+  IElementType PATH_SEP = new PowerShellTokenType("\\");
   IElementType PERS = new PowerShellTokenType("%");
   IElementType PIPE = new PowerShellTokenType("|");
   IElementType PLUS = new PowerShellTokenType("+");
@@ -145,6 +148,8 @@ public interface PowerShellTypes {
   IElementType USING = new PowerShellTokenType("using");
   IElementType VAR = new PowerShellTokenType("var");
   IElementType VAR_ID = new PowerShellTokenType("VAR_ID");
+  IElementType VERBATIM_ARG_INPUT = new PowerShellTokenType("VERBATIM_ARG_INPUT");
+  IElementType VERBATIM_ARG_START = new PowerShellTokenType("--%");
   IElementType VERBATIM_HERE_STRING = new PowerShellTokenType("VERBATIM_HERE_STRING");
   IElementType VERBATIM_STRING = new PowerShellTokenType("VERBATIM_STRING");
   IElementType WHILE = new PowerShellTokenType("while");
@@ -180,6 +185,8 @@ public interface PowerShellTypes {
         return new PowerShellDataStatementImplGen(node);
       } else if (type == DO_STATEMENT) {
         return new PowerShellDoStatementImplGen(node);
+      } else if (type == DRIVE_NAME) {
+        return new PowerShellDriveNameImplGen(node);
       } else if (type == EXPRESSION_WITH_UNARY_OPERATOR) {
         return new PowerShellExpressionWithUnaryOperatorImplGen(node);
       } else if (type == FLOW_CONTROL_STATEMENT) {
@@ -202,6 +209,8 @@ public interface PowerShellTypes {
         return new PowerShellIntegerLiteralExpressionImplGen(node);
       } else if (type == INVOCATION_EXPRESSION) {
         return new PowerShellInvocationExpressionImplGen(node);
+      } else if (type == ITEM) {
+        return new PowerShellItemImplGen(node);
       } else if (type == LOGICAL_EXPRESSION) {
         return new PowerShellLogicalExpressionImplGen(node);
       } else if (type == MULTIPLICATIVE_EXPRESSION) {
@@ -210,6 +219,8 @@ public interface PowerShellTypes {
         return new PowerShellParallelStatementImplGen(node);
       } else if (type == PARENTHESIZED_EXPRESSION) {
         return new PowerShellParenthesizedExpressionImplGen(node);
+      } else if (type == PATH_EXPRESSION) {
+        return new PowerShellPathExpressionImplGen(node);
       } else if (type == POST_DECREMENT_EXPRESSION) {
         return new PowerShellPostDecrementExpressionImplGen(node);
       } else if (type == POST_INCREMENT_EXPRESSION) {

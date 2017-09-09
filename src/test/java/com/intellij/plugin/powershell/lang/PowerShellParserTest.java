@@ -24,4 +24,8 @@ public class PowerShellParserTest extends ParsingTestCase {
 
   public void testCallInvocationOperator() throws Exception { doTest(true); }
 
+  public void testVerbatimCommandArgument() throws Exception { doTest(true); }
+
+  public void testPathExpression() throws Exception { doTest(true); }
+
 }
