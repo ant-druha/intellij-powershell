@@ -62,8 +62,10 @@ public interface PowerShellTypes {
   IElementType ALNUM = new PowerShellTokenType("ALNUM");
   IElementType AMP = new PowerShellTokenType("&");
   IElementType AT = new PowerShellTokenType("@");
+  IElementType BACKTICK = new PowerShellTokenType("`");
   IElementType BEGIN = new PowerShellTokenType("begin");
   IElementType BRACED_ID = new PowerShellTokenType("BRACED_ID");
+  IElementType BRACED_VAR_START = new PowerShellTokenType("${");
   IElementType BREAK = new PowerShellTokenType("break");
   IElementType CATCH = new PowerShellTokenType("catch");
   IElementType CLASS = new PowerShellTokenType("class");

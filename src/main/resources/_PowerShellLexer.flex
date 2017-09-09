@@ -25,7 +25,7 @@ import static com.intellij.plugin.powershell.psi.PowerShellTypes.*;
 EOL=\R
 WHITE_SPACE_CHAR=[\ \t\f]|{BACKTICK}{NL}
 BACKTICK="`"
-WHITE_SPACE={WHITE_SPACE_CHAR}+//|{BACKTICK}{NL}{WHITE_SPACE_CHAR}*//|{CC}
+WHITE_SPACE={WHITE_SPACE_CHAR}+
 
 OP_C=("-as"|"-ccontains"|"-ceq"|"-cge"|"-cgt"|"-cle"|"-clike"|"-clt"|"-cmatch"|"-cne"|"-cnotcontains"|"-cnotlike"|"-cnotmatch"|"-contains"
 |"-creplace"|"-csplit"|"-eq"|"-ge"|"-gt"|"-icontains"|"-ieq"|"-ige"|"-igt"|"-ile"|"-ilike"|"-ilt"|"-imatch"|"-in"|"-ine"|"-inotcontains"|"-inotlike"
@@ -73,6 +73,9 @@ PERS="%"
 HASH="#"
 SQBR_L="["
 SQBR_R="]"
+DS="$"
+LCURLY="{"
+RCURLY="}"
 
 SIMPLE_ID_FIRST_CHAR=(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\_)
 SIMPLE_ID_CHAR={SIMPLE_ID_FIRST_CHAR}|(\p{Nd}|\_|{HASH})
@@ -105,21 +108,19 @@ MM="--"
 PARAM_TOKEN={DASH}(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\_|\?)[^\{\}\(\)\;\,\|\&\.\[\:\s\n\r]*:?
 VERBATIM_ARG_START={MM}{PERS}
 VERBATIM_ARG_INPUT=[^\|\r\n]+
+BRACED_VAR_START={DS}{LCURLY}
 
-%state VAR_START VAR_BRACED VERBATIM_ARGUMENT
+%state VAR_SIMPLE VAR_BRACED VERBATIM_ARGUMENT
 
 
 %%
-<YYINITIAL> {
-"$"                                                            { yybegin(VAR_START); return DS; }
-}
-<VAR_START> {
-  "{"                                                          { yybegin(VAR_BRACED); return LCURLY; }
+<VAR_SIMPLE> {
+  {LCURLY}                                                     { yybegin(YYINITIAL);return LCURLY; }
   {SIMPLE_ID}                                                  { /*yybegin(YYINITIAL);*/ return SIMPLE_ID; }
   {VAR_ID}                                                     { /*yybegin(YYINITIAL);*/ return VAR_ID; }
   ":"                                                          { /*yybegin(YYINITIAL);*/ return COLON; }
   {COLON2}                                                     { yybegin(YYINITIAL); return COLON2; }
-//  "}"                                                          { return RCURLY; }
+  {RCURLY}                                                     { yybegin(YYINITIAL); return RCURLY; }
   "("                                                          { yybegin(YYINITIAL); return LP; }
   ")"                                                          { yybegin(YYINITIAL); return RP; }
   {WHITE_SPACE}                                                { yybegin(YYINITIAL); return WHITE_SPACE; }//todo WS can be after the colon $<scope name>: simple_id
@@ -132,7 +133,6 @@ VERBATIM_ARG_INPUT=[^\|\r\n]+
   {MM}                                                         { yybegin(YYINITIAL); return MM; }
   "="                                                          { yybegin(YYINITIAL); return EQ; }
   "+"                                                          { yybegin(YYINITIAL); return PLUS; }
-//  "-"                                                          { yybegin(YYINITIAL); return MINUS; }
   {DASH}                                                       { yybegin(YYINITIAL); return DASH; }
   {OP_NOT}                                                     { yybegin(YYINITIAL); return OP_NOT; }
   {OP_BNOT}                                                    { yybegin(YYINITIAL); return OP_BNOT; }
@@ -140,10 +140,10 @@ VERBATIM_ARG_INPUT=[^\|\r\n]+
   {OP_JOIN}                                                    { yybegin(YYINITIAL); return OP_JOIN; }
   {EXCL_MARK}                                                  { yybegin(YYINITIAL); return EXCL_MARK; }
 }
-<VAR_BRACED> {
+<VAR_BRACED> {//todo: variable scope
   {BRACED_ID}                                                  { return BRACED_ID; }
-//  "{"                                                          { yybegin(IN_BRACED_VAR) return LCURLY; }
-  "}"                                                          { yybegin(YYINITIAL); return RCURLY; }
+  {BACKTICK}                                                   { yybegin(YYINITIAL); return BACKTICK; }
+  {RCURLY}                                                     { yybegin(YYINITIAL); return RCURLY; }
 }
 
 <VERBATIM_ARGUMENT> {
@@ -197,8 +197,6 @@ VERBATIM_ARG_INPUT=[^\|\r\n]+
   "(*"                                                         { return MULTI_LINE_COMMENT_START; }
   "*)"                                                         { return MULTI_LINE_COMMENT_END; }
   ","                                                          { return COMMA; }
-  "{"                                                          { return LCURLY; }
-  "}"                                                          { return RCURLY; }
   ":"                                                          { return COLON; }
   "@"                                                          { return AT; }
   "="                                                          { return EQ; }
@@ -211,11 +209,14 @@ VERBATIM_ARG_INPUT=[^\|\r\n]+
   "\\"                                                         { return PATH_SEP; }
 
   {DASH}                           { return DASH; }
+  {BRACED_VAR_START}               { yybegin(VAR_BRACED); return BRACED_VAR_START; }
+  {DS}                             { yybegin(VAR_SIMPLE); return DS; }
+  {LCURLY}                         { return LCURLY; }
+  {RCURLY}                         { return RCURLY; }
   {DOT}                            { return DOT; }
   {SEMI}                           { return SEMI; }
   {COLON2}                         { return COLON2; }
   {PERS}                           { return PERS; }
-//  {HASH}                           { return HASH; }
   {SQBR_L}                         { return SQBR_L; }
   {SQBR_R}                         { return SQBR_R; }
   {OP_MR}                          { return OP_MR; }

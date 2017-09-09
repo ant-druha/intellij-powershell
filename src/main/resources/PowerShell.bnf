@@ -103,6 +103,7 @@
 //    GENERIC_ID='regexp:({SIMPLE_ID}|-)+' //todo ' and \s ???
 //    BRACED_ID='regexp:(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\p{Nd}|\_|\?)+' //todo: create proper regex
     BRACED_ID='regexp:([^\}\`\s]|(`.))+'
+    BACKTICK='`'
     VAR_ID='regexp:(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\p{Nd}|\_|\?)+'
 //    ESCAPED_CHAR='regexp:`.'//2.3.7 Escaped characters p.30
 //    NWS='regexp:[^ ]'
@@ -130,6 +131,7 @@
     DEL_COMENT_END='regexp:\#+\>'
     VERBATIM_ARG_START='--%'
     VERBATIM_ARG_INPUT='regexp:[^\|\r\n]'
+    BRACED_VAR_START='${'
 
     EQ='='
     PIPE='|'
@@ -258,8 +260,8 @@ private variable_scope ::= 'global:' | 'local:' | 'private:' | 'script:' | 'usin
 private variable_namespace ::= SIMPLE_ID ':'
 variable_name_simple ::= SIMPLE_ID //| VAR_ID
 {elementType=identifier}
-private braced_variable ::= DS LCURLY variable_scope? variable_name_braced RCURLY
-variable_name_braced ::= SIMPLE_ID  | BRACED_ID //todo: create regex for `BRACED_ID` and use it
+private braced_variable ::= BRACED_VAR_START variable_scope? variable_name_braced RCURLY
+variable_name_braced ::= SIMPLE_ID  | BRACED_ID
 {elementType=identifier}
 
 //expressions

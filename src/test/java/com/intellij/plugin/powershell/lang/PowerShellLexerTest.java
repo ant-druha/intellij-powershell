@@ -56,10 +56,18 @@ public class PowerShellLexerTest extends LexerTestCase {
     doTest("$values[2]", "$ ('$')\n" + "SIMPLE_ID ('values')\n" + "[ ('[')\n" + "DEC_INTEGER ('2')\n" + "] (']')");
   }
 
-  public void testBracedVariableId() {
-    doTest("${Name with`twhite space and `{punctuation`}}", "$ ('$')\n" + "{ ('{')\n" + "BRACED_ID ('Name with`twhite space and `{punctuation`}')" + "\n" + "} ('}')");
+  public void testSimpleVariableNamespace() {
+    doTest("$function: F", "$ ('$')\n" + "SIMPLE_ID ('function')\n" + ": (':')\n" + "WHITE_SPACE (' ')\n" + "SIMPLE_ID ('F')");
+    doTest("$Function: F", "$ ('$')\n" + "SIMPLE_ID ('Function')\n" + ": (':')\n" + "WHITE_SPACE (' ')\n" + "SIMPLE_ID ('F')");
+    doTest("$global: values", "$ ('$')\n" + "SIMPLE_ID ('global')\n" + ": (':')\n" + "WHITE_SPACE (' ')\n" + "SIMPLE_ID ('values')");
+    doTest("$using: values", "$ ('$')\n" + "SIMPLE_ID ('using')\n" + ": (':')\n" + "WHITE_SPACE (' ')\n" + "SIMPLE_ID ('values')");
+    doTest("$Variable:Count", "$ ('$')\n" + "SIMPLE_ID ('Variable')\n" + ": (':')\n" + "SIMPLE_ID ('Count')");
+    doTest("$Env: Path", "$ ('$')\n" + "SIMPLE_ID ('Env')\n" + ": (':')\n" + "WHITE_SPACE (' ')\n" + "SIMPLE_ID ('Path')");
+  }
 
-    doTest("${E:\\File.txt}", "$ ('$')\n" + "{ ('{')\n" + "BRACED_ID ('E:\\File.txt')\n" + "} ('}')");
+  public void testBracedVariableId() {
+    doTest("${Name with`twhite space and `{punctuation`}}", "${ ('${')\n" + "BRACED_ID ('Name with`twhite space and `{punctuation`}')\n" + "} ('}')");
+    doTest("${E:\\File.txt}", "${ ('${')\n" + "BRACED_ID ('E:\\File.txt')\n" + "} ('}')");
   }
 
   public void testExpandableStringLiteral() {
