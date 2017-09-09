@@ -28,4 +28,6 @@ public class PowerShellParserTest extends ParsingTestCase {
 
   public void testPathExpression() throws Exception { doTest(true); }
 
+  public void testCommandCallExpression() throws Exception { doTest(true); }
+
 }
