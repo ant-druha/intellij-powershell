@@ -102,7 +102,12 @@ public class PowerShellLexerTest extends LexerTestCase {
   }
 
   public void testDash() throws Exception {
-    doTest("-3\n" + "–3\n" + "—3\n" + "―3", "DASH ('-')\n" + "DEC_INTEGER ('3')\n" + "NLS ('\\n')\n" + "DASH ('–')\n" + "DEC_INTEGER ('3')\n" +
-        "NLS ('\\n')\n" + "DASH ('—')\n" + "DEC_INTEGER ('3')\n" + "NLS ('\\n')\n" + "DASH ('―')\n" + "DEC_INTEGER ('3')");
+    doTest("-3\n" + "–3\n" + "—3\n" + "―3", "DASH ('-')\n" + "DEC_INTEGER ('3')\n" + "NLS ('\\n')\n" + "DASH ('–')\n" + "DEC_INTEGER ('3')\n" + "NLS ('\\n')\n" + "DASH ('—')\n" + "DEC_INTEGER ('3')\n" + "NLS ('\\n')\n" + "DASH ('―')\n" + "DEC_INTEGER ('3')");
+  }
+
+  public void testVariableIdElementAccess() throws Exception {
+    doTest("$h1[$true]", "$ ('$')\n" + "SIMPLE_ID ('h1')\n" + "[ ('[')\n" + "$ ('$')\n" + "SIMPLE_ID ('true')\n" + "] (']')");
+    doTest("$h1[20.5]", "$ ('$')\n" + "SIMPLE_ID ('h1')\n" + "[ ('[')\n" + "REAL_NUM ('20.5')\n" + "] (']')");
+    doTest("$h1[$my_var]", "$ ('$')\n" + "SIMPLE_ID ('h1')\n" + "[ ('[')\n" + "$ ('$')\n" + "SIMPLE_ID ('my_var')\n" + "] (']')");
   }
 }

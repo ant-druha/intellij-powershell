@@ -129,6 +129,7 @@ BRACED_VAR_START={DS}{LCURLY}
   {DOT}                                                        { yybegin(YYINITIAL); return DOT; }
   ","                                                          { yybegin(YYINITIAL); return COMMA; }
   {SQBR_L}                                                     { yybegin(YYINITIAL); return SQBR_L; }
+  {SQBR_R}                                                     { yybegin(YYINITIAL); return SQBR_R; }
   "++"                                                         { yybegin(YYINITIAL); return PP; }
   {MM}                                                         { yybegin(YYINITIAL); return MM; }
   "="                                                          { yybegin(YYINITIAL); return EQ; }
