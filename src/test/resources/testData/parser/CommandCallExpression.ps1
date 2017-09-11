@@ -16,3 +16,5 @@ Get-Power -exponent 3 -base 5
 
 #Positional argument
 Get-Power 5 3
+
+$a = New-Object 'double[,]' 3, 2

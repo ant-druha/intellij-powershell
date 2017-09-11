@@ -30,4 +30,6 @@ public class PowerShellParserTest extends ParsingTestCase {
 
   public void testCommandCallExpression() throws Exception { doTest(true); }
 
+  public void testMemberElementAccess() throws Exception { doTest(true); }
+
 }

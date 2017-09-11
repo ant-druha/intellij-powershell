@@ -409,7 +409,7 @@ private switch_parameter ::=   '-regex'
 
 private switch_condition ::= LP nls? pipeline nls? RP | '-file' nls? switch_filename
 private switch_filename ::= command_argument | primary_expression
-command_argument ::= path_expression | command_name_expr
+command_argument ::= path_expression | expression | command_name
 path_expression ::= provider? drive? containers? item | relative_path
 private provider ::= ( module? COLON2 nws )+
 private module ::= module_name nws PATH_SEP nws
