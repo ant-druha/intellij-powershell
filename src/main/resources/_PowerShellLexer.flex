@@ -53,7 +53,7 @@ VERBATIM_STRING={CH_SQ}{VERBATIM_STRING_CHARS}?{CH_SQ}
 EXPANDABLE_HERE_STRING=@{CH_DQ}([ \t\n\x0B\f\r])*(\r|\n|\r\n)(([^\"\“\”\„\\]|\\.)+(\r|\n|\r\n))?([ \t\n\x0B\f\r])*{CH_DQ}@
 VERBATIM_HERE_STRING=@{CH_SQ}([ \t\n\x0B\f\r])*(\r|\n|\r\n)(([^\'\‘\’\‚\‛\\]|\\.)+(\r|\n|\r\n))?([ \t\n\x0B\f\r])*{CH_SQ}@
 DEC_DIGIT=[0-9]
-HEX_DIGIT={DEC_DIGIT}|[abcdef]
+HEX_DIGIT={DEC_DIGIT}|[abcdefABCDEF]
 DEC_DIGITS={DEC_DIGIT}+
 HEX_DIGITS={HEX_DIGIT}+{DEC_DIGIT}*
 

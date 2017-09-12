@@ -38,7 +38,7 @@ public class PowerShellLexerTest extends LexerTestCase {
     doTest("123", "DEC_INTEGER ('123')"); doTest("200000000000", "DEC_INTEGER ('200000000000')"); doTest("123l", "DEC_INTEGER ('123l')"); doTest("0x200000000000", "HEX_INTEGER ('0x200000000000')"); doTest("123d", "DEC_INTEGER ('123d')"); doTest("0x2001l", "HEX_INTEGER ('0x2001l')");
     doTest("123L", "DEC_INTEGER ('123L')"); doTest("0x2001l", "HEX_INTEGER ('0x2001l')"); doTest("123D", "DEC_INTEGER ('123D')"); doTest("0x2002L", "HEX_INTEGER ('0x2002L')"); doTest("0x2003Lkb", "HEX_INTEGER ('0x2003Lkb')"); doTest("0x2003kb", "HEX_INTEGER ('0x2003kb')");
     doTest("0x2003Kb", "HEX_INTEGER ('0x2003Kb')"); doTest("0x2003Gb", "HEX_INTEGER ('0x2003Gb')"); doTest("0x2003pB", "HEX_INTEGER ('0x2003pB')");
-    doTest("0xfff81", "HEX_INTEGER ('0xfff81')");
+    doTest("0xfff81", "HEX_INTEGER ('0xfff81')"); doTest("0xFFf81", "HEX_INTEGER ('0xFFf81')");
   }
 
   public void testIntegerLiteralSign() {

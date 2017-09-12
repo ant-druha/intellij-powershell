@@ -43,12 +43,16 @@ $a = ,, 10      # create an unconstrained array of 1 element, which is an uncons
 -not 1.23				# False
 !"xyz"					# False
 
-#bitwise not
--bnot $true				# int with value 0xFFFFFFFE
--bnot 10					# int with value 0xFFFFFFF5
--bnot 2147483648.1	# long with value 0xFFFFFFFF7FFFFFFF
--bnot $null				# int with value 0xFFFFFFFF
--bnot "0xabc"			# int with value 0xFFFFF543
+#bitwise
+-bnot $true				      # int with value 0xFFFFFFFE
+-bnot 10					      # int with value 0xFFFFFFF5
+-bnot 2147483648.1	    # long with value 0xFFFFFFFF7FFFFFFF
+-bnot $null				      # int with value 0xFFFFFFFF
+-bnot "0xabc"			      # int with value 0xFFFFF543
+0x0F0F -band 14.6       # long with value 0xF
+0x0F0F -bor 0xFEL       # long with value 0xFFF
+0x0F0F -bxor 0xFE       # int with value 0xFF1
+0x0F0F -bxor 14.40D     # long with value 0xF01
 
 #unary plus/minus
 +123L				# type long, value 123
@@ -178,6 +182,11 @@ $x = [double]
 12345 -join ","          # result is "12345", no separator needed
 ($null, $null) -join "<->"    # result is "<->", two zero-length values
 
-#banry split
+#binry split
 "one,forty two,," -split ","		# 5 strings: "one" "forty two" "" ""
 "abc","de" -split ""					# 9 strings: "" "a" "b" "c" "" "" "d"
+"10X20x30" -csplit "X", 0, "SimpleMatch"	# 2 strings: "10" "20x30"
+
+#shift op
+0x0408 -shl 1					# int with value 0x0810
+0x100000000 -shr 0xfff81	# long with value 0x80000000
