@@ -108,7 +108,7 @@
 //    ESCAPED_CHAR='regexp:`.'//2.3.7 Escaped characters p.30
 //    NWS='regexp:[^ ]'
 //    SIMPLE_NAME='regexp:(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\_)(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\p{Nd}|\_)+'//todo: in lexer tokens order and composition
-    TYPE_NAME='regexp:(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\p{Nd}|\_)+'
+//    TYPE_NAME='regexp:(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\p{Nd}|\_)+'
 
 
     SINGLE_LINE_COMMENT='regexp:\#([^\n\r])*'
@@ -140,13 +140,13 @@
     PP='++'
     MM='--'
     DOT='.'
+    DOT_DOT='..'
     SEMI=';'
     PLUS='+'
     DASH='regexp:[\-\–\—\―]'
-    PARAM_ARGUMENT='regexp:([\w][\w$0-9\-]*)' //todo
-    ALNUM='regexp:p{Alnum}'
+//    PARAM_ARGUMENT='regexp:([\w][\w$0-9\-]*)' //todo
     LETTERS='regexp:[a-zA-Z]+'
-    ALNUM='regexp:\p{Alnum}+'
+//    ALNUM='regexp:\p{Alnum}+'
     PARAM_TOKEN='regexp:\-(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\_|\?)[^\{\}\(\)\;\,\|\&\.\[\:\s\n\r]+:?'
 
     space = 'regexp:\s+' //???
@@ -216,7 +216,7 @@ private format_operator ::= '-f'
 //B.1.10 Type Names
 private type_name ::= type_identifier (DOT type_identifier)*
 
-private type_identifier ::= TYPE_NAME | SIMPLE_ID //todo in lexer (or merge?)
+private type_identifier ::= /*TYPE_NAME |*/ SIMPLE_ID //todo in lexer (or merge?)
 private array_type_name ::= type_name SQBR_L
 private generic_type_name ::= type_name SQBR_L
 
@@ -278,7 +278,7 @@ multiplicative_expression ::= format_expression ( ( '*' | '/' | '%') nls? format
 
 format_expression ::= range_expression ( format_operator nls? range_expression )*
 
-range_expression ::= array_literal_expression ( '..' nls? array_literal_expression )*
+range_expression ::= array_literal_expression ( DOT_DOT nls? array_literal_expression )*
 //range_expression ::= unary_expression ( '..' nls? unary_expression )*
 
 array_literal_expression ::= unary_expression ( ',' nls? unary_expression )*
@@ -290,8 +290,8 @@ array_literal_expression ::= unary_expression ( ',' nls? unary_expression )*
 //property_or_array_reference ::= value property_or_array_reference_op*
 //
 private prefix_op ::= OP_NOT | EXCL_MARK | OP_BNOT | MM | PP | OP_SPLIT | OP_JOIN | COMMA | PLUS | DASH
-private unary_expression ::= expression_with_unary_operator | primary_expression
-expression_with_unary_operator ::= prefix_op nls? primary_expression | cast_expression //lvalue
+unary_expression ::= expression_with_unary_operator | primary_expression
+private expression_with_unary_operator ::= prefix_op nls? unary_expression | cast_expression //lvalue
 //                                            ','     nls? lvalue //unary_expression
 //                                           | '-not'  nls? lvalue //unary_expression
 //                                           | '!'     nls? lvalue //unary_expression
@@ -421,7 +421,7 @@ drive_name ::= simple_name | primary_expression
 item ::= path_item_name
 private path_item_name ::= generic_id_part_tokens_start (nws path_name_part_tokens)*
 private path_name_part_tokens ::= generic_id_part_tokens_start | DOT
-private relative_path ::= DOT (nws DOT)? | PATH_SEP
+private relative_path ::= DOT | DOT_DOT | PATH_SEP
 command_parameter ::= PARAM_TOKEN
 verbatim_command_argument ::= VERBATIM_ARG_START VERBATIM_ARG_INPUT //(verbatim_command_string | AMP_ARG | generic_token_chars )+
 //private verbatim_command_string ::= EXPANDABLE_STRING //TODO: 02/09/17 variable substitution:
@@ -537,7 +537,7 @@ private requires_comment ::= HASH nws 'requires' ws command_argument+
 
 private statement_terminators ::= sep+
 
-private label ::= ':' LETTERS ALNUM?
+private label ::= ':' LETTERS SIMPLE_ID?// todo ALNUM?
 
 private nws ::= <<isNotWhiteSpace>>
 

@@ -59,13 +59,14 @@ DEC_DIGITS={DEC_DIGIT}+
 HEX_DIGITS={HEX_DIGIT}{DEC_DIGIT}*
 
 DEC_EXPONENT=[Ee][+-]?[0-9]+
-DEC_SF=[dDlL]
+DEC_SUF=[dDlL]
 NUM_MULTIPLIER=([kK]|[mM]|[gG]|[tT]|[pP])[bB]
 
-REAL_NUM={DEC_DIGITS}"."{DEC_DIGITS}?{DEC_EXPONENT}?{DEC_SF}?{NUM_MULTIPLIER}?|"."{DEC_DIGITS}{DEC_EXPONENT}?{DEC_SF}?{NUM_MULTIPLIER}?|{DEC_DIGITS}{DEC_EXPONENT}{DEC_SF}?{NUM_MULTIPLIER}?
+REAL_NUM={DEC_DIGITS}{DOT}{DEC_DIGITS}?{DEC_EXPONENT}?{DEC_SUF}?{NUM_MULTIPLIER}?|{DOT}{DEC_DIGITS}{DEC_EXPONENT}?{DEC_SUF}?{NUM_MULTIPLIER}?|{DEC_DIGITS}{DEC_EXPONENT}{DEC_SUF}?{NUM_MULTIPLIER}?
 HEX_INTEGER=0x{HEX_DIGITS}[lL]?{NUM_MULTIPLIER}?
-DEC_INTEGER={DEC_DIGITS}{DEC_SF}?{NUM_MULTIPLIER}?
+DEC_INTEGER={DEC_DIGITS}{DEC_SUF}?{NUM_MULTIPLIER}?
 
+DOT_DOT=".."
 DOT="."
 SEMI=";"
 COLON2="::"
@@ -91,7 +92,7 @@ GENERIC_ID_PART={GENERIC_ID_PART_FIRST_CHAR}{GENERIC_ID_PART_CHAR}*
 
 BRACED_ID_CHAR=([^\}\`]|(`.))
 BRACED_ID={BRACED_ID_CHAR}+
-TYPE_NAME=(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\p{Nd}|\_)+
+//TYPE_NAME=(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\p{Nd}|\_)+
 SINGLE_LINE_COMMENT_CHARS=[^\n\r]+
 SINGLE_LINE_COMMENT={HASH}({SINGLE_LINE_COMMENT_CHARS}?|{EOL})//??todo: #\n
 DELIMITED_COMENT_START=<{HASH}
@@ -100,8 +101,8 @@ DELIMITED_COMMENT_CHARS=({HASH}*[^#>]+)+
 DELIMITED_COMMENT={DELIMITED_COMENT_START}{DELIMITED_COMMENT_CHARS}?{DELIMITED_COMENT_END}
 
 //AMP_ARG=\&/*[^&]*/[\w]
-PARAM_ARGUMENT=([\w]([\w$0-9]|{DASH})*)
-ALNUM=([:letter:]|[:digit:])+
+//PARAM_ARGUMENT=([\w]([\w$0-9]|{DASH})*)
+//ALNUM=([:letter:]|[:digit:])+
 LETTERS=[a-zA-Z]+
 DASH=[\-\–\—\―]
 MM="--"
@@ -126,6 +127,7 @@ BRACED_VAR_START={DS}{LCURLY}
   {WHITE_SPACE}                                                { yybegin(YYINITIAL); return WHITE_SPACE; }//todo WS can be after the colon $<scope name>: simple_id
   {NLS}                                                        { yybegin(YYINITIAL); return NLS; }
   {SEMI}                                                       { yybegin(YYINITIAL); return SEMI; }
+  {DOT_DOT}                                                    { yybegin(YYINITIAL); return DOT_DOT; }
   {DOT}                                                        { yybegin(YYINITIAL); return DOT; }
   ","                                                          { yybegin(YYINITIAL); return COMMA; }
   {SQBR_L}                                                     { yybegin(YYINITIAL); return SQBR_L; }
@@ -214,6 +216,7 @@ BRACED_VAR_START={DS}{LCURLY}
   {DS}                             { yybegin(VAR_SIMPLE); return DS; }
   {LCURLY}                         { return LCURLY; }
   {RCURLY}                         { return RCURLY; }
+  {DOT_DOT}                        { return DOT_DOT; }
   {DOT}                            { return DOT; }
   {SEMI}                           { return SEMI; }
   {COLON2}                         { return COLON2; }
@@ -235,16 +238,16 @@ BRACED_VAR_START={DS}{LCURLY}
   {VERBATIM_HERE_STRING}           { return VERBATIM_HERE_STRING; }
   {REAL_NUM}                       { return REAL_NUM; }
   {HEX_INTEGER}                    { return HEX_INTEGER; }
-  {DEC_INTEGER}                    { return DEC_INTEGER; }
+  {DEC_INTEGER}/{DOT_DOT}?         { return DEC_INTEGER; }
   {DEC_EXPONENT}                   { return DEC_EXPONENT; }
   {SIMPLE_ID}                      { return SIMPLE_ID; }
   {GENERIC_ID_PART}                { return GENERIC_ID_PART; }
-  {TYPE_NAME}                      { return TYPE_NAME; }
+//  {TYPE_NAME}                      { return TYPE_NAME; }
   {SINGLE_LINE_COMMENT}            { return COMMENT; }
   {DELIMITED_COMMENT}              { return COMMENT; }
 //  {AMP_ARG}                        { return AMP_ARG; }
-  {PARAM_ARGUMENT}                 { return PARAM_ARGUMENT; }
-  {ALNUM}                          { return ALNUM; }
+//  {PARAM_ARGUMENT}                 { return PARAM_ARGUMENT; }
+//  {ALNUM}                          { return ALNUM; }
   {LETTERS}                        { return LETTERS; }
   {PARAM_TOKEN}                    { return PARAM_TOKEN; }
 

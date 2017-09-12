@@ -26,7 +26,6 @@ public interface PowerShellTypes {
   IElementType DO_STATEMENT = new PowerShellElementType("DO_STATEMENT");
   IElementType DRIVE_NAME = new PowerShellElementType("DRIVE_NAME");
   IElementType EXPRESSION = new PowerShellElementType("EXPRESSION");
-  IElementType EXPRESSION_WITH_UNARY_OPERATOR = new PowerShellElementType("EXPRESSION_WITH_UNARY_OPERATOR");
   IElementType FLOW_CONTROL_STATEMENT = new PowerShellElementType("FLOW_CONTROL_STATEMENT");
   IElementType FOREACH_STATEMENT = new PowerShellElementType("FOREACH_STATEMENT");
   IElementType FORMAT_EXPRESSION = new PowerShellElementType("FORMAT_EXPRESSION");
@@ -56,10 +55,10 @@ public interface PowerShellTypes {
   IElementType TRAP_STATEMENT = new PowerShellElementType("TRAP_STATEMENT");
   IElementType TRY_STATEMENT = new PowerShellElementType("TRY_STATEMENT");
   IElementType TYPE_LITERAL_EXPRESSION = new PowerShellElementType("TYPE_LITERAL_EXPRESSION");
+  IElementType UNARY_EXPRESSION = new PowerShellElementType("UNARY_EXPRESSION");
   IElementType VERBATIM_COMMAND_ARGUMENT = new PowerShellElementType("VERBATIM_COMMAND_ARGUMENT");
   IElementType WHILE_STATEMENT = new PowerShellElementType("WHILE_STATEMENT");
 
-  IElementType ALNUM = new PowerShellTokenType("ALNUM");
   IElementType AMP = new PowerShellTokenType("&");
   IElementType AT = new PowerShellTokenType("@");
   IElementType BACKTICK = new PowerShellTokenType("`");
@@ -83,6 +82,7 @@ public interface PowerShellTypes {
   IElementType DEL_COMENT_START = new PowerShellTokenType("DEL_COMENT_START");
   IElementType DO = new PowerShellTokenType("do");
   IElementType DOT = new PowerShellTokenType(".");
+  IElementType DOT_DOT = new PowerShellTokenType("..");
   IElementType DS = new PowerShellTokenType("$");
   IElementType DYNAMICPARAM = new PowerShellTokenType("dynamicparam");
   IElementType ELSE = new PowerShellTokenType("else");
@@ -122,7 +122,6 @@ public interface PowerShellTypes {
   IElementType OP_SPLIT = new PowerShellTokenType("-split");
   IElementType PARALLEL = new PowerShellTokenType("parallel");
   IElementType PARAM = new PowerShellTokenType("param");
-  IElementType PARAM_ARGUMENT = new PowerShellTokenType("PARAM_ARGUMENT");
   IElementType PARAM_TOKEN = new PowerShellTokenType("PARAM_TOKEN");
   IElementType PATH_SEP = new PowerShellTokenType("\\");
   IElementType PERS = new PowerShellTokenType("%");
@@ -145,7 +144,6 @@ public interface PowerShellTypes {
   IElementType THROW = new PowerShellTokenType("throw");
   IElementType TRAP = new PowerShellTokenType("trap");
   IElementType TRY = new PowerShellTokenType("try");
-  IElementType TYPE_NAME = new PowerShellTokenType("TYPE_NAME");
   IElementType UNTIL = new PowerShellTokenType("until");
   IElementType USING = new PowerShellTokenType("using");
   IElementType VAR = new PowerShellTokenType("var");
@@ -189,8 +187,6 @@ public interface PowerShellTypes {
         return new PowerShellDoStatementImplGen(node);
       } else if (type == DRIVE_NAME) {
         return new PowerShellDriveNameImplGen(node);
-      } else if (type == EXPRESSION_WITH_UNARY_OPERATOR) {
-        return new PowerShellExpressionWithUnaryOperatorImplGen(node);
       } else if (type == FLOW_CONTROL_STATEMENT) {
         return new PowerShellFlowControlStatementImplGen(node);
       } else if (type == FOREACH_STATEMENT) {
@@ -249,6 +245,8 @@ public interface PowerShellTypes {
         return new PowerShellTryStatementImplGen(node);
       } else if (type == TYPE_LITERAL_EXPRESSION) {
         return new PowerShellTypeLiteralExpressionImplGen(node);
+      } else if (type == UNARY_EXPRESSION) {
+        return new PowerShellUnaryExpressionImplGen(node);
       } else if (type == VERBATIM_COMMAND_ARGUMENT) {
         return new PowerShellVerbatimCommandArgumentImplGen(node);
       } else if (type == WHILE_STATEMENT) {

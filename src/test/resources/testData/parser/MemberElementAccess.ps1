@@ -34,3 +34,9 @@ $a = @{A = 10}, @{B = $true}, @{C = 123.45}
 $a[1]["B"]            # $a[1] is a Hashtable, where B is a key
 $a = "red", "green"
 $a[1][4]              # returns string "n" from string in $a[1]
+
+$a[1,3,5]             # slice has Length 3, value 40,60,80
+++$a[1,3,5][1]        # preincrement 60 in array 40,60,80
+$a[,5]                # slice with Length 1
+$a[@()]               # slice with Length 0
+$a[-1..-3]            # slice with Length 0, value 90,80,70
