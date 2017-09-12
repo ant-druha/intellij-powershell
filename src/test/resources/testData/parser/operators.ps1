@@ -190,3 +190,8 @@ $x = [double]
 #shift op
 0x0408 -shl 1					# int with value 0x0810
 0x100000000 -shr 0xfff81	# long with value 0x80000000
+
+#logical
+($j -gt 5) -and (++$k -lt 15)		# True -and False -> False
+($j -eq 10) -or (++$k -le 20)		# False -or False -> False
+($j -eq 10) -xor ($k -gt 15)		# False -xor True -> True
