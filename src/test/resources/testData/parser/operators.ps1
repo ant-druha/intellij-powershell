@@ -62,6 +62,7 @@ $j = --$i          # $i is decremented then $j takes on the value of $i
 -500..-495      # descending range -500..-495
 123kb..34
 123L..34
+2.1..12
 $x = 1.5
 $x..5.40D       # ascending range 2..5
 $true..3        # ascending range 1..3
