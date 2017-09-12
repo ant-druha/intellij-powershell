@@ -68,3 +68,102 @@ $x..5.40D       # ascending range 2..5
 $true..3        # ascending range 1..3
 -2..$null       # ascending range -2..0
 "0xf".."0xa"    # descending range 15..10
+
+#format op
+"{2} <= {0} + {1}`n" -f $i,$j,($i+$j)
+$format = ">{0:x8}<"
+$format -f    123455
+$format -F    -1234.56
+
+#multiplication
+12 * -10L            # long result -120
+-10.300D * 12        # decimal result -123.600
+10.6 * 12            # double result 127.2
+12 * "0xabc"        # int result 32976
+$abc * "0xabc"
+"red" * "3"          # string replicated 3 times
+"red" * 4            # string replicated 4 times
+(New-Object 'float[,]' 2, 3) * 2    # [object[]], Length 2*2
+
+#division
+10/-10      # int result -1.2
+12/-10      # double result -1.2
+12/-10D     # decimal result 1.2
+12/10.6     # double result 1.13207547169811
+12/"0xabc"  # double result 0.00436681222707424
+
+#reminder
+10%3	    					# int result 1
+10.0 % 0.3					# double result 0.1
+10.00D%"0x4"				# decimal result 2.00
+
+#additive
+12 + -10L					# long result 2
+-10.300D + 12			# decimal result 1.700
+10.6 + 12					# double result 22.6
+12 + "0xabc"			# int result 2760
+
+#string concat
+"red" + "123"						  # "red123"
+"red" + 123							  # "red123"
+"red" + 123.456e+5				# "red12345600"
+"red" + (20,30,40)				# "red20 30 40"
+
+#array concat
+$a + (New-Object 'float[,]' 2,3)		# [object[]], Length 8
+
+#substraction
+12 - -10L				# long result 2c
+-10.300D - 12			# decimal result -22.300
+10.6 - 12				# double result -1.4
+12 - "0xabc"			# int result -2736
+
+#comparisoin: equality
+10 -eq "010"				# True, int comparison
+"010" -eq 10				# False, string comparison
+"RED" -eq "Red"			# True, case-insensitive comparison
+"RED" -ceq "Red"			# False, case-sensitive comparison
+"ab" -lt "abc"				# True
+10,20,30,20,10 -ne 20	# 10,30,10, Length 3
+10,20,30,20,10 -eq 40	# Length 0
+10,20,30,20,10 -gt 25	# 30, Length 1
+0,1,30 -ne $true			# 0,30, Length 2
+0,"00" -eq "0"				# 0 (int), Length 1
+
+#comparison: containment
+10,20,30,20,10 -contains 42.9		# False
+10,20,30 -contains "10"				# True
+"010",20,30 -contains 10			# False
+10,20,30,20,10 -notcontains 15	# True
+"Red",20,30 -ccontains "RED"		# False
+
+#comparison: type testing
+$a = 10							# value 10 has type int
+$a -is [int]					# True
+$t = [int]
+$a -isnot $t					# False
+$a -is "int"					# True
+$a -isnot [double] 			# True
+$x = [int[]](10,20)
+$x -is [int[]]					# True
+$a = "abcd"						# string is derived from object
+$a -is [object] 				# True
+$x = [double]
+10.60D -as $t
+
+#comparison: pattern matching
+"Hello" -like "h*"				# True, starts with h
+"Hello" -clike "h*"				# False, does not start with lowercase h
+"#$%^&" -notlike "*[A-Za-z]"	# True, does not end with alphabetic character
+"abc","abbcde","abcgh" -like "abc*"	# object[2], values "abc" and "abcgh"
+
+"Hello" -match '^h.*o$'			# True, $matches key/value is 0/"Hello"
+"Hello" -cmatch '^h.*o$'		# False, $matches not set
+"abc" -notmatch "[A-Za-z]"		# False
+"abc","abbcde","abcgh" -match "abc.*"	# Length is 2, values "abc", "abcgh"
+
+#text replacement operator
+"Analogous","an apple" -replace "a","*"	# "*n*logous","*n *pple"
+"Analogous" -creplace "[aeiou]","?"			# "An?l?g??s"
+"Analogous","an apple" -replace '^a',"%%A" # "%%Analogous","%%An apple"
+"Analogous" -replace "[aeiou]",'$&$&'		# "AAnaaloogoouus"

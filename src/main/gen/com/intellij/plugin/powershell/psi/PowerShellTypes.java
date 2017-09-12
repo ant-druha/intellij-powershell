@@ -80,6 +80,7 @@ public interface PowerShellTypes {
   IElementType DELIMITED_COMMENT = new PowerShellTokenType("DELIMITED_COMMENT");
   IElementType DEL_COMENT_END = new PowerShellTokenType("DEL_COMENT_END");
   IElementType DEL_COMENT_START = new PowerShellTokenType("DEL_COMENT_START");
+  IElementType DIV = new PowerShellTokenType("/");
   IElementType DO = new PowerShellTokenType("do");
   IElementType DOT = new PowerShellTokenType(".");
   IElementType DOT_DOT = new PowerShellTokenType("..");
@@ -140,6 +141,7 @@ public interface PowerShellTypes {
   IElementType SINGLE_LINE_COMMENT = new PowerShellTokenType("SINGLE_LINE_COMMENT");
   IElementType SQBR_L = new PowerShellTokenType("[");
   IElementType SQBR_R = new PowerShellTokenType("]");
+  IElementType STAR = new PowerShellTokenType("*");
   IElementType SWITCH = new PowerShellTokenType("switch");
   IElementType THROW = new PowerShellTokenType("throw");
   IElementType TRAP = new PowerShellTokenType("trap");

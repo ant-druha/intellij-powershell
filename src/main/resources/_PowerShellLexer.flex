@@ -71,6 +71,8 @@ DOT="."
 SEMI=";"
 COLON2="::"
 PERS="%"
+STAR="*"
+DIV="/"
 HASH="#"
 SQBR_L="["
 SQBR_R="]"
@@ -86,8 +88,8 @@ VAR_ID_CHAR={SIMPLE_ID_CHAR}|(\?)
 VAR_ID={VAR_ID_CHAR}+
 
 
-GENERIC_ID_PART_FIRST_CHAR=([^\\\.\=\[\]\%\-\–\—\―\}\{\(\)\,\;\"\'\|\&\$\s\n\r\#\:\`0-9!\+]|(`.))
-GENERIC_ID_PART_CHAR={GENERIC_ID_PART_FIRST_CHAR}|([\+\-\–\—\―\%0-9!])
+GENERIC_ID_PART_FIRST_CHAR=([^\/\\\.\=\[\]\%\-\–\—\―\}\{\(\)\,\;\"\'\|\&\$\s\n\r\#\:\`0-9!\+]|(`.))
+GENERIC_ID_PART_CHAR={GENERIC_ID_PART_FIRST_CHAR}|([\/\+\-\–\—\―\%0-9!])
 GENERIC_ID_PART={GENERIC_ID_PART_FIRST_CHAR}{GENERIC_ID_PART_CHAR}*
 
 BRACED_ID_CHAR=([^\}\`]|(`.))
@@ -209,6 +211,8 @@ BRACED_VAR_START={DS}{LCURLY}
   "|"                                                          { return PIPE; }
   "&"                                                          { return AMP; }
   "++"                                                         { return PP; }
+  {DIV}                                                        { return DIV; }
+  {STAR}                                                       { return STAR; }
   {MM}                                                         { return MM; }
   {VERBATIM_ARG_START}                                         { yybegin(VERBATIM_ARGUMENT); return VERBATIM_ARG_START; }
   "+"                                                          { return PLUS; }

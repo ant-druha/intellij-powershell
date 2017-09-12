@@ -126,6 +126,8 @@
     DS='$'
     AT='@'
     PERS='%'
+    DIV='/'
+    STAR='*'
     HASH='#'
     DEL_COMENT_START='regexp:\<\#'
     DEL_COMENT_END='regexp:\#+\>'
@@ -274,7 +276,7 @@ comparison_expression ::= additive_expression ( comparison_operator nls? additiv
 
 additive_expression ::= multiplicative_expression ( ( PLUS | DASH ) nls? multiplicative_expression )*
 
-multiplicative_expression ::= format_expression ( ( '*' | '/' | '%') nls? format_expression )*
+multiplicative_expression ::= format_expression ( ( STAR | DIV | PERS) nls? format_expression )*
 
 format_expression ::= range_expression ( format_operator nls? range_expression )*
 
@@ -329,8 +331,8 @@ private generic_token_with_subexpr_start ::= generic_token_part DS nws LP
 private generic_token_part ::= expandable_string_literal | verbatim_here_string_literal | referenceVariable | generic_token_chars
 
 private generic_token_chars ::= generic_id_part_tokens_start ( nws generic_id_part_tokens )*
-private generic_id_part_tokens_start ::= SIMPLE_ID | GENERIC_ID_PART
-private generic_id_part_tokens ::= generic_id_part_tokens_start | DOT | PATH_SEP
+private generic_id_part_tokens_start ::= SIMPLE_ID | GENERIC_ID_PART | STAR
+private generic_id_part_tokens ::= generic_id_part_tokens_start | DOT | PATH_SEP | DIV
 
 private command_element ::= command_parameter | command_argument | redirection
 private command_invocation_operator ::= '&' | DOT
