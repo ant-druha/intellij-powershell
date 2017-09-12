@@ -30,6 +30,11 @@ $a = , (10, "red")  # create an unconstrained array of 1 element, $a[0],  which 
 # $a[0][0] an int, and $a[0][1] a string
 $a = ,, 10      # create an unconstrained array of 1 element, which is an unconstrained array of 1 element, which is an int
 # $a[0][0] is the int. Contrast this with @(@(10))
+-join 124
+-split 124
+!122
+++12
+--323
 
 #logical not
 -not $true				# False
@@ -167,3 +172,12 @@ $x = [double]
 "Analogous" -creplace "[aeiou]","?"			# "An?l?g??s"
 "Analogous","an apple" -replace '^a',"%%A" # "%%Analogous","%%An apple"
 "Analogous" -replace "[aeiou]",'$&$&'		# "AAnaaloogoouus"
+
+#binary join
+(10, 20, 30) -join "|"      # result is "10|20|30"
+12345 -join ","          # result is "12345", no separator needed
+($null, $null) -join "<->"    # result is "<->", two zero-length values
+
+#banry split
+"one,forty two,," -split ","		# 5 strings: "one" "forty two" "" ""
+"abc","de" -split ""					# 9 strings: "" "a" "b" "c" "" "" "d"

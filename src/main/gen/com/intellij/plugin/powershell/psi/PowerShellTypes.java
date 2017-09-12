@@ -117,10 +117,8 @@ public interface PowerShellTypes {
   IElementType OP_BNOT = new PowerShellTokenType("-bnot");
   IElementType OP_C = new PowerShellTokenType("OP_C");
   IElementType OP_FR = new PowerShellTokenType("OP_FR");
-  IElementType OP_JOIN = new PowerShellTokenType("-join");
   IElementType OP_MR = new PowerShellTokenType("OP_MR");
   IElementType OP_NOT = new PowerShellTokenType("-not");
-  IElementType OP_SPLIT = new PowerShellTokenType("-split");
   IElementType PARALLEL = new PowerShellTokenType("parallel");
   IElementType PARAM = new PowerShellTokenType("param");
   IElementType PARAM_TOKEN = new PowerShellTokenType("PARAM_TOKEN");

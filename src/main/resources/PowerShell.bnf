@@ -26,8 +26,6 @@
     OP_FR='regexp:(>|>>|2>|2>>3>|3>>4>|4>>|5>|5>>6>|6>>*>|*>>|<)'
     OP_NOT='-not'
     OP_BNOT='-bnot'
-    OP_SPLIT='-split'
-    OP_JOIN='-join'
     EXCL_MARK='!'
 
   // NewLines and spaces //
@@ -291,7 +289,9 @@ array_literal_expression ::= unary_expression ( ',' nls? unary_expression )*
 //private lvalue_expression ::= lvalue (PIPE lvalue)*
 //property_or_array_reference ::= value property_or_array_reference_op*
 //
-private prefix_op ::= OP_NOT | EXCL_MARK | OP_BNOT | MM | PP | OP_SPLIT | OP_JOIN | COMMA | PLUS | DASH
+private op_join_text ::= '-join' | '–join' | '—join' | '―join'
+private op_split_text ::= '-split' | '–split' | '—split' | '―split'
+private prefix_op ::= OP_BNOT | EXCL_MARK | OP_NOT | MM | PP | op_split_text | op_join_text | COMMA | PLUS | DASH
 unary_expression ::= expression_with_unary_operator | primary_expression
 private expression_with_unary_operator ::= prefix_op nls? unary_expression | cast_expression //lvalue
 //                                            ','     nls? lvalue //unary_expression

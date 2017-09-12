@@ -27,16 +27,15 @@ WHITE_SPACE_CHAR=[\ \t\f]|{BACKTICK}{NL}
 BACKTICK="`"
 WHITE_SPACE={WHITE_SPACE_CHAR}+
 
-OP_C=("-as"|"-ccontains"|"-ceq"|"-cge"|"-cgt"|"-cle"|"-clike"|"-clt"|"-cmatch"|"-cne"|"-cnotcontains"|"-cnotlike"|"-cnotmatch"|"-contains"
-|"-creplace"|"-csplit"|"-eq"|"-ge"|"-gt"|"-icontains"|"-ieq"|"-ige"|"-igt"|"-ile"|"-ilike"|"-ilt"|"-imatch"|"-in"|"-ine"|"-inotcontains"|"-inotlike"
-|"-inotmatch"|"-ireplace"|"-is"|"-isnot"|"-isplit"|"-join"|"-le"|"-like"|"-lt"|"-match"|"-ne"|"-notcontains"|"-notin"|"-notlike"|"-notmatch"
-|"-replace"|"-shl"|"-shr"|"-split")
+COMPARISON_TOKEN="as"|"ccontains"|"ceq"|"cge"|"cgt"|"cle"|"clike"|"clt"|"cmatch"|"cne"|"cnotcontains"|"cnotlike"|"cnotmatch"|"contains"
+|"creplace"|"csplit"|"eq"|"ge"|"gt"|"icontains"|"ieq"|"ige"|"igt"|"ile"|"ilike"|"ilt"|"imatch"|"in"|"ine"|"inotcontains"|"inotlike"
+|"inotmatch"|"ireplace"|"is"|"isnot"|"isplit"|"join"|"le"|"like"|"lt"|"match"|"ne"|"notcontains"|"notin"|"notlike"|"notmatch"
+|"replace"|"shl"|"shr"|"split"
+OP_C={DASH}{COMPARISON_TOKEN}
 OP_MR=("*>&1"|"2>&1"|"3>&1"|"4>&1"|"5>&1"|"6>&1"|"*>&2"|"1>&2"|"3>&2"|"4>&2"|"5>&2"|"6>&2")
 OP_FR=(">"|">>"|"2>"|"2>>3>"|"3>>4>"|"4>>"|"5>"|"5>>6>"|"6>>*>"|"*>>"|"<")
 OP_NOT={DASH}"not"
 OP_BNOT={DASH}"bnot"
-OP_SPLIT={DASH}"split"
-OP_JOIN={DASH}"join"
 EXCL_MARK="!"
 
 NL=(\r|\n|\r\n)
@@ -141,8 +140,6 @@ BRACED_VAR_START={DS}{LCURLY}
   {DASH}                                                       { yybegin(YYINITIAL); return DASH; }
   {OP_NOT}                                                     { yybegin(YYINITIAL); return OP_NOT; }
   {OP_BNOT}                                                    { yybegin(YYINITIAL); return OP_BNOT; }
-  {OP_SPLIT}                                                   { yybegin(YYINITIAL); return OP_SPLIT; }
-  {OP_JOIN}                                                    { yybegin(YYINITIAL); return OP_JOIN; }
   {EXCL_MARK}                                                  { yybegin(YYINITIAL); return EXCL_MARK; }
 }
 <VAR_BRACED> {
@@ -234,8 +231,6 @@ BRACED_VAR_START={DS}{LCURLY}
   {OP_FR}                          { return OP_FR; }
   {OP_NOT}                         { return OP_NOT; }
   {OP_BNOT}                        { return OP_BNOT; }
-  {OP_SPLIT}                       { return OP_SPLIT; }
-  {OP_JOIN}                        { return OP_JOIN; }
   {OP_C}                           { return OP_C; }
   {EXCL_MARK}                      { return EXCL_MARK; }
   {NLS}                            { return NLS; }
