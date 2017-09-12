@@ -143,7 +143,10 @@ BRACED_VAR_START={DS}{LCURLY}
   {OP_JOIN}                                                    { yybegin(YYINITIAL); return OP_JOIN; }
   {EXCL_MARK}                                                  { yybegin(YYINITIAL); return EXCL_MARK; }
 }
-<VAR_BRACED> {//todo: variable scope
+<VAR_BRACED> {
+  {SIMPLE_ID}   / ":"[^\\]{BRACED_ID}{RCURLY}                  { return SIMPLE_ID; }
+  {WHITE_SPACE} / {BRACED_ID}{RCURLY}                          { return WHITE_SPACE; }
+  ":"           / {WHITE_SPACE}?{BRACED_ID}{RCURLY}            { return COLON; }
   {BRACED_ID}                                                  { return BRACED_ID; }
   {BACKTICK}                                                   { yybegin(YYINITIAL); return BACKTICK; }
   {RCURLY}                                                     { yybegin(YYINITIAL); return RCURLY; }
