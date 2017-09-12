@@ -55,7 +55,7 @@ VERBATIM_HERE_STRING=@{CH_SQ}([ \t\n\x0B\f\r])*(\r|\n|\r\n)(([^\'\‘\’\‚\�
 DEC_DIGIT=[0-9]
 HEX_DIGIT={DEC_DIGIT}|[abcdef]
 DEC_DIGITS={DEC_DIGIT}+
-HEX_DIGITS={HEX_DIGIT}{DEC_DIGIT}*
+HEX_DIGITS={HEX_DIGIT}+{DEC_DIGIT}*
 
 DEC_EXPONENT=[Ee][+-]?[0-9]+
 DEC_SUF=[dDlL]
