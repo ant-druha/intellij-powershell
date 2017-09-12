@@ -89,6 +89,7 @@ $format -F    -1234.56
 -10.300D * 12        # decimal result -123.600
 10.6 * 12            # double result 127.2
 12 * "0xabc"        # int result 32976
+3*3
 $abc * "0xabc"
 "red" * "3"          # string replicated 3 times
 "red" * 4            # string replicated 4 times
@@ -195,3 +196,55 @@ $x = [double]
 ($j -gt 5) -and (++$k -lt 15)		# True -and False -> False
 ($j -eq 10) -or (++$k -le 20)		# False -or False -> False
 ($j -eq 10) -xor ($k -gt 15)		# False -xor True -> True
+
+#assignment
+$hypot = [Math]::Sqrt(3*3 + 4*4)  # type double, value 5
+$a = $b = $c = 10.20D             # all have type decimal, value 10.20
+$a = (10, 20, 30), (1, 2)         # type [object[]], Length 2
+[int]$x = 10.6                    # type int, value 11
+[long]$x = "0xabc"                # type long, value 0xabc
+$a = [float]                      # value type literal [float]
+$i, $j, $k = 10, "red", $true     # $i is 10, $j is "red", $k is True
+$i, $j = 10, "red", $true         # $i is 10, $j is [object[]], Length 2
+$i, $j, $k = 10                   # $i is 10, $j is $null, $k is $null
+$h = @{}
+[int] $h.Lower, [int] $h.Upper = -split "10 100"
+$h1 = @{FirstName = "James"; LastName = "Anderson"; IDNum = 123}
+$h1.Dept = "Finance"              # adds element Finance
+$h1["City"] = "New York"          # adds element City
+[int]$Variable: v = 123.456       # v takes on the value 123
+${E:output.txt} = "a"				      # write text to the given file
+$Env:MyPath = "x:\data\file.txt"	# define the environment variable
+$Function:F = { param ($a, $b) "Hello there, $a, $b" }
+F 10 "red"			    					    # define and invoke a function
+function Demo { "Hi there from inside Demo" }
+$Alias:A = "Demo"		  				    # create alias for function Demo
+A											            # invoke function Demo via the alias
+
+#compound assignment
+$a = 1234; $a *= (3 + 2)	    # type is int, value is 1234 * (3 + 2)
+$b = 10,20,30					        # $b[1] has type int, value 20
+$b[1] /= 6						        # $b[1] has type double, value 3.33…
+$i = 0
+$b[++$i] += 2					        # side effect evaluated only once
+[int]$Variable:v = 10		      # v takes on the value 10
+$Variable:v -= 3				      # 3 is subtracted from v
+${E:output.txt} += "b"		    # append text to the file giving ab
+${E:output.txt} *= 4			    # replicate ab 4 times giving abababab
+
+#redirection op
+$i = 200                      # pipeline gets nothing
+$i                            # pipeline gets result
+$i > output1.txt              # result redirected to named file
+++$i >> output1.txt           # result appended to named file
+type file1.txt 2> e_rror1.txt  # e_rror output redirected to named file
+type file2.txt 2>> e_rror1.txt # e_rror output appended to named file
+dir –Verbose 4> verbose1.txt  # verbose output redirected to named file
+dir –Verbose *>> verbose1.txt # verbose output redirected to named file
+
+# Send all output to output2.txt
+dir –Verbose –Debug –WarningAction Continue *> output2.txt
+
+# e_rror output redirected to named file, verbose output redirected
+# to the same location as e_rror output
+dir –Verbose 4>&2 2> e_rror2.txt

@@ -462,7 +462,7 @@ private sub_expression ::= DS LP statement_list? RP
 
 private array_expression ::= AT LP statement_list? RP
 
-private script_block_expression ::= LCURLY nls? block_body? nls? RCURLY
+script_block_expression ::= LCURLY nls? script_block? nls? RCURLY
 
 private hash_literal_expression ::= AT LCURLY hash_literal_body? RCURLY //'@{' nls? hash_literal_body? nls? '}'
 private hash_literal_body ::= hash_entry ( statement_terminators hash_entry )*

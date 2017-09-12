@@ -33,7 +33,7 @@ COMPARISON_TOKEN="as"|"ccontains"|"ceq"|"cge"|"cgt"|"cle"|"clike"|"clt"|"cmatch"
 |"replace"|"shl"|"shr"|"split"
 OP_C={DASH}{COMPARISON_TOKEN}
 OP_MR=("*>&1"|"2>&1"|"3>&1"|"4>&1"|"5>&1"|"6>&1"|"*>&2"|"1>&2"|"3>&2"|"4>&2"|"5>&2"|"6>&2")
-OP_FR=(">"|">>"|"2>"|"2>>3>"|"3>>4>"|"4>>"|"5>"|"5>>6>"|"6>>*>"|"*>>"|"<")
+OP_FR=(">"|">>"|"2>"|"2>>"|"3>"|"3>>"|"4>"|"4>>"|"5>"|"5>>"|"6>"|"6>>"|"*>"|"*>>"|"<")
 OP_NOT={DASH}"not"
 OP_BNOT={DASH}"bnot"
 EXCL_MARK="!"
@@ -87,8 +87,8 @@ VAR_ID_CHAR={SIMPLE_ID_CHAR}|(\?)
 VAR_ID={VAR_ID_CHAR}+
 
 
-GENERIC_ID_PART_FIRST_CHAR=([^\/\\\.\=\[\]\%\-\–\—\―\}\{\(\)\,\;\"\'\|\&\$\s\n\r\#\:\`0-9!\+]|(`.))
-GENERIC_ID_PART_CHAR={GENERIC_ID_PART_FIRST_CHAR}|([\/\+\-\–\—\―\%0-9!])
+GENERIC_ID_PART_FIRST_CHAR=([^\*\/\\\.\=\[\]\%\-\–\—\―\}\{\(\)\,\;\"\'\|\&\$\s\n\r\#\:\`0-9!\+]|(`.))
+GENERIC_ID_PART_CHAR={GENERIC_ID_PART_FIRST_CHAR}|([\*\/\+\-\–\—\―\%0-9!])
 GENERIC_ID_PART={GENERIC_ID_PART_FIRST_CHAR}{GENERIC_ID_PART_CHAR}*
 
 BRACED_ID_CHAR=([^\}\`]|(`.))
