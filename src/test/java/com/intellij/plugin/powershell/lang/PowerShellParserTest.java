@@ -34,4 +34,8 @@ public class PowerShellParserTest extends ParsingTestCase {
 
   public void testOperators() throws Exception { doTest(true); }
 
+  public void testLabeledStatement() throws Exception { doTest(true); }
+
+  public void testStatements() throws Exception { doTest(true); }
+
 }

@@ -159,7 +159,7 @@
 private top_level_element ::= ( nls? top_script_block | statement_list)?
 
 private statement_block ::= LCURLY nls? block_body? nls? RCURLY
-block_body ::= sep* statement_list
+block_body ::= statement_terminators? statement_list
 
 private statement_list ::= statement ( statement_terminators statement? )*
 
@@ -189,7 +189,7 @@ private named_block ::= block_name statement_block statement_terminators?
 private block_name ::= 'dynamicparam' | 'begin' | 'process' | 'end'
 
 private statement ::=   if_statement
-                      | label? labeled_statement
+                      | (label nls?)? labeled_statement
                       | function_statement
                       | flow_control_statement //sep
                       | trap_statement
@@ -512,7 +512,7 @@ for_statement ::=   'for' nls? LP
                                   nls? for_initializer? sep
                                   nls? for_condition? sep
                                   nls? for_iterator?
-                                  nls? RP statement_block
+                                  nls? RP nls? statement_block
 
 private for_initializer ::= pipeline
 private for_condition ::= pipeline
@@ -539,7 +539,7 @@ private requires_comment ::= HASH nws 'requires' ws command_argument+
 
 private statement_terminators ::= sep+
 
-private label ::= ':' LETTERS SIMPLE_ID?// todo ALNUM?
+private label ::= ':' nws SIMPLE_ID// todo ALNUM?
 
 private nws ::= <<isNotWhiteSpace>>
 
