@@ -141,6 +141,7 @@ BRACED_VAR_START={DS}{LCURLY}
   {OP_NOT}                                                     { yybegin(YYINITIAL); return OP_NOT; }
   {OP_BNOT}                                                    { yybegin(YYINITIAL); return OP_BNOT; }
   {EXCL_MARK}                                                  { yybegin(YYINITIAL); return EXCL_MARK; }
+  {STAR}                                                       { yybegin(YYINITIAL); return STAR; }
 }
 <VAR_BRACED> {
   {SIMPLE_ID}   / ":"[^\\]{BRACED_ID}{RCURLY}                  { return SIMPLE_ID; }

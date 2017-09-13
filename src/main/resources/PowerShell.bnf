@@ -159,10 +159,10 @@
 private top_level_element ::= ( nls? top_script_block | statement_list)?
 
 private statement_block ::= LCURLY nls? block_body? nls? RCURLY
-block_body ::= statement_terminators? statement_list
+block_body ::= statement_list | statement_terminators
 
-private statement_list ::= statement ( statement_terminators statement? )*
-
+private statement_list ::= statement_terminators? statement ( statement_terminators statement? )*
+{pin=2}
 private top_script_block ::= param_block? statement_terminators? script_block_body
 script_block ::= top_script_block //nls? param_block? statement_terminators? script_block_body
 {elementType=block_body}
@@ -199,10 +199,12 @@ private statement ::=   if_statement
                       | parallel_statement
                       | sequence_statement
                       | pipeline //sep
+//{recoverWhile=statement_recover}
+//private statement_recover ::= !sep
 
 private pipeline ::= assignment_statement | expression redirection* pipeline_tail? | command_call_expression verbatim_command_argument? pipeline_tail?
 
-assignment_statement ::= /*lvalue_expression*/ expression assignment_operator statement
+assignment_statement ::= expression assignment_operator statement
 {methods=[getTargetVariables]}
 
 //B.1.11 Operators and punctuators
@@ -248,9 +250,9 @@ private expandable_here_string_literal ::= EXPANDABLE_HERE_STRING //todo create 
 //B.1.6 Variables
 private variable ::= '$$' | '$?' | '$^' |  simple_variable | braced_variable
 
-referenceVariable ::= variable
+reference_variable ::= variable
 
-target_variable_expression ::= variable //'$$' | '$?' | '$^' |  simple_variable | braced_variable
+target_variable_expression ::= variable
 {mixin="com.intellij.plugin.powershell.psi.impl.PowerShellTargetVariableImpl"
 implements="com.intellij.plugin.powershell.psi.PowerShellVariable"}
 
@@ -328,7 +330,7 @@ private generic_token_with_sub_expr ::= generic_token_with_subexpr_start stateme
 //private generic_ref_token_with_sub_expr ::= generic_ref_token_with_subexpr_start statement_list? RP nws command_name
 private generic_token_with_subexpr_start ::= generic_token_part DS nws LP
 //private generic_ref_token_with_subexpr_start ::= generic_token_part DS nws LP
-private generic_token_part ::= expandable_string_literal | verbatim_here_string_literal | referenceVariable | generic_token_chars
+private generic_token_part ::= expandable_string_literal | verbatim_here_string_literal | reference_variable | generic_token_chars
 
 private generic_token_chars ::= generic_id_part_tokens_start ( nws generic_id_part_tokens )*
 private generic_id_part_tokens_start ::= SIMPLE_ID | GENERIC_ID_PART | STAR
@@ -359,10 +361,10 @@ private command_name_expr ::= primary_expression | command_name
 
 
 
-try_statement ::=   'try' statement_block (catch_clause+ | finally_clause | catch_clause finally_clause)
-private catch_clause ::= nls? 'catch' catch_type_list? statement_block
-private catch_type_list ::= nls? type_literal_expression nls? ( ',' nls? type_literal_expression nls? )*
-private finally_clause ::= nls? 'finally' statement_block
+try_statement ::= 'try' nls? statement_block nls? (catch_clause nls?)* finally_clause?
+private catch_clause ::= 'catch' nls? catch_type_list? nls? statement_block
+private catch_type_list ::= type_literal_expression nls? ( ',' nls? type_literal_expression nls? )*
+private finally_clause ::= 'finally' nls? statement_block
 
 
 trap_statement ::= 'trap' nls? type_literal_expression? nls? statement_block
@@ -411,7 +413,7 @@ private switch_parameter ::=   '-regex'
 
 private switch_condition ::= LP nls? pipeline nls? RP | '-file' nls? switch_filename
 private switch_filename ::= command_argument | primary_expression
-command_argument ::= path_expression | expression | command_name
+command_argument ::= expression | path_expression | command_name
 path_expression ::= provider? drive? containers? item | relative_path
 private provider ::= ( module? COLON2 nws )+
 private module ::= module_name nws PATH_SEP nws
@@ -523,7 +525,7 @@ while_statement ::= 'while' nls? LP nls? while_condition nls? RP nls? statement_
 private while_condition ::= nls? pipeline
 
 
-do_statement ::= 'do' statement_block nls? ( 'while' | 'until' ) nls? LP while_condition nls? RP
+do_statement ::= 'do' nls? statement_block nls? ( 'while' | 'until' ) nls? LP while_condition nls? RP
 
 
 if_statement ::= 'if' nls? LP nls? pipeline nls? RP nls? statement_block elseif_clause* else_clause?
