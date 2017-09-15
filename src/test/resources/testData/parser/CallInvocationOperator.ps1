@@ -15,3 +15,5 @@
 . FunctionA
 
 & mycmd.exe
+
+&{} {} {} {}

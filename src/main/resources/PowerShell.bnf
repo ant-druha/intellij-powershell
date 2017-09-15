@@ -192,7 +192,7 @@ private statement ::=   if_statement
                       | (label nls?)? labeled_statement
                       | function_statement
                       | flow_control_statement //sep
-                      | trap_statement
+                      | trap_pipeline
                       | try_statement
                       | data_statement
                       | inlinescript_statement
@@ -366,7 +366,7 @@ private catch_clause ::= 'catch' nls? catch_type_list? nls? statement_block
 private catch_type_list ::= type_literal_expression nls? ( ',' nls? type_literal_expression nls? )*
 private finally_clause ::= 'finally' nls? statement_block
 
-
+private trap_pipeline ::= trap_statement statement?
 trap_statement ::= 'trap' nls? type_literal_expression? nls? statement_block
 type_literal_expression ::= SQBR_L type_spec SQBR_R
 private type_spec ::=   array_type_name nls? dimension? SQBR_R | generic_type_name nls? generic_type_arguments SQBR_R | type_name

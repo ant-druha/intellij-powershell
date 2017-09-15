@@ -217,3 +217,12 @@ while ($true)
   # …
   }
 }
+
+#trap
+$j = 0; $v = 10/$j; "Done"
+trap { $j = 2; continue }
+trap { $j = 2; break }
+&{trap{}; throw '...'; 1}
+trap{} &{throw '...'; 1}; 2
+trap{} {throw '...'; 1}; 2
+trap{} {trap{}}
