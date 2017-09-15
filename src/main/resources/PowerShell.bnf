@@ -351,10 +351,10 @@ parallel_statement ::= 'parallel' statement_block
 inlinescript_statement ::= 'inlinescript' statement_block
 
 
-data_statement ::= 'data' nls? data_name data_commands_allowed? statement_block
+data_statement ::= 'data' nls? data_name? nls? data_commands_allowed? nls? statement_block
 private data_name ::= simple_name
-private data_commands_allowed ::= nls? '-supportedcommand' data_commands_list
-private data_commands_list ::= nls? data_command ( ',' nls? data_command nls? )*
+private data_commands_allowed ::= '-supportedcommand' nls? data_commands_list
+private data_commands_list ::= data_command ( nls? ',' nls? data_command )*
 private data_command ::= command_name_expr
 private command_name_expr ::= primary_expression | command_name
 

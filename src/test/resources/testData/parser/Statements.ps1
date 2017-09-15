@@ -226,3 +226,25 @@ trap { $j = 2; break }
 trap{} &{throw '...'; 1}; 2
 trap{} {throw '...'; 1}; 2
 trap{} {trap{}}
+
+#data
+data -supportedCommand ConvertTo-XML
+{
+  Format-XML -strings "string1", "string2", "string3"
+}
+$messagesS = data
+             {
+               ConvertFrom-StringData -stringdata @"
+		Greeting = Buenos días
+		Yes = sí
+		No = no
+"@
+             }
+data messages
+{
+  ConvertFrom-StringData -stringdata @"
+		Greeting = Buenos días
+		Yes = sí
+		No = no
+"@
+}
