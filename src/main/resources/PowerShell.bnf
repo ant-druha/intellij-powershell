@@ -185,7 +185,7 @@ private script_parameter_default ::= '=' nls? expression
 private script_block_body ::= named_block_list | statement_list
 
 private named_block_list ::= named_block (statement_terminators named_block? )*
-private named_block ::= block_name statement_block statement_terminators?
+private named_block ::= block_name nls? statement_block statement_terminators?
 private block_name ::= 'dynamicparam' | 'begin' | 'process' | 'end'
 
 private statement ::=   if_statement
@@ -322,7 +322,7 @@ command_call_expression ::= command_name command_element* | command_invocation_o
 {mixin="com.intellij.plugin.powershell.psi.impl.PowerShellCallableReferenceExpression"
 implements="com.intellij.plugin.powershell.psi.PowerShellReference"}
 
-command_name ::= generic_token_with_sub_expr | generic_token_part//generic_token
+command_name ::= generic_token_with_sub_expr | generic_token_part | allowed_identifier_keywords //generic_token
 
 
 //command_name ::= generic_ref_token_with_sub_expr | generic_token_part//generic_token
@@ -358,6 +358,10 @@ private data_commands_list ::= data_command ( nls? ',' nls? data_command )*
 private data_command ::= command_name_expr
 private command_name_expr ::= primary_expression | command_name
 
+private allowed_identifier_keywords ::= 'param'|'until'|'workflow'|'end'|'define'|'finally'|'parallel'|'continue'|'begin'|'dynamicparam'|'in'
+|'process'|'break'|'else'|'inlinescript'|'catch'
+private keywords ::= allowed_identifier_keywords | 'class'|'data'|'do'|'elseif'|'exit'|'filter'|'for'|'foreach'|'from'|'function'|'if'|'return'
+|'switch'|'throw'|'trap'|'try'|'using'|'var'|'while'
 
 
 
@@ -384,7 +388,7 @@ function_statement ::= ('function' | 'filter' | 'workflow') nls? function_name n
 {mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractComponent"
 implements="com.intellij.plugin.powershell.psi.PowerShellComponent"}
 
-private function_name ::= primary_expression | identifier //primary_expression | command_name
+private function_name ::= primary_expression | identifier //command_name_expr
 identifier ::= generic_identifier
 private generic_identifier ::=  generic_token_with_sub_expr | generic_token_part
 

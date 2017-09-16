@@ -145,7 +145,7 @@ function Get-Factorial ($v)
 
   return $v * (Get-Factorial ($v - 1))	# return is optional
 }
-The caller to Get-Factorial gets back an int.
+#The caller to Get-Factorial gets back an int.
 function Test
 {
   "text1"							# "text1" is written to the pipeline
@@ -221,7 +221,7 @@ while ($true)
 #trap
 $j = 0; $v = 10/$j; "Done"
 trap { $j = 2; continue }
-trap { $j = 2; break }
+Trap { $j = 2; break }
 &{trap{}; throw '...'; 1}
 trap{} &{throw '...'; 1}; 2
 trap{} {throw '...'; 1}; 2
@@ -248,3 +248,32 @@ data messages
 		No = no
 "@
 }
+
+#filter functions
+filter Get-Square2		# make the function a filter
+{
+  $_ * $_					# access current object from the collection
+}
+
+-3..3 | Get-Square2		# collection has 7 elements
+6,10,-3 | Get-Square2	# collection has 3 elements
+
+#function arguments
+function Get-Power ([long]$base, [int]$exponent)
+{
+  $result = 1
+  for ($i = 1; $i -le $exponent; ++$i)
+  {
+    $result *= $base
+  }
+  return $result
+}
+
+function F ($a, $b, $c, $d) { … }
+F -b 3 -d 5 2 4       # $a is 2, $b is 3, $c is 4, $d is 5, $args Length 0
+F -a 2 -d 3 4 5       # $a is 2, $b is 4, $c is 5, $d is 3, $args Length 0
+F 2 3 4 5 -c 7 -a 1   # $a is 1, $b is 2, $c is 7, $d is 3, $args Length 2
+
+function Find-Str ([string]$str, [int]$start_pos = 0) { … }
+Find-Str "abcabc"		# 2nd argument omitted, 0 used for $start_pos
+Find-Str "abcabc" 2	# 2nd argument present, so it is used for $start_pos

@@ -90,6 +90,7 @@ VAR_ID={VAR_ID_CHAR}+
 GENERIC_ID_PART_FIRST_CHAR=([^\*\/\\\.\=\[\]\%\-\–\—\―\}\{\(\)\,\;\"\'\|\&\$\s\n\r\#\:\`0-9!\+]|(`.))
 GENERIC_ID_PART_CHAR={GENERIC_ID_PART_FIRST_CHAR}|([\*\/\+\-\–\—\―\%0-9!])
 GENERIC_ID_PART={GENERIC_ID_PART_FIRST_CHAR}{GENERIC_ID_PART_CHAR}*
+GENERIC_ID_PART_TOKENS=({SIMPLE_ID}|{GENERIC_ID_PART}|{STAR})({SIMPLE_ID}|{GENERIC_ID_PART}|{STAR}|{DOT}|"\\"|{DIV})*
 
 BRACED_ID_CHAR=([^\}\`]|(`.))
 BRACED_ID={BRACED_ID_CHAR}+
@@ -112,7 +113,8 @@ VERBATIM_ARG_START={MM}{PERS}
 VERBATIM_ARG_INPUT=[^\|\r\n]+
 BRACED_VAR_START={DS}{LCURLY}
 
-%state VAR_SIMPLE VAR_BRACED VERBATIM_ARGUMENT
+%state VAR_SIMPLE VAR_BRACED VERBATIM_ARGUMENT FUNCTION_IDENTIFIER
+%caseless
 
 
 %%
@@ -157,6 +159,12 @@ BRACED_VAR_START={DS}{LCURLY}
   "|"                                                           { yybegin(YYINITIAL); return PIPE; }
   {NLS}                                                         { yybegin(YYINITIAL); return NLS; }
 }
+<FUNCTION_IDENTIFIER> {
+  {SIMPLE_ID}                                                  { yybegin(YYINITIAL); return SIMPLE_ID; }
+  {WHITE_SPACE}                                                { return WHITE_SPACE; }
+  {GENERIC_ID_PART_TOKENS}                                     { yybegin(YYINITIAL); return GENERIC_ID_PART; }
+  [^]                                                          { yybegin(YYINITIAL); yypushback(yylength()); }
+}
 
 <YYINITIAL> {
   {WHITE_SPACE}                                                { return WHITE_SPACE; }
@@ -176,12 +184,12 @@ BRACED_VAR_START={DS}{LCURLY}
   "elseif"                                                     { return ELSEIF; }
   "end"                                                        { return END; }
   "exit"                                                       { return EXIT; }
-  "filter"                                                     { return FILTER; }
+  "filter"/{WHITE_SPACE}                                       { yybegin(FUNCTION_IDENTIFIER); return FILTER; }
   "finally"                                                    { return FINALLY; }
   "for"                                                        { return FOR; }
   "foreach"                                                    { return FOREACH; }
   "from"                                                       { return FROM; }
-  "function"                                                   { return FUNCTION; }
+  "function"/{WHITE_SPACE}                                     { yybegin(FUNCTION_IDENTIFIER); return FUNCTION; }
   "if"                                                         { return IF; }
   "in"                                                         { return IN; }
   "inlinescript"                                               { return INLINESCRIPT; }
@@ -197,7 +205,7 @@ BRACED_VAR_START={DS}{LCURLY}
   "using"                                                      { return USING; }
   "var"                                                        { return VAR; }
   "while"                                                      { return WHILE; }
-  "workflow"                                                   { return WORKFLOW; }
+  "workflow"/{WHITE_SPACE}                                     { yybegin(FUNCTION_IDENTIFIER); return WORKFLOW; }
   "«"                                                          { return RAW_LBR; }
   "»"                                                          { return RAW_RBR; }
   "(*"                                                         { return MULTI_LINE_COMMENT_START; }
