@@ -113,7 +113,7 @@ VERBATIM_ARG_START={MM}{PERS}
 VERBATIM_ARG_INPUT=[^\|\r\n]+
 BRACED_VAR_START={DS}{LCURLY}
 
-%state VAR_SIMPLE VAR_BRACED VERBATIM_ARGUMENT FUNCTION_IDENTIFIER
+%state VAR_SIMPLE VAR_BRACED VERBATIM_ARGUMENT FUNCTION_ID TYPE_ID
 %caseless
 
 
@@ -133,6 +133,7 @@ BRACED_VAR_START={DS}{LCURLY}
   {DOT_DOT}                                                    { yybegin(YYINITIAL); return DOT_DOT; }
   {DOT}                                                        { yybegin(YYINITIAL); return DOT; }
   ","                                                          { yybegin(YYINITIAL); return COMMA; }
+  {SQBR_L}/{WHITE_SPACE}?{SIMPLE_ID}                           { yybegin(TYPE_ID);   return SQBR_L; }
   {SQBR_L}                                                     { yybegin(YYINITIAL); return SQBR_L; }
   {SQBR_R}                                                     { yybegin(YYINITIAL); return SQBR_R; }
   "++"                                                         { yybegin(YYINITIAL); return PP; }
@@ -159,10 +160,18 @@ BRACED_VAR_START={DS}{LCURLY}
   "|"                                                           { yybegin(YYINITIAL); return PIPE; }
   {NLS}                                                         { yybegin(YYINITIAL); return NLS; }
 }
-<FUNCTION_IDENTIFIER> {
+<FUNCTION_ID> {
   {SIMPLE_ID}                                                  { yybegin(YYINITIAL); return SIMPLE_ID; }
   {WHITE_SPACE}                                                { return WHITE_SPACE; }
   {GENERIC_ID_PART_TOKENS}                                     { yybegin(YYINITIAL); return GENERIC_ID_PART; }
+  [^]                                                          { yybegin(YYINITIAL); yypushback(yylength()); }
+}
+
+<TYPE_ID> {
+  {SIMPLE_ID}/{DOT}                                            { return SIMPLE_ID; }
+  {SIMPLE_ID}                                                  { yybegin(YYINITIAL); return SIMPLE_ID; }
+  {DOT}                                                        { return DOT; }
+  {WHITE_SPACE}                                                { return WHITE_SPACE; }
   [^]                                                          { yybegin(YYINITIAL); yypushback(yylength()); }
 }
 
@@ -184,12 +193,12 @@ BRACED_VAR_START={DS}{LCURLY}
   "elseif"                                                     { return ELSEIF; }
   "end"                                                        { return END; }
   "exit"                                                       { return EXIT; }
-  "filter"/{WHITE_SPACE}                                       { yybegin(FUNCTION_IDENTIFIER); return FILTER; }
+  "filter"/{WHITE_SPACE}                                       { yybegin(FUNCTION_ID); return FILTER; }
   "finally"                                                    { return FINALLY; }
   "for"                                                        { return FOR; }
   "foreach"                                                    { return FOREACH; }
   "from"                                                       { return FROM; }
-  "function"/{WHITE_SPACE}                                     { yybegin(FUNCTION_IDENTIFIER); return FUNCTION; }
+  "function"/{WHITE_SPACE}                                     { yybegin(FUNCTION_ID); return FUNCTION; }
   "if"                                                         { return IF; }
   "in"                                                         { return IN; }
   "inlinescript"                                               { return INLINESCRIPT; }
@@ -205,7 +214,7 @@ BRACED_VAR_START={DS}{LCURLY}
   "using"                                                      { return USING; }
   "var"                                                        { return VAR; }
   "while"                                                      { return WHILE; }
-  "workflow"/{WHITE_SPACE}                                     { yybegin(FUNCTION_IDENTIFIER); return WORKFLOW; }
+  "workflow"/{WHITE_SPACE}                                     { yybegin(FUNCTION_ID); return WORKFLOW; }
   "«"                                                          { return RAW_LBR; }
   "»"                                                          { return RAW_RBR; }
   "(*"                                                         { return MULTI_LINE_COMMENT_START; }
@@ -235,6 +244,7 @@ BRACED_VAR_START={DS}{LCURLY}
   {COLON2}                         { return COLON2; }
   {PERS}                           { return PERS; }
   {SQBR_L}                         { return SQBR_L; }
+  {SQBR_L}/{WHITE_SPACE}?{SIMPLE_ID}       { yybegin(TYPE_ID);   return SQBR_L; }
   {SQBR_R}                         { return SQBR_R; }
   {OP_MR}                          { return OP_MR; }
   {OP_FR}                          { return OP_FR; }

@@ -38,4 +38,6 @@ public class PowerShellParserTest extends ParsingTestCase {
 
   public void testStatements() throws Exception { doTest(true); }
 
+  public void testTypeLiteral() throws Exception { doTest(true); }
+
 }
