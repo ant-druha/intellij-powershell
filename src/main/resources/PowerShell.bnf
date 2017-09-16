@@ -177,7 +177,7 @@ private attribute_arguments ::= attribute_argument (nls? COMMA attribute_argumen
 private attribute_argument ::= nls? ( simple_name '=' nls? expression | expression | simple_name )
 
 
-private script_parameter_list ::= script_parameter (nls? COMMA script_parameter)*
+private script_parameter_list ::= script_parameter (nls? COMMA nls? script_parameter)*
 
 private script_parameter ::= attribute_list? nls? target_variable_expression nls? script_parameter_default?
 private script_parameter_default ::= '=' nls? expression

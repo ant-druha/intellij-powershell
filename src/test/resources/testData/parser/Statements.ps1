@@ -292,3 +292,83 @@ Process 10 -trace 20			# $trace is True, $p1 is 10, $p2 is 20
 Process 10 20 -trace			# $trace is True, $p1 is 10, $p2 is 20
 Process 10 20 -trace:$false	# $trace is False, $p1 is 10, $p2 is 20
 Process 10 20 -trace:$true		# $trace is True, $p1 is 10, $p2 is 20
+
+#pipelines & functions
+function Get-Square1
+{
+  foreach ($i in $input)		# iterate over the collection
+  {
+    $i * $i
+  }
+}
+
+-3..3 | Get-Square1			# collection has 7 elements
+6,10,-3 | Get-Square1		# collection has 3 elements
+
+#funciton named blocks
+function Sample
+{
+  Param ([String]$Name, [String]$Path)
+  DynamicParam
+  {
+    if ($path -match "*HKLM*:")
+    {
+      $dynParam1 = New-Object
+      System.Management.Automation.RuntimeDefinedParameter("dp1",
+                                                           [Int32], $attributeCollection)
+      $attributes = New-Object
+      System.Management.Automation.ParameterAttribute
+      $attributes.ParameterSetName = 'pset1'
+      $attributes.Mandatory = $false
+      $attributeCollection = New-Object -Type
+      System.Collections.ObjectModel.Collection``1[System.Attribute]
+      $attributeCollection.Add($attributes)
+      $paramDictionary = New-Object
+      System.Management.Automation.RuntimeDefinedParameterDictionary
+      $paramDictionary.Add("dp1", $dynParam1)
+      return $paramDictionary
+    }
+  }
+}
+
+#param block
+function FindStr1 ([string]$str, [int]$start_pos = 0) { … }
+function FindStr2 { param ([string]$str, [int]$start_pos = 0) … }
+
+#parallel statement
+Parallel { continue; }
+
+#sequence
+Sequence { continue; }
+
+#inlinescript
+inlinescript { $i=0; }
+
+#parameter binding
+function Get-Power ([long]$base, [int]$exponent) { … }
+Get-Power 5 3	# argument 5 is bound to parameter $base in position 0
+# argument 3 is bound to parameter $exponent in position 1
+# no conversion is needed, and the result is 5 to the power 3
+Get-Power 4.7 3.2	# double argument 4.7 is rounded to int 5, double argument
+# 3.2 is rounded to int 3, and result is 5 to the power 3
+Get-Power 5	# $exponent has value $null, which is converted to int 0
+Get-Power	# both parameters have value $null, which is converted to int 0
+
+function Get-Hypot ([double]$side1, [double]$side2)
+{
+  return [Math]::Sqrt($side1 * $side1 + $side2 * $side2)
+}
+
+function Test
+{
+  [CmdletBinding(DefaultParameterSetname = "SetB")]
+  param ([Parameter(Position = 0, ParameterSetname = "SetA")]
+  [decimal]$dec,
+  [Parameter(Position = 0, ParameterSetname = "SetB")]
+  [int]$in
+  )
+  $PsCmdlet.ParameterSetName
+}
+
+Test 42d  # outputs "SetA"
+Test 42   # outputs "SetB"
