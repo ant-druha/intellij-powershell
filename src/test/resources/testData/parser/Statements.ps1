@@ -277,3 +277,10 @@ F 2 3 4 5 -c 7 -a 1   # $a is 1, $b is 2, $c is 7, $d is 3, $args Length 2
 function Find-Str ([string]$str, [int]$start_pos = 0) { … }
 Find-Str "abcabc"		# 2nd argument omitted, 0 used for $start_pos
 Find-Str "abcabc" 2	# 2nd argument present, so it is used for $start_pos
+
+
+function until($i, $i2) { return $I2+$i; }; until 1 6;
+function parallel($i, $i2) { return $I2+$i; }; parallel 1 6;
+function catch($i, $i2) { return $I2+$i; }; catch 1 6;
+function dynamicparam($i, $i2) { return $I2+$i; }; dynamicparam 1 6;
+function param($i, $i2) { return $I2+$i; }; param 1 6;
