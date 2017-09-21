@@ -99,7 +99,7 @@ SINGLE_LINE_COMMENT_CHARS=[^\n\r]+
 SINGLE_LINE_COMMENT={HASH}({SINGLE_LINE_COMMENT_CHARS}?|{EOL})//??todo: #\n
 DELIMITED_COMENT_START=<{HASH}
 DELIMITED_COMENT_END={HASH}+>
-DELIMITED_COMMENT_CHARS=({HASH}*[^#>]+)+
+DELIMITED_COMMENT_CHARS=({HASH}*[^#>]+)+//todo
 DELIMITED_COMMENT={DELIMITED_COMENT_START}{DELIMITED_COMMENT_CHARS}?{DELIMITED_COMENT_END}
 
 //AMP_ARG=\&/*[^&]*/[\w]
@@ -140,11 +140,13 @@ BRACED_VAR_START={DS}{LCURLY}
   {MM}                                                         { yybegin(YYINITIAL); return MM; }
   "="                                                          { yybegin(YYINITIAL); return EQ; }
   "+"                                                          { yybegin(YYINITIAL); return PLUS; }
+  "\\"                                                         { yybegin(YYINITIAL); return PATH_SEP; }
   {DASH}                                                       { yybegin(YYINITIAL); return DASH; }
   {OP_NOT}                                                     { yybegin(YYINITIAL); return OP_NOT; }
   {OP_BNOT}                                                    { yybegin(YYINITIAL); return OP_BNOT; }
   {EXCL_MARK}                                                  { yybegin(YYINITIAL); return EXCL_MARK; }
   {STAR}                                                       { yybegin(YYINITIAL); return STAR; }
+    [^]                                                          { yybegin(YYINITIAL); yypushback(yylength()); }
 }
 <VAR_BRACED> {
   {SIMPLE_ID}   / ":"[^\\]{BRACED_ID}{RCURLY}                  { return SIMPLE_ID; }
@@ -247,7 +249,7 @@ BRACED_VAR_START={DS}{LCURLY}
   {SQBR_L}/{WHITE_SPACE}?{SIMPLE_ID}       { yybegin(TYPE_ID);   return SQBR_L; }
   {SQBR_R}                         { return SQBR_R; }
   {OP_MR}                          { return OP_MR; }
-  {OP_FR}                          { return OP_FR; }
+  {OP_FR}/[^#]                          { return OP_FR; }
   {OP_NOT}                         { return OP_NOT; }
   {OP_BNOT}                        { return OP_BNOT; }
   {OP_C}                           { return OP_C; }
@@ -262,10 +264,10 @@ BRACED_VAR_START={DS}{LCURLY}
   {DEC_INTEGER}/{DOT_DOT}?         { return DEC_INTEGER; }
   {DEC_EXPONENT}                   { return DEC_EXPONENT; }
   {SIMPLE_ID}                      { return SIMPLE_ID; }
-  {GENERIC_ID_PART}                { return GENERIC_ID_PART; }
 //  {TYPE_NAME}                      { return TYPE_NAME; }
   {SINGLE_LINE_COMMENT}            { return COMMENT; }
   {DELIMITED_COMMENT}              { return COMMENT; }
+  {GENERIC_ID_PART}                { return GENERIC_ID_PART; }
 //  {AMP_ARG}                        { return AMP_ARG; }
 //  {PARAM_ARGUMENT}                 { return PARAM_ARGUMENT; }
 //  {ALNUM}                          { return ALNUM; }

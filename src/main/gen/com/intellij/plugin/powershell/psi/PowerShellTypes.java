@@ -11,6 +11,7 @@ import com.intellij.psi.tree.IElementType;
 public interface PowerShellTypes {
 
   IElementType ADDITIVE_EXPRESSION = new PowerShellElementType("ADDITIVE_EXPRESSION");
+  IElementType ARRAY_EXPRESSION = new PowerShellElementType("ARRAY_EXPRESSION");
   IElementType ARRAY_LITERAL_EXPRESSION = new PowerShellElementType("ARRAY_LITERAL_EXPRESSION");
   IElementType ASSIGNMENT_STATEMENT = new PowerShellElementType("ASSIGNMENT_STATEMENT");
   IElementType ATTRIBUTE = new PowerShellElementType("ATTRIBUTE");
@@ -24,24 +25,25 @@ public interface PowerShellTypes {
   IElementType COMPARISON_EXPRESSION = new PowerShellElementType("COMPARISON_EXPRESSION");
   IElementType DATA_STATEMENT = new PowerShellElementType("DATA_STATEMENT");
   IElementType DO_STATEMENT = new PowerShellElementType("DO_STATEMENT");
-  IElementType DRIVE_NAME = new PowerShellElementType("DRIVE_NAME");
   IElementType EXPRESSION = new PowerShellElementType("EXPRESSION");
   IElementType FLOW_CONTROL_STATEMENT = new PowerShellElementType("FLOW_CONTROL_STATEMENT");
   IElementType FOREACH_STATEMENT = new PowerShellElementType("FOREACH_STATEMENT");
   IElementType FORMAT_EXPRESSION = new PowerShellElementType("FORMAT_EXPRESSION");
   IElementType FOR_STATEMENT = new PowerShellElementType("FOR_STATEMENT");
   IElementType FUNCTION_STATEMENT = new PowerShellElementType("FUNCTION_STATEMENT");
+  IElementType HASH_LITERAL_EXPRESSION = new PowerShellElementType("HASH_LITERAL_EXPRESSION");
   IElementType IDENTIFIER = new PowerShellElementType("IDENTIFIER");
   IElementType IF_STATEMENT = new PowerShellElementType("IF_STATEMENT");
   IElementType INLINESCRIPT_STATEMENT = new PowerShellElementType("INLINESCRIPT_STATEMENT");
   IElementType INTEGER_LITERAL_EXPRESSION = new PowerShellElementType("INTEGER_LITERAL_EXPRESSION");
   IElementType INVOCATION_EXPRESSION = new PowerShellElementType("INVOCATION_EXPRESSION");
-  IElementType ITEM = new PowerShellElementType("ITEM");
+  IElementType KEY_EXPRESSION = new PowerShellElementType("KEY_EXPRESSION");
   IElementType LOGICAL_EXPRESSION = new PowerShellElementType("LOGICAL_EXPRESSION");
   IElementType MULTIPLICATIVE_EXPRESSION = new PowerShellElementType("MULTIPLICATIVE_EXPRESSION");
   IElementType PARALLEL_STATEMENT = new PowerShellElementType("PARALLEL_STATEMENT");
   IElementType PARENTHESIZED_EXPRESSION = new PowerShellElementType("PARENTHESIZED_EXPRESSION");
   IElementType PATH_EXPRESSION = new PowerShellElementType("PATH_EXPRESSION");
+  IElementType PATH_ITEM = new PowerShellElementType("PATH_ITEM");
   IElementType POST_DECREMENT_EXPRESSION = new PowerShellElementType("POST_DECREMENT_EXPRESSION");
   IElementType POST_INCREMENT_EXPRESSION = new PowerShellElementType("POST_INCREMENT_EXPRESSION");
   IElementType RANGE_EXPRESSION = new PowerShellElementType("RANGE_EXPRESSION");
@@ -51,6 +53,7 @@ public interface PowerShellTypes {
   IElementType SEP = new PowerShellElementType("SEP");
   IElementType SEQUENCE_STATEMENT = new PowerShellElementType("SEQUENCE_STATEMENT");
   IElementType STRING_LITERAL_EXPRESSION = new PowerShellElementType("STRING_LITERAL_EXPRESSION");
+  IElementType SUB_EXPRESSION = new PowerShellElementType("SUB_EXPRESSION");
   IElementType SWITCH_STATEMENT = new PowerShellElementType("SWITCH_STATEMENT");
   IElementType TARGET_VARIABLE_EXPRESSION = new PowerShellElementType("TARGET_VARIABLE_EXPRESSION");
   IElementType TRAP_STATEMENT = new PowerShellElementType("TRAP_STATEMENT");
@@ -160,6 +163,8 @@ public interface PowerShellTypes {
     public static PsiElement createElement(ASTNode node) {
       IElementType type = node.getElementType(); if (type == ADDITIVE_EXPRESSION) {
         return new PowerShellAdditiveExpressionImplGen(node);
+      } else if (type == ARRAY_EXPRESSION) {
+        return new PowerShellArrayExpressionImplGen(node);
       } else if (type == ARRAY_LITERAL_EXPRESSION) {
         return new PowerShellArrayLiteralExpressionImplGen(node);
       } else if (type == ASSIGNMENT_STATEMENT) {
@@ -186,8 +191,6 @@ public interface PowerShellTypes {
         return new PowerShellDataStatementImplGen(node);
       } else if (type == DO_STATEMENT) {
         return new PowerShellDoStatementImplGen(node);
-      } else if (type == DRIVE_NAME) {
-        return new PowerShellDriveNameImplGen(node);
       } else if (type == FLOW_CONTROL_STATEMENT) {
         return new PowerShellFlowControlStatementImplGen(node);
       } else if (type == FOREACH_STATEMENT) {
@@ -198,6 +201,8 @@ public interface PowerShellTypes {
         return new PowerShellForStatementImplGen(node);
       } else if (type == FUNCTION_STATEMENT) {
         return new PowerShellFunctionStatementImplGen(node);
+      } else if (type == HASH_LITERAL_EXPRESSION) {
+        return new PowerShellHashLiteralExpressionImplGen(node);
       } else if (type == IDENTIFIER) {
         return new PowerShellIdentifierImplGen(node);
       } else if (type == IF_STATEMENT) {
@@ -208,8 +213,8 @@ public interface PowerShellTypes {
         return new PowerShellIntegerLiteralExpressionImplGen(node);
       } else if (type == INVOCATION_EXPRESSION) {
         return new PowerShellInvocationExpressionImplGen(node);
-      } else if (type == ITEM) {
-        return new PowerShellItemImplGen(node);
+      } else if (type == KEY_EXPRESSION) {
+        return new PowerShellKeyExpressionImplGen(node);
       } else if (type == LOGICAL_EXPRESSION) {
         return new PowerShellLogicalExpressionImplGen(node);
       } else if (type == MULTIPLICATIVE_EXPRESSION) {
@@ -220,6 +225,8 @@ public interface PowerShellTypes {
         return new PowerShellParenthesizedExpressionImplGen(node);
       } else if (type == PATH_EXPRESSION) {
         return new PowerShellPathExpressionImplGen(node);
+      } else if (type == PATH_ITEM) {
+        return new PowerShellPathItemImplGen(node);
       } else if (type == POST_DECREMENT_EXPRESSION) {
         return new PowerShellPostDecrementExpressionImplGen(node);
       } else if (type == POST_INCREMENT_EXPRESSION) {
@@ -238,6 +245,8 @@ public interface PowerShellTypes {
         return new PowerShellSequenceStatementImplGen(node);
       } else if (type == STRING_LITERAL_EXPRESSION) {
         return new PowerShellStringLiteralExpressionImplGen(node);
+      } else if (type == SUB_EXPRESSION) {
+        return new PowerShellSubExpressionImplGen(node);
       } else if (type == SWITCH_STATEMENT) {
         return new PowerShellSwitchStatementImplGen(node);
       } else if (type == TARGET_VARIABLE_EXPRESSION) {

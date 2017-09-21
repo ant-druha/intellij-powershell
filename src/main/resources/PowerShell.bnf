@@ -167,14 +167,14 @@ private top_script_block ::= param_block? statement_terminators? script_block_bo
 script_block ::= top_script_block //nls? param_block? statement_terminators? script_block_body
 {elementType=block_body}
 
-private param_block ::= attribute_list? nls? 'param' nls? LP script_parameter_list? nls? RP
+private param_block ::= attribute_list? nls? 'param' nls? LP nls? script_parameter_list? nls? RP
 
 private attribute_list ::= (attribute nls?)+
-attribute ::= SQBR_L nls? attribute_name LP attribute_arguments nls? RP nls? SQBR_R | type_literal_expression
+attribute ::= SQBR_L nls? attribute_name LP nls? attribute_arguments? nls? RP nls? SQBR_R | type_literal_expression
 private attribute_name ::= type_spec
 
-private attribute_arguments ::= attribute_argument (nls? COMMA attribute_argument)*
-private attribute_argument ::= nls? ( simple_name '=' nls? expression | expression | simple_name )
+private attribute_arguments ::= attribute_argument (nls? COMMA nls? attribute_argument)*
+private attribute_argument ::= simple_name '=' nls? expression | simple_name | expression
 
 
 private script_parameter_list ::= script_parameter (nls? COMMA nls? script_parameter)*
@@ -185,7 +185,7 @@ private script_parameter_default ::= '=' nls? expression
 private script_block_body ::= named_block_list | statement_list
 
 private named_block_list ::= named_block (statement_terminators named_block? )*
-private named_block ::= block_name nls? statement_block statement_terminators?
+private named_block ::= block_name nls? statement_block
 private block_name ::= 'dynamicparam' | 'begin' | 'process' | 'end'
 
 private statement ::=   if_statement
@@ -198,11 +198,11 @@ private statement ::=   if_statement
                       | inlinescript_statement
                       | parallel_statement
                       | sequence_statement
-                      | pipeline //sep
+                      | pipeline
 //{recoverWhile=statement_recover}
 //private statement_recover ::= !sep
 
-private pipeline ::= assignment_statement | expression redirection* pipeline_tail? | command_call_expression verbatim_command_argument? pipeline_tail?
+private pipeline ::= assignment_statement | expression redirection* pipeline_tail? &statement_end | command_call_expression verbatim_command_argument? pipeline_tail?
 
 assignment_statement ::= expression assignment_operator statement
 {methods=[getTargetVariables]}
@@ -318,10 +318,11 @@ private cast_expression ::= type_literal_expression unary_expression //lvalue
 
 private pipeline_tail ::= ( PIPE nls? command_call_expression )+
 
-command_call_expression ::= command_name command_element* | command_invocation_operator ( (command_module command_name_expr command_element* ) | command_name_expr command_element* )
+command_call_expression ::= command_invocation_operator ( (command_module command_name_expr command_element* ) | command_name_expr command_element* ) | command_name_expression command_element*
 {mixin="com.intellij.plugin.powershell.psi.impl.PowerShellCallableReferenceExpression"
 implements="com.intellij.plugin.powershell.psi.PowerShellReference"}
 
+private command_name_expression ::= path_expression | command_name//todo parse path_item where appropriate: path_item all bare identifiers including command_name
 command_name ::= generic_token_with_sub_expr | generic_token_part | allowed_identifier_keywords //generic_token
 
 
@@ -330,7 +331,7 @@ private generic_token_with_sub_expr ::= generic_token_with_subexpr_start stateme
 //private generic_ref_token_with_sub_expr ::= generic_ref_token_with_subexpr_start statement_list? RP nws command_name
 private generic_token_with_subexpr_start ::= generic_token_part DS nws LP
 //private generic_ref_token_with_subexpr_start ::= generic_token_part DS nws LP
-private generic_token_part ::= expandable_string_literal | verbatim_here_string_literal | reference_variable | generic_token_chars
+private generic_token_part ::= expandable_string_literal | verbatim_here_string_literal | target_variable_expression | generic_token_chars
 
 private generic_token_chars ::= generic_id_part_tokens_start ( nws generic_id_part_tokens )*
 private generic_id_part_tokens_start ::= SIMPLE_ID | GENERIC_ID_PART | STAR
@@ -356,12 +357,10 @@ private data_name ::= simple_name
 private data_commands_allowed ::= '-supportedcommand' nls? data_commands_list
 private data_commands_list ::= data_command ( nls? ',' nls? data_command )*
 private data_command ::= command_name_expr
-private command_name_expr ::= primary_expression | command_name
+private command_name_expr ::= primary_expression !(nws PATH_SEP | nws COLON) | command_name_expression
 
 private allowed_identifier_keywords ::= 'param'|'until'|'workflow'|'end'|'define'|'finally'|'parallel'|'continue'|'begin'|'dynamicparam'|'in'
 |'process'|'break'|'else'|'inlinescript'|'catch'
-private keywords ::= allowed_identifier_keywords | 'class'|'data'|'do'|'elseif'|'exit'|'filter'|'for'|'foreach'|'from'|'function'|'if'|'return'
-|'switch'|'throw'|'trap'|'try'|'using'|'var'|'while'
 
 
 
@@ -417,18 +416,31 @@ private switch_parameter ::=   '-regex'
 
 private switch_condition ::= LP nls? pipeline nls? RP | '-file' nls? switch_filename
 private switch_filename ::= command_argument | primary_expression
-command_argument ::= expression | path_expression | command_name
-path_expression ::= provider? drive? containers? item | relative_path
-private provider ::= ( module? COLON2 nws )+
-private module ::= module_name nws PATH_SEP nws
-private drive ::= drive_name nws COLON nws PATH_SEP nws
-private containers ::= (container nws PATH_SEP nws)+
-private module_name ::= simple_name | primary_expression
-private container ::= path_item_name
-drive_name ::= simple_name | primary_expression
-item ::= path_item_name
-private path_item_name ::= generic_id_part_tokens_start (nws path_name_part_tokens)*
-private path_name_part_tokens ::= generic_id_part_tokens_start | DOT
+command_argument ::= array_literal_expression !(nws PATH_SEP | nws COLON) | command_name_expression (nls? COMMA command_name_expression)*
+
+path_expression ::=  path_item nws (
+                              (
+                              ((   (PATH_SEP nws COLON2 nws) (path_item nws PATH_SEP nws COLON2 nws)*  //provider+ drive?
+                                  (nws path_item nws COLON nws PATH_SEP)? //drive
+                               )
+                              |
+                               (
+                                  (COLON nws PATH_SEP)     // or drive
+                               )
+                               )
+                              (nws path_item) (nws PATH_SEP nws path_item)* (nws PATH_SEP)? // container+
+                              )//provider and/or drive and container+
+                              | (PATH_SEP nws path_item)+ //just container+
+                              | COLON nws PATH_SEP     // just drive
+                              | PATH_SEP //just PATH_SEP
+                                ) | relative_path_item             // just relative path
+
+path_item ::= path_item_name
+relative_path_item ::= relative_path
+{elementType=path_item}
+
+private path_item_name ::= relative_path | path_name_part_tokens | allowed_identifier_keywords | target_variable_expression /*reference_variable*/
+private path_name_part_tokens ::= generic_id_part_tokens_start (nws (generic_id_part_tokens_start | DOT))*
 private relative_path ::= DOT | DOT_DOT | PATH_SEP
 command_parameter ::= PARAM_TOKEN
 verbatim_command_argument ::= VERBATIM_ARG_START VERBATIM_ARG_INPUT //(verbatim_command_string | AMP_ARG | generic_token_chars )+
@@ -464,17 +476,17 @@ private value ::=   parenthesized_expression
 
 parenthesized_expression ::= LP nls? pipeline nls? RP
 
-private sub_expression ::= DS LP statement_list? RP
+sub_expression ::= DS LP statement_list? RP
 
-private array_expression ::= AT LP statement_list? RP
+array_expression ::= AT LP statement_list? RP
 
 script_block_expression ::= LCURLY nls? script_block? nls? RCURLY
 
-private hash_literal_expression ::= AT LCURLY hash_literal_body? RCURLY //'@{' nls? hash_literal_body? nls? '}'
+hash_literal_expression ::= AT LCURLY nls? hash_literal_body? nls? RCURLY //'@{' nls? hash_literal_body? nls? '}'
 private hash_literal_body ::= hash_entry ( statement_terminators hash_entry )*
 private hash_entry ::= key_expression '=' nls? statement
 
-private key_expression ::= simple_name | unary_expression
+key_expression ::= simple_name | unary_expression
 
 // todo Note no whitespace is allowed after primary_expression.
 //->private member_access ::= primary_expression ( DOT | '::' ) member_name
@@ -537,10 +549,11 @@ private elseif_clause ::= nls? 'elseif' nls? LP nls? pipeline nls? RP nls? state
 private else_clause ::= nls? 'else' statement_block
 
 sep ::= SEMI |  NLS | new_line_char | !is_id comment //COMMENT //hide psi
-private nls ::= NLS
+private statement_end ::= sep | RCURLY | RP | <<eof>>
+private nls ::= (comment? NLS comment?)+ //NLS
 private new_line_char ::= LF
 
-comment ::= requires_comment | SINGLE_LINE_COMMENT | DELIMITED_COMMENT
+comment ::= !is_id requires_comment | !is_id SINGLE_LINE_COMMENT | DELIMITED_COMMENT
 private requires_comment ::= HASH nws 'requires' ws command_argument+
 
 private statement_terminators ::= sep+

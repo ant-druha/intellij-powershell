@@ -21,7 +21,7 @@ apply plugin: 'java'
 
 intellij {
     type 'IC'
-    version '2017.1' //'172-SNAPSHOT' // https://www.jetbrains.com/intellij-repository/[releases|snapshots]
+    version '2017.2' //'172-SNAPSHOT' // https://www.jetbrains.com/intellij-repository/[releases|snapshots]
     pluginName 'PowerShell'
     updateSinceUntilBuild = false
 }
