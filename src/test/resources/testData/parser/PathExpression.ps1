@@ -14,6 +14,9 @@ Import-Module ModuleName1\::ModuleName2\::C:\ProgramFiles\sample.txt
 New-File -Path ..\Examples\READMENew.md
 New-File -Path ..\Examples\README.md, XYZZY.ps1 #Processes multiple relative path via -Path param
 . .\Stop-Process2.ps1 # vs . ./Stop-Process2.ps1
+#Converts a path (§3.4) from a PowerShell path to a PowerShell provider path.
+Convert-Path -Path E:.
+Convert-Path -Path E:.,G:\Temp\..
 
 Not-Path-Arg $PSScriptRoot
 Not-Path-Arg 42d

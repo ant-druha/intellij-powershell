@@ -431,7 +431,7 @@ path_expression ::=  path_item nws (
                               (nws path_item) (nws PATH_SEP nws path_item)* (nws PATH_SEP)? // container+
                               )//provider and/or drive and container+
                               | (PATH_SEP nws path_item)+ //just container+
-                              | COLON nws PATH_SEP     // just drive
+                              | COLON (nws PATH_SEP)?     // just drive
                               | PATH_SEP //just PATH_SEP
                                 ) | relative_path_item             // just relative path
 
@@ -449,10 +449,10 @@ verbatim_command_argument ::= VERBATIM_ARG_START VERBATIM_ARG_INPUT //(verbatim_
 
 private primary_expression ::= value (invocation_expression | member_access | element_access | post_increment_expression | post_decrement_expression)*
 
-private left member_access ::= nws ( DOT | COLON2 ) member_name
+private left member_access ::= nws ( DOT | COLON2 ) nws member_name
 private left element_access ::= SQBR_L nls? expression nls? SQBR_R
-left invocation_expression ::= (DOT | COLON2 ) member_name LP argument_expression_list? nls? RP
-private left argument_expression_list ::= expression ( ',' expression)*
+left invocation_expression ::= (DOT | COLON2 ) member_name LP nls? argument_expression_list? nls? RP
+private argument_expression_list ::= expression ( nls? ',' nls? expression)*
 left post_increment_expression ::= PP
 left post_decrement_expression ::= MM
 
