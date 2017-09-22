@@ -38,6 +38,16 @@ public class PowerShellParserTest extends ParsingTestCase {
 
   public void testStatements() throws Exception { doTest(true); }
 
+  public void testArrayStatement() throws Exception { doTest(true); }
+
+  public void testAttributes() throws Exception { doTest(true); }
+
+  public void testClosures() throws Exception { doTest(true); }
+
+  public void testModules() throws Exception { doTest(true); }
+
+  public void testHashTables() throws Exception { doTest(true); }
+
   public void testTypeLiteral() throws Exception { doTest(true); }
 
 }
