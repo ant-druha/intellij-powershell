@@ -11,9 +11,13 @@ import com.intellij.psi.PsiElement
  * Andrey 05/08/17.
  */
 class PowerShellAnnotator : Annotator {
-  override fun annotate(element: PsiElement, holder: AnnotationHolder) {
-    if (element is PowerShellCommandName) {
-      createInfoAnnotation(holder, element, PowerShellSyntaxHighlighter.COMMAND_NAME)
+  override fun annotate(e: PsiElement, holder: AnnotationHolder) {
+    if (e is PowerShellCommandName) {
+      val elText = e.text
+      //todo: try to make via psi only
+      if (elText.endsWith(".exe", true) || elText.contains('-') || !elText.contains('.')) {
+        createInfoAnnotation(holder, e, PowerShellSyntaxHighlighter.COMMAND_NAME)
+      }
     }
 
   }
