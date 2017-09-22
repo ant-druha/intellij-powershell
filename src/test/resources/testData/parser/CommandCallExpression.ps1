@@ -18,3 +18,7 @@ Get-Power -exponent 3 -base 5
 Get-Power 5 3
 
 $a = New-Object 'double[,]' 3, 2
+
+#Performs an operation against each of a set of input objects. (alias %, foreach)
+5,20,-3 | ForEach-Object -Process {$_ * 2}
+5,20,-3 | % -Begin { "Setup" } -Process {$_ * $_} -End { "Cleanup" }

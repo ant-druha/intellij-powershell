@@ -334,7 +334,7 @@ private generic_token_with_subexpr_start ::= generic_token_part DS nws LP
 private generic_token_part ::= expandable_string_literal | verbatim_here_string_literal | target_variable_expression | generic_token_chars
 
 private generic_token_chars ::= generic_id_part_tokens_start ( nws generic_id_part_tokens )*
-private generic_id_part_tokens_start ::= SIMPLE_ID | GENERIC_ID_PART | STAR
+private generic_id_part_tokens_start ::= SIMPLE_ID | GENERIC_ID_PART | STAR | PERS
 private generic_id_part_tokens ::= generic_id_part_tokens_start | DOT | PATH_SEP | DIV
 
 private command_element ::= command_parameter | command_argument | redirection
