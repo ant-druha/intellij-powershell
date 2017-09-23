@@ -22,3 +22,7 @@ $a = New-Object 'double[,]' 3, 2
 #Performs an operation against each of a set of input objects. (alias %, foreach)
 5,20,-3 | ForEach-Object -Process {$_ * 2}
 5,20,-3 | % -Begin { "Setup" } -Process {$_ * $_} -End { "Cleanup" }
+
+#Creates a filter to determine which input objects are be passed along a command pipeline.
+Get-ChildItem "E:\Files\*.*" | Where-Object { $_.Length -le 1000 }
+Get-ChildItem "E:\Files\*.*" | Where-Object Length –eq 0

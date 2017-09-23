@@ -442,7 +442,7 @@ relative_path_item ::= relative_path
 private path_item_name ::= relative_path | path_name_part_tokens | allowed_identifier_keywords | target_variable_expression /*reference_variable*/
 private path_name_part_tokens ::= generic_id_part_tokens_start (nws (generic_id_part_tokens_start | DOT))*
 private relative_path ::= DOT | DOT_DOT | PATH_SEP
-command_parameter ::= PARAM_TOKEN
+command_parameter ::= PARAM_TOKEN | OP_C | OP_NOT | OP_BNOT
 verbatim_command_argument ::= VERBATIM_ARG_START VERBATIM_ARG_INPUT //(verbatim_command_string | AMP_ARG | generic_token_chars )+
 //private verbatim_command_string ::= EXPANDABLE_STRING //TODO: 02/09/17 variable substitution:
 
