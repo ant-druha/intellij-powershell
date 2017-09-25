@@ -40,6 +40,8 @@ public class PowerShellParserTest extends ParsingTestCase {
 
   public void testStatements() throws Exception { doTest(true); }
 
+  public void testDesiredSateConfiguration() throws Exception { doTest(true); }
+
   public void testArrayStatement() throws Exception { doTest(true); }
 
   public void testAttributes() throws Exception { doTest(true); }

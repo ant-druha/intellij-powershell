@@ -85,6 +85,8 @@
     var='var'
     while='while'
     workflow='workflow'
+    //since v4
+    configuration='configuration'
 
     //variable
     SIMPLE_ID='regexp:(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\p{Nd}|\_|\?)+'
@@ -156,7 +158,28 @@
 }
 
 
-private top_level_element ::= ( nls? top_script_block | statement_list)?
+private top_level_element ::= nls? ( top_script_block | statement_list | configuration_block_list )?
+private configuration_block_list ::= configuration_block (statement_terminators configuration_block)* statement_terminators?
+private configuration_block ::= 'configuration' nls? configuration_name nls? LCURLY nls? configuration_block_body? nls? RCURLY
+private configuration_name ::= function_name
+
+configuration_block_body ::= param_block? statement_terminators? node_block*
+{elementType=block_body}
+
+private node_block ::= /*'node'*/ node_token nls? node_name nls? LCURLY nls? node_block_body? nls? RCURLY
+node_block_body ::= resource_block_list
+{elementType=block_body}
+
+private node_token ::= SIMPLE_ID
+private node_name ::= function_name
+
+private resource_block_list ::= resource_block (statement_terminators resource_block)*
+private resource_block ::= resource_type nls? resource_name? nls? LCURLY nls? resource_block_body? nls? RCURLY
+resource_block_body ::= hash_literal_body
+{elementType=block_body}
+
+private resource_type ::= SIMPLE_ID
+private resource_name ::= simple_name
 
 private statement_block ::= LCURLY nls? block_body? nls? RCURLY
 block_body ::= statement_list | statement_terminators

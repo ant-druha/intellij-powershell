@@ -201,6 +201,7 @@ BRACED_VAR_START={DS}{LCURLY}
   "foreach"                                                    { return FOREACH; }
   "from"                                                       { return FROM; }
   "function"/{WHITE_SPACE}                                     { yybegin(FUNCTION_ID); return FUNCTION; }
+  "configuration"/{WHITE_SPACE}                                { yybegin(FUNCTION_ID); return CONFIGURATION; }
   "if"                                                         { return IF; }
   "in"                                                         { return IN; }
   "inlinescript"                                               { return INLINESCRIPT; }

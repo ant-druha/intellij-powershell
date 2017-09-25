@@ -75,6 +75,7 @@ public interface PowerShellTypes {
   IElementType COLON = new PowerShellTokenType(":");
   IElementType COLON2 = new PowerShellTokenType("::");
   IElementType COMMA = new PowerShellTokenType(",");
+  IElementType CONFIGURATION = new PowerShellTokenType("configuration");
   IElementType CONTINUE = new PowerShellTokenType("continue");
   IElementType DASH = new PowerShellTokenType("DASH");
   IElementType DATA = new PowerShellTokenType("data");
