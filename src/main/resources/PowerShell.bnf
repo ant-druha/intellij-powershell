@@ -440,7 +440,8 @@ relative_path_item ::= relative_path
 {elementType=path_item}
 
 private path_item_name ::= relative_path | path_name_part_tokens | allowed_identifier_keywords | target_variable_expression /*reference_variable*/
-private path_name_part_tokens ::= generic_id_part_tokens_start (nws (generic_id_part_tokens_start | DOT))*
+private path_name_part_tokens ::= path_name_part_tokens_start (nws (path_name_part_tokens_start | DOT))*
+private path_name_part_tokens_start ::= generic_id_part_tokens_start | DEC_INTEGER
 private relative_path ::= DOT | DOT_DOT | PATH_SEP
 command_parameter ::= PARAM_TOKEN | OP_C | OP_NOT | OP_BNOT
 verbatim_command_argument ::= VERBATIM_ARG_START VERBATIM_ARG_INPUT //(verbatim_command_string | AMP_ARG | generic_token_chars )+

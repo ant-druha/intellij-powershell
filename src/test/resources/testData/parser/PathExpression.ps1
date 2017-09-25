@@ -20,3 +20,9 @@ Convert-Path -Path E:.,G:\Temp\..
 
 Not-Path-Arg $PSScriptRoot
 Not-Path-Arg 42d
+
+#in older releases of Windows PowerShell, you can run the following command to get the value of the Application Base property
+#of the PowerShellEngine registry key:
+(Get-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\PowerShell\3\PowerShellEngine -Name ApplicationBase).ApplicationBase
+#Starting in Windows PowerShell 5.0, you can run
+Get-ItemPropertyValue -Path HKLM:\SOFTWARE\Microsoft\PowerShell\3\PowerShellEngine -Name ApplicationBase
