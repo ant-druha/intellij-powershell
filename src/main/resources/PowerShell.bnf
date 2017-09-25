@@ -260,7 +260,7 @@ private simple_variable ::= (DS | AT) variable_scope? variable_name_simple
 
 private variable_scope ::= 'global:' | 'local:' | 'private:' | 'script:' | 'using:' | 'workflow:' | variable_namespace
 private variable_namespace ::= SIMPLE_ID ':'
-variable_name_simple ::= SIMPLE_ID //| VAR_ID
+variable_name_simple ::= SIMPLE_ID | VAR_ID
 {elementType=identifier}
 private braced_variable ::= BRACED_VAR_START variable_scope? variable_name_braced RCURLY
 variable_name_braced ::= SIMPLE_ID  | BRACED_ID
