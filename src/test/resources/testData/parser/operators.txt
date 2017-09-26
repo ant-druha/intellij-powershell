@@ -1,6 +1,7 @@
 FILE(0,9106)
   PsiComment(COMMENT)('#7.1.6 $(…) operator')(0,20)
-  PsiElement(NLS)('\n')(20,21)
+  PowerShellSepImplGen(SEP)(20,21)
+    PsiElement(NLS)('\n')(20,21)
   PowerShellAssignmentStatementImplGen(ASSIGNMENT_STATEMENT)(21,28)
     PowerShellTargetVariableExpressionImplGen(TARGET_VARIABLE_EXPRESSION)(21,23)
       PsiElement($)('$')(21,22)

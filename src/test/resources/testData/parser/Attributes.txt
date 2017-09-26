@@ -1,6 +1,7 @@
 FILE(0,2243)
   PsiComment(COMMENT)('#Consider a function call Test1 that has the following param block, and which is called as shown:')(0,97)
-  PsiElement(NLS)('\n')(97,98)
+  PowerShellSepImplGen(SEP)(97,98)
+    PsiElement(NLS)('\n')(97,98)
   PowerShellFunctionStatementImplGen(FUNCTION_STATEMENT)(98,335)
     PsiElement(function)('function')(98,106)
     PsiWhiteSpace(' ')(106,107)

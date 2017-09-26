@@ -48,7 +48,6 @@ public interface PowerShellTypes {
   IElementType POST_INCREMENT_EXPRESSION = new PowerShellElementType("POST_INCREMENT_EXPRESSION");
   IElementType RANGE_EXPRESSION = new PowerShellElementType("RANGE_EXPRESSION");
   IElementType REAL_LITERAL_EXPRESSION = new PowerShellElementType("REAL_LITERAL_EXPRESSION");
-  IElementType REFERENCE_VARIABLE = new PowerShellElementType("REFERENCE_VARIABLE");
   IElementType SCRIPT_BLOCK_EXPRESSION = new PowerShellElementType("SCRIPT_BLOCK_EXPRESSION");
   IElementType SEP = new PowerShellElementType("SEP");
   IElementType SEQUENCE_STATEMENT = new PowerShellElementType("SEQUENCE_STATEMENT");
@@ -236,8 +235,6 @@ public interface PowerShellTypes {
         return new PowerShellRangeExpressionImplGen(node);
       } else if (type == REAL_LITERAL_EXPRESSION) {
         return new PowerShellRealLiteralExpressionImplGen(node);
-      } else if (type == REFERENCE_VARIABLE) {
-        return new PowerShellReferenceVariableImplGen(node);
       } else if (type == SCRIPT_BLOCK_EXPRESSION) {
         return new PowerShellScriptBlockExpressionImplGen(node);
       } else if (type == SEP) {

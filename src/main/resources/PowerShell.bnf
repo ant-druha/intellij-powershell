@@ -158,7 +158,7 @@
 }
 
 
-private top_level_element ::= nls? ( top_script_block | statement_list | configuration_block_list )?
+private top_level_element ::= ( top_script_block | statement_list | configuration_block_list | sep+ )?
 private configuration_block_list ::= configuration_block (statement_terminators configuration_block)* statement_terminators?
 private configuration_block ::= 'configuration' nls? configuration_name nls? LCURLY nls? configuration_block_body? nls? RCURLY
 private configuration_name ::= function_name
@@ -183,9 +183,11 @@ private resource_name ::= simple_name
 
 private statement_block ::= LCURLY nls? block_body? nls? RCURLY
 block_body ::= statement_list | statement_terminators
+//{recoverWhile=statement_block_recover}
+//private statement_block_recover ::= !sep
 
-private statement_list ::= statement_terminators? statement ( statement_terminators statement? )*
-{pin=2}
+private statement_list ::= statement ( statement_terminators statement? )* statement_terminators?
+{pin=1 /*recoverWhile=statement_recover*/}
 private top_script_block ::= param_block? statement_terminators? script_block_body
 script_block ::= top_script_block //nls? param_block? statement_terminators? script_block_body
 {elementType=block_body}
@@ -205,7 +207,7 @@ private script_parameter_list ::= script_parameter (nls? COMMA nls? script_param
 private script_parameter ::= attribute_list? nls? target_variable_expression nls? script_parameter_default?
 private script_parameter_default ::= '=' nls? expression
 
-private script_block_body ::= named_block_list | statement_list
+private script_block_body ::= named_block_list | statement_list | statement_terminators
 
 private named_block_list ::= named_block (statement_terminators named_block? )*
 private named_block ::= block_name nls? statement_block
@@ -214,6 +216,7 @@ private block_name ::= 'dynamicparam' | 'begin' | 'process' | 'end'
 private statement ::=   if_statement
                       | (label nls?)? labeled_statement
                       | function_statement
+                      | workflow_statement
                       | flow_control_statement //sep
                       | trap_pipeline
                       | try_statement
@@ -223,12 +226,12 @@ private statement ::=   if_statement
                       | sequence_statement
                       | pipeline
 //{recoverWhile=statement_recover}
-//private statement_recover ::= !sep
+private statement_recover ::= !( stop_keywords | nls | sep)
 
 private pipeline ::= assignment_statement | expression redirection* pipeline_tail? &statement_end | command_call_expression verbatim_command_argument? pipeline_tail?
 
 assignment_statement ::= expression assignment_operator statement
-{methods=[getTargetVariables]}
+{methods=[getTargetVariables] pin=2}
 
 //B.1.11 Operators and punctuators
 private assignment_operator ::= '=' | '-=' | '+=' | '*=' | '/='| '%='
@@ -273,7 +276,7 @@ private expandable_here_string_literal ::= EXPANDABLE_HERE_STRING //todo create 
 //B.1.6 Variables
 private variable ::= '$$' | '$?' | '$^' |  simple_variable | braced_variable
 
-reference_variable ::= variable
+//reference_variable ::= variable
 
 target_variable_expression ::= variable
 {mixin="com.intellij.plugin.powershell.psi.impl.PowerShellTargetVariableImpl"
@@ -375,7 +378,7 @@ parallel_statement ::= 'parallel' statement_block
 inlinescript_statement ::= 'inlinescript' statement_block
 
 
-data_statement ::= 'data' nls? data_name? nls? data_commands_allowed? nls? statement_block
+data_statement ::= 'data' nls? data_name? nls? data_commands_allowed? nls? statement_block {pin=1}
 private data_name ::= simple_name
 private data_commands_allowed ::= '-supportedcommand' nls? data_commands_list
 private data_commands_list ::= data_command ( nls? ',' nls? data_command )*
@@ -384,16 +387,18 @@ private command_name_expr ::= primary_expression !(nws PATH_SEP | nws COLON) | c
 
 private allowed_identifier_keywords ::= 'param'|'until'|'workflow'|'end'|'define'|'finally'|'parallel'|'continue'|'begin'|'dynamicparam'|'in'
 |'process'|'break'|'else'|'inlinescript'|'catch'
+private stop_keywords ::= 'class'|'data'|'do'|'elseif'|'exit'|'filter'|'for'|'foreach'|'from'|'function'|'if'|'return'|'switch'|'throw'
+|'trap'|'try'|'using'|'var'|'while'|'configuration'
 
 
 
-try_statement ::= 'try' nls? statement_block nls? (catch_clause nls?)* finally_clause?
+try_statement ::= 'try' nls? statement_block nls? (catch_clause nls?)* finally_clause? {pin=1}
 private catch_clause ::= 'catch' nls? catch_type_list? nls? statement_block
 private catch_type_list ::= type_literal_expression nls? ( ',' nls? type_literal_expression nls? )*
 private finally_clause ::= 'finally' nls? statement_block
 
 private trap_pipeline ::= trap_statement statement?
-trap_statement ::= 'trap' nls? type_literal_expression? nls? statement_block
+trap_statement ::= 'trap' nls? type_literal_expression? nls? statement_block {pin=1}
 type_literal_expression ::= SQBR_L type_spec SQBR_R
 private type_spec ::=   array_type_name nls? dimension? SQBR_R | generic_type_name nls? generic_type_arguments SQBR_R | type_name
 private dimension ::= COMMA+ //',' | dimension ','
@@ -402,14 +407,21 @@ private generic_type_arguments ::= type_spec nls? (',' nls? type_spec)*
 
 //attributes
 
-flow_control_statement ::= ('break' | 'continue') label_expression? | ('throw' | 'return' | 'exit') pipeline?
+flow_control_statement ::= break_continue_statement | throw_return_exit_statement
+private break_continue_statement ::= ('break' | 'continue') label_expression?
+private throw_return_exit_statement ::= ('throw' | 'return' | 'exit') pipeline? {pin=1}
 private label_expression ::= simple_name | unary_expression
 
 
-function_statement ::= ('function' | 'filter' | 'workflow') nls? function_name nls? function_parameter_declaration? nls? LCURLY nls? script_block? nls? RCURLY
+function_statement ::= ('function' | 'filter') nls? function_statement_tail {pin=1}
+{mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractComponent"
+implements="com.intellij.plugin.powershell.psi.PowerShellComponent"}
+workflow_statement ::= 'workflow' nls? function_statement_tail
+{elementType=function_statement}
 {mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractComponent"
 implements="com.intellij.plugin.powershell.psi.PowerShellComponent"}
 
+private function_statement_tail ::= function_name nls? function_parameter_declaration? nls? LCURLY nls? script_block? nls? RCURLY
 private function_name ::= primary_expression | identifier //command_name_expr
 identifier ::= generic_identifier
 private generic_identifier ::=  generic_token_with_sub_expr | generic_token_part
@@ -429,8 +441,7 @@ private labeled_statement ::=   switch_statement
                               | for_statement
                               | while_statement
                               | do_statement
-
-switch_statement ::= 'switch' nls? switch_parameter* switch_condition switch_body
+switch_statement ::= 'switch' nls? switch_parameter* switch_condition switch_body {pin=1}
 private switch_parameter ::=   '-regex'
                              | '-wildcard'
                              | '-exact'
@@ -462,8 +473,8 @@ path_item ::= path_item_name
 relative_path_item ::= relative_path
 {elementType=path_item}
 
-private path_item_name ::= relative_path | path_name_part_tokens | allowed_identifier_keywords | target_variable_expression /*reference_variable*/
-private path_name_part_tokens ::= path_name_part_tokens_start (nws (path_name_part_tokens_start | DOT))*
+private path_item_name ::= relative_path | path_name_tokens | allowed_identifier_keywords | target_variable_expression /*reference_variable*/
+private path_name_tokens ::= path_name_part_tokens_start (nws (path_name_part_tokens_start | DOT))*
 private path_name_part_tokens_start ::= generic_id_part_tokens_start | DEC_INTEGER
 private relative_path ::= DOT | DOT_DOT | PATH_SEP
 command_parameter ::= PARAM_TOKEN | OP_C | OP_NOT | OP_BNOT
@@ -500,9 +511,9 @@ private value ::=   parenthesized_expression
 
 parenthesized_expression ::= LP nls? pipeline nls? RP
 
-sub_expression ::= DS LP statement_list? RP
+sub_expression ::= DS LP nls? statement_list? RP
 
-array_expression ::= AT LP statement_list? RP
+array_expression ::= AT LP nls? statement_list? RP
 
 script_block_expression ::= LCURLY nls? script_block? nls? RCURLY
 
@@ -548,31 +559,31 @@ private switch_clause_condition ::= command_argument | primary_expression
 
 foreach_statement ::= 'foreach' nls? '-parallel'? nls?
                                 LP nls?   target_variable_expression   nls? 'in' nls? pipeline nls? RP nls? statement_block
-
+{pin=1}
 //todo simplify
 for_statement ::=   'for' nls? LP
                                   nls? for_initializer? sep
                                   nls? for_condition? sep
                                   nls? for_iterator?
                                   nls? RP nls? statement_block
-
+{pin=1}
 private for_initializer ::= pipeline
 private for_condition ::= pipeline
 private for_iterator ::= pipeline
 
 
 while_statement ::= 'while' nls? LP nls? while_condition nls? RP nls? statement_block {pin(".*")=1}
-private while_condition ::= nls? pipeline
+private while_condition ::= pipeline
 
 
-do_statement ::= 'do' nls? statement_block nls? ( 'while' | 'until' ) nls? LP while_condition nls? RP
+do_statement ::= 'do' nls? statement_block nls? ( 'while' | 'until' ) nls? LP nls? while_condition nls? RP {pin=1 recoverWhile=statement_recover}
 
 
-if_statement ::= 'if' nls? LP nls? pipeline nls? RP nls? statement_block elseif_clause* else_clause?
-private elseif_clause ::= nls? 'elseif' nls? LP nls? pipeline nls? RP nls? statement_block
-private else_clause ::= nls? 'else' statement_block
+if_statement ::= 'if' nls? LP nls? pipeline nls? RP nls? statement_block (nls? elseif_clause)* (nls? else_clause)? {pin=1 /*recoverWhile=statement_recover*/}
+private elseif_clause ::= 'elseif' nls? LP nls? pipeline nls? RP nls? statement_block
+private else_clause ::= 'else' nls? statement_block
 
-sep ::= SEMI |  NLS | new_line_char | !is_id comment //COMMENT //hide psi
+sep ::= SEMI |  NLS | new_line_char | comment //COMMENT //hide psi
 private statement_end ::= sep | RCURLY | RP | <<eof>>
 private nls ::= (comment? NLS comment?)+ //NLS
 private new_line_char ::= LF

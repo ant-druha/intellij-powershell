@@ -1,6 +1,7 @@
 FILE(0,1703)
   PsiComment(COMMENT)('#member access:')(0,15)
-  PsiElement(NLS)('\n')(15,16)
+  PowerShellSepImplGen(SEP)(15,16)
+    PsiElement(NLS)('\n')(15,16)
   PowerShellAssignmentStatementImplGen(ASSIGNMENT_STATEMENT)(16,31)
     PowerShellTargetVariableExpressionImplGen(TARGET_VARIABLE_EXPRESSION)(16,18)
       PsiElement($)('$')(16,17)
