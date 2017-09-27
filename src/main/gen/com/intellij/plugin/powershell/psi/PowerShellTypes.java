@@ -23,6 +23,7 @@ public interface PowerShellTypes {
   IElementType COMMAND_PARAMETER = new PowerShellElementType("COMMAND_PARAMETER");
   IElementType COMMENT = new PowerShellElementType("COMMENT");
   IElementType COMPARISON_EXPRESSION = new PowerShellElementType("COMPARISON_EXPRESSION");
+  IElementType CONFIGURATION_BLOCK = new PowerShellElementType("CONFIGURATION_BLOCK");
   IElementType DATA_STATEMENT = new PowerShellElementType("DATA_STATEMENT");
   IElementType DO_STATEMENT = new PowerShellElementType("DO_STATEMENT");
   IElementType EXPRESSION = new PowerShellElementType("EXPRESSION");
@@ -187,6 +188,8 @@ public interface PowerShellTypes {
         return new PowerShellCommentImplGen(node);
       } else if (type == COMPARISON_EXPRESSION) {
         return new PowerShellComparisonExpressionImplGen(node);
+      } else if (type == CONFIGURATION_BLOCK) {
+        return new PowerShellConfigurationBlockImplGen(node);
       } else if (type == DATA_STATEMENT) {
         return new PowerShellDataStatementImplGen(node);
       } else if (type == DO_STATEMENT) {

@@ -67,3 +67,20 @@ configuration CredentialEncryptionExample
     }
   }
 }
+
+#https://powershell.org/2017/09/26/using-azure-desired-state-configuration-part-ii/
+configuration AzureDesiredStateExample {
+  $AdminCreds = Get-AutomationPSCredential -Name $AdminName
+
+  Node ($AllNodes.Where{$_.Role -eq "WebServer"}).NodeName
+  {
+    JoinDomain DomainJoin
+    {
+      DependsOn = "[WindowsFeature]RemoveUI"
+      DomainName = $DomainName
+      Admincreds = $Admincreds
+      RetryCount = 20
+      RetryIntervalSec = 60
+    }
+  }
+}

@@ -27,14 +27,9 @@ public class PowerShellGeneratedParserUtil {
   }
 
 
-  public static boolean checkIsInsideCommandExpression(PsiBuilder builder, int level) {
-    GeneratedParserUtilBase.ErrorState state = GeneratedParserUtilBase.ErrorState.get(builder);
-    return findParent(state.currentFrame, "<command call expression>") != null;
-  }
-
-  public static boolean checkIsInsideCommandArgument(PsiBuilder builder, int level) {
-    GeneratedParserUtilBase.ErrorState state = GeneratedParserUtilBase.ErrorState.get(builder);
-    return findParent(state.currentFrame, "<command argument>") != null;
+  public static boolean consume_any_token(PsiBuilder b, int level) {
+//    if (b.eof()) return true;
+    b.advanceLexer(); b.error("unexpected token: " + b.getTokenText()); return false;
   }
 
   @Nullable
