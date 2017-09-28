@@ -372,3 +372,13 @@ function Test
 
 Test 42d  # outputs "SetA"
 Test 42   # outputs "SetB"
+
+$fields = @(
+          New-Object "System.Management.Automation.Host.FieldDescription" "Input"
+          New-Object "System.Management.Automation.Host.FieldDescription" "Input List"
+          )
+$fields = $(
+          New-Object "System.Management.Automation.Host.FieldDescription" "Input"
+          New-Object "System.Management.Automation.Host.FieldDescription" "Input List"
+          )
+$fields[1].SetParameterType([int[]])

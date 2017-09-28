@@ -522,9 +522,9 @@ private value ::=   parenthesized_expression
 
 parenthesized_expression ::= LP nls? pipeline nls? RP
 
-sub_expression ::= DS LP nls? statement_list? RP
+sub_expression ::= DS LP nls? statement_list? nls? RP
 
-array_expression ::= AT LP nls? statement_list? RP
+array_expression ::= AT LP nls? statement_list? nls? RP
 
 script_block_expression ::= LCURLY nls? script_block? nls? RCURLY
 
