@@ -460,7 +460,11 @@ private switch_parameter ::=   '-regex'
 
 private switch_condition ::= LP nls? pipeline nls? RP | '-file' nls? switch_filename
 private switch_filename ::= command_argument | primary_expression
-private generic_argument_rule ::= array_literal_expression !(nws PATH_SEP | nws COLON) | command_name_expression (nls? COMMA command_name_expression)*
+//private generic_argument_rule ::= array_literal_expression !(nws PATH_SEP | nws COLON) | command_name_expression (nls? COMMA command_name_expression)*
+private generic_argument_rule ::= generic_chars_or_path_expression (nls? COMMA generic_chars_or_path_expression)* | array_literal_expression
+private generic_chars_or_path_expression ::= path_expression | command_name_char_tokens
+command_name_char_tokens ::= generic_token_chars | allowed_identifier_keywords
+{elementType=command_name}
 command_argument ::= generic_argument_rule
 
 path_expression ::=  path_item nws (
@@ -478,8 +482,8 @@ path_expression ::=  path_item nws (
                               | (PATH_SEP nws path_item)+ //just container+
                               | COLON (nws PATH_SEP)?     // just drive
                               | PATH_SEP //just PATH_SEP
-                                ) | relative_path_item             // just relative path
-
+                                ) | PATH_SEP (nws (path_expression | path_item))?//todo do not produce another path_expression node
+                                  | relative_path_item             // just relative path
 path_item ::= path_item_name
 relative_path_item ::= relative_path
 {elementType=path_item}

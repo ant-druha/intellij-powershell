@@ -26,3 +26,7 @@ Not-Path-Arg 42d
 (Get-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\PowerShell\3\PowerShellEngine -Name ApplicationBase).ApplicationBase
 #Starting in Windows PowerShell 5.0, you can run
 Get-ItemPropertyValue -Path HKLM:\SOFTWARE\Microsoft\PowerShell\3\PowerShellEngine -Name ApplicationBase
+
+cd (Get-Location)\pip #command with 2 arguments: (Get-Location) and \pip todo: check it is really works
+cd \pip
+cd \pip\wwe
