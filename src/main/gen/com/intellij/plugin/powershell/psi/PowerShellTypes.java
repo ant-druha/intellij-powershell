@@ -41,6 +41,7 @@ public interface PowerShellTypes {
   IElementType KEY_EXPRESSION = new PowerShellElementType("KEY_EXPRESSION");
   IElementType LOGICAL_EXPRESSION = new PowerShellElementType("LOGICAL_EXPRESSION");
   IElementType MULTIPLICATIVE_EXPRESSION = new PowerShellElementType("MULTIPLICATIVE_EXPRESSION");
+  IElementType NODE_BLOCK = new PowerShellElementType("NODE_BLOCK");
   IElementType PARALLEL_STATEMENT = new PowerShellElementType("PARALLEL_STATEMENT");
   IElementType PARENTHESIZED_EXPRESSION = new PowerShellElementType("PARENTHESIZED_EXPRESSION");
   IElementType PATH_EXPRESSION = new PowerShellElementType("PATH_EXPRESSION");
@@ -49,6 +50,7 @@ public interface PowerShellTypes {
   IElementType POST_INCREMENT_EXPRESSION = new PowerShellElementType("POST_INCREMENT_EXPRESSION");
   IElementType RANGE_EXPRESSION = new PowerShellElementType("RANGE_EXPRESSION");
   IElementType REAL_LITERAL_EXPRESSION = new PowerShellElementType("REAL_LITERAL_EXPRESSION");
+  IElementType RESOURCE_BLOCK = new PowerShellElementType("RESOURCE_BLOCK");
   IElementType SCRIPT_BLOCK_EXPRESSION = new PowerShellElementType("SCRIPT_BLOCK_EXPRESSION");
   IElementType SEP = new PowerShellElementType("SEP");
   IElementType SEQUENCE_STATEMENT = new PowerShellElementType("SEQUENCE_STATEMENT");
@@ -222,6 +224,8 @@ public interface PowerShellTypes {
         return new PowerShellLogicalExpressionImplGen(node);
       } else if (type == MULTIPLICATIVE_EXPRESSION) {
         return new PowerShellMultiplicativeExpressionImplGen(node);
+      } else if (type == NODE_BLOCK) {
+        return new PowerShellNodeBlockImplGen(node);
       } else if (type == PARALLEL_STATEMENT) {
         return new PowerShellParallelStatementImplGen(node);
       } else if (type == PARENTHESIZED_EXPRESSION) {
@@ -238,6 +242,8 @@ public interface PowerShellTypes {
         return new PowerShellRangeExpressionImplGen(node);
       } else if (type == REAL_LITERAL_EXPRESSION) {
         return new PowerShellRealLiteralExpressionImplGen(node);
+      } else if (type == RESOURCE_BLOCK) {
+        return new PowerShellResourceBlockImplGen(node);
       } else if (type == SCRIPT_BLOCK_EXPRESSION) {
         return new PowerShellScriptBlockExpressionImplGen(node);
       } else if (type == SEP) {

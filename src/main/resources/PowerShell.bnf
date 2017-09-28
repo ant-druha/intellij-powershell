@@ -176,20 +176,29 @@ private configuration_block_body_part ::= node_block | statement_rule
 {pin=1 recoverWhile=configuration_block_body_part_recover}
 private configuration_block_body_part_recover ::= !(sep | RCURLY | reserved_statement_keywords)
 
-private node_block ::= node_token nls? node_name nls? LCURLY nls? node_block_body? nls? RCURLY {pin=1}
-node_block_body ::= resource_block_list
-{elementType=block_body recoverWhile=statement_block_recover}
+//node_block ::= node_token nls? node_name nls? LCURLY nls? node_block_body? nls? RCURLY {pin=1} //possible variant: node_token command_call_expression
+node_block ::= node_token nls? generic_argument_rule+ //)
+{pin=1}
+//private node_tail ::= LCURLY nls? node_block_body? nls? RCURLY
+//node_block_body ::= resource_block_list
+//{elementType=block_body recoverWhile=statement_block_recover}
+//node_name ::= generic_token_chars
 
 private node_token ::= SIMPLE_ID
-private node_name ::= function_name
+//node_name ::= primary_expression | statement_rule | identifier  //function_name
 
-private resource_block_list ::= resource_block (statement_terminators resource_block)* {pin=1}
-private resource_block ::= resource_type nls? resource_name? nls? LCURLY nls? resource_block_body? nls? RCURLY
+//private resource_block_list ::= resource_block_part (statement_terminators resource_block_part)* {pin=1}
+//private resource_block_part ::= statement_rule
+//{recoverWhile=configuration_block_body_part_recover}
+
+resource_block ::= resource_type nls? ( resource_name nls? resource_block_tail | resource_block_tail )//todo: or predicate is faster?
+private resource_block_tail ::= LCURLY nls? resource_block_body? nls? RCURLY
 resource_block_body ::= hash_literal_body
 {elementType=block_body}
 
 private resource_type ::= SIMPLE_ID
-private resource_name ::= simple_name
+private resource_name ::= /*!(nls? LCURLY)*/ function_name //function_name can be parsed as script_block_expression
+private parse_resource_block ::= is_dsc resource_block
 
 private statement_block ::= LCURLY nls? block_body? nls? RCURLY
 block_body ::= (statement_list | statement_terminators)+ {recoverWhile=statement_block_recover}
@@ -234,6 +243,7 @@ private statement_rule ::=   if_statement
                       | inlinescript_statement
                       | parallel_statement
                       | sequence_statement
+                      | parse_resource_block
                       | pipeline
 private statement ::= statement_rule
 {recoverWhile=statement_recover}
@@ -461,7 +471,8 @@ private switch_parameter ::=   '-regex'
 
 private switch_condition ::= LP nls? pipeline nls? RP | '-file' nls? switch_filename
 private switch_filename ::= command_argument | primary_expression
-command_argument ::= array_literal_expression !(nws PATH_SEP | nws COLON) | command_name_expression (nls? COMMA command_name_expression)*
+private generic_argument_rule ::= array_literal_expression !(nws PATH_SEP | nws COLON) | command_name_expression (nls? COMMA command_name_expression)*
+command_argument ::= generic_argument_rule
 
 path_expression ::=  path_item nws (
                               (
@@ -595,7 +606,7 @@ private elseif_clause ::= 'elseif' nls? LP nls? pipeline nls? RP nls? statement_
 private else_clause ::= 'else' nls? statement_block
 
 sep ::= SEMI |  NLS | new_line_char | comment //COMMENT //hide psi
-private statement_end ::= sep | RCURLY | RP | <<eof>>
+private statement_end ::= sep | RCURLY | RP | <<eof>>//ex: parethnisized_expression $AllNodes.Where{$_.Role -eq "WebServer"}
 private nls ::= (comment? NLS comment?)+ //NLS
 private new_line_char ::= LF
 
@@ -610,3 +621,4 @@ private nws ::= <<isNotWhiteSpace>>
 
 private ws ::= <<isWhiteSpace>>
 private is_id ::= <<isIdentifierBefore>>
+private is_dsc ::= <<is_parsing_configuration_block>>

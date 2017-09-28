@@ -27,9 +27,9 @@ public class PowerShellGeneratedParserUtil {
   }
 
 
-  public static boolean consume_any_token(PsiBuilder b, int level) {
-//    if (b.eof()) return true;
-    b.advanceLexer(); b.error("unexpected token: " + b.getTokenText()); return false;
+  public static boolean is_parsing_configuration_block(PsiBuilder b, int l) {
+    GeneratedParserUtilBase.ErrorState state = GeneratedParserUtilBase.ErrorState.get(b);
+    return findParent(state.currentFrame, "<configuration block>") != null;
   }
 
   @Nullable
