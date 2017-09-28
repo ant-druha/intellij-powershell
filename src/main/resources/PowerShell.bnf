@@ -167,29 +167,16 @@ configuration_block ::= 'configuration' nls? configuration_name nls? LCURLY nls?
 private configuration_block_recover ::= !(statement_terminators? ('configuration' | <<eof>>))
 private configuration_name ::= function_name
 
-configuration_block_body ::= param_block? statement_terminators? configuration_block_body_tail?
+configuration_block_body ::= top_script_block
 {elementType=block_body recoverWhile=configuration_block_body_recover}
 private configuration_block_body_recover ::= !(RCURLY (nls? ('configuration' | <<eof>>)))
 
-private configuration_block_body_tail ::= configuration_block_body_part (statement_terminators configuration_block_body_part?)* {pin=1}
-private configuration_block_body_part ::= node_block | statement_rule
-{pin=1 recoverWhile=configuration_block_body_part_recover}
-private configuration_block_body_part_recover ::= !(sep | RCURLY | reserved_statement_keywords)
-
 //node_block ::= node_token nls? node_name nls? LCURLY nls? node_block_body? nls? RCURLY {pin=1} //possible variant: node_token command_call_expression
-node_block ::= node_token nls? generic_argument_rule+ //)
+node_block ::= node_token nls? generic_argument_rule+
 {pin=1}
-//private node_tail ::= LCURLY nls? node_block_body? nls? RCURLY
-//node_block_body ::= resource_block_list
-//{elementType=block_body recoverWhile=statement_block_recover}
-//node_name ::= generic_token_chars
 
 private node_token ::= SIMPLE_ID
 //node_name ::= primary_expression | statement_rule | identifier  //function_name
-
-//private resource_block_list ::= resource_block_part (statement_terminators resource_block_part)* {pin=1}
-//private resource_block_part ::= statement_rule
-//{recoverWhile=configuration_block_body_part_recover}
 
 resource_block ::= resource_type nls? ( resource_name nls? resource_block_tail | resource_block_tail )//todo: or predicate is faster?
 private resource_block_tail ::= LCURLY nls? resource_block_body? nls? RCURLY
@@ -199,6 +186,7 @@ resource_block_body ::= hash_literal_body
 private resource_type ::= SIMPLE_ID
 private resource_name ::= /*!(nls? LCURLY)*/ function_name //function_name can be parsed as script_block_expression
 private parse_resource_block ::= is_dsc resource_block
+private parse_node_block ::= is_dsc node_block
 
 private statement_block ::= LCURLY nls? block_body? nls? RCURLY
 block_body ::= (statement_list | statement_terminators)+ {recoverWhile=statement_block_recover}
@@ -244,6 +232,7 @@ private statement_rule ::=   if_statement
                       | parallel_statement
                       | sequence_statement
                       | parse_resource_block
+                      | parse_node_block
                       | pipeline
 private statement ::= statement_rule
 {recoverWhile=statement_recover}
