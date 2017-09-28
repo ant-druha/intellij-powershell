@@ -28,5 +28,6 @@ Not-Path-Arg 42d
 Get-ItemPropertyValue -Path HKLM:\SOFTWARE\Microsoft\PowerShell\3\PowerShellEngine -Name ApplicationBase
 
 cd (Get-Location)\pip #command with 2 arguments: (Get-Location) and \pip todo: check it is really works
+cd (Get-Location)\pip\(Get-Location)\
 cd \pip
 cd \pip\wwe
