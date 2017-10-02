@@ -393,7 +393,7 @@ private data_name ::= simple_name
 private data_commands_allowed ::= '-supportedcommand' nls? data_commands_list
 private data_commands_list ::= data_command ( nls? ',' nls? data_command )*
 private data_command ::= command_name_expr
-private command_name_expr ::= primary_expression !(nws PATH_SEP | nws COLON) | command_name_expression
+private command_name_expr ::= primary_expression | command_name_expression
 
 private allowed_identifier_keywords ::= 'param'|'until'|'workflow'|'end'|'define'|'finally'|'parallel'|'continue'|'begin'|'dynamicparam'|'in'
 |'process'|'break'|'else'|'inlinescript'|'catch'
