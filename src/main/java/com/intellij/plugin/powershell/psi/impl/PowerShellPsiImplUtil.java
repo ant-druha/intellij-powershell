@@ -1,7 +1,7 @@
 package com.intellij.plugin.powershell.psi.impl;
 
 import com.intellij.lang.ASTNode;
-import com.intellij.plugin.powershell.psi.PowerShellAssignmentStatement;
+import com.intellij.plugin.powershell.psi.PowerShellAssignmentExpression;
 import com.intellij.plugin.powershell.psi.PowerShellTargetVariableExpression;
 import com.intellij.plugin.powershell.psi.PowerShellTypes;
 import com.intellij.psi.TokenType;
@@ -24,7 +24,7 @@ public class PowerShellPsiImplUtil {
     return isWhiteSpace(node) || node.getElementType() == PowerShellTypes.NLS || node.getElementType() == PowerShellTypes.LF;
   }
 
-  public static List<PowerShellTargetVariableExpression> getTargetVariables(@NotNull PowerShellAssignmentStatement assignment) {
+  public static List<PowerShellTargetVariableExpression> getTargetVariables(@NotNull PowerShellAssignmentExpression assignment) {
     List<PowerShellTargetVariableExpression> result = new ArrayList<>();
     Collection<PowerShellTargetVariableExpression> targets = PsiTreeUtil.findChildrenOfAnyType(assignment, PowerShellTargetVariableExpression.class);
     if (!targets.isEmpty()) result.addAll(targets); return result;

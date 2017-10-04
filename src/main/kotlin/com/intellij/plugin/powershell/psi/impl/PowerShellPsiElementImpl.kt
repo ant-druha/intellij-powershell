@@ -2,7 +2,7 @@ package com.intellij.plugin.powershell.psi.impl
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
-import com.intellij.plugin.powershell.psi.PowerShellAssignmentStatement
+import com.intellij.plugin.powershell.psi.PowerShellAssignmentExpression
 import com.intellij.plugin.powershell.psi.PowerShellComponent
 import com.intellij.plugin.powershell.psi.PowerShellPsiElement
 import com.intellij.psi.PsiElement
@@ -22,7 +22,7 @@ open class PowerShellPsiElementImpl(node: ASTNode) : ASTWrapperPsiElement(node),
     for (ch in children) {
       if (ch is PowerShellComponent) {
         result.add(ch)
-      } else if (ch is PowerShellAssignmentStatement) {
+      } else if (ch is PowerShellAssignmentExpression) {
         result += ch.targetVariables
       }
     }

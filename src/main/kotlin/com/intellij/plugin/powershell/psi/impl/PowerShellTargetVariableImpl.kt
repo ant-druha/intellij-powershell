@@ -136,7 +136,7 @@ open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractCompo
   }
 
   fun isLhsAssignmentTarget(): Boolean {
-    return context?.firstChild == this && context is PowerShellAssignmentStatement
+    return context?.firstChild == this && context is PowerShellAssignmentExpression
   }
 
   override fun processDeclarations(processor: PsiScopeProcessor, state: ResolveState, lastParent: PsiElement?, place: PsiElement): Boolean {
