@@ -86,16 +86,49 @@ public class PowerShellLexerTest extends LexerTestCase {
   }
 
   public void testExpandableStringLiteral() {
-    doTest("\"Hello World!\"", "EXPANDABLE_STRING ('\"Hello World!\"')"); doTest("“Hello World!\"", "EXPANDABLE_STRING ('“Hello World!\"')");
-    doTest("\"\"", "EXPANDABLE_STRING ('\"\"')"); doTest("\"Hello World!”", "EXPANDABLE_STRING ('\"Hello World!”')");
-    doTest("„Hello World!„", "EXPANDABLE_STRING ('„Hello World!„')");
-    doTest("\"I said, \"\"Hello\"\".\"", "EXPANDABLE_STRING ('\"I said, \"\"Hello\"\".\"')");
-    doTest("\"I said, „„Hello„„.\"", "EXPANDABLE_STRING ('\"I said, „„Hello„„.\"')");
-    doTest("\"I said, 'Hello'\"", "EXPANDABLE_STRING ('\"I said, 'Hello'\"')");
-    doTest("\"column1`tcolumn2`nsecond line, `\"Hello`\", ```Q`5`!\"", "EXPANDABLE_STRING ('\"column1`tcolumn2`nsecond line, `\"Hello`\", " +
-        "```Q`5`!\"')");
-    // TODO: 02/09/17 variable substitution:
-    doTest("\">$a.Length<\"", "EXPANDABLE_STRING ('\">$a.Length<\"')"); doTest("\"${Lengt}\"", "EXPANDABLE_STRING ('\"${Lengt}\"')");
+    doTest("\"Hello World!\"", "DQ_OPEN ('\"')\n" +
+        "EXPANDABLE_STRING_PART ('Hello World!')\n" +
+        "DQ_CLOSE ('\"')");
+    doTest("“Hello World!\"", "DQ_OPEN ('“')\n" +
+        "EXPANDABLE_STRING_PART ('Hello World!')\n" +
+        "DQ_CLOSE ('\"')");
+    doTest("\"\"", "DQ_OPEN ('\"')\n" +
+        "DQ_CLOSE ('\"')");
+    doTest("\"Hello World!”", "DQ_OPEN ('\"')\n" +
+        "EXPANDABLE_STRING_PART ('Hello World!')\n" +
+        "DQ_CLOSE ('”')");
+    doTest("„Hello World!„", "DQ_OPEN ('„')\n" +
+        "EXPANDABLE_STRING_PART ('Hello World!')\n" +
+        "DQ_CLOSE ('„')");
+    doTest("\"I said, \"\"Hello\"\".\"", "DQ_OPEN ('\"')\n" +
+        "EXPANDABLE_STRING_PART ('I said, \"\"Hello\"\".')\n" +
+        "DQ_CLOSE ('\"')");
+    doTest("\"I said, „„Hello„„.\"", "DQ_OPEN ('\"')\n" +
+        "EXPANDABLE_STRING_PART ('I said, „„Hello„„.')\n" +
+        "DQ_CLOSE ('\"')");
+    doTest("\"I said, 'Hello'\"", "DQ_OPEN ('\"')\n" +
+        "EXPANDABLE_STRING_PART ('I said, 'Hello'')\n" +
+        "DQ_CLOSE ('\"')");
+    doTest("\"column1`tcolumn2`nsecond line, `\"Hello`\", ```Q`5`!\"", "DQ_OPEN ('\"')\n" +
+        "EXPANDABLE_STRING_PART ('column1`tcolumn2`nsecond line, `\"Hello`\", ```Q`5`!')\n" +
+        "DQ_CLOSE ('\"')");
+    doTest("\">$a.Length<\"", "DQ_OPEN ('\"')\n" +
+        "EXPANDABLE_STRING_PART ('>')\n" +
+        "$ ('$')\n" +
+        "SIMPLE_ID ('a')\n" +
+        "EXPANDABLE_STRING_PART ('.Length<')\n" +
+        "DQ_CLOSE ('\"')");
+    doTest("\"${Lengt}\"", "DQ_OPEN ('\"')\n" +
+        "${ ('${')\n" +
+        "BRACED_ID ('Lengt')\n" +
+        "} ('}')\n" +
+        "DQ_CLOSE ('\"')");
+    doTest("\"lonely dollar $ is here$\"", "DQ_OPEN ('\"')\n" +
+        "EXPANDABLE_STRING_PART ('lonely dollar ')\n" +
+        "EXPANDABLE_STRING_PART ('$')\n" +
+        "EXPANDABLE_STRING_PART (' is here')\n" +
+        "EXPANDABLE_STRING_PART ('$')\n" +
+        "DQ_CLOSE ('\"')");
   }
 
   public void testVerbatimStringLiteral() {

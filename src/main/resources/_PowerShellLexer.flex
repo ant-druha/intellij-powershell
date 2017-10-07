@@ -2,6 +2,7 @@ package com.intellij.plugin.powershell.lang;
 
 import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
+import com.intellij.util.containers.Stack;
 
 import static com.intellij.psi.TokenType.BAD_CHARACTER;
 import static com.intellij.psi.TokenType.WHITE_SPACE;
@@ -13,6 +14,44 @@ import static com.intellij.plugin.powershell.psi.PowerShellTypes.*;
   public _PowerShellLexer() {
     this((java.io.Reader)null);
   }
+  
+  private static final class State {
+          final int lParenCount;
+          final int state;
+  
+          public State(int state, int lParenCount) {
+              this.state = state;
+              this.lParenCount = lParenCount;
+          }
+  
+          @Override
+          public String toString() {
+              return "yystate = " + state + (lParenCount == 0 ? "" : "lParenCount = " + lParenCount);
+          }
+      }
+  
+      private final Stack<State> states = new Stack<State>();
+      private int lParenCount;
+  
+      private int commentStart;
+      private int commentDepth;
+  
+      private void pushState(int state) {
+          states.push(new State(yystate(), lParenCount));
+          lParenCount = 0;
+          yybegin(state);
+      }
+  
+      private void popState() {
+          State state = states.pop();
+          lParenCount = state.lParenCount;
+          yybegin(state.state);
+      }
+
+      public int getState() {
+      return states.peek().state;
+      }
+  
 %}
 
 %public
@@ -40,12 +79,12 @@ EXCL_MARK="!"
 
 NL=(\r|\n|\r\n)
 NLS={WHITE_SPACE}*{NL}({NL}|{WHITE_SPACE}*)*
-CH_DQ=\"|\“|\”|\„
-CH_SQ=\'|\‘|\’|\‚|\‛
-VAR_SCOPE="global:" | "local:" | "private:" | "script:" | "using:" | "workflow:" | {SIMPLE_ID}":"
-BRACED_VAR="${"{VAR_SCOPE}?{WHITE_SPACE}?{BRACED_ID}"}"
-EXPAND_STRING_CHARS=([^\$\"\“\”\„\`\r\n]|{BRACED_VAR}|"$"[^\"\“\”\„\`\r\n]|"$"(\`.)|(\`.)|{CH_DQ}{CH_DQ})+//?subexpression'\(\)' in: '|"$"[^\(\)\"\“\”\„\`\r\n]|'
-EXPANDABLE_STRING={CH_DQ}{EXPAND_STRING_CHARS}?"$"*{CH_DQ}
+CH_DQ=(\"|“|”|„)
+CH_SQ=(\'|‘|’|‚|‛)
+//BRACED_VAR="${"{VAR_SCOPE}?{WHITE_SPACE}?{BRACED_ID}"}"
+//EXPAND_STRING_CHARS=([^\$\"\“\”\„\`\r\n]|{BRACED_VAR}|"$"[^\"\“\”\„\`\r\n]|"$"(\`.)|(\`.)|{CH_DQ}{CH_DQ})+
+EXPANDABLE_STRING_PART=([^\$\"\“\”\„\`\r\n]/*|{BRACED_VAR}|"$"[^\"\“\”\„\`\r\n]|"$"(\`.)*/|(\`.)|{CH_DQ}{CH_DQ})+
+//EXPANDABLE_STRING={CH_DQ}{EXPAND_STRING_CHARS}?"$"*{CH_DQ}
 
 VERBATIM_STRING_CHARS=([^\'\‘\’\‚\‛\r\n]|{CH_SQ}{CH_SQ})+
 VERBATIM_STRING={CH_SQ}{VERBATIM_STRING_CHARS}?{CH_SQ}
@@ -87,7 +126,7 @@ VAR_ID_CHAR={SIMPLE_ID_CHAR}|(\?)
 VAR_ID={VAR_ID_CHAR}+
 
 
-GENERIC_ID_PART_FIRST_CHAR=([^\*\/\\\.\=\[\]\%\-\–\—\―\}\{\(\)\,\;\"\'\|\&\$\s\n\r\#\:\`0-9!\+]|(`.))
+GENERIC_ID_PART_FIRST_CHAR=([^\*\/\\\.\=\[\]\%\-\–\—\―\}\{\(\)\,\;\"\“\”\„\'\|\&\$\s\n\r\#\:\`0-9!\+]|(`.))
 GENERIC_ID_PART_CHAR={GENERIC_ID_PART_FIRST_CHAR}|([\*\/\+\-\–\—\―\%0-9!])
 GENERIC_ID_PART={GENERIC_ID_PART_FIRST_CHAR}{GENERIC_ID_PART_CHAR}*
 GENERIC_ID_PART_TOKENS=({SIMPLE_ID}|{GENERIC_ID_PART}|{STAR})({SIMPLE_ID}|{GENERIC_ID_PART}|{STAR}|{DOT}|"\\"|{DIV})*
@@ -113,75 +152,74 @@ VERBATIM_ARG_START={MM}{PERS}
 VERBATIM_ARG_INPUT=[^\|\r\n]+
 BRACED_VAR_START={DS}{LCURLY}
 
-%state VAR_SIMPLE VAR_BRACED VERBATIM_ARGUMENT FUNCTION_ID TYPE_ID
+%state VAR_SIMPLE VAR_BRACED VERBATIM_ARGUMENT FUNCTION_ID TYPE_ID STRING STRING_SUB_EXPRESSION
 %caseless
 
 
 %%
+
+<STRING> {
+  {CH_DQ}                                                      { popState(); return DQ_CLOSE; }
+  {EXPANDABLE_STRING_PART}                                     { return EXPANDABLE_STRING_PART; }
+  {DS}/{SIMPLE_ID}                                             { pushState(VAR_SIMPLE); return DS; }
+  {BRACED_VAR_START}                                           { pushState(VAR_BRACED); return BRACED_VAR_START; }
+  {DS}/"("                                                     { pushState(STRING_SUB_EXPRESSION); return DS; }
+  {DS}                                                         { return EXPANDABLE_STRING_PART; }
+}
+
 <VAR_SIMPLE> {
-  {LCURLY}                                                     { yybegin(YYINITIAL);return LCURLY; }
-  {SIMPLE_ID}                                                  { /*yybegin(YYINITIAL);*/ return SIMPLE_ID; }
-  {VAR_ID}                                                     { /*yybegin(YYINITIAL);*/ return VAR_ID; }
-  ":"                                                          { /*yybegin(YYINITIAL);*/ return COLON; }
-  {COLON2}                                                     { yybegin(YYINITIAL); return COLON2; }
-  {RCURLY}                                                     { yybegin(YYINITIAL); return RCURLY; }
-  "("                                                          { yybegin(YYINITIAL); return LP; }
-  ")"                                                          { yybegin(YYINITIAL); return RP; }
-  {WHITE_SPACE}                                                { yybegin(YYINITIAL); return WHITE_SPACE; }//todo WS can be after the colon $<scope name>: simple_id
-  {NLS}                                                        { yybegin(YYINITIAL); return NLS; }
-  {SEMI}                                                       { yybegin(YYINITIAL); return SEMI; }
-  {DOT_DOT}                                                    { yybegin(YYINITIAL); return DOT_DOT; }
-  {DOT}                                                        { yybegin(YYINITIAL); return DOT; }
-  ","                                                          { yybegin(YYINITIAL); return COMMA; }
-  {SQBR_L}/{WHITE_SPACE}?{SIMPLE_ID}                           { yybegin(TYPE_ID);   return SQBR_L; }
-  {SQBR_L}                                                     { yybegin(YYINITIAL); return SQBR_L; }
-  {SQBR_R}                                                     { yybegin(YYINITIAL); return SQBR_R; }
-  "++"                                                         { yybegin(YYINITIAL); return PP; }
-  {MM}                                                         { yybegin(YYINITIAL); return MM; }
-  "="                                                          { yybegin(YYINITIAL); return EQ; }
-  "+"                                                          { yybegin(YYINITIAL); return PLUS; }
-  "\\"                                                         { yybegin(YYINITIAL); return PATH_SEP; }
-  {DASH}                                                       { yybegin(YYINITIAL); return DASH; }
-  {OP_NOT}                                                     { yybegin(YYINITIAL); return OP_NOT; }
-  {OP_BNOT}                                                    { yybegin(YYINITIAL); return OP_BNOT; }
-  {EXCL_MARK}                                                  { yybegin(YYINITIAL); return EXCL_MARK; }
-  {STAR}                                                       { yybegin(YYINITIAL); return STAR; }
-    [^]                                                          { yybegin(YYINITIAL); yypushback(yylength()); }
+  {SIMPLE_ID}/{DOT}                                            { if (states.size() > 0 && states.get(states.size() - 1).state == STRING) popState(); return SIMPLE_ID; }
+  {SIMPLE_ID}/{COLON2}                                         { popState(); return SIMPLE_ID; }
+  {SIMPLE_ID}/":"                                              { return SIMPLE_ID; }
+  {SIMPLE_ID}                                                  { popState(); return SIMPLE_ID; }
+  {VAR_ID}/{DOT}                                               { if (states.size() > 0 && states.get(states.size() - 1).state == STRING) popState(); return VAR_ID; }
+  {VAR_ID}                                                     { popState(); return VAR_ID; }
+  ":"                                                          { return COLON; }
+  {DOT}/{SIMPLE_ID}                                            { return DOT; }
+  [^]                                                          { popState(); yypushback(yylength()); }
 }
 <VAR_BRACED> {
   {SIMPLE_ID}   / ":"[^\\]{BRACED_ID}{RCURLY}                  { return SIMPLE_ID; }
   {WHITE_SPACE} / {BRACED_ID}{RCURLY}                          { return WHITE_SPACE; }
   ":"           / {WHITE_SPACE}?{BRACED_ID}{RCURLY}            { return COLON; }
   {BRACED_ID}                                                  { return BRACED_ID; }
-  {BACKTICK}                                                   { yybegin(YYINITIAL); return BACKTICK; }
-  {RCURLY}                                                     { yybegin(YYINITIAL); return RCURLY; }
+  {BACKTICK}                                                   { popState(); return BACKTICK; }
+  {RCURLY}                                                     { popState(); return RCURLY; }
 }
 
 <VERBATIM_ARGUMENT> {
-  {VERBATIM_ARG_INPUT}                                          { return VERBATIM_ARG_INPUT; }
-  "|"                                                           { yybegin(YYINITIAL); return PIPE; }
-  {NLS}                                                         { yybegin(YYINITIAL); return NLS; }
+  {VERBATIM_ARG_INPUT}                                         { return VERBATIM_ARG_INPUT; }
+  "|"                                                          { popState(); return PIPE; }
+  {NLS}                                                        { popState(); return NLS; }
 }
 <FUNCTION_ID> {
-  {SIMPLE_ID}                                                  { yybegin(YYINITIAL); return SIMPLE_ID; }
+  {SIMPLE_ID}                                                  { popState(); return SIMPLE_ID; }
   {WHITE_SPACE}                                                { return WHITE_SPACE; }
-  {GENERIC_ID_PART_TOKENS}                                     { yybegin(YYINITIAL); return GENERIC_ID_PART; }
-  [^]                                                          { yybegin(YYINITIAL); yypushback(yylength()); }
+  {GENERIC_ID_PART_TOKENS}                                     { popState(); return GENERIC_ID_PART; }
+  [^]                                                          { popState(); yypushback(yylength()); }
 }
 
 <TYPE_ID> {
   {SIMPLE_ID}/{DOT}                                            { return SIMPLE_ID; }
-  {SIMPLE_ID}                                                  { yybegin(YYINITIAL); return SIMPLE_ID; }
+  {SIMPLE_ID}                                                  { popState(); return SIMPLE_ID; }
   {DOT}                                                        { return DOT; }
   {WHITE_SPACE}                                                { return WHITE_SPACE; }
-  [^]                                                          { yybegin(YYINITIAL); yypushback(yylength()); }
+  [^]                                                          { popState(); yypushback(yylength()); }
+}
+
+<STRING_SUB_EXPRESSION> {
+  "("                                                          { lParenCount++; return LP; }
+  ")"                                                          { lParenCount--; if (lParenCount==0) popState(); return RP; }
 }
 
 <YYINITIAL> {
-  {WHITE_SPACE}                                                { return WHITE_SPACE; }
-
   "("                                                          { return LP; }
   ")"                                                          { return RP; }
+}
+
+<YYINITIAL, STRING_SUB_EXPRESSION> {
+  {WHITE_SPACE}                                                { return WHITE_SPACE; }
+
   "begin"                                                      { return BEGIN; }
   "break"                                                      { return BREAK; }
   "catch"                                                      { return CATCH; }
@@ -195,13 +233,13 @@ BRACED_VAR_START={DS}{LCURLY}
   "elseif"                                                     { return ELSEIF; }
   "end"                                                        { return END; }
   "exit"                                                       { return EXIT; }
-  "filter"/{WHITE_SPACE}                                       { yybegin(FUNCTION_ID); return FILTER; }
+  "filter"/{WHITE_SPACE}                                       { pushState(FUNCTION_ID); return FILTER; }
   "finally"                                                    { return FINALLY; }
   "for"                                                        { return FOR; }
   "foreach"                                                    { return FOREACH; }
   "from"                                                       { return FROM; }
-  "function"/{WHITE_SPACE}                                     { yybegin(FUNCTION_ID); return FUNCTION; }
-  "configuration"/{WHITE_SPACE}                                { yybegin(FUNCTION_ID); return CONFIGURATION; }
+  "function"/{WHITE_SPACE}                                     { pushState(FUNCTION_ID); return FUNCTION; }
+  "configuration"/{WHITE_SPACE}                                { pushState(FUNCTION_ID); return CONFIGURATION; }
   "if"                                                         { return IF; }
   "in"                                                         { return IN; }
   "inlinescript"                                               { return INLINESCRIPT; }
@@ -217,7 +255,7 @@ BRACED_VAR_START={DS}{LCURLY}
   "using"                                                      { return USING; }
   "var"                                                        { return VAR; }
   "while"                                                      { return WHILE; }
-  "workflow"/{WHITE_SPACE}                                     { yybegin(FUNCTION_ID); return WORKFLOW; }
+  "workflow"/{WHITE_SPACE}                                     { pushState(FUNCTION_ID); return WORKFLOW; }
   "«"                                                          { return RAW_LBR; }
   "»"                                                          { return RAW_RBR; }
   "(*"                                                         { return MULTI_LINE_COMMENT_START; }
@@ -232,13 +270,14 @@ BRACED_VAR_START={DS}{LCURLY}
   {DIV}                                                        { return DIV; }
   {STAR}                                                       { return STAR; }
   {MM}                                                         { return MM; }
-  {VERBATIM_ARG_START}                                         { yybegin(VERBATIM_ARGUMENT); return VERBATIM_ARG_START; }
+  {VERBATIM_ARG_START}                                         { pushState(VERBATIM_ARGUMENT); return VERBATIM_ARG_START; }
   "+"                                                          { return PLUS; }
   "\\"                                                         { return PATH_SEP; }
 
   {DASH}                           { return DASH; }
-  {BRACED_VAR_START}               { yybegin(VAR_BRACED); return BRACED_VAR_START; }
-  {DS}                             { yybegin(VAR_SIMPLE); return DS; }
+  {BRACED_VAR_START}               { pushState(VAR_BRACED); return BRACED_VAR_START; }
+  {DS}/{SIMPLE_ID}                 { pushState(VAR_SIMPLE); return DS; }
+  {DS}                             { return DS; }
   {LCURLY}                         { return LCURLY; }
   {RCURLY}                         { return RCURLY; }
   {DOT_DOT}                        { return DOT_DOT; }
@@ -247,7 +286,7 @@ BRACED_VAR_START={DS}{LCURLY}
   {COLON2}                         { return COLON2; }
   {PERS}                           { return PERS; }
   {SQBR_L}                         { return SQBR_L; }
-  {SQBR_L}/{WHITE_SPACE}?{SIMPLE_ID}       { yybegin(TYPE_ID);   return SQBR_L; }
+  {SQBR_L}/{WHITE_SPACE}?{SIMPLE_ID}       { pushState(TYPE_ID);   return SQBR_L; }
   {SQBR_R}                         { return SQBR_R; }
   {OP_MR}                          { return OP_MR; }
   {OP_FR}/[^#]                          { return OP_FR; }
@@ -256,7 +295,7 @@ BRACED_VAR_START={DS}{LCURLY}
   {OP_C}                           { return OP_C; }
   {EXCL_MARK}                      { return EXCL_MARK; }
   {NLS}                            { return NLS; }
-  {EXPANDABLE_STRING}              { return EXPANDABLE_STRING; }
+  {CH_DQ}                          { pushState(STRING); return DQ_OPEN; }
   {VERBATIM_STRING}                { return VERBATIM_STRING; }
   {EXPANDABLE_HERE_STRING}         { return EXPANDABLE_HERE_STRING; }
   {VERBATIM_HERE_STRING}           { return VERBATIM_HERE_STRING; }

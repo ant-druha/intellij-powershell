@@ -270,7 +270,11 @@ real_literal_expression ::= REAL_NUM
 
 //String literals
 string_literal_expression ::= expandable_string_literal | verbatim_string_literal | expandable_here_string_literal | verbatim_here_string_literal
-private expandable_string_literal ::= EXPANDABLE_STRING
+private expandable_string_literal ::= dq_open expandable_string_content? dq_close
+private expandable_string_content ::= ( string_literal_entry | target_variable_expression | sub_expression )+
+private string_literal_entry ::= EXPANDABLE_STRING_PART
+private dq_open ::=  DQ_OPEN
+private dq_close ::= DQ_CLOSE
 private verbatim_string_literal ::= VERBATIM_STRING
 private verbatim_here_string_literal ::= VERBATIM_HERE_STRING //todo create proper char goups
 private expandable_here_string_literal ::= EXPANDABLE_HERE_STRING //todo create proper char goups
@@ -529,13 +533,13 @@ private value ::=   parenthesized_expression
 
 parenthesized_expression ::= LP nls? pipeline nls? RP
 
-sub_expression ::= DS LP nls? statement_list? nls? RP
+sub_expression ::= DS nws LP nls? statement_list? nls? RP
 
-array_expression ::= AT LP nls? statement_list? nls? RP
+array_expression ::= AT nws LP nls? statement_list? nls? RP
 
 script_block_expression ::= LCURLY nls? script_block? nls? RCURLY
 
-hash_literal_expression ::= AT LCURLY nls? hash_literal_body? nls? RCURLY //'@{' nls? hash_literal_body? nls? '}'
+hash_literal_expression ::= AT nws LCURLY nls? hash_literal_body? nls? RCURLY //'@{' nls? hash_literal_body? nls? '}'
 private hash_literal_body ::= hash_entry ( statement_terminators hash_entry )*
 private hash_entry ::= key_expression '=' nls? statement
 

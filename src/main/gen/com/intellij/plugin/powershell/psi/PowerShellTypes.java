@@ -92,6 +92,8 @@ public interface PowerShellTypes {
   IElementType DO = new PowerShellTokenType("do");
   IElementType DOT = new PowerShellTokenType(".");
   IElementType DOT_DOT = new PowerShellTokenType("..");
+  IElementType DQ_CLOSE = new PowerShellTokenType("DQ_CLOSE");
+  IElementType DQ_OPEN = new PowerShellTokenType("DQ_OPEN");
   IElementType DS = new PowerShellTokenType("$");
   IElementType DYNAMICPARAM = new PowerShellTokenType("dynamicparam");
   IElementType ELSE = new PowerShellTokenType("else");
@@ -102,6 +104,7 @@ public interface PowerShellTypes {
   IElementType EXIT = new PowerShellTokenType("exit");
   IElementType EXPANDABLE_HERE_STRING = new PowerShellTokenType("EXPANDABLE_HERE_STRING");
   IElementType EXPANDABLE_STRING = new PowerShellTokenType("EXPANDABLE_STRING");
+  IElementType EXPANDABLE_STRING_PART = new PowerShellTokenType("EXPANDABLE_STRING_PART");
   IElementType FILTER = new PowerShellTokenType("filter");
   IElementType FINALLY = new PowerShellTokenType("finally");
   IElementType FOR = new PowerShellTokenType("for");

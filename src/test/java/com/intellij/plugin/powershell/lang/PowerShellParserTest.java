@@ -52,6 +52,8 @@ public class PowerShellParserTest extends ParsingTestCase {
 
   public void testHashTables() throws Exception { doTest(true); }
 
+  public void testExpandableString() throws Exception { doTest(true); }
+
   public void testTypeLiteral() throws Exception { doTest(true); }
 
 }
