@@ -103,7 +103,9 @@ public interface PowerShellTypes {
   IElementType EXCL_MARK = new PowerShellTokenType("!");
   IElementType EXIT = new PowerShellTokenType("exit");
   IElementType EXPANDABLE_HERE_STRING = new PowerShellTokenType("EXPANDABLE_HERE_STRING");
-  IElementType EXPANDABLE_STRING = new PowerShellTokenType("EXPANDABLE_STRING");
+  IElementType EXPANDABLE_HERE_STRING_END = new PowerShellTokenType("EXPANDABLE_HERE_STRING_END");
+  IElementType EXPANDABLE_HERE_STRING_PART = new PowerShellTokenType("EXPANDABLE_HERE_STRING_PART");
+  IElementType EXPANDABLE_HERE_STRING_START = new PowerShellTokenType("EXPANDABLE_HERE_STRING_START");
   IElementType EXPANDABLE_STRING_PART = new PowerShellTokenType("EXPANDABLE_STRING_PART");
   IElementType FILTER = new PowerShellTokenType("filter");
   IElementType FINALLY = new PowerShellTokenType("finally");

@@ -35,6 +35,8 @@ import static com.intellij.plugin.powershell.psi.PowerShellTypes.*;
   
       private int commentStart;
       private int commentDepth;
+
+      private int yycolumn = 0;
   
       private void pushState(int state) {
           states.push(new State(yystate(), lParenCount));
@@ -60,6 +62,7 @@ import static com.intellij.plugin.powershell.psi.PowerShellTypes.*;
 %function advance
 %type IElementType
 %unicode
+%column
 
 EOL=\R
 WHITE_SPACE_CHAR=[\ \t\f]|{BACKTICK}{NL}
@@ -84,12 +87,16 @@ CH_SQ=(\'|‘|’|‚|‛)
 //BRACED_VAR="${"{VAR_SCOPE}?{WHITE_SPACE}?{BRACED_ID}"}"
 //EXPAND_STRING_CHARS=([^\$\"\“\”\„\`\r\n]|{BRACED_VAR}|"$"[^\"\“\”\„\`\r\n]|"$"(\`.)|(\`.)|{CH_DQ}{CH_DQ})+
 EXPANDABLE_STRING_PART=([^\$\"\“\”\„\`\r\n]/*|{BRACED_VAR}|"$"[^\"\“\”\„\`\r\n]|"$"(\`.)*/|(\`.)|{CH_DQ}{CH_DQ})+
+//EXPANDABLE_HERE_STRING_PART=(([^\"\“\”\„\\]|\\.)+(\r|\n|\r\n))
+EXPANDABLE_HERE_STRING_PART=({EXPANDABLE_STRING_PART}|(\r|\n|\r\n))+
 //EXPANDABLE_STRING={CH_DQ}{EXPAND_STRING_CHARS}?"$"*{CH_DQ}
 
 VERBATIM_STRING_CHARS=([^\'\‘\’\‚\‛\r\n]|{CH_SQ}{CH_SQ})+
 VERBATIM_STRING={CH_SQ}{VERBATIM_STRING_CHARS}?{CH_SQ}
 
-EXPANDABLE_HERE_STRING=@{CH_DQ}([ \t\n\x0B\f\r])*(\r|\n|\r\n)(([^\"\“\”\„\\]|\\.)+(\r|\n|\r\n))?([ \t\n\x0B\f\r])*{CH_DQ}@
+EXPANDABLE_HERE_STRING_START=@{CH_DQ}([ \t\n\x0B\f\r])*(\r|\n|\r\n)
+EXPANDABLE_HERE_STRING_END=/*(\r|\n|\r\n)*/{CH_DQ}@
+//EXPANDABLE_HERE_STRING={EXPANDABLE_HERE_STRING_START}{EXPANDABLE_HERE_STRING_PART}*{EXPANDABLE_HERE_STRING_END}
 VERBATIM_HERE_STRING=@{CH_SQ}([ \t\n\x0B\f\r])*(\r|\n|\r\n)(([^\'\‘\’\‚\‛\\]|\\.)+(\r|\n|\r\n))?([ \t\n\x0B\f\r])*{CH_SQ}@
 DEC_DIGIT=[0-9]
 HEX_DIGIT={DEC_DIGIT}|[abcdefABCDEF]
@@ -152,7 +159,7 @@ VERBATIM_ARG_START={MM}{PERS}
 VERBATIM_ARG_INPUT=[^\|\r\n]+
 BRACED_VAR_START={DS}{LCURLY}
 
-%state VAR_SIMPLE VAR_BRACED VERBATIM_ARGUMENT FUNCTION_ID TYPE_ID STRING STRING_SUB_EXPRESSION
+%state VAR_SIMPLE VAR_BRACED VERBATIM_ARGUMENT FUNCTION_ID TYPE_ID STRING HERE_STRING STRING_SUB_EXPRESSION
 %caseless
 
 
@@ -167,12 +174,23 @@ BRACED_VAR_START={DS}{LCURLY}
   {DS}                                                         { return EXPANDABLE_STRING_PART; }
 }
 
+<HERE_STRING> {
+  {EXPANDABLE_HERE_STRING_END}                                 { if (yycolumn==0) {popState(); return EXPANDABLE_HERE_STRING_END;} else return EXPANDABLE_HERE_STRING_PART; }
+  {CH_DQ}                                                      { return EXPANDABLE_HERE_STRING_PART; }
+  {EXPANDABLE_STRING_PART}                                     { return EXPANDABLE_STRING_PART; }
+  {EXPANDABLE_HERE_STRING_PART}                                { return EXPANDABLE_HERE_STRING_PART; }
+  {DS}/{SIMPLE_ID}                                             { pushState(VAR_SIMPLE); return DS; }
+  {BRACED_VAR_START}                                           { pushState(VAR_BRACED); return BRACED_VAR_START; }
+  {DS}/"("                                                     { pushState(STRING_SUB_EXPRESSION); return DS; }
+  {DS}                                                         { return EXPANDABLE_STRING_PART; }
+}
+
 <VAR_SIMPLE> {
-  {SIMPLE_ID}/{DOT}                                            { if (states.size() > 0 && states.get(states.size() - 1).state == STRING) popState(); return SIMPLE_ID; }
+  {SIMPLE_ID}/{DOT}                                            { State s = states.get(states.size() - 1); if (s.state == STRING || s.state == HERE_STRING) popState(); return SIMPLE_ID; }
   {SIMPLE_ID}/{COLON2}                                         { popState(); return SIMPLE_ID; }
   {SIMPLE_ID}/":"                                              { return SIMPLE_ID; }
   {SIMPLE_ID}                                                  { popState(); return SIMPLE_ID; }
-  {VAR_ID}/{DOT}                                               { if (states.size() > 0 && states.get(states.size() - 1).state == STRING) popState(); return VAR_ID; }
+  {VAR_ID}/{DOT}                                               { State s = states.get(states.size() - 1); if (s.state == STRING || s.state == HERE_STRING) popState(); return VAR_ID; }
   {VAR_ID}                                                     { popState(); return VAR_ID; }
   ":"                                                          { return COLON; }
   {DOT}/{SIMPLE_ID}                                            { return DOT; }
@@ -297,7 +315,7 @@ BRACED_VAR_START={DS}{LCURLY}
   {NLS}                            { return NLS; }
   {CH_DQ}                          { pushState(STRING); return DQ_OPEN; }
   {VERBATIM_STRING}                { return VERBATIM_STRING; }
-  {EXPANDABLE_HERE_STRING}         { return EXPANDABLE_HERE_STRING; }
+  {EXPANDABLE_HERE_STRING_START}   { pushState(HERE_STRING); return EXPANDABLE_HERE_STRING_START; }
   {VERBATIM_HERE_STRING}           { return VERBATIM_HERE_STRING; }
   {REAL_NUM}                       { return REAL_NUM; }
   {HEX_INTEGER}                    { return HEX_INTEGER; }

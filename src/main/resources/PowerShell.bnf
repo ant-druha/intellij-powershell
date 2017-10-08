@@ -39,7 +39,7 @@
     SQBR_R=']'
     PATH_SEP='\'
 
-    EXPANDABLE_STRING='regexp:"([^"\\]|\\.)*"'
+//    EXPANDABLE_STRING='regexp:"([^"\\]|\\.)*"'
     VERBATIM_STRING="regexp:'[^']*'"
     EXPANDABLE_HERE_STRING='regexp:@"(\s)*(\r|\n|\r\n)(([^"\\]|\\.)+(\r|\n|\r\n))?(\s)*"@'
     VERBATIM_HERE_STRING="regexp:@\'(\s)*(\r|\n|\r\n)(([^'\\]|\\.)+(\r|\n|\r\n))?(\s)*\'@"
@@ -276,8 +276,9 @@ private string_literal_entry ::= EXPANDABLE_STRING_PART
 private dq_open ::=  DQ_OPEN
 private dq_close ::= DQ_CLOSE
 private verbatim_string_literal ::= VERBATIM_STRING
-private verbatim_here_string_literal ::= VERBATIM_HERE_STRING //todo create proper char goups
-private expandable_here_string_literal ::= EXPANDABLE_HERE_STRING //todo create proper char goups
+private verbatim_here_string_literal ::= VERBATIM_HERE_STRING
+private expandable_here_string_literal ::= EXPANDABLE_HERE_STRING_START expandable_here_string_content? EXPANDABLE_HERE_STRING_END
+private expandable_here_string_content ::= ( expandable_string_content | EXPANDABLE_HERE_STRING_PART )+
 
 
 //B.1.7 Commands
@@ -369,11 +370,11 @@ private command_name_expression ::= path_expression | command_name//todo parse p
 command_name ::= generic_token_with_sub_expr | generic_token_part | allowed_identifier_keywords //generic_token
 
 
-//command_name ::= generic_ref_token_with_sub_expr | generic_token_part//generic_token
+
 private generic_token_with_sub_expr ::= generic_token_with_subexpr_start statement_list? RP nws command_name
-//private generic_ref_token_with_sub_expr ::= generic_ref_token_with_subexpr_start statement_list? RP nws command_name
+
 private generic_token_with_subexpr_start ::= generic_token_part DS nws LP
-//private generic_ref_token_with_subexpr_start ::= generic_token_part DS nws LP
+
 private generic_token_part ::= expandable_string_literal | verbatim_here_string_literal | target_variable_expression | generic_token_chars
 
 private generic_token_chars ::= generic_id_part_tokens_start ( nws generic_id_part_tokens )*

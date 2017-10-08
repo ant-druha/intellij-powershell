@@ -29,3 +29,11 @@ $s2 = $s1
 "lonely dollar $ is here$"
 
 "$sss::log"
+
+$lit = @"
+That's it!
+2 * 3 = $(2*3)
+$a = $(2*3)
+"@
+@"
+"@

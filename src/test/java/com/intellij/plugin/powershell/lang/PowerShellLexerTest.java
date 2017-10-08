@@ -139,8 +139,13 @@ public class PowerShellLexerTest extends LexerTestCase {
   }
 
   public void testExpandableHereStringLiteral() {
-    doTest("@\"\n" + "\"@", "EXPANDABLE_HERE_STRING ('@\"\\n\"@')"); doTest("@„\n" + "„@", "EXPANDABLE_HERE_STRING ('@„\\n„@')");
-    doTest("@\"\n" + "line 1\n" + "\"@", "EXPANDABLE_HERE_STRING ('@\"\\n" + "line 1\\n" + "\"@')");
+    doTest("@\"\n" + "\"@", "EXPANDABLE_HERE_STRING_START ('@\"\\n')\n" +
+        "EXPANDABLE_HERE_STRING_END ('\"@')");
+    doTest("@„\n" + "„@", "EXPANDABLE_HERE_STRING_START ('@„\\n')\n" +
+        "EXPANDABLE_HERE_STRING_END ('„@')");
+    doTest("@\"\n" + "line 1\n" + "\"@", "EXPANDABLE_HERE_STRING_START ('@\"\\n')\n" +
+        "EXPANDABLE_HERE_STRING_PART ('line 1\\n')\n" +
+        "EXPANDABLE_HERE_STRING_END ('\"@')");
   }
 
   public void testVerbatimHereStringLiteral() {
