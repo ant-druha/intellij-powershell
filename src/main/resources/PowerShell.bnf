@@ -149,7 +149,7 @@
 //    PARAM_ARGUMENT='regexp:([\w][\w$0-9\-]*)' //todo
     LETTERS='regexp:[a-zA-Z]+'
 //    ALNUM='regexp:\p{Alnum}+'
-    PARAM_TOKEN='regexp:\-(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\_|\?)[^\{\}\(\)\;\,\|\&\.\[\:\s\n\r]+:?'
+    PARAM_TOKEN='regexp:(\-|/)(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\_|\?)[^\{\}\(\)\;\,\|\&\.\[\:\s\n\r]+:?'
 
     space = 'regexp:\s+' //???
   ]
