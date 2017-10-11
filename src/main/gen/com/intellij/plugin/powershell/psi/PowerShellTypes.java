@@ -30,7 +30,7 @@ public interface PowerShellTypes {
   IElementType DATA_STATEMENT = new PowerShellElementType("DATA_STATEMENT");
   IElementType DO_STATEMENT = new PowerShellElementType("DO_STATEMENT");
   IElementType ENUM_DECLARATION_STATEMENT = new PowerShellElementType("ENUM_DECLARATION_STATEMENT");
-  IElementType ENUM_LABEL_DEFINITION = new PowerShellElementType("ENUM_LABEL_DEFINITION");
+  IElementType ENUM_LABEL_DECLARATION = new PowerShellElementType("ENUM_LABEL_DECLARATION");
   IElementType EXPRESSION = new PowerShellElementType("EXPRESSION");
   IElementType FLOW_CONTROL_STATEMENT = new PowerShellElementType("FLOW_CONTROL_STATEMENT");
   IElementType FOREACH_STATEMENT = new PowerShellElementType("FOREACH_STATEMENT");
@@ -242,8 +242,8 @@ public interface PowerShellTypes {
       else if (type == ENUM_DECLARATION_STATEMENT) {
         return new PowerShellEnumDeclarationStatementImplGen(node);
       }
-      else if (type == ENUM_LABEL_DEFINITION) {
-        return new PowerShellEnumLabelDefinitionImplGen(node);
+      else if (type == ENUM_LABEL_DECLARATION) {
+        return new PowerShellEnumLabelDeclarationImplGen(node);
       }
       else if (type == FLOW_CONTROL_STATEMENT) {
         return new PowerShellFlowControlStatementImplGen(node);
