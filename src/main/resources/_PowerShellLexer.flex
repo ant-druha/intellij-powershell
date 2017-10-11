@@ -186,6 +186,10 @@ BRACED_VAR_START={DS}{LCURLY}
 }
 
 <VAR_SIMPLE> {
+  "this"/{DOT}                                                 { State s = states.get(states.size() - 1); if (s.state == STRING || s.state == HERE_STRING) popState(); return THIS; }
+  "this"/{COLON2}                                              { popState(); return THIS; }
+  "this"/":"                                                   { return THIS; }
+  "this"                                                       { popState(); return THIS; }
   {SIMPLE_ID}/{DOT}                                            { State s = states.get(states.size() - 1); if (s.state == STRING || s.state == HERE_STRING) popState(); return SIMPLE_ID; }
   {SIMPLE_ID}/{COLON2}                                         { popState(); return SIMPLE_ID; }
   {SIMPLE_ID}/":"                                              { return SIMPLE_ID; }
@@ -242,6 +246,9 @@ BRACED_VAR_START={DS}{LCURLY}
   "break"                                                      { return BREAK; }
   "catch"                                                      { return CATCH; }
   "class"                                                      { return CLASS; }
+  "hidden"                                                     { return HIDDEN; }
+  "static"                                                     { return STATIC; }
+  "enum"                                                       { return ENUM; }
   "continue"                                                   { return CONTINUE; }
   "data"                                                       { return DATA; }
   "define"                                                     { return DEFINE; }

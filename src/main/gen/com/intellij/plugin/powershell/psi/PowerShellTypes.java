@@ -18,6 +18,7 @@ public interface PowerShellTypes {
   IElementType BITWISE_EXPRESSION = new PowerShellElementType("BITWISE_EXPRESSION");
   IElementType BLOCK_BODY = new PowerShellElementType("BLOCK_BODY");
   IElementType CAST_EXPRESSION = new PowerShellElementType("CAST_EXPRESSION");
+  IElementType CLASS_DECLARATION_STATEMENT = new PowerShellElementType("CLASS_DECLARATION_STATEMENT");
   IElementType COMMAND_ARGUMENT = new PowerShellElementType("COMMAND_ARGUMENT");
   IElementType COMMAND_CALL_EXPRESSION = new PowerShellElementType("COMMAND_CALL_EXPRESSION");
   IElementType COMMAND_NAME = new PowerShellElementType("COMMAND_NAME");
@@ -25,8 +26,11 @@ public interface PowerShellTypes {
   IElementType COMMENT = new PowerShellElementType("COMMENT");
   IElementType COMPARISON_EXPRESSION = new PowerShellElementType("COMPARISON_EXPRESSION");
   IElementType CONFIGURATION_BLOCK = new PowerShellElementType("CONFIGURATION_BLOCK");
+  IElementType CONSTRUCTOR_DECLARATION_STATEMENT = new PowerShellElementType("CONSTRUCTOR_DECLARATION_STATEMENT");
   IElementType DATA_STATEMENT = new PowerShellElementType("DATA_STATEMENT");
   IElementType DO_STATEMENT = new PowerShellElementType("DO_STATEMENT");
+  IElementType ENUM_DECLARATION_STATEMENT = new PowerShellElementType("ENUM_DECLARATION_STATEMENT");
+  IElementType ENUM_LABEL_DEFINITION = new PowerShellElementType("ENUM_LABEL_DEFINITION");
   IElementType EXPRESSION = new PowerShellElementType("EXPRESSION");
   IElementType FLOW_CONTROL_STATEMENT = new PowerShellElementType("FLOW_CONTROL_STATEMENT");
   IElementType FOREACH_STATEMENT = new PowerShellElementType("FOREACH_STATEMENT");
@@ -41,6 +45,7 @@ public interface PowerShellTypes {
   IElementType INVOCATION_EXPRESSION = new PowerShellElementType("INVOCATION_EXPRESSION");
   IElementType KEY_EXPRESSION = new PowerShellElementType("KEY_EXPRESSION");
   IElementType LOGICAL_EXPRESSION = new PowerShellElementType("LOGICAL_EXPRESSION");
+  IElementType METHOD_DECLARATION_STATEMENT = new PowerShellElementType("METHOD_DECLARATION_STATEMENT");
   IElementType MULTIPLICATIVE_EXPRESSION = new PowerShellElementType("MULTIPLICATIVE_EXPRESSION");
   IElementType NODE_BLOCK = new PowerShellElementType("NODE_BLOCK");
   IElementType PARALLEL_STATEMENT = new PowerShellElementType("PARALLEL_STATEMENT");
@@ -49,8 +54,10 @@ public interface PowerShellTypes {
   IElementType PATH_ITEM = new PowerShellElementType("PATH_ITEM");
   IElementType POST_DECREMENT_EXPRESSION = new PowerShellElementType("POST_DECREMENT_EXPRESSION");
   IElementType POST_INCREMENT_EXPRESSION = new PowerShellElementType("POST_INCREMENT_EXPRESSION");
+  IElementType PROPERTY_DECLARATION_STATEMENT = new PowerShellElementType("PROPERTY_DECLARATION_STATEMENT");
   IElementType RANGE_EXPRESSION = new PowerShellElementType("RANGE_EXPRESSION");
   IElementType REAL_LITERAL_EXPRESSION = new PowerShellElementType("REAL_LITERAL_EXPRESSION");
+  IElementType REFERENCE_IDENTIFIER = new PowerShellElementType("REFERENCE_IDENTIFIER");
   IElementType RESOURCE_BLOCK = new PowerShellElementType("RESOURCE_BLOCK");
   IElementType SCRIPT_BLOCK_EXPRESSION = new PowerShellElementType("SCRIPT_BLOCK_EXPRESSION");
   IElementType SEP = new PowerShellElementType("SEP");
@@ -99,6 +106,7 @@ public interface PowerShellTypes {
   IElementType ELSE = new PowerShellTokenType("else");
   IElementType ELSEIF = new PowerShellTokenType("elseif");
   IElementType END = new PowerShellTokenType("end");
+  IElementType ENUM = new PowerShellTokenType("enum");
   IElementType EQ = new PowerShellTokenType("=");
   IElementType EXCL_MARK = new PowerShellTokenType("!");
   IElementType EXIT = new PowerShellTokenType("exit");
@@ -116,6 +124,7 @@ public interface PowerShellTypes {
   IElementType GENERIC_ID_PART = new PowerShellTokenType("GENERIC_ID_PART");
   IElementType HASH = new PowerShellTokenType("#");
   IElementType HEX_INTEGER = new PowerShellTokenType("HEX_INTEGER");
+  IElementType HIDDEN = new PowerShellTokenType("hidden");
   IElementType IF = new PowerShellTokenType("if");
   IElementType IN = new PowerShellTokenType("in");
   IElementType INLINESCRIPT = new PowerShellTokenType("inlinescript");
@@ -153,7 +162,9 @@ public interface PowerShellTypes {
   IElementType SQBR_L = new PowerShellTokenType("[");
   IElementType SQBR_R = new PowerShellTokenType("]");
   IElementType STAR = new PowerShellTokenType("*");
+  IElementType STATIC = new PowerShellTokenType("static");
   IElementType SWITCH = new PowerShellTokenType("switch");
+  IElementType THIS = new PowerShellTokenType("this");
   IElementType THROW = new PowerShellTokenType("throw");
   IElementType TRAP = new PowerShellTokenType("trap");
   IElementType TRY = new PowerShellTokenType("try");
@@ -195,6 +206,9 @@ public interface PowerShellTypes {
       else if (type == CAST_EXPRESSION) {
         return new PowerShellCastExpressionImplGen(node);
       }
+      else if (type == CLASS_DECLARATION_STATEMENT) {
+        return new PowerShellClassDeclarationStatementImplGen(node);
+      }
       else if (type == COMMAND_ARGUMENT) {
         return new PowerShellCommandArgumentImplGen(node);
       }
@@ -216,11 +230,20 @@ public interface PowerShellTypes {
       else if (type == CONFIGURATION_BLOCK) {
         return new PowerShellConfigurationBlockImplGen(node);
       }
+      else if (type == CONSTRUCTOR_DECLARATION_STATEMENT) {
+        return new PowerShellConstructorDeclarationStatementImplGen(node);
+      }
       else if (type == DATA_STATEMENT) {
         return new PowerShellDataStatementImplGen(node);
       }
       else if (type == DO_STATEMENT) {
         return new PowerShellDoStatementImplGen(node);
+      }
+      else if (type == ENUM_DECLARATION_STATEMENT) {
+        return new PowerShellEnumDeclarationStatementImplGen(node);
+      }
+      else if (type == ENUM_LABEL_DEFINITION) {
+        return new PowerShellEnumLabelDefinitionImplGen(node);
       }
       else if (type == FLOW_CONTROL_STATEMENT) {
         return new PowerShellFlowControlStatementImplGen(node);
@@ -261,6 +284,9 @@ public interface PowerShellTypes {
       else if (type == LOGICAL_EXPRESSION) {
         return new PowerShellLogicalExpressionImplGen(node);
       }
+      else if (type == METHOD_DECLARATION_STATEMENT) {
+        return new PowerShellMethodDeclarationStatementImplGen(node);
+      }
       else if (type == MULTIPLICATIVE_EXPRESSION) {
         return new PowerShellMultiplicativeExpressionImplGen(node);
       }
@@ -285,11 +311,17 @@ public interface PowerShellTypes {
       else if (type == POST_INCREMENT_EXPRESSION) {
         return new PowerShellPostIncrementExpressionImplGen(node);
       }
+      else if (type == PROPERTY_DECLARATION_STATEMENT) {
+        return new PowerShellPropertyDeclarationStatementImplGen(node);
+      }
       else if (type == RANGE_EXPRESSION) {
         return new PowerShellRangeExpressionImplGen(node);
       }
       else if (type == REAL_LITERAL_EXPRESSION) {
         return new PowerShellRealLiteralExpressionImplGen(node);
+      }
+      else if (type == REFERENCE_IDENTIFIER) {
+        return new PowerShellReferenceIdentifierImplGen(node);
       }
       else if (type == RESOURCE_BLOCK) {
         return new PowerShellResourceBlockImplGen(node);

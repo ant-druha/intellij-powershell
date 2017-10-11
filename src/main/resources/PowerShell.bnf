@@ -54,6 +54,7 @@
     break='break'
     catch='catch'
     class='class'
+    enum='enum'
     continue='continue'
     data='data'
     define='define'
@@ -85,6 +86,9 @@
     var='var'
     while='while'
     workflow='workflow'
+    this='this'
+    hidden='hidden'
+    static='static'
     //since v4
     configuration='configuration'
 
@@ -206,7 +210,7 @@ attribute ::= SQBR_L nls? attribute_name LP nls? attribute_arguments? nls? RP nl
 private attribute_name ::= type_spec
 
 private attribute_arguments ::= attribute_argument (nls? COMMA nls? attribute_argument)*
-private attribute_argument ::= simple_name '=' nls? unary_expression | simple_name | unary_expression
+private attribute_argument ::= simple_name_identifier '=' nls? unary_expression | simple_name_identifier | unary_expression
 
 
 private script_parameter_list ::= script_parameter (nls? COMMA nls? script_parameter)*
@@ -222,6 +226,8 @@ private block_name ::= 'dynamicparam' | 'begin' | 'process' | 'end'
 
 private statement ::=   if_statement
                       | (label nls?)? labeled_statement
+                      | class_declaration_statement
+                      | enum_declaration_statement
                       | function_statement
                       | workflow_statement
                       | flow_control_statement //sep
@@ -255,8 +261,10 @@ private array_type_name ::= type_name SQBR_L
 private generic_type_name ::= type_name SQBR_L
 
 //B.1.9 Simple Names
-simple_name ::= SIMPLE_ID
+simple_name_identifier ::= SIMPLE_ID | allowed_identifier_keywords
 {elementType=identifier}
+simple_name_reference ::= SIMPLE_ID | allowed_identifier_keywords
+{elementType=reference_identifier}
 //B.1.8 Literals
 private literal ::= real_literal_expression | integer_literal_expression | string_literal_expression
 
@@ -297,7 +305,7 @@ private simple_variable ::= (DS | AT) variable_scope? variable_name_simple
 
 private variable_scope ::= 'global:' | 'local:' | 'private:' | 'script:' | 'using:' | 'workflow:' | variable_namespace
 private variable_namespace ::= SIMPLE_ID ':'
-variable_name_simple ::= SIMPLE_ID | VAR_ID
+variable_name_simple ::= SIMPLE_ID | VAR_ID | 'this'
 {elementType=identifier}
 private braced_variable ::= BRACED_VAR_START variable_scope? variable_name_braced RCURLY
 variable_name_braced ::= SIMPLE_ID  | BRACED_ID
@@ -397,16 +405,16 @@ inlinescript_statement ::= 'inlinescript' statement_block
 
 
 data_statement ::= 'data' nls? data_name? nls? data_commands_allowed? nls? statement_block {pin=1}
-private data_name ::= simple_name
+private data_name ::= simple_name_identifier
 private data_commands_allowed ::= '-supportedcommand' nls? data_commands_list
 private data_commands_list ::= data_command ( nls? ',' nls? data_command )*
 private data_command ::= command_name_expr
 private command_name_expr ::= primary_expression | command_name_expression
 
 private allowed_identifier_keywords ::= 'param'|'until'|'workflow'|'end'|'define'|'finally'|'parallel'|'continue'|'begin'|'dynamicparam'|'in'
-|'process'|'break'|'else'|'inlinescript'|'catch'
+|'process'|'break'|'else'|'inlinescript'|'catch'|'this'|'hidden'|'foreach'|'static'
 private reserved_statement_keywords ::= 'class'|'data'|'do'|'elseif'|'exit'|'filter'|'for'|'foreach'|'from'|'function'|'if'|'return'|'switch'|'throw'
-|'trap'|'try'|'using'|'var'|'while'|'configuration'
+|'trap'|'try'|'using'|'var'|'while'|'configuration'|'enum'
 
 
 
@@ -428,8 +436,60 @@ private generic_type_arguments ::= type_spec nls? (',' nls? type_spec)*
 flow_control_statement ::= break_continue_statement | throw_return_exit_statement
 private break_continue_statement ::= ('break' | 'continue') label_expression?
 private throw_return_exit_statement ::= ('throw' | 'return' | 'exit') pipeline? {pin=1}
-private label_expression ::= simple_name | unary_expression
+private label_expression ::= simple_name_identifier | unary_expression
 
+// class/enum
+class_declaration_statement ::= 'class' class_name (nls? base_class_clause)? (nls? interface_list)? nls? class_block
+{mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractComponent"
+implements="com.intellij.plugin.powershell.psi.PowerShellComponent"}
+private class_name ::= identifier
+
+private base_class_clause ::= COLON nls? base_class_name
+private base_class_name ::= generic_identifier
+
+private interface_list ::= COMMA nls? interface_name (nls? COMMA nls? interface_name)*
+private interface_name ::= generic_identifier
+
+private class_block ::= LCURLY nls? class_block_body? nls? RCURLY
+
+class_block_body ::= ( class_member_declaration statement_terminators )+ 
+{elementType=block_body}
+private class_member_declaration ::= property_declaration_statement | constructor_declaration_statement | method_declaration_statement
+
+property_declaration_statement ::= member_declaration_attribute* property_definition_expression
+//{mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractComponent"
+//implements="com.intellij.plugin.powershell.psi.PowerShellComponent"}
+private property_definition_expression ::= expression 
+private member_declaration_attribute ::= declaration_modifier_attribute | attribute
+private declaration_modifier_attribute ::= 'hidden' | 'static'
+ 
+constructor_declaration_statement ::= class_name method_argument_expression_list nls? base_constructor_call? nls? method_block
+{mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractComponent"
+implements="com.intellij.plugin.powershell.psi.PowerShellComponent"}
+
+private method_block ::= statement_block
+
+private method_argument_expression_list ::= LP nls? argument_expression_list? nls? RP
+private base_constructor_call ::= COLON 'base' method_argument_expression_list
+
+method_declaration_statement ::= member_declaration_attribute* method_name method_argument_expression_list nls? method_block
+{mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractComponent"
+implements="com.intellij.plugin.powershell.psi.PowerShellComponent"}
+private method_name ::= identifier
+
+enum_declaration_statement ::= enum_declaration | enum_with_flags_declaration
+{mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractComponent"
+implements="com.intellij.plugin.powershell.psi.PowerShellComponent"}
+
+private enum_with_flags_declaration ::= attribute /*SQBR_L SIMPLE_ID LP RP SQBR_R */nls? enum_declaration
+private enum_declaration ::= 'enum' enum_name nls? enum_block
+private enum_name ::= identifier
+private enum_block ::= LCURLY nls? enum_block_body? nls? RCURLY
+
+enum_block_body ::= (label_list | statement_terminators)+
+{elementType=block_body}
+private label_list ::= (enum_label_definition statement_terminators)+
+enum_label_definition ::= label_expression (EQ expression)?
 
 function_statement ::= ('function' | 'filter') nls? function_statement_tail {pin=1}
 {mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractComponent"
@@ -442,7 +502,8 @@ implements="com.intellij.plugin.powershell.psi.PowerShellComponent"}
 private function_statement_tail ::= function_name nls? function_parameter_declaration? nls? LCURLY nls? script_block? nls? RCURLY
 private function_name ::= primary_expression | identifier //command_name_expr
 identifier ::= generic_identifier
-private generic_identifier ::=  generic_token_with_sub_expr | generic_token_part
+fake reference_identifier ::= generic_identifier
+private generic_identifier ::=  generic_token_with_sub_expr | generic_token_part | allowed_identifier_keywords
 
 
 private function_parameter_declaration ::= LP parameter_list nls? RP
@@ -514,7 +575,7 @@ private argument_expression_list ::= expression ( nls? ',' nls? expression)*
 left post_increment_expression ::= PP
 left post_decrement_expression ::= MM
 
-private member_name ::=   simple_name
+private member_name ::=   simple_name_reference
                         | string_literal_expression
 //->                        | string_literal_with_subexpression
                         | expression_with_unary_operator //prefix_op unary_expression //
@@ -544,7 +605,7 @@ hash_literal_expression ::= AT nws LCURLY nls? hash_literal_body? nls? RCURLY //
 private hash_literal_body ::= hash_entry ( statement_terminators hash_entry )*
 private hash_entry ::= key_expression '=' nls? statement
 
-key_expression ::= simple_name | unary_expression
+key_expression ::= simple_name_identifier | unary_expression
 
 // todo Note no whitespace is allowed after primary_expression.
 //->private member_access ::= primary_expression ( DOT | '::' ) member_name

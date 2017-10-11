@@ -40,3 +40,13 @@ $a[1,3,5]             # slice has Length 3, value 40,60,80
 $a[,5]                # slice with Length 1
 $a[@()]               # slice with Length 0
 $a[-1..-3]            # slice with Length 0, value 90,80,70
+
+(0..15).ForEach ({
+                   $ComputeServer = [ComputeServer]::new()
+                   $ComputeServer.Brand = "Fabrikam, Inc."
+                   $ComputeServer.Model = "Fbk5040"
+                   $ComputeServer.Status = "Installed"
+                   $ComputeServer.ProcessorIdentifier = "x64"
+                   $ComputeServer.Hostname = ("r1s" + $_.ToString("000"))
+                   $FirstRack.AddDevice($ComputeServer, $_)
+                 })
