@@ -50,3 +50,7 @@ $a[-1..-3]            # slice with Length 0, value 90,80,70
                    $ComputeServer.Hostname = ("r1s" + $_.ToString("000"))
                    $FirstRack.AddDevice($ComputeServer, $_)
                  })
+
+TR (-join $Properties.Foreach{ TD ($row.$_) } )
+
+{1,2,3}.foreach{ echo "$_" }
