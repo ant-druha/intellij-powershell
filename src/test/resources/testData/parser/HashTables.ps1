@@ -15,3 +15,14 @@ foreach ($e in $h1.Keys)
 {
   "Key is " + $e + ", Value is " + $h1[$e]
 }
+
+$getTargetResourceResult = @{
+                           Name = $Website.Name;
+                           Ensure = $ensureResult;
+                           PhysicalPath = $Website.physicalPath;
+                           State = $Website.state;
+                           ID = $Website.id;
+                           ApplicationPool = $Website.applicationPool;
+                           Protocol = $Website.bindings.Collection.protocol;
+                           Binding = $Website.bindings.Collection.bindingInformation;
+                         }

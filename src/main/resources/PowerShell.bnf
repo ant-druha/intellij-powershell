@@ -605,7 +605,9 @@ array_expression ::= AT nws LP nls? statement_list? nls? RP
 script_block_expression ::= LCURLY nls? script_block? nls? RCURLY
 
 hash_literal_expression ::= AT nws LCURLY nls? hash_literal_body? nls? RCURLY //'@{' nls? hash_literal_body? nls? '}'
-private hash_literal_body ::= hash_entry ( statement_terminators hash_entry )*
+hash_literal_body ::= (hash_entry_list | statement_terminators )+
+{elementType=block_body}
+private hash_entry_list ::= hash_entry ( statement_terminators hash_entry )*
 private hash_entry ::= key_expression '=' nls? statement
 
 key_expression ::= simple_name_identifier | unary_expression
