@@ -199,7 +199,7 @@ private statement_block_recover ::= !block_body_stop_tokens
 private block_body_stop_tokens ::= reserved_statement_keywords | sep | nls | RCURLY
 
 private statement_list ::= statement ( statement_terminators statement )* {pin=1 recoverWhile=top_level_recover}
-private top_script_block ::= param_block? statement_terminators? script_block_body
+private top_script_block ::= param_block? statement_terminators? script_block_body | param_block statement_terminators?
 script_block ::= top_script_block
 {elementType=block_body}
 
