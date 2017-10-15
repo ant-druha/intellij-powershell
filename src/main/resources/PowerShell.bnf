@@ -164,16 +164,16 @@
 
 private top_level_element ::= sep* ( top_script_block | statement_list | configuration_block_list )?
 {recoverWhile=top_level_recover}
-private top_level_recover ::= !(reserved_statement_keywords | sep | nls | RCURLY | LCURLY | RP)
+private top_level_recover ::= !(reserved_statement_keywords | sep | nls | RCURLY | LCURLY | RP | SQBR_L)
 private configuration_block_list ::= configuration_block (statement_terminators configuration_block)* statement_terminators?
-configuration_block ::= 'configuration' nls? configuration_name nls? LCURLY nls? configuration_block_body? nls? RCURLY
-{pin=1 recoverWhile=configuration_block_recover}
-private configuration_block_recover ::= !(statement_terminators? ('configuration' | <<eof>>))
+configuration_block ::= attribute_list? 'configuration' nls? configuration_name nls? LCURLY nls? configuration_block_body? nls? RCURLY
+{pin=2 recoverWhile=configuration_block_recover}
+private configuration_block_recover ::= !(statement_terminators? ('configuration' | <<eof>> | SQBR_L))
 private configuration_name ::= function_name
 
 configuration_block_body ::= top_script_block
 {elementType=block_body recoverWhile=configuration_block_body_recover}
-private configuration_block_body_recover ::= !(RCURLY (nls? ('configuration' | <<eof>>)))
+private configuration_block_body_recover ::= !(nls? RCURLY statement_terminators? ('configuration' | <<eof>> | SQBR_L))
 
 //node_block ::= node_token nls? node_name nls? LCURLY nls? node_block_body? nls? RCURLY {pin=1} //possible variant: node_token command_call_expression
 node_block ::= node_token nls? generic_argument_rule+
@@ -221,7 +221,7 @@ private script_parameter_default ::= '=' nls? unary_expression //expression todo
 private script_block_body ::= named_block_list | (statement_list | statement_terminators)+
 
 private named_block_list ::= named_block (statement_terminators named_block )*
-private named_block ::= block_name nls? statement_block
+private named_block ::= block_name nls? statement_block {pin=1}
 private block_name ::= 'dynamicparam' | 'begin' | 'process' | 'end'
 
 private statement ::=   if_statement
@@ -242,7 +242,7 @@ private statement ::=   if_statement
                       | pipeline
 {recoverWhile=statement_recover}
 private statement_recover ::= !statement_stop_tokens
-private statement_stop_tokens ::= reserved_statement_keywords | sep | nls | RCURLY | LCURLY | RP
+private statement_stop_tokens ::= reserved_statement_keywords | sep | nls | RCURLY | LCURLY | RP | SQBR_L
 private pipeline ::= expression redirection* pipeline_tail? &statement_end | command_call_expression verbatim_command_argument? pipeline_tail?
 
 //B.1.11 Operators and punctuators
