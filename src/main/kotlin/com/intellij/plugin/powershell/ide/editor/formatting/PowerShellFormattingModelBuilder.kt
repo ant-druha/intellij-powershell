@@ -26,12 +26,12 @@ class PowerShellFormattingModelBuilder : FormattingModelBuilder {
   override fun createModel(element: PsiElement?, settings: CodeStyleSettings): FormattingModel {
     val containingFile = element?.getContainingFile()?.viewProvider?.getPsi(PowerShellLanguage.INSTANCE) ?: error(element!!.getContainingFile())
     val astNode = containingFile.node!!
-    val appleScriptSettings = settings.getCommonSettings(PowerShellLanguage.INSTANCE)
+    val codeStyleSettings = settings.getCommonSettings(PowerShellLanguage.INSTANCE)
     val rootBlock = PowerShellBlock(astNode, null, null, settings)
-    return AppleScriptFormattingModel(containingFile, rootBlock, FormattingDocumentModelImpl.createOn(containingFile))
+    return PowerShellFormattingModel(containingFile, rootBlock, FormattingDocumentModelImpl.createOn(containingFile))
   }
 
-  private class AppleScriptFormattingModel internal constructor(file: PsiFile, rootBlock: Block, documentModel: FormattingDocumentModelImpl)
+  private class PowerShellFormattingModel internal constructor(file: PsiFile, rootBlock: Block, documentModel: FormattingDocumentModelImpl)
     : PsiBasedFormattingModel(file, rootBlock, documentModel) {
 
     override fun replaceWithPsiInLeaf(textRange: TextRange, whiteSpace: String, leafElement: ASTNode): String? {

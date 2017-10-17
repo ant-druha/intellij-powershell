@@ -1,5 +1,7 @@
 package com.intellij.plugin.powershell.ide.editor.formatting
 
+import com.intellij.application.options.IndentOptionsEditor
+import com.intellij.application.options.SmartIndentOptionsEditor
 import com.intellij.lang.Language
 import com.intellij.plugin.powershell.lang.PowerShellLanguage
 import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable
@@ -11,24 +13,29 @@ import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider
  */
 class PowerShellLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider() {
   override fun getCodeSample(settingsType: SettingsType): String {
-    return "foreach (\$i in <command name>get-childitem</command name> | <command name>sort-object</command name> length)\n" +
-        " {\n" +
-        " \$i  #highlight\n" +
-        " \$sum += \$i.length\n" +
-        " }\n" +
+    return "foreach (\$i in get-childitem | sort-object length)\n" +
+        "{\n" +
+        "    \$i  #highlight\n" +
+        "    \$sum += \$i.length\n" +
+        "}\n" +
         "\n" +
         "# 3) variable name token: '\$_.length ' and 'get-childitem'\n" +
-        "switch -regex -casesensitive (<command name>get-childitem</command name> | sort length)\n" +
+        "switch -regex -casesensitive (get-childitem | sort length)\n" +
         "{\n" +
-        " \"^5\" {\"length for \$_ started with 5\" ; continue}\n" +
-        " { \$_.length > 20000 } {\"length of \$_ is greater than 20000\"}\n" +
-        " default {\"Didn't match anything else...\"}\n" +
+        "\"^5\" {\"length for \$_ started with 5\" ; continue}\n" +
+        "{\$_.length >20000} {\"length of \$_ is greater than 20000\"\n" +
+        "}\n" +
+        "default {\"Didn't match anything else...\"}\n" +
         "}"
   }
 
+  override fun getIndentOptionsEditor(): IndentOptionsEditor? {
+    return SmartIndentOptionsEditor()
+  }
+
   override fun customizeSettings(consumer: CodeStyleSettingsCustomizable, settingsType: SettingsType) {
-    if (settingsType == LanguageCodeStyleSettingsProvider.SettingsType.SPACING_SETTINGS) {
-      consumer.showStandardOptions("SPACE_BEFORE_METHOD_CALL_PARENTHESES",
+    when (settingsType) {
+      LanguageCodeStyleSettingsProvider.SettingsType.SPACING_SETTINGS -> consumer.showStandardOptions("SPACE_BEFORE_METHOD_CALL_PARENTHESES",
           "SPACE_BEFORE_METHOD_PARENTHESES",
           "SPACE_BEFORE_IF_PARENTHESES",
           "SPACE_AROUND_ASSIGNMENT_OPERATORS",
@@ -52,10 +59,8 @@ class PowerShellLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsPro
           "SPACE_BEFORE_COMMA",
           "SPACE_AROUND_UNARY_OPERATOR"
       )
-    } else if (settingsType == LanguageCodeStyleSettingsProvider.SettingsType.BLANK_LINES_SETTINGS) {
-      consumer.showStandardOptions("KEEP_BLANK_LINES_IN_CODE")
-    } else if (settingsType == LanguageCodeStyleSettingsProvider.SettingsType.WRAPPING_AND_BRACES_SETTINGS) {
-      consumer.showStandardOptions("RIGHT_MARGIN",
+      LanguageCodeStyleSettingsProvider.SettingsType.BLANK_LINES_SETTINGS -> consumer.showStandardOptions("KEEP_BLANK_LINES_IN_CODE")
+      LanguageCodeStyleSettingsProvider.SettingsType.WRAPPING_AND_BRACES_SETTINGS -> consumer.showStandardOptions("RIGHT_MARGIN",
           "KEEP_LINE_BREAKS",
           "KEEP_FIRST_COLUMN_COMMENT",
           "BRACE_STYLE",
@@ -75,15 +80,20 @@ class PowerShellLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsPro
           "PARENTHESES_EXPRESSION_LPAREN_WRAP",
           "PARENTHESES_EXPRESSION_RPAREN_WRAP",
           "SPECIAL_ELSE_IF_TREATMENT")
+      LanguageCodeStyleSettingsProvider.SettingsType.INDENT_SETTINGS -> consumer.showStandardOptions("INDENT_SIZE",
+          "CONTINUATION_INDENT_SIZE",
+          "TAB_SIZE")
+      LanguageCodeStyleSettingsProvider.SettingsType.COMMENTER_SETTINGS -> consumer.showStandardOptions("COMMENTER_SETTINGS")
+      LanguageCodeStyleSettingsProvider.SettingsType.LANGUAGE_SPECIFIC -> consumer.showStandardOptions("LANGUAGE_SPECIFIC")
     }
   }
 
   override fun getDefaultCommonSettings(): CommonCodeStyleSettings? {
     val defaultSettings = CommonCodeStyleSettings(language)
     val indentOptions = defaultSettings.initIndentOptions()
-    indentOptions.INDENT_SIZE = 2
-    indentOptions.CONTINUATION_INDENT_SIZE = 4
-    indentOptions.TAB_SIZE = 2
+    indentOptions.INDENT_SIZE = 4
+    indentOptions.CONTINUATION_INDENT_SIZE = 8
+    indentOptions.TAB_SIZE = 4
     return defaultSettings
   }
 

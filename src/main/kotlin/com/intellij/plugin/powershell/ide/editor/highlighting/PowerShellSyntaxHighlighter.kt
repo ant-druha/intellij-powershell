@@ -17,12 +17,19 @@ class PowerShellSyntaxHighlighter : SyntaxHighlighterBase() {
 
 
   companion object {
+    private val POWER_SHELL_KEYWORD = "POWER_SHELL_KEYWORD"
+    private val POWER_SHELL_NUMBER = "POWER_SHELL_NUMBER"
+    private val POWER_SHELL_STRING = "POWER_SHELL_STRING"
+    private val POWER_SHELL_LINE_COMMENT = "POWER_SHELL_LINE_COMMENT"
+    private val POWER_SHELL_COMMAND_NAME = "POWER_SHELL_COMMAND_NAME"
+
     val ATTRIBUTES = HashMap<IElementType, TextAttributesKey>()
-    lateinit var KEYWORD: TextAttributesKey
-    lateinit var COMMENT: TextAttributesKey
-    lateinit var STRING: TextAttributesKey
-    lateinit var NUMBER: TextAttributesKey
-    lateinit var COMMAND_NAME: TextAttributesKey
+    val KEYWORD = createTextAttributesKey(POWER_SHELL_KEYWORD, DefaultLanguageHighlighterColors.KEYWORD)
+    val COMMENT = createTextAttributesKey(POWER_SHELL_LINE_COMMENT, DefaultLanguageHighlighterColors.LINE_COMMENT)
+    val STRING = createTextAttributesKey(POWER_SHELL_STRING, DefaultLanguageHighlighterColors.STRING)
+    val NUMBER = createTextAttributesKey(POWER_SHELL_NUMBER, DefaultLanguageHighlighterColors.NUMBER)
+    val COMMAND_NAME = createTextAttributesKey(POWER_SHELL_COMMAND_NAME, DefaultLanguageHighlighterColors.MARKUP_ATTRIBUTE)
+    // val COMMAND_NAME_ATTR = createTextAttributesKey(POWER_SHELL_COMMAND_NAME, DefaultLanguageHighlighterColors.MARKUP_ATTRIBUTE)
   }
 
   override fun getTokenHighlights(tokenType: IElementType?): Array<TextAttributesKey> {
@@ -35,20 +42,6 @@ class PowerShellSyntaxHighlighter : SyntaxHighlighterBase() {
 
 
   init {
-    val POWER_SHELL_KEYWORD = "POWER_SHELL_KEYWORD"
-    val POWER_SHELL_NUMBER = "POWER_SHELL_NUMBER"
-    val POWER_SHELL_STRING = "POWER_SHELL_STRING"
-    val POWER_SHELL_LINE_COMMENT = "POWER_SHELL_LINE_COMMENT"
-    val POWER_SHELL_COMMAND_NAME = "POWER_SHELL_COMMAND_NAME"
-
-
-    KEYWORD = createTextAttributesKey(POWER_SHELL_KEYWORD, DefaultLanguageHighlighterColors.KEYWORD)
-    COMMENT = createTextAttributesKey(POWER_SHELL_LINE_COMMENT, DefaultLanguageHighlighterColors.LINE_COMMENT)
-    STRING = createTextAttributesKey(POWER_SHELL_STRING, DefaultLanguageHighlighterColors.STRING)
-    NUMBER = createTextAttributesKey(POWER_SHELL_NUMBER, DefaultLanguageHighlighterColors.NUMBER)
-    COMMAND_NAME = createTextAttributesKey(POWER_SHELL_COMMAND_NAME, DefaultLanguageHighlighterColors.MARKUP_ATTRIBUTE)
-//    val COMMAND_NAME_ATTR = createTextAttributesKey(POWER_SHELL_COMMAND_NAME, DefaultLanguageHighlighterColors.MARKUP_ATTRIBUTE)
-
     fillMap(ATTRIBUTES, PowerShellTokenTypeSets.KEYWORDS, KEYWORD)
     fillMap(ATTRIBUTES, PowerShellTokenTypeSets.COMMENTS, COMMENT)
     fillMap(ATTRIBUTES, PowerShellTokenTypeSets.STRINGS, STRING)

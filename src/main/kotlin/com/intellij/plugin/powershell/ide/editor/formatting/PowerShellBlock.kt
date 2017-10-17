@@ -4,6 +4,7 @@ import com.intellij.formatting.*
 import com.intellij.formatting.templateLanguages.BlockWithParent
 import com.intellij.lang.ASTNode
 import com.intellij.plugin.powershell.lang.PowerShellLanguage
+import com.intellij.plugin.powershell.psi.PowerShellPsiUtil
 import com.intellij.plugin.powershell.psi.PowerShellTokenTypeSets
 import com.intellij.plugin.powershell.psi.PowerShellTypes.*
 import com.intellij.plugin.powershell.psi.impl.PowerShellPsiImplUtil
@@ -144,7 +145,11 @@ class PowerShellSpacingProcessor(private val myNode: ASTNode, private val mySett
 
     if (type1 == DS) return Spacing.createSpacing(0, 0, 0, true, 0)
 
-    if (type1 === COLON && type2 != COLON) return Spacing.createSpacing(1, 1, 0, true, 0)//todo setting
+    if (type1 === COLON && type2 != COLON) {
+      if (PowerShellPsiUtil.isLabel(node2) || PowerShellPsiUtil.isVariableScope(node2)) return Spacing.createSpacing(0, 0, 0, true, 0)
+
+      return Spacing.createSpacing(1, 1, 0, true, 0)//todo setting
+    }
 
     if (type2 === COLON && type1 != COLON) return Spacing.createSpacing(0, 0, 0, true, 0)
 

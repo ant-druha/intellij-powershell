@@ -60,7 +60,6 @@ public interface PowerShellTypes {
   IElementType REFERENCE_IDENTIFIER = new PowerShellElementType("REFERENCE_IDENTIFIER");
   IElementType RESOURCE_BLOCK = new PowerShellElementType("RESOURCE_BLOCK");
   IElementType SCRIPT_BLOCK_EXPRESSION = new PowerShellElementType("SCRIPT_BLOCK_EXPRESSION");
-  IElementType SEP = new PowerShellElementType("SEP");
   IElementType SEQUENCE_STATEMENT = new PowerShellElementType("SEQUENCE_STATEMENT");
   IElementType STRING_LITERAL_EXPRESSION = new PowerShellElementType("STRING_LITERAL_EXPRESSION");
   IElementType SUB_EXPRESSION = new PowerShellElementType("SUB_EXPRESSION");
@@ -328,9 +327,6 @@ public interface PowerShellTypes {
       }
       else if (type == SCRIPT_BLOCK_EXPRESSION) {
         return new PowerShellScriptBlockExpressionImplGen(node);
-      }
-      else if (type == SEP) {
-        return new PowerShellSepImplGen(node);
       }
       else if (type == SEQUENCE_STATEMENT) {
         return new PowerShellSequenceStatementImplGen(node);

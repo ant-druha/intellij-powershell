@@ -647,7 +647,7 @@ private switch_clause_condition ::= command_argument | primary_expression
 
 
 foreach_statement ::= 'foreach' nls? '-parallel'? nls?
-                                LP nls?   target_variable_expression   nls? 'in' nls? pipeline nls? RP nls? statement_block
+                                LP nls? target_variable_expression nls? 'in' nls? pipeline nls? RP nls? statement_block
 {pin=1}
 //todo simplify
 for_statement ::=   'for' nls? LP
@@ -672,7 +672,7 @@ if_statement ::= 'if' nls? LP nls? pipeline nls? RP nls? statement_block (nls? e
 private elseif_clause ::= 'elseif' nls? LP nls? pipeline nls? RP nls? statement_block
 private else_clause ::= 'else' nls? statement_block
 
-sep ::= SEMI |  NLS | new_line_char | comment //COMMENT //hide psi
+private sep ::= SEMI |  NLS | new_line_char | comment //COMMENT //hide psi
 private statement_end ::= sep | RCURLY | RP | <<eof>>//ex: parethnisized_expression $AllNodes.Where{$_.Role -eq "WebServer"}
 private nls ::= (comment? NLS comment?)+ //NLS
 private new_line_char ::= LF
