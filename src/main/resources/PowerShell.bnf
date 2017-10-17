@@ -522,7 +522,7 @@ private labeled_statement ::=   switch_statement
                               | for_statement
                               | while_statement
                               | do_statement
-switch_statement ::= 'switch' nls? switch_parameter* switch_condition switch_body {pin=1}
+switch_statement ::= 'switch' nls? switch_parameter* switch_condition switch_block_body {pin=1}
 private switch_parameter ::=   '-regex'
                              | '-wildcard'
                              | '-exact'
@@ -641,7 +641,9 @@ key_expression ::= simple_name_identifier | unary_expression
 //->private range_argument_expression ::= unary_expression ( '..' nls? unary_expression )*
 //->
 
-private switch_body ::= nls? '{' nls? switch_clause+ '}'
+private switch_block_body ::= nls? '{' nls? switch_body '}'
+switch_body ::= switch_clause+
+{elementType=block_body}
 private switch_clause ::= switch_clause_condition statement_block statement_terminators?
 private switch_clause_condition ::= command_argument | primary_expression
 
