@@ -1,6 +1,7 @@
 package com.intellij.plugin.powershell.psi
 
 import com.intellij.lang.ASTNode
+import com.intellij.plugin.powershell.psi.PowerShellTypes.PATH_EXPRESSION
 import com.intellij.plugin.powershell.psi.PowerShellTypes.TARGET_VARIABLE_EXPRESSION
 import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IElementType
@@ -28,5 +29,9 @@ object PowerShellPsiUtil {
 
   fun isVariableScope(node: ASTNode): Boolean {
     return node.treeParent.elementType == TARGET_VARIABLE_EXPRESSION
+  }
+
+  fun isPathExpression(node: ASTNode): Boolean {
+    return node.treeParent.elementType == PATH_EXPRESSION
   }
 }
