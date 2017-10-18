@@ -645,7 +645,7 @@ private switch_block_body ::= nls? '{' nls? switch_body '}'
 switch_body ::= switch_clause+
 {elementType=block_body}
 private switch_clause ::= switch_clause_condition statement_block statement_terminators?
-private switch_clause_condition ::= command_argument | primary_expression
+private switch_clause_condition ::= generic_argument_rule | primary_expression
 
 
 foreach_statement ::= 'foreach' nls? '-parallel'? nls?
