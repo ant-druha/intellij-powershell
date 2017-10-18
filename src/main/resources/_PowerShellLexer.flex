@@ -14,36 +14,36 @@ import static com.intellij.plugin.powershell.psi.PowerShellTypes.*;
   public _PowerShellLexer() {
     this((java.io.Reader)null);
   }
-  
+
   private static final class State {
           final int lParenCount;
           final int state;
-  
+
           public State(int state, int lParenCount) {
               this.state = state;
               this.lParenCount = lParenCount;
           }
-  
+
           @Override
           public String toString() {
               return "yystate = " + state + (lParenCount == 0 ? "" : "lParenCount = " + lParenCount);
           }
       }
-  
+
       private final Stack<State> states = new Stack<State>();
       private int lParenCount;
-  
+
       private int commentStart;
       private int commentDepth;
 
       private int yycolumn = 0;
-  
+
       private void pushState(int state) {
           states.push(new State(yystate(), lParenCount));
           lParenCount = 0;
           yybegin(state);
       }
-  
+
       private void popState() {
           State state = states.pop();
           lParenCount = state.lParenCount;
@@ -53,7 +53,7 @@ import static com.intellij.plugin.powershell.psi.PowerShellTypes.*;
       public int getState() {
       return states.peek().state;
       }
-  
+
 %}
 
 %public
@@ -317,7 +317,7 @@ BRACED_VAR_START={DS}{LCURLY}
   {OP_FR}/[^#]                          { return OP_FR; }
   {OP_NOT}                         { return OP_NOT; }
   {OP_BNOT}                        { return OP_BNOT; }
-  {OP_C}                           { return OP_C; }
+  {OP_C}/[^\{\}\(\)\;\,\|\&\.\[\:\s\n\r]*                       { return OP_C; }
   {EXCL_MARK}                      { return EXCL_MARK; }
   {NLS}                            { return NLS; }
   {CH_DQ}                          { pushState(STRING); return DQ_OPEN; }

@@ -163,4 +163,24 @@ public class PowerShellLexerTest extends LexerTestCase {
     doTest("$h1[20.5]", "$ ('$')\n" + "SIMPLE_ID ('h1')\n" + "[ ('[')\n" + "REAL_NUM ('20.5')\n" + "] (']')");
     doTest("$h1[$my_var]", "$ ('$')\n" + "SIMPLE_ID ('h1')\n" + "[ ('[')\n" + "$ ('$')\n" + "SIMPLE_ID ('my_var')\n" + "] (']')");
   }
+
+  public void testComparisonOperator() throws Exception {
+    doTest("$j-le100", "$ ('$')\n" +
+        "SIMPLE_ID ('j')\n" +
+        "OP_C ('-le')\n" +
+        "DEC_INTEGER ('100')");
+    doTest("$j-gt100", "$ ('$')\n" +
+        "SIMPLE_ID ('j')\n" +
+        "OP_C ('-gt')\n" +
+        "DEC_INTEGER ('100')");
+    doTest("$j-ccontains100", "$ ('$')\n" +
+        "SIMPLE_ID ('j')\n" +
+        "OP_C ('-ccontains')\n" +
+        "DEC_INTEGER ('100')");
+    doTest("$_-eq$null", "$ ('$')\n" +
+        "SIMPLE_ID ('_')\n" +
+        "OP_C ('-eq')\n" +
+        "$ ('$')\n" +
+        "SIMPLE_ID ('null')");
+  }
 }
