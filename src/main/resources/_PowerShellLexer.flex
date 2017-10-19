@@ -157,7 +157,8 @@ DELIMITED_COMMENT={DELIMITED_COMENT_START}{DELIMITED_COMMENT_CHARS}?{DELIMITED_C
 LETTERS=[a-zA-Z]+
 DASH=[\-\–\—\―]
 MM="--"
-PARAM_TOKEN=({DASH}|{DIV})(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\_|\?)[^\{\}\(\)\;\,\|\&\.\[\:\s\n\r]*:?
+PARAM_TOKEN=({DASH}|{DIV})(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\_|\?){PARAMETER_CHAR}*:?
+PARAMETER_CHAR=[^\{\}\(\)\;\,\|\&\.\[\:\s\n\r]
 VERBATIM_ARG_START={MM}{PERS}
 VERBATIM_ARG_INPUT=[^\|\r\n]+
 BRACED_VAR_START={DS}{LCURLY}
@@ -317,13 +318,13 @@ BRACED_VAR_START={DS}{LCURLY}
   {SQBR_L}/{WHITE_SPACE}?{SIMPLE_ID}       { pushState(TYPE_ID);   return SQBR_L; }
   {SQBR_R}                         { return SQBR_R; }
   {OP_MR}                          { return OP_MR; }
-  {OP_FR}/[^#]                          { return OP_FR; }
-  {OP_NOT}                         { return OP_NOT; }
-  {OP_BNOT}                        { return OP_BNOT; }
-  {OP_BAND}                        { return OP_BAND; }
-  {OP_BOR}                        { return OP_BOR; }
-  {OP_BXOR}                        { return OP_BXOR; }
-  {OP_C}/[^\{\}\(\)\;\,\|\&\.\[\:\s\n\r]*                       { return OP_C; }
+  {OP_FR}/[^#]                     { return OP_FR; }
+  {OP_C}/{PARAMETER_CHAR}*         { return OP_C; }
+  {OP_BNOT}/{PARAMETER_CHAR}*      { return OP_BNOT; }
+  {OP_BAND}/{PARAMETER_CHAR}*      { return OP_BAND; }
+  {OP_BOR}/{PARAMETER_CHAR}*       { return OP_BOR; }
+  {OP_BXOR}/{PARAMETER_CHAR}*      { return OP_BXOR; }
+  {OP_NOT}/{PARAMETER_CHAR}*       { return OP_NOT; }
   {EXCL_MARK}                      { return EXCL_MARK; }
   {NLS}                            { return NLS; }
   {CH_DQ}                          { pushState(STRING); return DQ_OPEN; }
