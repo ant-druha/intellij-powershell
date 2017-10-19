@@ -78,6 +78,9 @@ OP_MR=("*>&1"|"2>&1"|"3>&1"|"4>&1"|"5>&1"|"6>&1"|"*>&2"|"1>&2"|"3>&2"|"4>&2"|"5>
 OP_FR=(">"|">>"|"2>"|"2>>"|"3>"|"3>>"|"4>"|"4>>"|"5>"|"5>>"|"6>"|"6>>"|"*>"|"*>>"|"<")
 OP_NOT={DASH}"not"
 OP_BNOT={DASH}"bnot"
+OP_BAND={DASH}"band"
+OP_BOR={DASH}"bor"
+OP_BXOR={DASH}"bxor"
 EXCL_MARK="!"
 
 NL=(\r|\n|\r\n)
@@ -317,6 +320,9 @@ BRACED_VAR_START={DS}{LCURLY}
   {OP_FR}/[^#]                          { return OP_FR; }
   {OP_NOT}                         { return OP_NOT; }
   {OP_BNOT}                        { return OP_BNOT; }
+  {OP_BAND}                        { return OP_BAND; }
+  {OP_BOR}                        { return OP_BOR; }
+  {OP_BXOR}                        { return OP_BXOR; }
   {OP_C}/[^\{\}\(\)\;\,\|\&\.\[\:\s\n\r]*                       { return OP_C; }
   {EXCL_MARK}                      { return EXCL_MARK; }
   {NLS}                            { return NLS; }

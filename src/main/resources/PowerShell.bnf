@@ -328,7 +328,7 @@ assignment_expression ::= expression assignment_operator statement
 
 logical_expression ::=   expression ( '-and' | '-or' | '-xor' ) nls? expression
 
-bitwise_expression ::=  expression ('-band' | '-bor' | '-bxor' )  nls? expression
+bitwise_expression ::=  expression (OP_BAND | OP_BOR | OP_BXOR )  nls? expression
 
 comparison_expression ::= expression comparison_operator nls? expression
 
