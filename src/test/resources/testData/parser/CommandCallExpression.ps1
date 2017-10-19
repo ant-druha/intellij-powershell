@@ -26,5 +26,7 @@ $a = New-Object 'double[,]' 3, 2
 #Creates a filter to determine which input objects are be passed along a command pipeline.
 Get-ChildItem "E:\Files\*.*" | Where-Object { $_.Length -le 1000 }
 Get-ChildItem "E:\Files\*.*" | Where-Object Length –eq 0
+Get-ChildItem "E:\Files\*.*" | Where-Object Length –xor 0
+Get-ChildItem "E:\Files\*.*" | Where-Object Length –and 0
 
 cmdkey /list

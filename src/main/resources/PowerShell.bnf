@@ -326,7 +326,7 @@ expression ::=   assignment_expression
 assignment_expression ::= expression assignment_operator statement
 {rightAssociative=true methods=[getTargetVariables] pin=2}
 
-logical_expression ::=   expression ( '-and' | '-or' | '-xor' ) nls? expression
+logical_expression ::=   expression ( OP_AND | OP_OR | OP_XOR ) nls? expression
 
 bitwise_expression ::=  expression (OP_BAND | OP_BOR | OP_BXOR )  nls? expression
 
@@ -563,7 +563,8 @@ private path_item_name ::= relative_path | path_name_tokens | allowed_identifier
 private path_name_tokens ::= path_name_part_tokens_start (nws (path_name_part_tokens_start | DOT))*
 private path_name_part_tokens_start ::= generic_id_part_tokens_start | DEC_INTEGER
 private relative_path ::= DOT | DOT_DOT | PATH_SEP
-command_parameter ::= PARAM_TOKEN | OP_C | OP_NOT | OP_BNOT
+command_parameter ::= PARAM_TOKEN | binary_operator
+private binary_operator ::= OP_C | OP_NOT | OP_BNOT | OP_BAND | OP_BOR | OP_BXOR | OP_AND | OP_OR | OP_XOR
 verbatim_command_argument ::= VERBATIM_ARG_START VERBATIM_ARG_INPUT //(verbatim_command_string | AMP_ARG | generic_token_chars )+
 //private verbatim_command_string ::= EXPANDABLE_STRING //TODO: 02/09/17 variable substitution:
 

@@ -81,6 +81,9 @@ OP_BNOT={DASH}"bnot"
 OP_BAND={DASH}"band"
 OP_BOR={DASH}"bor"
 OP_BXOR={DASH}"bxor"
+OP_AND={DASH}"and"
+OP_OR={DASH}"or"
+OP_XOR={DASH}"xor"
 EXCL_MARK="!"
 
 NL=(\r|\n|\r\n)
@@ -325,6 +328,9 @@ BRACED_VAR_START={DS}{LCURLY}
   {OP_BOR}/{PARAMETER_CHAR}*       { return OP_BOR; }
   {OP_BXOR}/{PARAMETER_CHAR}*      { return OP_BXOR; }
   {OP_NOT}/{PARAMETER_CHAR}*       { return OP_NOT; }
+  {OP_AND}/{PARAMETER_CHAR}*       { return OP_AND; }
+  {OP_OR}/{PARAMETER_CHAR}*        { return OP_OR; }
+  {OP_XOR}/{PARAMETER_CHAR}*       { return OP_XOR; }
   {EXCL_MARK}                      { return EXCL_MARK; }
   {NLS}                            { return NLS; }
   {CH_DQ}                          { pushState(STRING); return DQ_OPEN; }
