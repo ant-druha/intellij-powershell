@@ -592,9 +592,9 @@ private value ::=   parenthesized_expression
                   | script_block_expression
                   | hash_literal_expression
                   | literal
-                  | type_literal_expression
-//                  | prefix_op lvalue
                   | cast_expression
+//                  | prefix_op lvalue
+                  | type_literal_expression
                   | target_variable_expression
 
 parenthesized_expression ::= LP nls? pipeline nls? RP
