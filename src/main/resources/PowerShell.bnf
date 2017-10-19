@@ -246,7 +246,7 @@ private statement_stop_tokens ::= reserved_statement_keywords | sep | nls | RCUR
 private pipeline ::= expression redirection* pipeline_tail? &statement_end | command_call_expression verbatim_command_argument? pipeline_tail?
 
 //B.1.11 Operators and punctuators
-private assignment_operator ::= '=' | '-=' | '+=' | '*=' | '/='| '%='
+private assignment_operator ::= EQ | EQ_DASH | EQ_PLUS | EQ_STAR | EQ_DIV | EQ_PERS
 private merging_redirection_operator ::= OP_MR
 private file_redirection_operator ::= OP_FR
 private comparison_operator ::=  OP_C

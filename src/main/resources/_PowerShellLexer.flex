@@ -121,6 +121,11 @@ DOT_DOT=".."
 DOT="."
 SEMI=";"
 COLON2="::"
+EQ_DASH={DASH}"="
+EQ_PLUS="+="
+EQ_STAR={STAR}"="
+EQ_DIV={DIV}"="
+EQ_PERS={PERS}"="
 PERS="%"
 STAR="*"
 DIV="/"
@@ -295,17 +300,22 @@ BRACED_VAR_START={DS}{LCURLY}
   ","                                                          { return COMMA; }
   ":"                                                          { return COLON; }
   "@"                                                          { return AT; }
-  "="                                                          { return EQ; }
   "|"                                                          { return PIPE; }
   "&"                                                          { return AMP; }
   "++"                                                         { return PP; }
-  {DIV}                                                        { return DIV; }
+  {EQ_DASH}                                                    { return EQ_DASH; }
+  {EQ_PLUS}                                                    { return EQ_PLUS; }
+  {EQ_STAR}                                                    { return EQ_STAR; }
+  {EQ_DIV}                                                     { return EQ_DIV; }
+  {EQ_PERS}                                                    { return EQ_PERS; }
+  "+"                                                          { return PLUS; }
   {STAR}                                                       { return STAR; }
+  {DIV}                                                        { return DIV; }
   {MM}                                                         { return MM; }
   {VERBATIM_ARG_START}                                         { pushState(VERBATIM_ARGUMENT); return VERBATIM_ARG_START; }
-  "+"                                                          { return PLUS; }
+  "="                                                          { return EQ; }
   "\\"                                                         { return PATH_SEP; }
-
+//private assignment_operator ::= '=' | '-=' | '+=' | '*=' | '/='| '%='
   {DASH}                           { return DASH; }
   {BRACED_VAR_START}               { pushState(VAR_BRACED); return BRACED_VAR_START; }
   {DS}/{SIMPLE_ID}                 { pushState(VAR_SIMPLE); return DS; }
