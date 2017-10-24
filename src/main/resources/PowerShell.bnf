@@ -420,9 +420,9 @@ private reserved_statement_keywords ::= 'class'|'data'|'do'|'elseif'|'exit'|'fil
 
 
 try_statement ::= 'try' nls? statement_block nls? (catch_clause nls?)* finally_clause? {pin=1}
-private catch_clause ::= 'catch' nls? catch_type_list? nls? statement_block
+catch_clause ::= 'catch' nls? catch_type_list? nls? statement_block {pin=1}
 private catch_type_list ::= type_literal_expression nls? ( ',' nls? type_literal_expression nls? )*
-private finally_clause ::= 'finally' nls? statement_block
+finally_clause ::= 'finally' nls? statement_block {pin=1}
 
 private trap_pipeline ::= trap_statement statement?
 trap_statement ::= 'trap' nls? type_literal_expression? nls? statement_block {pin=1}
@@ -681,7 +681,7 @@ private nls ::= (comment? NLS comment?)+ //NLS
 private new_line_char ::= LF
 
 comment ::= !is_id requires_comment | !is_id SINGLE_LINE_COMMENT | DELIMITED_COMMENT
-private requires_comment ::= HASH nws 'requires' ws command_argument+
+private requires_comment ::= REQUIRES_COMMENT_START ws generic_argument_rule+//HASH nws 'requires' ws command_argument+
 
 private statement_terminators ::= sep+
 
