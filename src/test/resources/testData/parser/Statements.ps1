@@ -382,3 +382,10 @@ $fields = $(
           New-Object "System.Management.Automation.Host.FieldDescription" "Input List"
           )
 $fields[1].SetParameterType([int[]])
+
+#call arguments
+$SomeVar.call($($d = 3))
+$SomeVar.call($param1, $($d = 3))
+$SomeVar.call($param1, $(1,2,3))
+$SomeVar.call({$d = 3})
+$SomeVar.call{$d = 3}

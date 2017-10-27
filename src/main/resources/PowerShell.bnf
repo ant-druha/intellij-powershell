@@ -323,7 +323,7 @@ expression ::=   assignment_expression
                | array_literal_expression
                | unary_expression
 
-assignment_expression ::= expression assignment_operator statement
+assignment_expression ::= expression (!is_in_call_arguments assignment_operator) statement
 {rightAssociative=true methods=[getTargetVariables] pin=2}
 
 logical_expression ::=   expression ( OP_AND | OP_OR | OP_XOR ) nls? expression
@@ -340,7 +340,7 @@ format_expression ::= expression format_operator nls? expression
 
 range_expression ::= expression DOT_DOT nls? expression
 
-array_literal_expression ::= expression (',' nls? expression)+
+array_literal_expression ::= expression (!is_in_call_arguments COMMA nls? expression)+
 
 
 private op_join_text ::= '-join' | '–join' | '—join' | '―join'
@@ -471,7 +471,7 @@ implements="com.intellij.plugin.powershell.psi.PowerShellComponent"}
 
 private method_block ::= statement_block
 
-private method_argument_expression_list ::= LP nls? argument_expression_list? nls? RP
+private method_argument_expression_list ::= LP nls? parameter_list? nls? RP
 private base_constructor_call ::= COLON 'base' method_argument_expression_list
 
 method_declaration_statement ::= (member_declaration_attribute nls?)* method_name method_argument_expression_list nls? method_block
@@ -508,7 +508,7 @@ fake reference_identifier ::= generic_identifier
 private generic_identifier ::=  generic_token_with_sub_expr | generic_token_part | allowed_identifier_keywords
 
 
-private function_parameter_declaration ::= LP parameter_list nls? RP
+private function_parameter_declaration ::= LP nls? parameter_list nls? RP
 //private parameter_list ::= parameter_with_initializer (COMMA parameter_with_initializer)*
 private parameter_list ::= script_parameter_list
 //private script_parameter_list ::= script_parameter (nls? ',' script_parameter)*
@@ -574,8 +574,11 @@ private primary_expression ::= value (nws (invocation_expression | member_access
 private left member_access ::= nws ( DOT | COLON2 ) nws member_name
 private left element_access ::= SQBR_L nls? expression nls? SQBR_R
 left invocation_expression ::= (DOT | COLON2 ) member_name call_arguments
+
 private call_arguments ::= LP nls? argument_expression_list? nls? RP | primary_expression
-private argument_expression_list ::= expression ( nls? ',' nls? expression)*
+private argument_expression_list ::= <<parse_call_arguments_expression_list expression_list_rule>>
+private expression_list_rule ::= expression ( nls? COMMA nls? expression)*
+
 left post_increment_expression ::= PP
 left post_decrement_expression ::= MM
 
@@ -597,50 +600,23 @@ private value ::=   parenthesized_expression
                   | type_literal_expression
                   | target_variable_expression
 
-parenthesized_expression ::= LP nls? pipeline nls? RP
+parenthesized_expression ::= LP nls? <<allow_any_expression pipeline>> nls? RP
 
-sub_expression ::= DS nws LP nls? statement_list? nls? RP
+sub_expression ::= DS nws LP nls? statement_list_rule? nls? RP
+private statement_list_rule ::= <<allow_any_expression statement_list>>
+array_expression ::= AT nws LP nls? statement_list_rule? nls? RP
 
-array_expression ::= AT nws LP nls? statement_list? nls? RP
+script_block_expression ::= LCURLY nls? script_block_rule? nls? RCURLY
+private script_block_rule ::= <<allow_any_expression script_block>>
 
-script_block_expression ::= LCURLY nls? script_block? nls? RCURLY
-
-hash_literal_expression ::= AT nws LCURLY nls? hash_literal_body? nls? RCURLY //'@{' nls? hash_literal_body? nls? '}'
+hash_literal_expression ::= AT nws LCURLY nls? hash_literal_body_rule? nls? RCURLY //'@{' nls? hash_literal_body? nls? '}'
+private hash_literal_body_rule ::= <<allow_any_expression hash_literal_body>>
 hash_literal_body ::= (hash_entry_list | statement_terminators )+
 {elementType=block_body}
 private hash_entry_list ::= hash_entry ( statement_terminators hash_entry )*
 private hash_entry ::= key_expression '=' nls? statement
 
 key_expression ::= simple_name_identifier | unary_expression
-
-// todo Note no whitespace is allowed after primary_expression.
-//->private member_access ::= primary_expression ( DOT | '::' ) member_name
-
-//todo  Note no whitespace is allowed between primary_expression and [.
-//->private element_access ::= primary_expression '[' nls? expression nls? ']'
-
-//->//todo  Note no whitespace is allowed after primary_expression.
-//->private invocation_expression ::= primary_expression (DOT | '::') member_name argument_list
-//->
-//->private argument_list ::= LP argument_expression_list? nls? RP
-//->private argument_expression_list ::= argument_expression ( ',' argument_expression)*
-//->
-//->private argument_expression ::=  nls? logical_argument_expression
-//->
-//->private logical_argument_expression ::= bitwise_argument_expression ( ('-and' | '-or' | '-xor') nls? bitwise_argument_expression )*
-//->
-//->private bitwise_argument_expression ::= comparison_argument_expression ( ('-band' | '-bor' | '-bxor') nls? comparison_argument_expression )*
-//->
-//->private comparison_argument_expression ::= additive_argument_expression ( comparison_operator nls? additive_argument_expression )*
-//->
-//->private additive_argument_expression ::= multiplicative_argument_expression ( (PLUS | MINUS) nls? multiplicative_argument_expression )*
-//->
-//->private multiplicative_argument_expression ::= format_argument_expression ( ('*' | '/' | '%') nls? format_argument_expression )*
-//->
-//->private format_argument_expression ::= range_argument_expression ( format_operator nls? range_argument_expression )*
-//->
-//->private range_argument_expression ::= unary_expression ( '..' nls? unary_expression )*
-//->
 
 private switch_block_body ::= nls? '{' nls? switch_body '}'
 switch_body ::= switch_clause+
@@ -692,3 +668,5 @@ private nws ::= <<isNotWhiteSpace>>
 private ws ::= <<isWhiteSpace>>
 private is_id ::= <<isIdentifierBefore>>
 private is_dsc ::= <<is_parsing_configuration_block>>
+//array_literal_expression and assignment_expression are not allowed inside call arguments:
+private is_in_call_arguments ::= <<is_parsing_call_arguments>>
