@@ -166,7 +166,7 @@ private top_level_element ::= sep* ( top_script_block | statement_list | configu
 {recoverWhile=top_level_recover}
 private top_level_recover ::= !(reserved_statement_keywords | sep | nls | RCURLY | LCURLY | RP | SQBR_L)
 private configuration_block_list ::= configuration_block (statement_terminators configuration_block)* statement_terminators?
-configuration_block ::= attribute_list? 'configuration' nls? configuration_name nls? LCURLY nls? configuration_block_body? nls? RCURLY
+configuration_block ::= attribute_list? 'configuration' nls? configuration_name nls? LCURLY configuration_block_body? RCURLY
 {pin=2 recoverWhile=configuration_block_recover}
 private configuration_block_recover ::= !(statement_terminators? ('configuration' | <<eof>> | SQBR_L))
 private configuration_name ::= function_name
@@ -192,14 +192,16 @@ private resource_name ::= /*!(nls? LCURLY)*/ function_name //function_name can b
 private parse_resource_block ::= is_dsc resource_block
 private parse_node_block ::= is_dsc node_block
 
-private statement_block ::= LCURLY nls? block_body? nls? RCURLY
-block_body ::= (statement_list | statement_terminators)+ {recoverWhile=statement_block_recover}
+private statement_block ::= LCURLY block_body? RCURLY
+block_body ::= nls? block_body_content nls? | nls
+private block_body_content ::= (statement_list | statement_terminators)+ {recoverWhile=statement_block_recover}
 
 private statement_block_recover ::= !block_body_stop_tokens
 private block_body_stop_tokens ::= reserved_statement_keywords | sep | nls | RCURLY
 
 private statement_list ::= statement ( statement_terminators statement )* {pin=1 recoverWhile=top_level_recover}
-private top_script_block ::= param_block? statement_terminators? script_block_body | param_block statement_terminators?
+private top_script_block ::= nls? top_script_block_content nls? | nls
+private top_script_block_content ::= param_block? statement_terminators? script_block_body | param_block statement_terminators?
 script_block ::= top_script_block
 {elementType=block_body}
 
@@ -502,7 +504,7 @@ workflow_statement ::= 'workflow' nls? function_statement_tail
 {mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractComponent"
 implements="com.intellij.plugin.powershell.psi.PowerShellComponent"}
 
-private function_statement_tail ::= function_name nls? function_parameter_declaration? nls? LCURLY nls? script_block? nls? RCURLY
+private function_statement_tail ::= function_name nls? function_parameter_declaration? nls? LCURLY script_block? RCURLY
 private function_name ::= primary_expression | identifier //command_name_expr
 identifier ::= generic_identifier
 fake reference_identifier ::= generic_identifier
@@ -609,7 +611,7 @@ sub_expression ::= DS nws LP nls? statement_list_rule? nls? RP
 private statement_list_rule ::= <<allow_any_expression statement_list>>
 array_expression ::= AT nws LP nls? statement_list_rule? nls? RP
 
-script_block_expression ::= LCURLY nls? script_block_rule? nls? RCURLY
+script_block_expression ::= LCURLY script_block_rule? RCURLY
 private script_block_rule ::= <<allow_any_expression script_block>>
 
 hash_literal_expression ::= AT nws LCURLY nls? hash_literal_body_rule? nls? RCURLY //'@{' nls? hash_literal_body? nls? '}'
