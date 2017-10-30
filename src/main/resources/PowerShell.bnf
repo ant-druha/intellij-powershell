@@ -471,7 +471,8 @@ implements="com.intellij.plugin.powershell.psi.PowerShellComponent"}
 
 private method_block ::= statement_block
 
-private method_argument_expression_list ::= LP nls? parameter_list? nls? RP
+method_argument_expression_list ::= LP nls? parameter_list? nls? RP
+{elementType=parameter_clause}
 private base_constructor_call ::= COLON 'base' method_argument_expression_list
 
 method_declaration_statement ::= (member_declaration_attribute nls?)* method_name method_argument_expression_list nls? method_block
@@ -508,7 +509,8 @@ fake reference_identifier ::= generic_identifier
 private generic_identifier ::=  generic_token_with_sub_expr | generic_token_part | allowed_identifier_keywords
 
 
-private function_parameter_declaration ::= LP nls? parameter_list nls? RP
+private function_parameter_declaration ::= parameter_clause
+parameter_clause ::= LP nls? parameter_list nls? RP
 //private parameter_list ::= parameter_with_initializer (COMMA parameter_with_initializer)*
 private parameter_list ::= script_parameter_list
 //private script_parameter_list ::= script_parameter (nls? ',' script_parameter)*
@@ -569,14 +571,15 @@ verbatim_command_argument ::= VERBATIM_ARG_START VERBATIM_ARG_INPUT //(verbatim_
 //private verbatim_command_string ::= EXPANDABLE_STRING //TODO: 02/09/17 variable substitution:
 
 
-private primary_expression ::= value (nws (invocation_expression | member_access | element_access | post_increment_expression | post_decrement_expression)+)?
+private primary_expression ::= value (invocation_expression | member_access | element_access | post_increment_expression | post_decrement_expression)*
 
-private left member_access ::= nws ( DOT | COLON2 ) nws member_name
-private left element_access ::= SQBR_L nls? expression nls? SQBR_R
-left invocation_expression ::= (DOT | COLON2 ) member_name call_arguments
+private left member_access ::= nws ( DOT | COLON2 ) nls? member_name
+private left element_access ::= nws SQBR_L nls? expression nls? SQBR_R
+left invocation_expression ::= nws (DOT | COLON2 ) nls? member_name call_arguments
 
-private call_arguments ::= LP nls? argument_expression_list? nls? RP | primary_expression
-private argument_expression_list ::= <<parse_call_arguments_expression_list expression_list_rule>>
+private call_arguments ::= ncm nls? parenthesized_argument_list | primary_expression
+parenthesized_argument_list ::= LP nls? argument_expression_list? nls? RP
+private argument_expression_list ::= <<parse_call_arguments expression_list_rule>>
 private expression_list_rule ::= expression ( nls? COMMA nls? expression)*
 
 left post_increment_expression ::= PP
@@ -664,6 +667,7 @@ private statement_terminators ::= sep+
 private label ::= ':' nws SIMPLE_ID// todo ALNUM?
 
 private nws ::= <<isNotWhiteSpace>>
+private ncm ::= <<isNotComment>>
 
 private ws ::= <<isWhiteSpace>>
 private is_id ::= <<isIdentifierBefore>>

@@ -389,3 +389,10 @@ $SomeVar.call($param1, $($d = 3))
 $SomeVar.call($param1, $(1,2,3))
 $SomeVar.call({$d = 3})
 $SomeVar.call{$d = 3}
+#nls
+$a.Length
+(1)
+$a.Length    #
+(1)
+$a.Length    #
+1
