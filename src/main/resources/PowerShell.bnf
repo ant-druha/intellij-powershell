@@ -623,10 +623,11 @@ private hash_entry ::= key_expression '=' nls? statement
 
 key_expression ::= simple_name_identifier | unary_expression
 
-private switch_block_body ::= nls? '{' nls? switch_body '}'
-switch_body ::= switch_clause+
+private switch_block_body ::= nls? '{' switch_body? '}'
+switch_body ::= nls? switch_clause+ nls? | nls
 {elementType=block_body}
-private switch_clause ::= switch_clause_condition statement_block statement_terminators?
+private switch_clause ::= switch_clause_condition switch_clause_block statement_terminators?
+switch_clause_block ::= statement_block
 private switch_clause_condition ::= generic_argument_rule | primary_expression
 
 
