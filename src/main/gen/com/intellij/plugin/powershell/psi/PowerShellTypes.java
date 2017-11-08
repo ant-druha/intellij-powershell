@@ -15,9 +15,11 @@ public interface PowerShellTypes {
   IElementType ARRAY_LITERAL_EXPRESSION = new PowerShellElementType("ARRAY_LITERAL_EXPRESSION");
   IElementType ASSIGNMENT_EXPRESSION = new PowerShellElementType("ASSIGNMENT_EXPRESSION");
   IElementType ATTRIBUTE = new PowerShellElementType("ATTRIBUTE");
+  IElementType ATTRIBUTE_ARGUMENT = new PowerShellElementType("ATTRIBUTE_ARGUMENT");
   IElementType BITWISE_EXPRESSION = new PowerShellElementType("BITWISE_EXPRESSION");
   IElementType BLOCK_BODY = new PowerShellElementType("BLOCK_BODY");
   IElementType CAST_EXPRESSION = new PowerShellElementType("CAST_EXPRESSION");
+  IElementType CATCH_CLAUSE = new PowerShellElementType("CATCH_CLAUSE");
   IElementType CLASS_DECLARATION_STATEMENT = new PowerShellElementType("CLASS_DECLARATION_STATEMENT");
   IElementType COMMAND_ARGUMENT = new PowerShellElementType("COMMAND_ARGUMENT");
   IElementType COMMAND_CALL_EXPRESSION = new PowerShellElementType("COMMAND_CALL_EXPRESSION");
@@ -29,12 +31,16 @@ public interface PowerShellTypes {
   IElementType CONSTRUCTOR_DECLARATION_STATEMENT = new PowerShellElementType("CONSTRUCTOR_DECLARATION_STATEMENT");
   IElementType DATA_STATEMENT = new PowerShellElementType("DATA_STATEMENT");
   IElementType DO_STATEMENT = new PowerShellElementType("DO_STATEMENT");
+  IElementType ELSEIF_CLAUSE = new PowerShellElementType("ELSEIF_CLAUSE");
+  IElementType ELSE_CLAUSE = new PowerShellElementType("ELSE_CLAUSE");
   IElementType ENUM_DECLARATION_STATEMENT = new PowerShellElementType("ENUM_DECLARATION_STATEMENT");
   IElementType ENUM_LABEL_DECLARATION = new PowerShellElementType("ENUM_LABEL_DECLARATION");
   IElementType EXPRESSION = new PowerShellElementType("EXPRESSION");
+  IElementType FINALLY_CLAUSE = new PowerShellElementType("FINALLY_CLAUSE");
   IElementType FLOW_CONTROL_STATEMENT = new PowerShellElementType("FLOW_CONTROL_STATEMENT");
   IElementType FOREACH_STATEMENT = new PowerShellElementType("FOREACH_STATEMENT");
   IElementType FORMAT_EXPRESSION = new PowerShellElementType("FORMAT_EXPRESSION");
+  IElementType FOR_CLAUSE = new PowerShellElementType("FOR_CLAUSE");
   IElementType FOR_STATEMENT = new PowerShellElementType("FOR_STATEMENT");
   IElementType FUNCTION_STATEMENT = new PowerShellElementType("FUNCTION_STATEMENT");
   IElementType HASH_LITERAL_EXPRESSION = new PowerShellElementType("HASH_LITERAL_EXPRESSION");
@@ -49,6 +55,8 @@ public interface PowerShellTypes {
   IElementType MULTIPLICATIVE_EXPRESSION = new PowerShellElementType("MULTIPLICATIVE_EXPRESSION");
   IElementType NODE_BLOCK = new PowerShellElementType("NODE_BLOCK");
   IElementType PARALLEL_STATEMENT = new PowerShellElementType("PARALLEL_STATEMENT");
+  IElementType PARAMETER_CLAUSE = new PowerShellElementType("PARAMETER_CLAUSE");
+  IElementType PARENTHESIZED_ARGUMENT_LIST = new PowerShellElementType("PARENTHESIZED_ARGUMENT_LIST");
   IElementType PARENTHESIZED_EXPRESSION = new PowerShellElementType("PARENTHESIZED_EXPRESSION");
   IElementType PATH_EXPRESSION = new PowerShellElementType("PATH_EXPRESSION");
   IElementType PATH_ITEM = new PowerShellElementType("PATH_ITEM");
@@ -63,6 +71,7 @@ public interface PowerShellTypes {
   IElementType SEQUENCE_STATEMENT = new PowerShellElementType("SEQUENCE_STATEMENT");
   IElementType STRING_LITERAL_EXPRESSION = new PowerShellElementType("STRING_LITERAL_EXPRESSION");
   IElementType SUB_EXPRESSION = new PowerShellElementType("SUB_EXPRESSION");
+  IElementType SWITCH_CLAUSE_BLOCK = new PowerShellElementType("SWITCH_CLAUSE_BLOCK");
   IElementType SWITCH_STATEMENT = new PowerShellElementType("SWITCH_STATEMENT");
   IElementType TARGET_VARIABLE_EXPRESSION = new PowerShellElementType("TARGET_VARIABLE_EXPRESSION");
   IElementType TRAP_STATEMENT = new PowerShellElementType("TRAP_STATEMENT");
@@ -107,6 +116,11 @@ public interface PowerShellTypes {
   IElementType END = new PowerShellTokenType("end");
   IElementType ENUM = new PowerShellTokenType("enum");
   IElementType EQ = new PowerShellTokenType("=");
+  IElementType EQ_DASH = new PowerShellTokenType("EQ_DASH");
+  IElementType EQ_DIV = new PowerShellTokenType("EQ_DIV");
+  IElementType EQ_PERS = new PowerShellTokenType("EQ_PERS");
+  IElementType EQ_PLUS = new PowerShellTokenType("EQ_PLUS");
+  IElementType EQ_STAR = new PowerShellTokenType("EQ_STAR");
   IElementType EXCL_MARK = new PowerShellTokenType("!");
   IElementType EXIT = new PowerShellTokenType("exit");
   IElementType EXPANDABLE_HERE_STRING = new PowerShellTokenType("EXPANDABLE_HERE_STRING");
@@ -135,11 +149,17 @@ public interface PowerShellTypes {
   IElementType MULTI_LINE_COMMENT_END = new PowerShellTokenType("*)");
   IElementType MULTI_LINE_COMMENT_START = new PowerShellTokenType("(*");
   IElementType NLS = new PowerShellTokenType("NLS");
+  IElementType OP_AND = new PowerShellTokenType("OP_AND");
+  IElementType OP_BAND = new PowerShellTokenType("OP_BAND");
   IElementType OP_BNOT = new PowerShellTokenType("-bnot");
+  IElementType OP_BOR = new PowerShellTokenType("OP_BOR");
+  IElementType OP_BXOR = new PowerShellTokenType("OP_BXOR");
   IElementType OP_C = new PowerShellTokenType("OP_C");
   IElementType OP_FR = new PowerShellTokenType("OP_FR");
   IElementType OP_MR = new PowerShellTokenType("OP_MR");
   IElementType OP_NOT = new PowerShellTokenType("-not");
+  IElementType OP_OR = new PowerShellTokenType("OP_OR");
+  IElementType OP_XOR = new PowerShellTokenType("OP_XOR");
   IElementType PARALLEL = new PowerShellTokenType("parallel");
   IElementType PARAM = new PowerShellTokenType("param");
   IElementType PARAM_TOKEN = new PowerShellTokenType("PARAM_TOKEN");
@@ -153,6 +173,7 @@ public interface PowerShellTypes {
   IElementType RAW_RBR = new PowerShellTokenType("»");
   IElementType RCURLY = new PowerShellTokenType("}");
   IElementType REAL_NUM = new PowerShellTokenType("REAL_NUM");
+  IElementType REQUIRES_COMMENT_START = new PowerShellTokenType("REQUIRES_COMMENT_START");
   IElementType RETURN = new PowerShellTokenType("return");
   IElementType RP = new PowerShellTokenType(")");
   IElementType SEMI = new PowerShellTokenType(";");
@@ -196,6 +217,9 @@ public interface PowerShellTypes {
       else if (type == ATTRIBUTE) {
         return new PowerShellAttributeImplGen(node);
       }
+      else if (type == ATTRIBUTE_ARGUMENT) {
+        return new PowerShellAttributeArgumentImplGen(node);
+      }
       else if (type == BITWISE_EXPRESSION) {
         return new PowerShellBitwiseExpressionImplGen(node);
       }
@@ -204,6 +228,9 @@ public interface PowerShellTypes {
       }
       else if (type == CAST_EXPRESSION) {
         return new PowerShellCastExpressionImplGen(node);
+      }
+      else if (type == CATCH_CLAUSE) {
+        return new PowerShellCatchClauseImplGen(node);
       }
       else if (type == CLASS_DECLARATION_STATEMENT) {
         return new PowerShellClassDeclarationStatementImplGen(node);
@@ -238,11 +265,20 @@ public interface PowerShellTypes {
       else if (type == DO_STATEMENT) {
         return new PowerShellDoStatementImplGen(node);
       }
+      else if (type == ELSEIF_CLAUSE) {
+        return new PowerShellElseifClauseImplGen(node);
+      }
+      else if (type == ELSE_CLAUSE) {
+        return new PowerShellElseClauseImplGen(node);
+      }
       else if (type == ENUM_DECLARATION_STATEMENT) {
         return new PowerShellEnumDeclarationStatementImplGen(node);
       }
       else if (type == ENUM_LABEL_DECLARATION) {
         return new PowerShellEnumLabelDeclarationImplGen(node);
+      }
+      else if (type == FINALLY_CLAUSE) {
+        return new PowerShellFinallyClauseImplGen(node);
       }
       else if (type == FLOW_CONTROL_STATEMENT) {
         return new PowerShellFlowControlStatementImplGen(node);
@@ -252,6 +288,9 @@ public interface PowerShellTypes {
       }
       else if (type == FORMAT_EXPRESSION) {
         return new PowerShellFormatExpressionImplGen(node);
+      }
+      else if (type == FOR_CLAUSE) {
+        return new PowerShellForClauseImplGen(node);
       }
       else if (type == FOR_STATEMENT) {
         return new PowerShellForStatementImplGen(node);
@@ -295,6 +334,12 @@ public interface PowerShellTypes {
       else if (type == PARALLEL_STATEMENT) {
         return new PowerShellParallelStatementImplGen(node);
       }
+      else if (type == PARAMETER_CLAUSE) {
+        return new PowerShellParameterClauseImplGen(node);
+      }
+      else if (type == PARENTHESIZED_ARGUMENT_LIST) {
+        return new PowerShellParenthesizedArgumentListImplGen(node);
+      }
       else if (type == PARENTHESIZED_EXPRESSION) {
         return new PowerShellParenthesizedExpressionImplGen(node);
       }
@@ -336,6 +381,9 @@ public interface PowerShellTypes {
       }
       else if (type == SUB_EXPRESSION) {
         return new PowerShellSubExpressionImplGen(node);
+      }
+      else if (type == SWITCH_CLAUSE_BLOCK) {
+        return new PowerShellSwitchClauseBlockImplGen(node);
       }
       else if (type == SWITCH_STATEMENT) {
         return new PowerShellSwitchStatementImplGen(node);

@@ -45,7 +45,7 @@
         implementation="com.intellij.plugin.powershell.ide.editor.formatting.PowerShellLanguageCodeStyleSettingsProvider"/>
 
     <codeStyleSettingsProvider
-        implementation="com.intellij.plugin.powershell.ide.editor.formatting.PowerShellCodeStyleSettingsProviderProvider"/>
+        implementation="com.intellij.plugin.powershell.ide.editor.formatting.PowerShellCodeStyleSettingsProvider"/>
 
 
     <lang.commenter language="PowerShell" implementationClass="com.intellij.plugin.powershell.ide.editor.PowerShellCommenter"/>

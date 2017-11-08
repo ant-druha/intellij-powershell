@@ -16,7 +16,7 @@ import java.util.List;
  * Andrey 26/06/17.
  */
 public class PowerShellPsiImplUtil {
-  public static boolean isWhiteSpace(@NotNull ASTNode node) {
+  private static boolean isWhiteSpace(@NotNull ASTNode node) {
     return node.getElementType() == TokenType.WHITE_SPACE;
   }
 

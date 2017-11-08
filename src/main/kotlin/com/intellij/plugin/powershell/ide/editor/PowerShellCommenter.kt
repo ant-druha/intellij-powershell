@@ -1,6 +1,7 @@
 package com.intellij.plugin.powershell.ide.editor
 
 import com.intellij.lang.CodeDocumentationAwareCommenter
+import com.intellij.plugin.powershell.psi.PowerShellTypes.COMMENT
 import com.intellij.psi.PsiComment
 import com.intellij.psi.tree.IElementType
 
@@ -9,11 +10,11 @@ import com.intellij.psi.tree.IElementType
  */
 class PowerShellCommenter : CodeDocumentationAwareCommenter {
   override fun getLineCommentTokenType(): IElementType? {
-    return null
+    return COMMENT
   }
 
   override fun getBlockCommentTokenType(): IElementType? {
-    return null
+    return COMMENT
   }
 
   override fun getDocumentationCommentTokenType(): IElementType? {
