@@ -8,9 +8,12 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.plugin.powershell.lang.PowerShellLanguage
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.TokenType
 import com.intellij.psi.codeStyle.CodeStyleSettings
+import com.intellij.psi.formatter.FormatterUtil
 import com.intellij.psi.formatter.FormattingDocumentModelImpl
 import com.intellij.psi.formatter.PsiBasedFormattingModel
+import com.intellij.psi.impl.source.tree.TreeUtil
 
 /**
  * Andrey 08/08/17.
@@ -27,5 +30,22 @@ class PowerShellFormattingModelBuilder : FormattingModelBuilder {
   }
 
   private class PowerShellFormattingModel internal constructor(file: PsiFile, rootBlock: Block, documentModel: FormattingDocumentModelImpl)
-    : PsiBasedFormattingModel(file, rootBlock, documentModel)
+    : PsiBasedFormattingModel(file, rootBlock, documentModel) {
+
+
+    override fun replaceWithPsiInLeaf(textRange: TextRange?, whiteSpace: String?, leafElement: ASTNode?): String? {
+      if (!myCanModifyAllWhiteSpaces) {
+        if (leafElement != null && isWhiteSpaceOrNls(leafElement)) return null
+      }
+
+      var elementTypeToUse = TokenType.WHITE_SPACE
+      val prevNode = TreeUtil.prevLeaf(leafElement)
+      if (prevNode != null && isWhiteSpaceOrNls(prevNode)) {
+        elementTypeToUse = prevNode.elementType
+      }
+
+      FormatterUtil.replaceWhiteSpace(whiteSpace, leafElement, elementTypeToUse, textRange)
+      return whiteSpace
+    }
+  }
 }

@@ -324,7 +324,7 @@ class PowerShellSpacingProcessor(private val myCommonSettings: CommonCodeStyleSe
     if (child == null) return
 
     var treePrev: ASTNode? = child.treePrev
-    while (treePrev != null && isWhiteSpace(treePrev)) {
+    while (treePrev != null && isWhiteSpaceOrNls(treePrev)) {
       treePrev = treePrev.treePrev
     }
 

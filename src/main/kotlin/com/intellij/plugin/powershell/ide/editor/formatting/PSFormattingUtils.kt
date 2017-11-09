@@ -168,7 +168,7 @@ internal fun isAdditiveOperator(node: ASTNode): Boolean {
   return (type === PowerShellTypes.PLUS || type === PowerShellTypes.DASH) && node.treeParent?.elementType === PowerShellTypes.ADDITIVE_EXPRESSION
 }
 
-internal fun isWhiteSpace(node: ASTNode): Boolean {
+internal fun isWhiteSpaceOrNls(node: ASTNode): Boolean {
   return PowerShellPsiImplUtil.isWhiteSpaceOrNls(node) || node.textLength == 0
 }
 
