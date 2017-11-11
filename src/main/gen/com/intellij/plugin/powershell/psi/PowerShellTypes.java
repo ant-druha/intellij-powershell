@@ -60,6 +60,7 @@ public interface PowerShellTypes {
   IElementType PARENTHESIZED_EXPRESSION = new PowerShellElementType("PARENTHESIZED_EXPRESSION");
   IElementType PATH_EXPRESSION = new PowerShellElementType("PATH_EXPRESSION");
   IElementType PATH_ITEM = new PowerShellElementType("PATH_ITEM");
+  IElementType PIPELINE = new PowerShellElementType("PIPELINE");
   IElementType POST_DECREMENT_EXPRESSION = new PowerShellElementType("POST_DECREMENT_EXPRESSION");
   IElementType POST_INCREMENT_EXPRESSION = new PowerShellElementType("POST_INCREMENT_EXPRESSION");
   IElementType PROPERTY_DECLARATION_STATEMENT = new PowerShellElementType("PROPERTY_DECLARATION_STATEMENT");
@@ -348,6 +349,9 @@ public interface PowerShellTypes {
       }
       else if (type == PATH_ITEM) {
         return new PowerShellPathItemImplGen(node);
+      }
+      else if (type == PIPELINE) {
+        return new PowerShellPipelineTailImplGen(node);
       }
       else if (type == POST_DECREMENT_EXPRESSION) {
         return new PowerShellPostDecrementExpressionImplGen(node);

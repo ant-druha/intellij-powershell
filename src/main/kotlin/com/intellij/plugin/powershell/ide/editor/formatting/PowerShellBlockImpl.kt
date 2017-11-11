@@ -160,6 +160,8 @@ open class PowerShellBlockImpl(node: ASTNode, wrap: Wrap?, alignment: Alignment?
     }
     if (myPSSettings.ALIGN_MULTILINE_ATTRIBUTE_ARGUMENT && isAttributeArgument(node)) return myBaseAlignment
 
+    if (myPSSettings.ALIGN_MULTILINE_PIPELINE_STATEMENT && isPipelineContext(node)) return myBaseAlignment
+
     if (myNode.elementType === PARENTHESIZED_ARGUMENT_LIST
         && myCommonSettings.ALIGN_MULTILINE_PARAMETERS_IN_CALLS
         && myCommonSettings.CALL_PARAMETERS_LPAREN_ON_NEXT_LINE) return myBaseAlignment
@@ -191,6 +193,9 @@ open class PowerShellBlockImpl(node: ASTNode, wrap: Wrap?, alignment: Alignment?
       return Indent.getContinuationIndent()
     }
     if (isInvocationExpressionQualifier(node)) {
+      return Indent.getContinuationIndent()
+    }
+    if (isExpressionInPipelineTail(node)) {
       return Indent.getContinuationIndent()
     }
     if (isAttributeArgument(node)) {
@@ -288,6 +293,10 @@ open class PowerShellBlockImpl(node: ASTNode, wrap: Wrap?, alignment: Alignment?
 
     if (isAttributeArgument(childNode) && findSiblingSkippingWS(childNode, false)?.elementType != LP) {
       return Wrap.createWrap(WrappingUtil.getWrapType(myPSSettings.ATTRIBUTE_ARGUMENT_WRAP), true)
+    }
+
+    if (isExpressionInPipelineTail(childNode)) {
+      return Wrap.createWrap(WrappingUtil.getWrapType(myPSSettings.PIPELINE_TAIL_WRAP), true)
     }
 
     if (childNode.elementType === LP) {

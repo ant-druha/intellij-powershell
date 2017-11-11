@@ -99,6 +99,15 @@ internal fun isAttributeArgument(node: ASTNode): Boolean {
   return node.elementType === PowerShellTypes.ATTRIBUTE_ARGUMENT
 }
 
+internal fun isExpressionInPipelineTail(node: ASTNode): Boolean {
+  return node.elementType === PowerShellTypes.COMMAND_CALL_EXPRESSION
+      && findSiblingSkippingWS(node, false)?.elementType === PowerShellTypes.PIPE
+}
+
+internal fun isPipelineContext(node: ASTNode): Boolean {
+  return node.treeParent?.elementType === PowerShellTypes.PIPELINE
+}
+
 internal fun isConstructorDeclarationContext(node: ASTNode): Boolean {
   return node.treeParent?.elementType === PowerShellTypes.CONSTRUCTOR_DECLARATION_STATEMENT
 }

@@ -3,6 +3,7 @@ package com.intellij.plugin.powershell.lang
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.CommandProcessor
 import com.intellij.openapi.util.TextRange
+import com.intellij.plugin.powershell.ide.editor.formatting.PowerShellCodeStyleSettings
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.codeStyle.CodeStyleManager
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings
@@ -28,6 +29,20 @@ class PowerShellFormatterTest : FormatterTestCase() {
     tempTestSettings.BRACE_STYLE = CommonCodeStyleSettings.NEXT_LINE_SHIFTED2
     tempTestSettings.METHOD_BRACE_STYLE = CommonCodeStyleSettings.NEXT_LINE_SHIFTED2
     doTest("indent_brace", "indent_brace_res")
+  }
+
+  fun testDependentBracePlacement() {
+    val settings = getCommonSettings()
+    settings.BRACE_STYLE = CommonCodeStyleSettings.NEXT_LINE_IF_WRAPPED
+    settings.METHOD_BRACE_STYLE = CommonCodeStyleSettings.NEXT_LINE_IF_WRAPPED
+    doTest("braces1", "braces1_if_wrapped_res")
+  }
+
+  fun testPipelineWrap() {
+    val psSettings = getPowerShellSettings()
+    psSettings.PIPELINE_TAIL_WRAP = CommonCodeStyleSettings.WRAP_ALWAYS
+    psSettings.ALIGN_MULTILINE_PIPELINE_STATEMENT = true
+    doTest("indent_brace", "indent_brace_pipeline_wrap_res")
   }
 
   fun testDefault1() {
@@ -168,6 +183,8 @@ class PowerShellFormatterTest : FormatterTestCase() {
     manager.commitDocument(document)
     assertEquals(textAfter, file.text)
   }
+
+  private fun getPowerShellSettings(): PowerShellCodeStyleSettings  = settings.getCustomSettings(PowerShellCodeStyleSettings::class.java)
 
   private fun getCommonSettings() = FormatterTestCase.getSettings(PowerShellLanguage.INSTANCE)
 }

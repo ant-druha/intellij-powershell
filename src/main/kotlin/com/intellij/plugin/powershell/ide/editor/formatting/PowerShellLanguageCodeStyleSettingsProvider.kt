@@ -282,6 +282,18 @@ class PowerShellLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsPro
             MessagesBundle.message("wrapping.attribute.argument")
         )
 
+        consumer.showCustomOption(PowerShellCodeStyleSettings::class.java, "PIPELINE_TAIL_WRAP",
+            MessagesBundle.message("wrapping.pipeline"),
+            null,
+            CodeStyleSettingsCustomizable.OptionAnchor.AFTER,
+            "BINARY_OPERATION_WRAP",
+            CodeStyleSettingsCustomizable.WRAP_OPTIONS,
+            CodeStyleSettingsCustomizable.WRAP_VALUES)
+        consumer.showCustomOption(PowerShellCodeStyleSettings::class.java, "ALIGN_MULTILINE_PIPELINE_STATEMENT",
+            MessagesBundle.message("code.style.align.multiline"),
+            MessagesBundle.message("wrapping.pipeline")
+        )
+
       }
       LanguageCodeStyleSettingsProvider.SettingsType.INDENT_SETTINGS -> consumer.showStandardOptions("INDENT_SIZE",
           "CONTINUATION_INDENT_SIZE",
