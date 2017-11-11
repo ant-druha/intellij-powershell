@@ -370,7 +370,8 @@ cast_expression ::= type_literal_expression unary_expression
 
 //private attributed_expression ::= type_literal variable
 
-private pipeline_tail ::= ( PIPE nls? command_call_expression )+
+left pipeline_tail ::= ( PIPE nls? command_call_expression )+
+{elementType=pipeline}
 
 command_call_expression ::= command_invocation_operator ( (command_module command_name_expr command_element* ) | command_name_expr command_element* ) | command_name_expression command_element*
 {mixin="com.intellij.plugin.powershell.psi.impl.PowerShellCallableReferenceExpression"
