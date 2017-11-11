@@ -110,9 +110,7 @@ function ValidateScriptTest
 [DscResource()]
 class Person
 {
-    [int]
-    [int]
-    $Age
+    [int] [int] $Age
     Person($foo)
     {
     }

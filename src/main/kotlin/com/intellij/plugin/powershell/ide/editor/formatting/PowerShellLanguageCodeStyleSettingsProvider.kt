@@ -21,14 +21,14 @@ class PowerShellLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsPro
         "    \$sum += \$i.length\n" +
         "    0x0F0F -band \$i\n" +
         "    \$j = 20 +\n" +
-        "         \$i\n" +
+        "            \$i\n" +
         "    # comment here\n" +
         "    Write-Object ((\$j -gt 5) -and (\$i -lt 15))\n" +
         "}\n" +
         "#logical not\n" +
-        "-not-not\$false         # False\n" +
+        "-not-not\$false          # False\n" +
         "-not1.23                # False\n" +
-        "!\"xyz\"                # False\n" +
+        "!\"xyz\"                  # False\n" +
         "[int] \$x = 10.6         # type int, value 11\n" +
         "# 3) variable name token: '\$_.length ' and 'get-childitem'\n" +
         "switch -regex -casesensitive (get-childitem | sort length)\n" +
@@ -85,7 +85,7 @@ class PowerShellLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsPro
         "    }\n" +
         "    finally\n" +
         "    {\n" +
-        "    # …\n" +
+        "        # …\n" +
         "    }\n" +
         "}\n" +
         "function ValidateScriptTest\n" +
@@ -100,7 +100,6 @@ class PowerShellLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsPro
         "[DscResource()]\n" +
         "class Person\n" +
         "{\n" +
-        "    [int]\$Age\n" +
         "    [int]\$Age\n" +
         "    Person(\$foo)\n" +
         "    {\n" +
@@ -320,6 +319,9 @@ class PowerShellLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsPro
     defaultSettings.BRACE_STYLE = CommonCodeStyleSettings.NEXT_LINE
     defaultSettings.CLASS_BRACE_STYLE = CommonCodeStyleSettings.NEXT_LINE
     defaultSettings.METHOD_BRACE_STYLE = CommonCodeStyleSettings.NEXT_LINE
+
+    defaultSettings.FIELD_ANNOTATION_WRAP = CommonCodeStyleSettings.DO_NOT_WRAP
+
     val indentOptions = defaultSettings.initIndentOptions()
     indentOptions.INDENT_SIZE = 4
     indentOptions.CONTINUATION_INDENT_SIZE = 8
