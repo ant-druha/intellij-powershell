@@ -3,6 +3,7 @@ package com.intellij.plugin.powershell.ide.structure
 import com.intellij.ide.structureView.StructureViewModel
 import com.intellij.ide.structureView.StructureViewModelBase
 import com.intellij.ide.structureView.StructureViewTreeElement
+import com.intellij.ide.util.treeView.smartTree.Sorter
 import com.intellij.openapi.editor.Editor
 import com.intellij.plugin.powershell.psi.*
 import com.intellij.plugin.powershell.psi.impl.PowerShellFile
@@ -13,6 +14,7 @@ class PowerShellStructureViewModel(file: PowerShellFile, editor: Editor?) :
 
   init {
     withSuitableClasses(*PowerShellStructureViewModel.getSuitableClasses())
+    withSorters(Sorter.ALPHA_SORTER)
   }
 
   companion object {
