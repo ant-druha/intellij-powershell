@@ -2,7 +2,6 @@ package com.intellij.plugin.powershell.ide.resolve
 
 import com.intellij.openapi.util.Key
 import com.intellij.plugin.powershell.psi.PowerShellComponent
-import com.intellij.plugin.powershell.psi.PowerShellPsiElement
 import com.intellij.psi.PsiElement
 import com.intellij.psi.ResolveState
 import com.intellij.psi.scope.PsiScopeProcessor
@@ -11,7 +10,7 @@ import com.intellij.psi.scope.PsiScopeProcessor
  * Andrey 18/08/17.
  */
 class PowerShellComponentScopeProcessor : PsiScopeProcessor {
-  private val myResult: ArrayList<PowerShellPsiElement> = ArrayList()
+  private val myResult: ArrayList<PowerShellComponent> = ArrayList()
 
   override fun handleEvent(event: PsiScopeProcessor.Event, associated: Any?) {
     TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -28,7 +27,7 @@ class PowerShellComponentScopeProcessor : PsiScopeProcessor {
     return true
   }
 
-  fun getResult(): List<PowerShellPsiElement> {
+  fun getResult(): List<PowerShellComponent> {
     return myResult
   }
 

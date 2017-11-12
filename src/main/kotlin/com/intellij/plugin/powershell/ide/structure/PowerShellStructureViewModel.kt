@@ -6,20 +6,29 @@ import com.intellij.ide.structureView.StructureViewTreeElement
 import com.intellij.openapi.editor.Editor
 import com.intellij.plugin.powershell.psi.*
 import com.intellij.plugin.powershell.psi.impl.PowerShellFile
+import com.intellij.psi.PsiElement
 
 class PowerShellStructureViewModel(file: PowerShellFile, editor: Editor?) :
     StructureViewModelBase(file, editor, PowerShellStructureViewElement(file)), StructureViewModel.ElementInfoProvider {
 
   init {
-    withSuitableClasses(PowerShellFile::class.java,
-        PowerShellClassDeclarationStatement::class.java,
-        PowerShellEnumDeclarationStatement::class.java,
-        PowerShellMethodDeclarationStatement::class.java,
-        PowerShellConstructorDeclarationStatement::class.java,
-        PowerShellPropertyDeclarationStatement::class.java,
-        PowerShellTargetVariableExpression::class.java,
-        PowerShellFunctionStatement::class.java,
-        PowerShellConfigurationBlock::class.java)
+    withSuitableClasses(*PowerShellStructureViewModel.getSuitableClasses())
+  }
+
+  companion object {
+    fun getSuitableClasses(): Array<Class<out PsiElement>> {
+      return arrayOf(PowerShellFile::class.java,
+          PowerShellClassDeclarationStatement::class.java,
+          PowerShellEnumDeclarationStatement::class.java,
+          PowerShellMethodDeclarationStatement::class.java,
+          PowerShellConstructorDeclarationStatement::class.java,
+          PowerShellPropertyDeclarationStatement::class.java,
+          PowerShellTargetVariableExpression::class.java,
+          PowerShellFunctionStatement::class.java,
+          PowerShellEnumLabelDeclaration::class.java,
+          PowerShellConfigurationBlock::class.java
+      )
+    }
   }
 
   override fun shouldEnterElement(element: Any?): Boolean {

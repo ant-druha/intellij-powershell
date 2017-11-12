@@ -498,6 +498,8 @@ enum_block_body ::= (label_list | statement_terminators)+
 {elementType=block_body}
 private label_list ::= enum_label_declaration (statement_terminators enum_label_declaration)*
 enum_label_declaration ::= label_expression (EQ expression)?
+{mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractComponent"
+ implements="com.intellij.plugin.powershell.psi.PowerShellComponent"}
 
 function_statement ::= ('function' | 'filter') nls? function_statement_tail
 {pin=1 mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractComponent"

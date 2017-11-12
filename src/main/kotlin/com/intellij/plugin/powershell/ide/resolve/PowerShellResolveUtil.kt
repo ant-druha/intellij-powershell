@@ -51,4 +51,10 @@ object PowerShellResolveUtil {
     processDeclarationsImpl(classBody, processor, state, lastParent, place)
   }
 
+  fun processEnumMembers(enum: PowerShellEnumDeclarationStatement, processor: PowerShellComponentScopeProcessor,
+                          state: ResolveState, lastParent: PsiElement?, place: PsiElement?) {//todo common interface for class/enum
+    val enumBody = enum.blockBody ?: return
+    processDeclarationsImpl(enumBody, processor, state, lastParent, place)
+  }
+
 }

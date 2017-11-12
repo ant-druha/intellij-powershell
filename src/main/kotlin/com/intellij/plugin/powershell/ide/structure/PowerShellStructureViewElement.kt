@@ -5,7 +5,10 @@ import com.intellij.ide.structureView.impl.common.PsiTreeElementBase
 import com.intellij.navigation.ItemPresentation
 import com.intellij.plugin.powershell.ide.resolve.PowerShellComponentScopeProcessor
 import com.intellij.plugin.powershell.ide.resolve.PowerShellResolveUtil
-import com.intellij.plugin.powershell.psi.*
+import com.intellij.plugin.powershell.psi.PowerShellClassDeclarationStatement
+import com.intellij.plugin.powershell.psi.PowerShellComponent
+import com.intellij.plugin.powershell.psi.PowerShellEnumDeclarationStatement
+import com.intellij.plugin.powershell.psi.PowerShellPsiElement
 import com.intellij.plugin.powershell.psi.impl.PowerShellFile
 import com.intellij.psi.ResolveState
 import javax.swing.Icon
@@ -31,22 +34,18 @@ class PowerShellStructureViewElement(element: PowerShellPsiElement) : PsiTreeEle
       PowerShellResolveUtil.processDeclarationsImpl(myElement, resolveProcessor, ResolveState.initial(), null, null)
     } else if (myElement is PowerShellClassDeclarationStatement) {
       PowerShellResolveUtil.processClassMembers(myElement, resolveProcessor, ResolveState.initial(), null, null)
+    } else if (myElement is PowerShellEnumDeclarationStatement) {
+      PowerShellResolveUtil.processEnumMembers(myElement, resolveProcessor, ResolveState.initial(), null, null)
     }
-    val components = resolveProcessor.getResult()
-    components.filter {
-      it is PowerShellTargetVariableExpression
-          || it is PowerShellClassDeclarationStatement
-          || it is PowerShellMethodDeclarationStatement
-          || it is PowerShellConstructorDeclarationStatement
-          || it is PowerShellPropertyDeclarationStatement
-          || it is PowerShellEnumDeclarationStatement
-          || it is PowerShellFunctionStatement
-          || it is PowerShellConfigurationBlock
-    }.mapTo(result) { PowerShellStructureViewElement(it, it is PowerShellClassDeclarationStatement && it != myElement) }
+    val declarations: List<PowerShellComponent> = resolveProcessor.getResult()
+    declarations.filter { d -> PowerShellStructureViewModel.getSuitableClasses().any { it.isInstance(d) } }
+        .mapTo(result) { PowerShellStructureViewElement(it, isRoot(it) && it != myElement) }
     result.sortBy { e -> (e.value as? PowerShellPsiElement)?.textOffset ?: 0 }
 
     return result
   }
+
+  private fun isRoot(e: PowerShellPsiElement) = e is PowerShellClassDeclarationStatement || e is PowerShellEnumDeclarationStatement
 
   override fun getIcon(open: Boolean): Icon? {
     return element?.presentation?.getIcon(true)
