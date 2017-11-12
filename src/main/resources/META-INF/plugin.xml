@@ -58,6 +58,9 @@
     <lang.psiStructureViewFactory language="PowerShell"
                                   implementationClass="com.intellij.plugin.powershell.ide.structure.PowerShellStructureViewFactory"/>
 
+    <lang.braceMatcher language="PowerShell"
+                       implementationClass="com.intellij.plugin.powershell.ide.editor.highlighting.PowerShellPairedBraceMatcher"/>
+
 
   </extensions>
 
