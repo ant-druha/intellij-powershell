@@ -48,10 +48,15 @@
         implementation="com.intellij.plugin.powershell.ide.editor.formatting.PowerShellCodeStyleSettingsProvider"/>
 
 
-    <lang.commenter language="PowerShell" implementationClass="com.intellij.plugin.powershell.ide.editor.PowerShellCommenter"/>
+    <lang.commenter language="PowerShell"
+                    implementationClass="com.intellij.plugin.powershell.ide.editor.PowerShellCommenter"/>
 
 
-    <lang.findUsagesProvider language="PowerShell" implementationClass="com.intellij.plugin.powershell.ide.search.PowerShellUsagesProvider"/>
+    <lang.findUsagesProvider language="PowerShell"
+                             implementationClass="com.intellij.plugin.powershell.ide.search.PowerShellUsagesProvider"/>
+
+    <lang.psiStructureViewFactory language="PowerShell"
+                                  implementationClass="com.intellij.plugin.powershell.ide.structure.PowerShellStructureViewFactory"/>
 
 
   </extensions>

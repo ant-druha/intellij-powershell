@@ -67,6 +67,7 @@ public interface PowerShellTypes {
   IElementType RANGE_EXPRESSION = new PowerShellElementType("RANGE_EXPRESSION");
   IElementType REAL_LITERAL_EXPRESSION = new PowerShellElementType("REAL_LITERAL_EXPRESSION");
   IElementType REFERENCE_IDENTIFIER = new PowerShellElementType("REFERENCE_IDENTIFIER");
+  IElementType REFERENCE_VARIABLE = new PowerShellElementType("REFERENCE_VARIABLE");
   IElementType RESOURCE_BLOCK = new PowerShellElementType("RESOURCE_BLOCK");
   IElementType SCRIPT_BLOCK_EXPRESSION = new PowerShellElementType("SCRIPT_BLOCK_EXPRESSION");
   IElementType SEQUENCE_STATEMENT = new PowerShellElementType("SEQUENCE_STATEMENT");
@@ -370,6 +371,9 @@ public interface PowerShellTypes {
       }
       else if (type == REFERENCE_IDENTIFIER) {
         return new PowerShellReferenceIdentifierImplGen(node);
+      }
+      else if (type == REFERENCE_VARIABLE) {
+        return new PowerShellReferenceVariableImplGen(node);
       }
       else if (type == RESOURCE_BLOCK) {
         return new PowerShellResourceBlockImplGen(node);

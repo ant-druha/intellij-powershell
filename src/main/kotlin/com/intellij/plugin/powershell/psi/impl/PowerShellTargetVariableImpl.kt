@@ -90,7 +90,7 @@ open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractCompo
     return dot?.prevSibling //todo
   }
 
-  override fun getPresentation(): ItemPresentation? {
+  override fun getPresentation(): ItemPresentation {
     return object : ItemPresentation {
       override fun getLocationString(): String? {
         return getNamespace()
@@ -101,7 +101,7 @@ open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractCompo
       }
 
       override fun getPresentableText(): String? {
-        return node.text
+        return name
       }
     }
   }

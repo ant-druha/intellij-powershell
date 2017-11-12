@@ -167,7 +167,9 @@ private top_level_element ::= sep* ( top_script_block | statement_list | configu
 private top_level_recover ::= !(reserved_statement_keywords | sep | nls | RCURLY | LCURLY | RP | SQBR_L)
 private configuration_block_list ::= configuration_block (statement_terminators configuration_block)* statement_terminators?
 configuration_block ::= attribute_list? 'configuration' nls? configuration_name nls? LCURLY configuration_block_body? RCURLY
-{pin=2 recoverWhile=configuration_block_recover}
+{pin=2 recoverWhile=configuration_block_recover
+mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractComponent"
+implements="com.intellij.plugin.powershell.psi.PowerShellComponent"}
 private configuration_block_recover ::= !(statement_terminators? ('configuration' | <<eof>> | SQBR_L))
 private configuration_name ::= function_name
 
@@ -297,7 +299,7 @@ private expandable_here_string_content ::= ( expandable_string_content | EXPANDA
 //B.1.6 Variables
 private variable ::= '$$' | '$?' | '$^' |  simple_variable | braced_variable
 
-//reference_variable ::= variable
+reference_variable ::= variable
 
 target_variable_expression ::= variable
 {mixin="com.intellij.plugin.powershell.psi.impl.PowerShellTargetVariableImpl"
@@ -462,8 +464,8 @@ private class_member_declaration_list ::= class_member_declaration (statement_te
 private class_member_declaration ::= property_declaration_statement | constructor_declaration_statement | method_declaration_statement
 
 property_declaration_statement ::= (member_declaration_attribute nls?)* property_definition_expression
-//{mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractComponent"
-//implements="com.intellij.plugin.powershell.psi.PowerShellComponent"}
+{mixin="com.intellij.plugin.powershell.psi.impl.PowerShellPropertyImpl"
+implements="com.intellij.plugin.powershell.psi.PowerShellComponent"}
 private property_definition_expression ::= expression
 private member_declaration_attribute ::= declaration_modifier_attribute | attribute
 private declaration_modifier_attribute ::= 'hidden' | 'static'
@@ -497,8 +499,8 @@ enum_block_body ::= (label_list | statement_terminators)+
 private label_list ::= enum_label_declaration (statement_terminators enum_label_declaration)*
 enum_label_declaration ::= label_expression (EQ expression)?
 
-function_statement ::= ('function' | 'filter') nls? function_statement_tail {pin=1}
-{mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractComponent"
+function_statement ::= ('function' | 'filter') nls? function_statement_tail
+{pin=1 mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractComponent"
 implements="com.intellij.plugin.powershell.psi.PowerShellComponent"}
 workflow_statement ::= 'workflow' nls? function_statement_tail
 {elementType=function_statement}
@@ -508,7 +510,11 @@ implements="com.intellij.plugin.powershell.psi.PowerShellComponent"}
 private function_statement_tail ::= function_name nls? function_parameter_declaration? nls? LCURLY script_block? RCURLY
 private function_name ::= primary_expression | identifier //command_name_expr
 identifier ::= generic_identifier
+//{implements="com.intellij.plugin.powershell.psi.PSIdentifier"
+//mixin="com.intellij.plugin.powershell.psi.impl.PSIdentifierImpl"}
 fake reference_identifier ::= generic_identifier
+//{implements="com.intellij.plugin.powershell.psi.PSIdentifier"
+//mixin="com.intellij.plugin.powershell.psi.impl.PSIdentifierImpl"}
 private generic_identifier ::=  generic_token_with_sub_expr | generic_token_part | allowed_identifier_keywords
 
 
@@ -564,7 +570,7 @@ path_item ::= path_item_name
 relative_path_item ::= relative_path
 {elementType=path_item}
 
-private path_item_name ::= relative_path | path_name_tokens | allowed_identifier_keywords | target_variable_expression /*reference_variable*/
+private path_item_name ::= relative_path | path_name_tokens | allowed_identifier_keywords | reference_variable
 private path_name_tokens ::= path_name_part_tokens_start (nws (path_name_part_tokens_start | DOT))*
 private path_name_part_tokens_start ::= generic_id_part_tokens_start | DEC_INTEGER
 private relative_path ::= DOT | DOT_DOT | PATH_SEP
