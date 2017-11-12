@@ -14,6 +14,7 @@ import javax.swing.Icon
 enum class PowerShellComponentType(icon: Icon) {
 
   CLASS(PlatformIcons.CLASS_ICON),
+  ENUM(PlatformIcons.ENUM_ICON),
   METHOD(PlatformIcons.METHOD_ICON),
   FIELD(PlatformIcons.FIELD_ICON),
   FUNCTION(PlatformIcons.FUNCTION_ICON),
@@ -28,6 +29,7 @@ enum class PowerShellComponentType(icon: Icon) {
         is PowerShellPropertyDeclarationStatement -> FIELD
         is PowerShellVariable -> VARIABLE
         is PowerShellClassDeclarationStatement -> CLASS
+        is PowerShellEnumDeclarationStatement -> ENUM
         is PowerShellMethodDeclarationStatement -> METHOD
         is PowerShellConstructorDeclarationStatement -> METHOD
         is PowerShellConfigurationBlock -> DSC_CONFIGURATION
