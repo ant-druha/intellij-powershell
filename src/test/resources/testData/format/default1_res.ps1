@@ -133,14 +133,14 @@ class Person
     }
 }
 #constructor override
-class Child : Person
+class Child: Person
 {
     [string]
     $School
 
     Child([int]
           $a, [string]
-          $s) : base($a)
+          $s): base($a)
     {
         $this.School = $s
     }

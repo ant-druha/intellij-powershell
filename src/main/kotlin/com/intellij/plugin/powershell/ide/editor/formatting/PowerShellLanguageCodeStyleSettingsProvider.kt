@@ -189,8 +189,6 @@ class PowerShellLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsPro
             "SPACE_BEFORE_COMMA",
             "SPACE_AFTER_SEMICOLON",
             "SPACE_BEFORE_SEMICOLON",
-            "SPACE_BEFORE_COLON",
-            "SPACE_AFTER_COLON",
             "SPACE_BEFORE_ANOTATION_PARAMETER_LIST",
             "SPACE_WITHIN_ANNOTATION_PARENTHESES",
             "SPACE_WITHIN_EMPTY_METHOD_CALL_PARENTHESES",
@@ -202,6 +200,10 @@ class PowerShellLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsPro
 
         consumer.showCustomOption(PowerShellCodeStyleSettings::class.java, "SPACE_BEFORE_DATA_LBRACE", "'data' left brace", CodeStyleSettingsCustomizable.SPACES_BEFORE_LEFT_BRACE)
         consumer.showCustomOption(PowerShellCodeStyleSettings::class.java, "SPACE_BEFORE_TRAP_LBRACE", "'trap' left brace", CodeStyleSettingsCustomizable.SPACES_BEFORE_LEFT_BRACE)
+        consumer.showCustomOption(PowerShellCodeStyleSettings::class.java, "SPACE_BEFORE_COLON", "Before colon",
+            CodeStyleSettingsCustomizable.SPACES_OTHER, CodeStyleSettingsCustomizable.OptionAnchor.BEFORE)
+        consumer.showCustomOption(PowerShellCodeStyleSettings::class.java, "SPACE_AFTER_COLON", "After colon",
+            CodeStyleSettingsCustomizable.SPACES_OTHER, CodeStyleSettingsCustomizable.OptionAnchor.BEFORE)
       }
       LanguageCodeStyleSettingsProvider.SettingsType.BLANK_LINES_SETTINGS -> consumer.showStandardOptions("KEEP_BLANK_LINES_IN_CODE")
       LanguageCodeStyleSettingsProvider.SettingsType.WRAPPING_AND_BRACES_SETTINGS -> {

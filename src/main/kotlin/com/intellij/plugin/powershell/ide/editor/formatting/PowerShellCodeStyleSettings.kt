@@ -26,4 +26,8 @@ class PowerShellCodeStyleSettings(settings: CodeStyleSettings?) : CustomCodeStyl
   var SPACE_BEFORE_DATA_LBRACE = true
   @JvmField
   var SPACE_BEFORE_TRAP_LBRACE = true
+  @JvmField
+  var SPACE_BEFORE_COLON = false
+  @JvmField
+  var SPACE_AFTER_COLON = true
 }

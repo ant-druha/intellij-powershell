@@ -612,12 +612,10 @@ class PowerShellSpacingProcessor(private val myCommonSettings: CommonCodeStyleSe
     if (type1 == DS) return Spacing.createSpacing(0, 0, 0, true, 0)
 
     if (type1 === COLON) {
-      if (!canAddSpaceBefore(node2)) return null
-
-      return simpleSpacing(myCommonSettings.SPACE_AFTER_COLON)
+      return if (canAddSpaceBefore(node2)) simpleSpacing(myPowerShellSettings.SPACE_AFTER_COLON) else null
     }
 
-    if (type2 == COLON) return if (!canAddSpaceBefore(node2)) null else simpleSpacing(myCommonSettings.SPACE_BEFORE_COLON)
+    if (type2 == COLON) return if (canAddSpaceBefore(node2)) simpleSpacing(myPowerShellSettings.SPACE_BEFORE_COLON) else null
 
     if (type1 == SEMI) return simpleSpacing(myCommonSettings.SPACE_AFTER_SEMICOLON)
 
