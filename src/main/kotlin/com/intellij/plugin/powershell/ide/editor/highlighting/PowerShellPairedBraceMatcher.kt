@@ -11,8 +11,8 @@ import com.intellij.psi.tree.IElementType
 class PowerShellPairedBraceMatcher : PairedBraceMatcherAdapter(MyPairedBraceMatcher(), PowerShellLanguage.INSTANCE) {
 
   private class MyPairedBraceMatcher : PairedBraceMatcher {
-    private val PAIRS = arrayOf(BracePair(
-        LCURLY, RCURLY, true),
+    private val PAIRS = arrayOf(BracePair(LCURLY, RCURLY, true),
+        BracePair(BRACED_VAR_START, RCURLY, false),
         BracePair(LP, RP, false),
         BracePair(SQBR_L, SQBR_R, false))
 
