@@ -305,7 +305,7 @@ target_variable_expression ::= variable
 {mixin="com.intellij.plugin.powershell.psi.impl.PowerShellTargetVariableImpl"
 implements="com.intellij.plugin.powershell.psi.PowerShellVariable"}
 
-private simple_variable ::= (DS | AT) variable_scope? variable_name_simple
+private simple_variable ::= (DS | AT) nws variable_scope? variable_name_simple
 
 private variable_scope ::= 'global:' | 'local:' | 'private:' | 'script:' | 'using:' | 'workflow:' | variable_namespace
 private variable_namespace ::= SIMPLE_ID ':'
@@ -505,9 +505,11 @@ function_statement ::= ('function' | 'filter') nls? function_statement_tail
 {pin=1 mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractComponent"
 implements="com.intellij.plugin.powershell.psi.PowerShellComponent"}
 workflow_statement ::= 'workflow' nls? function_statement_tail
-{elementType=function_statement}
-{mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractComponent"
-implements="com.intellij.plugin.powershell.psi.PowerShellComponent"}
+{
+    elementType=function_statement
+    mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractComponent"
+    implements="com.intellij.plugin.powershell.psi.PowerShellComponent"
+}
 
 private function_statement_tail ::= function_name nls? function_parameter_declaration? nls? LCURLY script_block? RCURLY
 private function_name ::= primary_expression | identifier //command_name_expr

@@ -144,7 +144,7 @@ VAR_ID_CHAR={SIMPLE_ID_CHAR}|(\?)
 VAR_ID={VAR_ID_CHAR}+
 
 
-GENERIC_ID_PART_FIRST_CHAR=([^\*\/\\\.\=\[\]\%\-\–\—\―\}\{\(\)\,\;\"\“\”\„\'\|\&\$\s\n\r\#\:\`0-9!\+]|(`.))
+GENERIC_ID_PART_FIRST_CHAR=([^@\*\/\\\.\=\[\]\%\-\–\—\―\}\{\(\)\,\;\"\“\”\„\'\|\&\$\s\n\r\#\:\`0-9!\+]|(`.))
 GENERIC_ID_PART_CHAR={GENERIC_ID_PART_FIRST_CHAR}|([\*\/\+\-\–\—\―\%0-9!])
 GENERIC_ID_PART={GENERIC_ID_PART_FIRST_CHAR}{GENERIC_ID_PART_CHAR}*
 GENERIC_ID_PART_TOKENS=({SIMPLE_ID}|{GENERIC_ID_PART}|{STAR})({SIMPLE_ID}|{GENERIC_ID_PART}|{STAR}|{DOT}|"\\"|{DIV})*
