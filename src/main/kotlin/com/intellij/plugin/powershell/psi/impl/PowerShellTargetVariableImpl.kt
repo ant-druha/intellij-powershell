@@ -3,18 +3,21 @@ package com.intellij.plugin.powershell.psi.impl
 import com.intellij.lang.ASTNode
 import com.intellij.navigation.ItemPresentation
 import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.util.UnfairTextRange
 import com.intellij.plugin.powershell.ide.resolve.PowerShellResolveUtil
 import com.intellij.plugin.powershell.ide.resolve.PowerShellResolver
-import com.intellij.plugin.powershell.psi.*
+import com.intellij.plugin.powershell.ide.search.PowerShellComponentType
+import com.intellij.plugin.powershell.psi.PowerShellAssignmentExpression
+import com.intellij.plugin.powershell.psi.PowerShellReference
+import com.intellij.plugin.powershell.psi.PowerShellTypes
+import com.intellij.plugin.powershell.psi.PowerShellTypes.*
+import com.intellij.plugin.powershell.psi.PowerShellVariable
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiPolyVariantReference
 import com.intellij.psi.ResolveResult
 import com.intellij.psi.ResolveState
 import com.intellij.psi.impl.source.resolve.ResolveCache
 import com.intellij.psi.scope.PsiScopeProcessor
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.util.PlatformIcons
+import com.intellij.psi.tree.TokenSet
 import javax.swing.Icon
 
 /**
@@ -23,9 +26,8 @@ import javax.swing.Icon
 open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractComponent(node), PowerShellVariable, PowerShellReference, PsiPolyVariantReference {
 
   override fun getQualifiedName(): String {
-    val varName = nameIdentifier?.text
     val ns = getNamespace() ?: "Variable"
-    return ns + ":" + varName
+    return ns + ":" + name
   }
 
 
@@ -34,56 +36,31 @@ open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractCompo
     return PowerShellResolveUtil.toCandidateInfoArray(elements)
   }
 
-  override fun getElement(): PsiElement {
-    return nameIdentifier ?: this
-//    return this
-  }
+  override fun getElement(): PsiElement = this
 
   override fun resolve(): PsiElement? {
     val res = multiResolve(false)
     return if (res.isEmpty()) this else res[0].element
   }
 
-  override fun getVariants(): Array<Any> {
-    return emptyArray<Any>() //todo list all existing variables + all functions of type: "$Function: funName"
-  }
+  override fun getVariants(): Array<Any> = emptyArray() //todo list all existing variables + all functions of type: "$Function: funName"
 
-  override fun getRangeInElement(): TextRange {
-    val refs = PsiTreeUtil.getChildrenOfType(this, PowerShellReference::class.java)
-    val nameIdRange = nameIdentifier?.textRange ?: textRange
-    if (refs != null && refs.isNotEmpty()) {
-      val lastRefRange = refs[refs.size - 1].textRange
-      return UnfairTextRange(lastRefRange.startOffset - nameIdRange.startOffset, lastRefRange.endOffset - nameIdRange.endOffset)
-    }
-//    return UnfairTextRange(nameIdRange.startOffset - this.textRange.startOffset, nameIdRange.endOffset - nameIdRange.startOffset)
-//    return UnfairTextRange(0, nameIdRange.endOffset - nameIdRange.startOffset)
-    return UnfairTextRange(0, this.textRange.endOffset - this.textRange.startOffset)
-  }
+  override fun getRangeInElement(): TextRange = TextRange(getPrefixNode().textLength, node.textLength - (getSuffixNode()?.textLength ?: 0))
 
   override fun getCanonicalText(): String {
     val varName = nameIdentifier?.text
     val ns = getNamespace() ?: "Variable"
     return ns + ":" + varName
-//    val varName = nameIdentifier?.text ?: ""
-//    val ns = getNamespace()
-//    return if (ns != null) ns + ":" + varName else varName
   }
 
-  override fun handleElementRename(newElementName: String?): PsiElement {
-    return if (newElementName != null) setName(newElementName) else this
-  }
+  override fun handleElementRename(newElementName: String?): PsiElement =
+      if (newElementName != null) setName(newElementName) else this
 
-  override fun bindToElement(element: PsiElement): PsiElement {
-    return this
-  }
+  override fun bindToElement(element: PsiElement): PsiElement = this
 
-  override fun isSoft(): Boolean {
-    return false
-  }
+  override fun isSoft(): Boolean = false
 
-  override fun isReferenceTo(element: PsiElement?): Boolean {
-    return element != null && element == resolve()
-  }
+  override fun isReferenceTo(element: PsiElement?): Boolean = element != null && element == resolve()
 
   override fun getQualifier(): PsiElement? {
     val dot = findChildByType<PsiElement>(PowerShellTypes.DOT)
@@ -92,56 +69,40 @@ open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractCompo
 
   override fun getPresentation(): ItemPresentation {
     return object : ItemPresentation {
-      override fun getLocationString(): String? {
-        return getNamespace()
-      }
+      override fun getLocationString(): String? = getNamespace()
 
-      override fun getIcon(unused: Boolean): Icon? {
-        return PlatformIcons.VARIABLE_ICON
-      }
+      override fun getIcon(unused: Boolean): Icon? = getIcon(0)
 
-      override fun getPresentableText(): String? {
-        return name
-      }
+      override fun getPresentableText(): String? = getPrefix() + name + (getSuffix() ?: "")
     }
   }
 
-  override fun getIcon(flags: Int): Icon? {
-    return /*super.getIcon(flags) ?:*/ PlatformIcons.VARIABLE_ICON
-  }
+  override fun getIcon(flags: Int): Icon? = PowerShellComponentType.VARIABLE.getIcon()
 
-  override fun getNamespace(): String? {
-    //todo implicit "Variable" namespace
-    return findChildByType<PsiElement>(PowerShellTokenTypeSets.IDENTIFIERS)?.text
-  }
+  override fun getNamespace(): String? = findChildByType<PsiElement>(SIMPLE_ID)?.text
 
-  override fun getName(): String? {
-//    val varName = nameIdentifier?.text
-//    val ns = getNamespace()
-//    return if (ns != null) ns + ":" + varName else varName
-    return super.getName()
-  }
+  override fun getPrefix(): String = getPrefixNode().text
+
+  private fun getPrefixNode(): ASTNode =
+      node.findChildByType(TokenSet.create(DS, AT, BRACED_VAR_START)) ?: error("null for" + text)
+
+  override fun getSuffix(): String? = getSuffixNode()?.text
+
+  private fun getSuffixNode(): ASTNode? = node.findChildByType(RCURLY)
 
   override fun getReference(): PowerShellReference? {
     return if (getNamespace().equals("function", true) && !isLhsAssignmentTarget()) {
       //if context is PowerShellAssignmentStatement, then this is function declaration
       object : PowerShellCallableReferenceExpression(node) {
-        override fun getNameElement(): PsiElement? {
-          return nameIdentifier
-        }
+        override fun getNameElement(): PsiElement? = nameIdentifier
       }
     } else this
-//    return this
-//    return PowerShellReferenceImpl(node)//todo implement reference here?
+//    return PowerShellReferenceImpl(node)
   }
 
-  fun isLhsAssignmentTarget(): Boolean {
-    return context?.firstChild == this && context is PowerShellAssignmentExpression
-  }
+  fun isLhsAssignmentTarget(): Boolean = context?.firstChild == this && context is PowerShellAssignmentExpression
 
-  override fun processDeclarations(processor: PsiScopeProcessor, state: ResolveState, lastParent: PsiElement?, place: PsiElement): Boolean {
-
-    return super.processDeclarations(processor, state, lastParent, place)
-  }
+  override fun processDeclarations(processor: PsiScopeProcessor, state: ResolveState, lastParent: PsiElement?, place: PsiElement): Boolean =
+      super.processDeclarations(processor, state, lastParent, place)
 }
 

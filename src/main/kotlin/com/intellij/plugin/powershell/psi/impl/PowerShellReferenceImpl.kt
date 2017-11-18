@@ -15,7 +15,6 @@ import com.intellij.plugin.powershell.psi.PowerShellVariable
 import com.intellij.psi.*
 import com.intellij.psi.impl.source.resolve.ResolveCache
 import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.util.PlatformIcons
 import java.util.*
 
 /**
@@ -28,21 +27,13 @@ open class PowerShellReferenceImpl(node: ASTNode) : PowerShellPsiElementImpl(nod
     return PowerShellResolveUtil.toCandidateInfoArray(elements)
   }
 
-  override fun getElement(): PsiElement {
-    return this
-  }
+  override fun getElement(): PsiElement = this
 
-  override fun getReference(): PsiReference? {
-    return this
-  }
+  override fun getReference(): PsiReference? = this
 
   override fun resolve(): PsiElement? {
     val res = multiResolve(false)
     return if (res.isNotEmpty()) res[0].element else null
-  }
-
-  override fun getTextRange(): TextRange {
-    return super.getTextRange()
   }
 
   override fun getVariants(): Array<Any> {
@@ -59,13 +50,14 @@ open class PowerShellReferenceImpl(node: ASTNode) : PowerShellPsiElementImpl(nod
   }
 
   private fun addLookupElement(e: PsiElement, lookupElements: ArrayList<LookupElement>) {
+    val icon = e.getIcon(0)
     val res: LookupElement = when (e) {
       is PowerShellVariable -> {
-        val lookupString = e.presentation?.presentableText ?: e.text
-        LookupElementBuilder.create(e, lookupString).withIcon(e.getIcon(0)).withPresentableText(lookupString)
+        val lookupString = e.presentation.presentableText ?: e.text
+        LookupElementBuilder.create(e, lookupString).withIcon(icon).withPresentableText(lookupString)
       }
-      is PowerShellFunctionStatement -> LookupElementBuilder.create(e).withIcon(PlatformIcons.FUNCTION_ICON)
-      is PowerShellComponent -> LookupElementBuilder.create(e)
+      is PowerShellFunctionStatement -> LookupElementBuilder.create(e).withIcon(icon)
+      is PowerShellComponent -> LookupElementBuilder.create(e).withIcon(icon)
       else -> LookupElementBuilder.create(e)
     }
     lookupElements.add(res)
@@ -80,30 +72,14 @@ open class PowerShellReferenceImpl(node: ASTNode) : PowerShellPsiElementImpl(nod
     return UnfairTextRange(0, textRange.endOffset - textRange.startOffset)
   }
 
-  override fun getTextOffset(): Int {
-    return super.getTextOffset()
-  }
+  override fun getCanonicalText(): String = node.text
 
-  override fun getCanonicalText(): String {
-//    val id = findChildByType<PsiElement>(PowerShellTokenTypeSets.IDENTIFIERS)
-//    if (id != null) return id.text
+  override fun handleElementRename(newElementName: String?): PsiElement =
+      if (this is PsiNamedElement && newElementName != null) setName(newElementName) else this
 
-    return node.text
-  }
+  override fun bindToElement(element: PsiElement): PsiElement = this
 
-  override fun handleElementRename(newElementName: String?): PsiElement {
-    return if (this is PsiNamedElement && newElementName != null) setName(newElementName) else this
-  }
+  override fun isSoft(): Boolean = false
 
-  override fun bindToElement(element: PsiElement): PsiElement {
-    return this
-  }
-
-  override fun isSoft(): Boolean {
-    return false
-  }
-
-  override fun isReferenceTo(element: PsiElement?): Boolean {
-    return element != null && resolve() == element
-  }
+  override fun isReferenceTo(element: PsiElement?): Boolean = element != null && resolve() == element
 }

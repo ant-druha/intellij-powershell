@@ -17,31 +17,17 @@ abstract class PowerShellAbstractComponent(node: ASTNode) : PowerShellPsiElement
 
   override fun getPresentation(): ItemPresentation {
     return object : ItemPresentation {
-      override fun getLocationString(): String? {
-        return null
-      }
-
-      override fun getIcon(unused: Boolean): Icon? {
-        return PowerShellComponentType.typeOf(this@PowerShellAbstractComponent)?.getIcon()
-      }
-
-      override fun getPresentableText(): String? {
-        return name
-      }
+      override fun getLocationString(): String? = null
+      override fun getIcon(unused: Boolean): Icon? = getIcon(0)
+      override fun getPresentableText(): String? = name
     }
   }
 
-  override fun getName(): String? {
-    return nameIdentifier?.text
-  }
+  override fun getName(): String? = nameIdentifier?.text
 
-  override fun getTextOffset(): Int {
-    return nameIdentifier?.textOffset ?: super.getTextOffset()
-  }
+  override fun getTextOffset(): Int = nameIdentifier?.textOffset ?: super.getTextOffset()
 
-  override fun getNameIdentifier(): PsiElement? {
-    return findChildByClass(PowerShellIdentifier::class.java)
-  }
+  override fun getNameIdentifier(): PsiElement? = findChildByClass(PowerShellIdentifier::class.java)
 
   override fun setName(name: String): PsiElement {
     val identifier = nameIdentifier
@@ -51,4 +37,6 @@ abstract class PowerShellAbstractComponent(node: ASTNode) : PowerShellPsiElement
     }
     return this
   }
+
+  override fun getIcon(flags: Int): Icon? = PowerShellComponentType.typeOf(this)?.getIcon()
 }
