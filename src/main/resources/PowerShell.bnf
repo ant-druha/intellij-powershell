@@ -129,6 +129,8 @@
     COLON2='::'
     DS='$'
     AT='@'
+    QMARK='?'
+    HAT='^'
     PERS='%'
     DIV='/'
     STAR='*'
@@ -297,8 +299,9 @@ private expandable_here_string_content ::= ( expandable_string_content | EXPANDA
 
 
 //B.1.6 Variables
-private variable ::= '$$' | '$?' | '$^' |  simple_variable | braced_variable
-
+private variable ::= DS nws predefined_var_id | simple_variable | braced_variable
+predefined_var_id ::= DS | QMARK | HAT
+{elementType=identifier}
 reference_variable ::= variable
 
 target_variable_expression ::= variable

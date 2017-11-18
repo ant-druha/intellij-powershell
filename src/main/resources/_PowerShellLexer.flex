@@ -143,9 +143,10 @@ SIMPLE_ID={SIMPLE_ID_FIRST_CHAR}{SIMPLE_ID_CHAR}*
 VAR_ID_CHAR={SIMPLE_ID_CHAR}|(\?)
 VAR_ID={VAR_ID_CHAR}+
 
-
+QMARK="?"
+HAT="^"
 GENERIC_ID_PART_FIRST_CHAR=([^@\*\/\\\.\=\[\]\%\-\–\—\―\}\{\(\)\,\;\"\“\”\„\'\|\&\$\s\n\r\#\:\`0-9!\+]|(`.))
-GENERIC_ID_PART_CHAR={GENERIC_ID_PART_FIRST_CHAR}|([\*\/\+\-\–\—\―\%0-9!])
+GENERIC_ID_PART_CHAR={GENERIC_ID_PART_FIRST_CHAR}|([\*\/\+\-\–\—\―\%0-9!@])
 GENERIC_ID_PART={GENERIC_ID_PART_FIRST_CHAR}{GENERIC_ID_PART_CHAR}*
 GENERIC_ID_PART_TOKENS=({SIMPLE_ID}|{GENERIC_ID_PART}|{STAR})({SIMPLE_ID}|{GENERIC_ID_PART}|{STAR}|{DOT}|"\\"|{DIV})*
 
@@ -177,24 +178,23 @@ BRACED_VAR_START={DS}{LCURLY}
 
 %%
 
-<STRING> {
-  {CH_DQ}                                                      { popState(); return DQ_CLOSE; }
+<STRING, HERE_STRING> {
   {EXPANDABLE_STRING_PART}                                     { return EXPANDABLE_STRING_PART; }
   {DS}/{SIMPLE_ID}                                             { pushState(VAR_SIMPLE); return DS; }
+  {DS}/{QMARK}|{HAT}|{DS}                                      { pushState(VAR_SIMPLE); return DS; }
   {BRACED_VAR_START}                                           { pushState(VAR_BRACED); return BRACED_VAR_START; }
   {DS}/"("                                                     { pushState(STRING_SUB_EXPRESSION); return DS; }
   {DS}                                                         { return EXPANDABLE_STRING_PART; }
 }
 
+<STRING> {
+  {CH_DQ}                                                      { popState(); return DQ_CLOSE; }
+}
+
 <HERE_STRING> {
   {EXPANDABLE_HERE_STRING_END}                                 { if (yycolumn==0) {popState(); return EXPANDABLE_HERE_STRING_END;} else return EXPANDABLE_HERE_STRING_PART; }
   {CH_DQ}                                                      { return EXPANDABLE_HERE_STRING_PART; }
-  {EXPANDABLE_STRING_PART}                                     { return EXPANDABLE_STRING_PART; }
   {EXPANDABLE_HERE_STRING_PART}                                { return EXPANDABLE_HERE_STRING_PART; }
-  {DS}/{SIMPLE_ID}                                             { pushState(VAR_SIMPLE); return DS; }
-  {BRACED_VAR_START}                                           { pushState(VAR_BRACED); return BRACED_VAR_START; }
-  {DS}/"("                                                     { pushState(STRING_SUB_EXPRESSION); return DS; }
-  {DS}                                                         { return EXPANDABLE_STRING_PART; }
 }
 
 <VAR_SIMPLE> {
@@ -206,6 +206,9 @@ BRACED_VAR_START={DS}{LCURLY}
   {SIMPLE_ID}/{COLON2}                                         { popState(); return SIMPLE_ID; }
   {SIMPLE_ID}/":"                                              { return SIMPLE_ID; }
   {SIMPLE_ID}                                                  { popState(); return SIMPLE_ID; }
+  {QMARK}                                                      { popState(); return QMARK; }
+  {HAT}                                                        { popState(); return HAT; }
+  {DS}                                                         { popState(); return DS; }
   {VAR_ID}/{DOT}                                               { State s = states.get(states.size() - 1); if (s.state == STRING || s.state == HERE_STRING) popState(); return VAR_ID; }
   {VAR_ID}                                                     { popState(); return VAR_ID; }
   ":"                                                          { return COLON; }
@@ -315,10 +318,11 @@ BRACED_VAR_START={DS}{LCURLY}
   {VERBATIM_ARG_START}                                         { pushState(VERBATIM_ARGUMENT); return VERBATIM_ARG_START; }
   "="                                                          { return EQ; }
   "\\"                                                         { return PATH_SEP; }
-//private assignment_operator ::= '=' | '-=' | '+=' | '*=' | '/='| '%='
+
   {DASH}                           { return DASH; }
   {BRACED_VAR_START}               { pushState(VAR_BRACED); return BRACED_VAR_START; }
   {DS}/{SIMPLE_ID}                 { pushState(VAR_SIMPLE); return DS; }
+  {DS}/{QMARK}|{HAT}|{DS}          { pushState(VAR_SIMPLE); return DS; }
   {DS}                             { return DS; }
   {LCURLY}                         { return LCURLY; }
   {RCURLY}                         { return RCURLY; }

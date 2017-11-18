@@ -138,6 +138,7 @@ public interface PowerShellTypes {
   IElementType FUNCTION = new PowerShellTokenType("function");
   IElementType GENERIC_ID_PART = new PowerShellTokenType("GENERIC_ID_PART");
   IElementType HASH = new PowerShellTokenType("#");
+  IElementType HAT = new PowerShellTokenType("^");
   IElementType HEX_INTEGER = new PowerShellTokenType("HEX_INTEGER");
   IElementType HIDDEN = new PowerShellTokenType("hidden");
   IElementType IF = new PowerShellTokenType("if");
@@ -171,6 +172,7 @@ public interface PowerShellTypes {
   IElementType PLUS = new PowerShellTokenType("+");
   IElementType PP = new PowerShellTokenType("++");
   IElementType PROCESS = new PowerShellTokenType("process");
+  IElementType QMARK = new PowerShellTokenType("?");
   IElementType RAW_LBR = new PowerShellTokenType("«");
   IElementType RAW_RBR = new PowerShellTokenType("»");
   IElementType RCURLY = new PowerShellTokenType("}");

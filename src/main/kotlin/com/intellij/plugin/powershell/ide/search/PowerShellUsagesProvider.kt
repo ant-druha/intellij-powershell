@@ -8,9 +8,11 @@ import com.intellij.plugin.powershell.lang.lexer.PowerShellLexerAdapter
 import com.intellij.plugin.powershell.psi.PowerShellComponent
 import com.intellij.plugin.powershell.psi.PowerShellReference
 import com.intellij.plugin.powershell.psi.PowerShellTokenTypeSets
+import com.intellij.plugin.powershell.psi.PowerShellTypes
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
 import com.intellij.psi.PsiReference
+import com.intellij.psi.tree.TokenSet
 
 /**
  * Andrey 15/08/17.
@@ -21,7 +23,10 @@ class PowerShellUsagesProvider : FindUsagesProvider {
     return DefaultWordsScanner(PowerShellLexerAdapter(),
         PowerShellTokenTypeSets.IDENTIFIERS,
         PowerShellTokenTypeSets.COMMENTS,
-        PowerShellTokenTypeSets.STRINGS)
+        PowerShellTokenTypeSets.STRINGS
+      ,  TokenSet.EMPTY,
+        TokenSet.create(PowerShellTypes.QMARK, PowerShellTypes.DS, PowerShellTypes.HAT)
+    )
   }
 
   override fun canFindUsagesFor(psiElement: PsiElement): Boolean {

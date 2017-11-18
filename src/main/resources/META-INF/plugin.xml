@@ -61,6 +61,15 @@
     <lang.braceMatcher language="PowerShell"
                        implementationClass="com.intellij.plugin.powershell.ide.editor.highlighting.PowerShellPairedBraceMatcher"/>
 
+    <!--<configurationType implementation="com.intellij.plugin.powershell.ide.run.PowerShellConfigurationType"/>-->
+    <!--<runConfigurationProducer-->
+        <!--implementation="com.intellij.plugin.powershell.ide.run.PowerShellConfigurationProducer"/>-->
+
+    <targetElementEvaluator language="PowerShell"
+                            implementationClass="com.intellij.plugin.powershell.ide.search.PowerShellTargetElementEvaluator"/>
+
+    <!--<referencesSearch-->
+        <!--implementation="com.intellij.plugin.powershell.ide.search.PowerShellVariableReferencesSearch"/>-->
 
   </extensions>
 
