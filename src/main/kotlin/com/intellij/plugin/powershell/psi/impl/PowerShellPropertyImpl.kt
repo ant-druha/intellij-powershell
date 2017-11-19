@@ -24,7 +24,7 @@ open class PowerShellPropertyImpl(node: ASTNode) : /*PowerShellAbstractComponent
   }
 
   override fun getNameIdentifier(): PsiElement? {
-    val variable = getVariable() ?: findFirstAssignmentTarget()
+    val variable = getVariable()
     return variable?.nameIdentifier
   }
 
@@ -33,7 +33,7 @@ open class PowerShellPropertyImpl(node: ASTNode) : /*PowerShellAbstractComponent
     return if (assignmentVariables != null && assignmentVariables.size > 0) assignmentVariables[0] else null
   }
 
-  private fun getVariable(): PowerShellVariable? = findChildByClass(PowerShellTargetVariableExpression::class.java)
+  private fun getVariable(): PowerShellVariable? = findChildByClass(PowerShellTargetVariableExpression::class.java) ?: findFirstAssignmentTarget()
 
   override fun getPrefix(): String = getVariable()?.getPrefix() ?: ""
 
