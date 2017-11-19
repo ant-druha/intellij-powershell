@@ -31,6 +31,7 @@ public interface PowerShellTypes {
   IElementType CONSTRUCTOR_DECLARATION_STATEMENT = new PowerShellElementType("CONSTRUCTOR_DECLARATION_STATEMENT");
   IElementType DATA_STATEMENT = new PowerShellElementType("DATA_STATEMENT");
   IElementType DO_STATEMENT = new PowerShellElementType("DO_STATEMENT");
+  IElementType ELEMENT_ACCESS_EXPRESSION = new PowerShellElementType("ELEMENT_ACCESS_EXPRESSION");
   IElementType ELSEIF_CLAUSE = new PowerShellElementType("ELSEIF_CLAUSE");
   IElementType ELSE_CLAUSE = new PowerShellElementType("ELSE_CLAUSE");
   IElementType ENUM_DECLARATION_STATEMENT = new PowerShellElementType("ENUM_DECLARATION_STATEMENT");
@@ -51,6 +52,7 @@ public interface PowerShellTypes {
   IElementType INVOCATION_EXPRESSION = new PowerShellElementType("INVOCATION_EXPRESSION");
   IElementType KEY_EXPRESSION = new PowerShellElementType("KEY_EXPRESSION");
   IElementType LOGICAL_EXPRESSION = new PowerShellElementType("LOGICAL_EXPRESSION");
+  IElementType MEMBER_ACCESS_EXPRESSION = new PowerShellElementType("MEMBER_ACCESS_EXPRESSION");
   IElementType METHOD_DECLARATION_STATEMENT = new PowerShellElementType("METHOD_DECLARATION_STATEMENT");
   IElementType MULTIPLICATIVE_EXPRESSION = new PowerShellElementType("MULTIPLICATIVE_EXPRESSION");
   IElementType NODE_BLOCK = new PowerShellElementType("NODE_BLOCK");
@@ -269,6 +271,9 @@ public interface PowerShellTypes {
       else if (type == DO_STATEMENT) {
         return new PowerShellDoStatementImplGen(node);
       }
+      else if (type == ELEMENT_ACCESS_EXPRESSION) {
+        return new PowerShellElementAccessExpressionImplGen(node);
+      }
       else if (type == ELSEIF_CLAUSE) {
         return new PowerShellElseifClauseImplGen(node);
       }
@@ -325,6 +330,9 @@ public interface PowerShellTypes {
       }
       else if (type == LOGICAL_EXPRESSION) {
         return new PowerShellLogicalExpressionImplGen(node);
+      }
+      else if (type == MEMBER_ACCESS_EXPRESSION) {
+        return new PowerShellMemberAccessExpressionImplGen(node);
       }
       else if (type == METHOD_DECLARATION_STATEMENT) {
         return new PowerShellMethodDeclarationStatementImplGen(node);

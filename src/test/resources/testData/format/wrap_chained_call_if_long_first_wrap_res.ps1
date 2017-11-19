@@ -1,14 +1,17 @@
-$VerbosePreference = $PSCmdlet.GetjsjsjsjsjsjsjsjsjVariableValue()
+$VerbosePreference = $PSCmdlet.GetFooooooooooooooooVariableValue()
 $VerbosePreference = $PSCmdlet.
-        GetjsjsjsjsjsjsjsjsjVariableValue().dddd()
+        GetFooooooooooooooooVariableValue().booo()
 $VerbosePreference = $PSCmdlet.
-        GetjsjsjsjsjsjsjsjsjVariableValue().
-        djdjdj().sdsdsdsdsd
-$VerbosePreference = $PSCmdlet.alue().llslsllsslsl.
-        djdjdsasaj().sdsdsdsdsd
+        GetFooooooooooooooooVariableValue().
+        booooo().dooooooooo
+$VerbosePreference = $PSCmdlet.alue().foooooooooooo.
+        fooooooooo().fooooooooo()
+$VerbosePreference = $PSCmdlet.alue().fooooooooooo.foooooooooo().sdsdsdsdsd
+$VerbosePreference = $PSCmdlet.alue().fooooooooooo.
+        foooooooooo().sdsdsdsdsd()
 $VerbosePreference = $PSCmdlet.alues.
-        llslsllsslslsasasasasasasa().djdjdsasaj().saj()
+        fooooooooooooooooooooooooo().fooooooooo().saj()
 $VerbosePreference = $PSCmdlet.alues().
-        lllsllsslslsasasasasasasa().djdjdsasaj().saj()
+        foooooooooooooooooooooooo().fooooooooo().saj()
 $VerbosePreference = $PSCmdlet.alues.
-        llslsllsslslsasasasasasasa().djdjdsasaj()
+        fooooooooooooooooooooooooo().fooooooooo()
