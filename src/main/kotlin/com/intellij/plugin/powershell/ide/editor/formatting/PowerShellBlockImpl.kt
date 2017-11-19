@@ -57,8 +57,8 @@ open class PowerShellBlockImpl(node: ASTNode, wrap: Wrap?, alignment: Alignment?
     val newChildAt = children[newChildIndex]
     val prevChild = children[newChildIndex - 1]
     if (newChildAt is ASTBlock && prevChild is ASTBlock) {
-      val newType = newChildAt.node.elementType
-      val prevType = prevChild.node.elementType
+      val newType = newChildAt.node?.elementType
+      val prevType = prevChild.node?.elementType
       if (prevType === BLOCK_BODY && newType === RCURLY) {
         return ChildAttributes.DELEGATE_TO_PREV_CHILD
       } else if (prevType === LCURLY && newType === RCURLY) {
