@@ -2,7 +2,7 @@ package com.intellij.plugin.powershell.ide.resolve
 
 import com.intellij.plugin.powershell.psi.PowerShellCallableReference
 import com.intellij.plugin.powershell.psi.PowerShellComponent
-import com.intellij.plugin.powershell.psi.PowerShellReference
+import com.intellij.plugin.powershell.psi.PowerShellReferencePsiElement
 import com.intellij.plugin.powershell.psi.PowerShellVariable
 import com.intellij.psi.PsiElement
 import com.intellij.psi.ResolveState
@@ -14,9 +14,9 @@ import java.util.*
 /**
  * Andrey 21/08/17.
  */
-class PowerShellResolver<T> : ResolveCache.AbstractResolver<T, List<PsiElement>> where T : PowerShellReference {
+class PowerShellResolver<T> : ResolveCache.AbstractResolver<T, List<PsiElement>> where T : PowerShellReferencePsiElement {
   companion object {
-    val INSTANCE = PowerShellResolver<PowerShellReference>()
+    val INSTANCE = PowerShellResolver<PowerShellReferencePsiElement>()
   }
 
   private fun resolveReference(ref: T): List<PsiElement> {
@@ -38,7 +38,7 @@ class PowerShellResolver<T> : ResolveCache.AbstractResolver<T, List<PsiElement>>
   }
 }
 
-abstract class PowerShellResolveProcessor<out R : PowerShellReference>(protected val myRef: R) : BaseScopeProcessor() {
+abstract class PowerShellResolveProcessor<out R : PowerShellReferencePsiElement>(protected val myRef: R) : BaseScopeProcessor() {
   protected var myResult: PowerShellComponent? = null //todo should navigate to closest declaration (of function or variable)
 
   fun getResult(): PowerShellComponent? {
@@ -63,7 +63,7 @@ class PowerShellCallableResolveProcessor(ref: PowerShellCallableReference) : Pow
 
 }
 
-class PowerShellVariableResolveProcessor(ref: PowerShellReference) : PowerShellResolveProcessor<PowerShellReference>(ref) {
+class PowerShellVariableResolveProcessor(ref: PowerShellReferencePsiElement) : PowerShellResolveProcessor<PowerShellReferencePsiElement>(ref) {
 
   override fun execute(element: PsiElement, state: ResolveState): Boolean {
     if (element is PowerShellComponent) {

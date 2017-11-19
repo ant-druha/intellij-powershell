@@ -18,7 +18,7 @@ object PowerShellResolveUtil {
     return Array(elements.size) { PsiElementResolveResult(elements[it]) }
   }
 
-  fun areNamesEqual(component: PowerShellComponent, reference: PowerShellReference): Boolean {
+  fun areNamesEqual(component: PowerShellComponent, reference: PowerShellReferencePsiElement): Boolean {
     val refName = reference.canonicalText
 
     if (component is PowerShellVariable) {

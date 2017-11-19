@@ -10,7 +10,7 @@ import com.intellij.plugin.powershell.ide.resolve.PowerShellResolveUtil
 import com.intellij.plugin.powershell.ide.resolve.PowerShellResolver
 import com.intellij.plugin.powershell.psi.PowerShellComponent
 import com.intellij.plugin.powershell.psi.PowerShellFunctionStatement
-import com.intellij.plugin.powershell.psi.PowerShellReference
+import com.intellij.plugin.powershell.psi.PowerShellReferencePsiElement
 import com.intellij.plugin.powershell.psi.PowerShellVariable
 import com.intellij.psi.*
 import com.intellij.psi.impl.source.resolve.ResolveCache
@@ -20,7 +20,7 @@ import java.util.*
 /**
  * Andrey 18/08/17.
  */
-open class PowerShellReferenceImpl(node: ASTNode) : PowerShellPsiElementImpl(node), PowerShellReference, PsiPolyVariantReference {
+open class PowerShellReferencePsiElementImpl(node: ASTNode) : PowerShellPsiElementImpl(node), PowerShellReferencePsiElement, PsiPolyVariantReference {
 
   override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
     val elements = ResolveCache.getInstance(project).resolveWithCaching(this, PowerShellResolver.INSTANCE, true, incompleteCode)
@@ -64,7 +64,7 @@ open class PowerShellReferenceImpl(node: ASTNode) : PowerShellPsiElementImpl(nod
   }
 
   override fun getRangeInElement(): TextRange {
-    val refs = PsiTreeUtil.getChildrenOfType(this, PowerShellReference::class.java)
+    val refs = PsiTreeUtil.getChildrenOfType(this, PowerShellReferencePsiElement::class.java)
     if (refs != null && refs.isNotEmpty()) {
       val lastRefRange = refs[refs.size - 1].textRange
       return UnfairTextRange(lastRefRange.startOffset - textRange.startOffset, lastRefRange.endOffset - textRange.endOffset)

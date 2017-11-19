@@ -380,7 +380,7 @@ left pipeline_tail ::= ( PIPE nls? command_call_expression )+
 
 command_call_expression ::= command_invocation_operator ( (command_module command_name_expr command_element* ) | command_name_expr command_element* ) | command_name_expression command_element*
 {mixin="com.intellij.plugin.powershell.psi.impl.PowerShellCallableReferenceExpression"
-implements="com.intellij.plugin.powershell.psi.PowerShellReference"}
+implements="com.intellij.plugin.powershell.psi.PowerShellReferencePsiElement"}
 
 private command_name_expression ::= path_expression | command_name//todo parse path_item where appropriate: path_item all bare identifiers including command_name
 command_name ::= generic_token_with_sub_expr | generic_token_part | allowed_identifier_keywords //generic_token

@@ -5,6 +5,6 @@ import com.intellij.psi.PsiElement
 /**
  * Andrey 24/08/17.
  */
-interface PowerShellCallableReference : PowerShellReference {
+interface PowerShellCallableReference : PowerShellReferencePsiElement {
   fun getNameElement(): PsiElement?
 }

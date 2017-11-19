@@ -6,7 +6,7 @@ import com.intellij.lang.findUsages.FindUsagesProvider
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.plugin.powershell.lang.lexer.PowerShellLexerAdapter
 import com.intellij.plugin.powershell.psi.PowerShellComponent
-import com.intellij.plugin.powershell.psi.PowerShellReference
+import com.intellij.plugin.powershell.psi.PowerShellReferencePsiElement
 import com.intellij.plugin.powershell.psi.PowerShellTokenTypeSets
 import com.intellij.plugin.powershell.psi.PowerShellTypes
 import com.intellij.psi.PsiElement
@@ -30,7 +30,7 @@ class PowerShellUsagesProvider : FindUsagesProvider {
   }
 
   override fun canFindUsagesFor(psiElement: PsiElement): Boolean {
-    return psiElement is PowerShellReference || psiElement is PowerShellComponent
+    return psiElement is PowerShellReferencePsiElement || psiElement is PowerShellComponent
   }
 
   override fun getHelpId(psiElement: PsiElement): String? {

@@ -7,7 +7,7 @@ import com.intellij.plugin.powershell.ide.resolve.PowerShellResolveUtil
 import com.intellij.plugin.powershell.ide.resolve.PowerShellResolver
 import com.intellij.plugin.powershell.ide.search.PowerShellComponentType
 import com.intellij.plugin.powershell.psi.PowerShellAssignmentExpression
-import com.intellij.plugin.powershell.psi.PowerShellReference
+import com.intellij.plugin.powershell.psi.PowerShellReferencePsiElement
 import com.intellij.plugin.powershell.psi.PowerShellTypes
 import com.intellij.plugin.powershell.psi.PowerShellTypes.*
 import com.intellij.plugin.powershell.psi.PowerShellVariable
@@ -23,7 +23,7 @@ import javax.swing.Icon
 /**
  * Andrey 18/08/17.
  */
-open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractComponent(node), PowerShellVariable, PowerShellReference, PsiPolyVariantReference {
+open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractComponent(node), PowerShellVariable, PowerShellReferencePsiElement, PsiPolyVariantReference {
 
   override fun getQualifiedName(): String {
     val ns = getNamespace() ?: "Variable"
@@ -90,14 +90,14 @@ open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractCompo
 
   private fun getSuffixNode(): ASTNode? = node.findChildByType(RCURLY)
 
-  override fun getReference(): PowerShellReference? {
+  override fun getReference(): PowerShellReferencePsiElement? {
     return if (getNamespace().equals("function", true) && !isLhsAssignmentTarget()) {
       //if context is PowerShellAssignmentStatement, then this is function declaration
       object : PowerShellCallableReferenceExpression(node) {
         override fun getNameElement(): PsiElement? = nameIdentifier
       }
     } else this
-//    return PowerShellReferenceImpl(node)
+//    return PowerShellReferencePsiElementImpl(node)
   }
 
   fun isLhsAssignmentTarget(): Boolean = context?.firstChild == this && context is PowerShellAssignmentExpression
