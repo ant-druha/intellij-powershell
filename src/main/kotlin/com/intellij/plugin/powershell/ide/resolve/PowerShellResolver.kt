@@ -45,6 +45,13 @@ abstract class PowerShellResolveProcessor<out R : PowerShellReferencePsiElement>
     return myResult
   }
 
+  protected fun setResult(element: PowerShellComponent): Boolean {
+    if (myResult == null || myResult!!.textOffset > element.textOffset) {
+      myResult = element
+    }
+    return true
+  }
+
 }
 
 class PowerShellCallableResolveProcessor(ref: PowerShellCallableReference) : PowerShellResolveProcessor<PowerShellCallableReference>(ref) {
@@ -53,8 +60,7 @@ class PowerShellCallableResolveProcessor(ref: PowerShellCallableReference) : Pow
     if (element is PowerShellComponent) {
       if (element.name.equals(myRef.canonicalText, true) && (element !is PowerShellVariable || "function".equals(element.getNamespace(), true))) {
 //      if (PowerShellResolveUtil.areNamesEqual(element, myRef)) {
-        myResult = element
-        return false
+        return setResult(element)
       }
 //      }
     }
@@ -70,16 +76,13 @@ class PowerShellVariableResolveProcessor(ref: PowerShellReferencePsiElement) : P
       val refName = myRef.canonicalText
       if (element is PowerShellVariable) {
         if (element.getQualifiedName().equals(refName, true)) {
-          myResult = element
-          return false
+          return setResult(element)
         }
       } else if (element.name.equals(refName, true)) {
-        myResult = element
-        return false
+        return setResult(element)
       }
     }
     return true
   }
-
 
 }
