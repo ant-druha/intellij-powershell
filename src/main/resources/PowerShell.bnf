@@ -451,7 +451,7 @@ private label_expression ::= simple_name_identifier | unary_expression
 class_declaration_statement ::= attribute_list? 'class' class_name (nls? base_class_clause)? (nls? interface_list)? nls? class_block
 {mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractComponent"
 implements="com.intellij.plugin.powershell.psi.PowerShellComponent"}
-private class_name ::= identifier
+private class_name ::= simple_name_identifier
 
 private base_class_clause ::= COLON nls? base_class_name
 private base_class_name ::= type_spec
@@ -486,7 +486,7 @@ private base_constructor_call ::= COLON 'base' method_argument_expression_list
 method_declaration_statement ::= (member_declaration_attribute nls?)* method_name method_argument_expression_list nls? method_block
 {mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractComponent"
 implements="com.intellij.plugin.powershell.psi.PowerShellComponent"}
-private method_name ::= identifier
+private method_name ::= simple_name_identifier
 
 enum_declaration_statement ::= enum_declaration | enum_with_flags_declaration
 {mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractComponent"
@@ -494,7 +494,7 @@ implements="com.intellij.plugin.powershell.psi.PowerShellComponent"}
 
 private enum_with_flags_declaration ::= attribute /*SQBR_L SIMPLE_ID LP RP SQBR_R */nls? enum_declaration
 private enum_declaration ::= 'enum' enum_name nls? enum_block
-private enum_name ::= identifier
+private enum_name ::= simple_name_identifier
 private enum_block ::= LCURLY nls? enum_block_body? nls? RCURLY
 
 enum_block_body ::= (label_list | statement_terminators)+
