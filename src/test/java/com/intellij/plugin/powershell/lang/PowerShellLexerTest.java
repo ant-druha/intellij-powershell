@@ -99,7 +99,11 @@ public class PowerShellLexerTest extends LexerTestCase {
   public void testBracedVariableId() {
     doTest("${Name with`twhite space and `{punctuation`}}", "${ ('${')\n" + "BRACED_ID ('Name with`twhite space and " +
         "`{punctuation`}')\n" + "} ('}')");
-    doTest("${E:\\File.txt}", "${ ('${')\n" + "BRACED_ID ('E:\\File.txt')\n" + "} ('}')");
+    doTest("${E:\\File.txt}", "${ ('${')\n" +
+        "SIMPLE_ID ('E')\n" +
+        ": (':')\n" +
+        "BRACED_ID ('\\File.txt')\n" +
+        "} ('}')");
   }
 
   public void testVariableScope() {

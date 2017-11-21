@@ -308,13 +308,13 @@ target_variable_expression ::= variable
 {mixin="com.intellij.plugin.powershell.psi.impl.PowerShellTargetVariableImpl"
 implements="com.intellij.plugin.powershell.psi.PowerShellVariable"}
 
-private simple_variable ::= (DS | AT) nws variable_scope? variable_name_simple
+private simple_variable ::= (DS | AT) nws (variable_scope nws)? variable_name_simple
 
 private variable_scope ::= 'global:' | 'local:' | 'private:' | 'script:' | 'using:' | 'workflow:' | variable_namespace
 private variable_namespace ::= SIMPLE_ID ':'
 variable_name_simple ::= SIMPLE_ID | VAR_ID | 'this'
 {elementType=identifier}
-private braced_variable ::= BRACED_VAR_START variable_scope? variable_name_braced RCURLY
+private braced_variable ::= BRACED_VAR_START nws variable_scope? variable_name_braced RCURLY
 variable_name_braced ::= SIMPLE_ID  | BRACED_ID
 {elementType=identifier}
 

@@ -212,7 +212,7 @@ $h = @{}
 $h1 = @{FirstName = "James"; LastName = "Anderson"; IDNum = 123}
 $h1.Dept = "Finance"              # adds element Finance
 $h1["City"] = "New York"          # adds element City
-[int]$Variable: v = 123.456       # v takes on the value 123
+[int]$Variable:v = 123.456       # v takes on the value 123
 ${E:output.txt} = "a"				      # write text to the given file
 $Env:MyPath = "x:\data\file.txt"	# define the environment variable
 $Function:F = { param ($a, $b) "Hello there, $a, $b" }

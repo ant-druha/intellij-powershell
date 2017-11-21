@@ -216,7 +216,7 @@ BRACED_VAR_START={DS}{LCURLY}
   [^]                                                          { popState(); yypushback(yylength()); }
 }
 <VAR_BRACED> {
-  {SIMPLE_ID}   / ":"[^\\]{BRACED_ID}{RCURLY}                  { return SIMPLE_ID; }
+  {SIMPLE_ID}   / ":"{BRACED_ID}{RCURLY}                  { return SIMPLE_ID; }
   {WHITE_SPACE} / {BRACED_ID}{RCURLY}                          { return WHITE_SPACE; }
   ":"           / {WHITE_SPACE}?{BRACED_ID}{RCURLY}            { return COLON; }
   {BRACED_ID}                                                  { return BRACED_ID; }
