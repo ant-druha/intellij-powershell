@@ -314,7 +314,7 @@ private variable_scope ::= 'global:' | 'local:' | 'private:' | 'script:' | 'usin
 private variable_namespace ::= SIMPLE_ID ':'
 variable_name_simple ::= SIMPLE_ID | VAR_ID | 'this'
 {elementType=identifier}
-private braced_variable ::= BRACED_VAR_START nws variable_scope? variable_name_braced RCURLY
+private braced_variable ::= BRACED_VAR_START (nws variable_scope)? variable_name_braced RCURLY
 variable_name_braced ::= SIMPLE_ID  | BRACED_ID
 {elementType=identifier}
 

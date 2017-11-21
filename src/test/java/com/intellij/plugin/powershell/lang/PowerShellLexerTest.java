@@ -112,13 +112,20 @@ public class PowerShellLexerTest extends LexerTestCase {
     doTest("$local: var_name", "$ ('$')\n" + "SIMPLE_ID ('local')\n" + ": (':')\n" + "WHITE_SPACE (' ')\n" +
         "SIMPLE_ID ('var_name')\n");
     doTest("$my_scope:var_name", "$ ('$')\n" + "SIMPLE_ID ('my_scope')\n" + ": (':')\n" + "SIMPLE_ID ('var_name')\n");
-    doTest("${my_scope: var_/'name}", "${ ('${')\n" + "SIMPLE_ID ('my_scope')\n" + ": (':')\n" + "WHITE_SPACE (' ')" +
-        "\n" + "BRACED_ID ('var_/'name')" +
-        "\n" + "} ('}')");
-    doTest("${E: \\File.txt}", "${ ('${')\n" + "SIMPLE_ID ('E')\n" + ": (':')\n" + "WHITE_SPACE (' ')\n" + "BRACED_ID" +
-        " ('\\File.txt')\n" + "} ('}')");
-    doTest("${my_scope: File.txt}", "${ ('${')\n" + "SIMPLE_ID ('my_scope')\n" + ": (':')\n" + "WHITE_SPACE (' ')\n"
-        + "BRACED_ID ('File.txt')\n" +
+    doTest("${my_scope: var_/'name}", "${ ('${')\n" +
+        "SIMPLE_ID ('my_scope')\n" +
+        ": (':')\n" +
+        "BRACED_ID (' var_/'name')\n" +
+        "} ('}')");
+    doTest("${E: \\File.txt}", "${ ('${')\n" +
+        "SIMPLE_ID ('E')\n" +
+        ": (':')\n" +
+        "BRACED_ID (' \\File.txt')\n" +
+        "} ('}')");
+    doTest("${my_scope: File.txt}", "${ ('${')\n" +
+        "SIMPLE_ID ('my_scope')\n" +
+        ": (':')\n" +
+        "BRACED_ID (' File.txt')\n" +
         "} ('}')");
     doTest("${not a_scope: File.txt}", "${ ('${')\n" + "BRACED_ID ('not a_scope: File.txt')\n" + "} ('}')");
     doTest("${not_a_scope : File.txt}", "${ ('${')\n" + "BRACED_ID ('not_a_scope : File.txt')\n" + "} ('}')");
