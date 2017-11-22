@@ -320,9 +320,7 @@ BRACED_VAR_START={DS}{LCURLY}
 
   {DASH}                           { return DASH; }
   {BRACED_VAR_START}               { pushState(VAR_BRACED); return BRACED_VAR_START; }
-  {DS}/{SIMPLE_ID}                 { pushState(VAR_SIMPLE); return DS; }
-  {DS}/{QMARK}|{HAT}|{DS}          { pushState(VAR_SIMPLE); return DS; }
-  {DS}                             { return DS; }
+  {DS}                             { pushState(VAR_SIMPLE); return DS; }
   {LCURLY}                         { return LCURLY; }
   {RCURLY}                         { return RCURLY; }
   {DOT_DOT}                        { return DOT_DOT; }

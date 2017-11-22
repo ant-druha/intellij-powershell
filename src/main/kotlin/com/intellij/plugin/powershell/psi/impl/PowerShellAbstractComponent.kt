@@ -4,6 +4,7 @@ import com.intellij.lang.ASTNode
 import com.intellij.navigation.ItemPresentation
 import com.intellij.plugin.powershell.ide.search.PowerShellComponentType
 import com.intellij.plugin.powershell.psi.PowerShellComponent
+import com.intellij.plugin.powershell.psi.PowerShellFunctionStatement
 import com.intellij.plugin.powershell.psi.PowerShellIdentifier
 import com.intellij.plugin.powershell.psi.PowerShellPsiElementFactory
 import com.intellij.psi.PsiElement
@@ -27,11 +28,11 @@ abstract class PowerShellAbstractComponent(node: ASTNode) : PowerShellPsiElement
 
   override fun getTextOffset(): Int = nameIdentifier?.textOffset ?: super.getTextOffset()
 
-  override fun getNameIdentifier(): PsiElement? = findChildByClass(PowerShellIdentifier::class.java)
+  override fun getNameIdentifier(): PowerShellIdentifier? = findChildByClass(PowerShellIdentifier::class.java)
 
   override fun setName(name: String): PsiElement {
     val identifier = nameIdentifier
-    val identifierNew = PowerShellPsiElementFactory.createIdentifierFromText(project, name)
+    val identifierNew = PowerShellPsiElementFactory.createIdentifierFromText(project, name, this is PowerShellFunctionStatement)
     if (identifierNew != null && identifier != null) {
       node.replaceChild(identifier.node, identifierNew.node)
     }

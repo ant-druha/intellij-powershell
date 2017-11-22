@@ -5,9 +5,9 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.UnfairTextRange
 import com.intellij.plugin.powershell.ide.search.PowerShellComponentType
 import com.intellij.plugin.powershell.psi.PowerShellAssignmentExpression
+import com.intellij.plugin.powershell.psi.PowerShellIdentifier
 import com.intellij.plugin.powershell.psi.PowerShellTargetVariableExpression
 import com.intellij.plugin.powershell.psi.PowerShellVariable
-import com.intellij.psi.PsiElement
 import javax.swing.Icon
 
 open class PowerShellPropertyImpl(node: ASTNode) : /*PowerShellAbstractComponent*/PowerShellTargetVariableImpl(node) {
@@ -23,7 +23,7 @@ open class PowerShellPropertyImpl(node: ASTNode) : /*PowerShellAbstractComponent
     return UnfairTextRange(0, this.textRange.endOffset - this.textRange.startOffset)
   }
 
-  override fun getNameIdentifier(): PsiElement? {
+  override fun getNameIdentifier(): PowerShellIdentifier? {
     val variable = getVariable()
     return variable?.nameIdentifier
   }

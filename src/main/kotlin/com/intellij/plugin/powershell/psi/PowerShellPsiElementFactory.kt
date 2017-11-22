@@ -10,10 +10,28 @@ import com.intellij.psi.util.PsiTreeUtil
  * Andrey 16/08/17.
  */
 object PowerShellPsiElementFactory {
-  fun createIdentifierFromText(project: Project, text: String): PowerShellIdentifier? {
-    val file = createFile(project, "$" + text)
+  fun createIdentifierFromText(project: Project, text: String, genericId: Boolean = false): PowerShellIdentifier? {
+    val fileText = if (genericId) {
+      "function $text {}"
+    } else {
+      "class $text {}"
+    }
+    val file = createFile(project, fileText)
+    val component = PsiTreeUtil.findChildOfAnyType(file, PowerShellComponent::class.java)
+    return component?.nameIdentifier
+  }
+
+  fun createCommandName(project: Project, text: String): PowerShellCommandName? {
+    val file = createFile(project, text)
+    val component = PsiTreeUtil.findChildOfAnyType(file, PowerShellCommandCallExpression::class.java)
+    return component?.commandName
+  }
+
+  fun createVariableFromText(project: Project, text: String, bracedVariable: Boolean = false): PowerShellVariable? {
+    val varText = if (bracedVariable) "\${$text}" else "$" + text
+    val file = createFile(project, varText)
     val variable = PsiTreeUtil.findChildOfAnyType(file, PowerShellTargetVariableExpression::class.java)
-    return variable?.identifier
+    return variable
   }
 
   private fun createFile(project: Project, text: String): PowerShellFile {

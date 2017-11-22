@@ -8,11 +8,11 @@ import com.intellij.openapi.util.UnfairTextRange
 import com.intellij.plugin.powershell.ide.resolve.PowerShellComponentResolveProcessor
 import com.intellij.plugin.powershell.ide.resolve.PowerShellResolveUtil
 import com.intellij.plugin.powershell.ide.resolve.PowerShellResolver
-import com.intellij.plugin.powershell.psi.PowerShellComponent
-import com.intellij.plugin.powershell.psi.PowerShellFunctionStatement
-import com.intellij.plugin.powershell.psi.PowerShellReferencePsiElement
-import com.intellij.plugin.powershell.psi.PowerShellVariable
-import com.intellij.psi.*
+import com.intellij.plugin.powershell.psi.*
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiPolyVariantReference
+import com.intellij.psi.PsiReference
+import com.intellij.psi.ResolveResult
 import com.intellij.psi.impl.source.resolve.ResolveCache
 import com.intellij.psi.util.PsiTreeUtil
 import java.util.*
@@ -20,7 +20,7 @@ import java.util.*
 /**
  * Andrey 18/08/17.
  */
-open class PowerShellReferencePsiElementImpl(node: ASTNode) : PowerShellPsiElementImpl(node), PowerShellReferencePsiElement, PsiPolyVariantReference {
+abstract class PowerShellReferencePsiElementImpl(node: ASTNode) : PowerShellPsiElementImpl(node), PowerShellReferencePsiElement, PsiPolyVariantReference {
 
   override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
     val elements = ResolveCache.getInstance(project).resolveWithCaching(this, PowerShellResolver.INSTANCE, true, incompleteCode)
@@ -74,8 +74,15 @@ open class PowerShellReferencePsiElementImpl(node: ASTNode) : PowerShellPsiEleme
 
   override fun getCanonicalText(): String = node.text
 
-  override fun handleElementRename(newElementName: String?): PsiElement =
-      if (this is PsiNamedElement && newElementName != null) setName(newElementName) else this
+  override fun handleElementRename(newElementName: String?): PsiElement {
+    if (newElementName == null) return this
+    val identifierNew = PowerShellPsiElementFactory.createIdentifierFromText(project, newElementName, true)
+    if (identifierNew != null) {
+      node.replaceChild(element.node, identifierNew.node)
+    }
+    return this
+  }
+
 
   override fun bindToElement(element: PsiElement): PsiElement = this
 

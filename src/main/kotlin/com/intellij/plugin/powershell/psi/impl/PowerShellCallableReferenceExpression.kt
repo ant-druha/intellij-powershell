@@ -4,6 +4,7 @@ import com.intellij.lang.ASTNode
 import com.intellij.openapi.util.TextRange
 import com.intellij.plugin.powershell.psi.PowerShellCallableReference
 import com.intellij.plugin.powershell.psi.PowerShellCommandName
+import com.intellij.plugin.powershell.psi.PowerShellPsiElementFactory
 import com.intellij.psi.PsiElement
 
 /**
@@ -18,6 +19,15 @@ open class PowerShellCallableReferenceExpression(node: ASTNode) : PowerShellRefe
 
     val refRange = refElement.textRange
     return TextRange(textRange.startOffset - refRange.startOffset, refRange.endOffset - refRange.startOffset)
+  }
+
+  override fun handleElementRename(newElementName: String?): PsiElement {
+      if (newElementName == null) return this
+      val commandName = PowerShellPsiElementFactory.createCommandName(project, newElementName)
+      if (commandName != null ) {
+        node.replaceChild(element.node, commandName.node)
+      }
+      return this
   }
 
   override fun getNameElement(): PsiElement? = findChildByClass(PowerShellCommandName::class.java)

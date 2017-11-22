@@ -68,6 +68,13 @@
     <targetElementEvaluator language="PowerShell"
                             implementationClass="com.intellij.plugin.powershell.ide.search.PowerShellTargetElementEvaluator"/>
 
+    <lang.refactoringSupport language="PowerShell"
+                             implementationClass="com.intellij.plugin.powershell.ide.refactoring.PowerShellElementRefactoringSupportProvider"/>
+    <lang.namesValidator language="PowerShell"
+                         implementationClass="com.intellij.plugin.powershell.ide.refactoring.PowerShellNamesValidator"/>
+    <renameInputValidator implementation="com.intellij.plugin.powershell.ide.refactoring.PowerShellVariableRenameInputValidator"/>
+    <renamePsiElementProcessor implementation="com.intellij.plugin.powershell.ide.refactoring.PowerShellRenamePsiElementProcessor"/>
+
   </extensions>
 
   <actions>

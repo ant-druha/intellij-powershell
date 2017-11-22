@@ -6,11 +6,8 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.plugin.powershell.ide.resolve.PowerShellResolveUtil
 import com.intellij.plugin.powershell.ide.resolve.PowerShellResolver
 import com.intellij.plugin.powershell.ide.search.PowerShellComponentType
-import com.intellij.plugin.powershell.psi.PowerShellAssignmentExpression
-import com.intellij.plugin.powershell.psi.PowerShellReferencePsiElement
-import com.intellij.plugin.powershell.psi.PowerShellTypes
+import com.intellij.plugin.powershell.psi.*
 import com.intellij.plugin.powershell.psi.PowerShellTypes.*
-import com.intellij.plugin.powershell.psi.PowerShellVariable
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiPolyVariantReference
 import com.intellij.psi.ResolveResult
@@ -24,6 +21,9 @@ import javax.swing.Icon
  * Andrey 18/08/17.
  */
 open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractComponent(node), PowerShellVariable, PowerShellReferencePsiElement, PsiPolyVariantReference {
+  override fun getNameElement(): PsiElement? {
+    return nameIdentifier
+  }
 
   override fun getQualifiedName(): String {
     val ns = getNamespace() ?: "Variable"
@@ -56,6 +56,18 @@ open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractCompo
   override fun handleElementRename(newElementName: String?): PsiElement =
       if (newElementName != null) setName(newElementName) else this
 
+  override fun setName(name: String): PsiElement {
+    val identifier = getNameElement()
+    val variable = PowerShellPsiElementFactory.createVariableFromText(project, name, isBracedVariable())
+    val identifierNew = variable?.nameIdentifier
+    if (identifierNew != null && identifier != null) {
+      node.replaceChild(identifier.node, identifierNew.node)
+    }
+    return this
+  }
+
+  private fun isBracedVariable() = firstChild.node.elementType === BRACED_VAR_START
+
   override fun bindToElement(element: PsiElement): PsiElement = this
 
   override fun isSoft(): Boolean = false
@@ -83,8 +95,7 @@ open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractCompo
 
   override fun getPrefix(): String = getPrefixNode().text
 
-  private fun getPrefixNode(): ASTNode =
-      node.findChildByType(TokenSet.create(DS, AT, BRACED_VAR_START)) ?: error("null for" + text)
+  private fun getPrefixNode(): ASTNode = node.findChildByType(TokenSet.create(DS, AT, BRACED_VAR_START)) ?: error("null for" + text)
 
   override fun getSuffix(): String? = getSuffixNode()?.text
 
