@@ -10,8 +10,8 @@ import com.intellij.psi.util.PsiTreeUtil
  * Andrey 16/08/17.
  */
 object PowerShellPsiElementFactory {
-  fun createIdentifierFromText(project: Project, text: String, genericId: Boolean = false): PowerShellIdentifier? {
-    val fileText = if (genericId) {
+  fun createIdentifierFromText(project: Project, text: String, functionId: Boolean = false): PowerShellIdentifier? {
+    val fileText = if (functionId) {
       "function $text {}"
     } else {
       "class $text {}"

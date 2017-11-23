@@ -25,7 +25,7 @@ class PowerShellUsagesProvider : FindUsagesProvider {
         PowerShellTokenTypeSets.COMMENTS,
         PowerShellTokenTypeSets.STRINGS
       ,  TokenSet.EMPTY,
-        TokenSet.create(PowerShellTypes.QMARK, PowerShellTypes.DS, PowerShellTypes.HAT)
+        TokenSet.create(PowerShellTypes.QMARK, PowerShellTypes.DS, PowerShellTypes.HAT, PowerShellTypes.LP, PowerShellTypes.RP, PowerShellTypes.DOT)
     )
   }
 

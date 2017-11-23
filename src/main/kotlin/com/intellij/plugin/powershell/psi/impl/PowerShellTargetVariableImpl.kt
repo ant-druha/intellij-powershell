@@ -21,9 +21,7 @@ import javax.swing.Icon
  * Andrey 18/08/17.
  */
 open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractComponent(node), PowerShellVariable, PowerShellReferencePsiElement, PsiPolyVariantReference {
-  override fun getNameElement(): PsiElement? {
-    return nameIdentifier
-  }
+  override fun getNameElement(): PsiElement? = nameIdentifier
 
   override fun getQualifiedName(): String {
     val ns = getNamespace() ?: "Variable"

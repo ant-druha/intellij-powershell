@@ -45,6 +45,10 @@ import static com.intellij.plugin.powershell.psi.PowerShellTypes.*;
       }
 
       private void popState() {
+          if (states.empty()) {
+              yybegin(YYINITIAL);
+              return;
+          }
           State state = states.pop();
           lParenCount = state.lParenCount;
           yybegin(state.state);

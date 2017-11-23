@@ -383,13 +383,15 @@ command_call_expression ::= command_invocation_operator ( (command_module comman
 implements="com.intellij.plugin.powershell.psi.PowerShellReferencePsiElement"}
 
 private command_name_expression ::= path_expression | command_name//todo parse path_item where appropriate: path_item all bare identifiers including command_name
-command_name ::= generic_token_with_sub_expr | generic_token_part | allowed_identifier_keywords //generic_token
+command_name ::= command_name_identifier //generic_token
+command_name_identifier ::= generic_token_with_sub_expr | generic_token_part | allowed_identifier_keywords //generic_token
+{elementType=identifier}
 
 
 
-private generic_token_with_sub_expr ::= generic_token_with_subexpr_start statement_list? RP nws command_name
+private generic_token_with_sub_expr ::= generic_token_with_subexpr_start statement_list? RP nws command_name //todo word index is not built by default words scanner
 
-private generic_token_with_subexpr_start ::= generic_token_part DS nws LP
+private generic_token_with_subexpr_start ::= generic_token_part nws DS nws LP
 
 private generic_token_part ::= (expandable_string_literal | verbatim_here_string_literal | target_variable_expression | generic_token_chars) generic_token_chars_tail?
 
@@ -449,8 +451,8 @@ private label_expression ::= simple_name_identifier | unary_expression
 
 // class/enum
 class_declaration_statement ::= attribute_list? 'class' class_name (nls? base_class_clause)? (nls? interface_list)? nls? class_block
-{mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractComponent"
-implements="com.intellij.plugin.powershell.psi.PowerShellComponent"}
+{mixin="com.intellij.plugin.powershell.psi.impl.PowerShellMemberDeclarationImpl"
+implements="com.intellij.plugin.powershell.psi.PowerShellMemberDeclaration"}
 private class_name ::= simple_name_identifier
 
 private base_class_clause ::= COLON nls? base_class_name
@@ -467,15 +469,15 @@ private class_member_declaration_list ::= class_member_declaration (statement_te
 private class_member_declaration ::= property_declaration_statement | constructor_declaration_statement | method_declaration_statement
 
 property_declaration_statement ::= (member_declaration_attribute nls?)* property_definition_expression
-{mixin="com.intellij.plugin.powershell.psi.impl.PowerShellPropertyImpl"
-implements="com.intellij.plugin.powershell.psi.PowerShellComponent"}
+{mixin="com.intellij.plugin.powershell.psi.impl.PowerShellMemberDeclarationImpl"
+implements="com.intellij.plugin.powershell.psi.PowerShellMemberDeclaration"}
 private property_definition_expression ::= expression
 private member_declaration_attribute ::= declaration_modifier_attribute | attribute
 private declaration_modifier_attribute ::= 'hidden' | 'static'
 
 constructor_declaration_statement ::= class_name method_argument_expression_list nls? base_constructor_call? nls? method_block
-{mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractComponent"
-implements="com.intellij.plugin.powershell.psi.PowerShellComponent"}
+{mixin="com.intellij.plugin.powershell.psi.impl.PowerShellMemberDeclarationImpl"
+implements="com.intellij.plugin.powershell.psi.PowerShellMemberDeclaration"}
 
 private method_block ::= statement_block
 
@@ -484,13 +486,13 @@ method_argument_expression_list ::= LP nls? parameter_list? nls? RP
 private base_constructor_call ::= COLON 'base' method_argument_expression_list
 
 method_declaration_statement ::= (member_declaration_attribute nls?)* method_name method_argument_expression_list nls? method_block
-{mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractComponent"
-implements="com.intellij.plugin.powershell.psi.PowerShellComponent"}
+{mixin="com.intellij.plugin.powershell.psi.impl.PowerShellMemberDeclarationImpl"
+implements="com.intellij.plugin.powershell.psi.PowerShellMemberDeclaration"}
 private method_name ::= simple_name_identifier
 
 enum_declaration_statement ::= enum_declaration | enum_with_flags_declaration
-{mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractComponent"
-implements="com.intellij.plugin.powershell.psi.PowerShellComponent"}
+{mixin="com.intellij.plugin.powershell.psi.impl.PowerShellMemberDeclarationImpl"
+implements="com.intellij.plugin.powershell.psi.PowerShellMemberDeclaration"}
 
 private enum_with_flags_declaration ::= attribute /*SQBR_L SIMPLE_ID LP RP SQBR_R */nls? enum_declaration
 private enum_declaration ::= 'enum' enum_name nls? enum_block
@@ -501,8 +503,8 @@ enum_block_body ::= (label_list | statement_terminators)+
 {elementType=block_body}
 private label_list ::= enum_label_declaration (statement_terminators enum_label_declaration)*
 enum_label_declaration ::= label_expression (EQ expression)?
-{mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractComponent"
- implements="com.intellij.plugin.powershell.psi.PowerShellComponent"}
+{mixin="com.intellij.plugin.powershell.psi.impl.PowerShellMemberDeclarationImpl"
+ implements="com.intellij.plugin.powershell.psi.PowerShellMemberDeclaration"}
 
 function_statement ::= ('function' | 'filter') nls? function_statement_tail
 {pin=1 mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractComponent"

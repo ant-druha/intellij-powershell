@@ -4,7 +4,6 @@ import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.lang.ASTNode
 import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.util.UnfairTextRange
 import com.intellij.plugin.powershell.ide.resolve.PowerShellComponentResolveProcessor
 import com.intellij.plugin.powershell.ide.resolve.PowerShellResolveUtil
 import com.intellij.plugin.powershell.ide.resolve.PowerShellResolver
@@ -14,7 +13,6 @@ import com.intellij.psi.PsiPolyVariantReference
 import com.intellij.psi.PsiReference
 import com.intellij.psi.ResolveResult
 import com.intellij.psi.impl.source.resolve.ResolveCache
-import com.intellij.psi.util.PsiTreeUtil
 import java.util.*
 
 /**
@@ -64,22 +62,18 @@ abstract class PowerShellReferencePsiElementImpl(node: ASTNode) : PowerShellPsiE
   }
 
   override fun getRangeInElement(): TextRange {
-    val refs = PsiTreeUtil.getChildrenOfType(this, PowerShellReferencePsiElement::class.java)
-    if (refs != null && refs.isNotEmpty()) {
-      val lastRefRange = refs[refs.size - 1].textRange
-      return UnfairTextRange(lastRefRange.startOffset - textRange.startOffset, lastRefRange.endOffset - textRange.endOffset)
-    }
-    return UnfairTextRange(0, textRange.endOffset - textRange.startOffset)
+    val refRange = element.textRange
+    return TextRange(textRange.startOffset - refRange.startOffset, refRange.endOffset - refRange.startOffset)
   }
 
   override fun getCanonicalText(): String = node.text
 
   override fun handleElementRename(newElementName: String?): PsiElement {
-    if (newElementName == null) return this
+    val nameElement = getNameElement()
+    if (newElementName == null || nameElement == null) return this
+
     val identifierNew = PowerShellPsiElementFactory.createIdentifierFromText(project, newElementName, true)
-    if (identifierNew != null) {
-      node.replaceChild(element.node, identifierNew.node)
-    }
+    if (identifierNew != null) nameElement.replace(identifierNew)
     return this
   }
 

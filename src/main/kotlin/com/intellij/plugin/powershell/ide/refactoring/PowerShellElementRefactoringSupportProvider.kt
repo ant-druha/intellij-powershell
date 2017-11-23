@@ -1,18 +1,18 @@
 package com.intellij.plugin.powershell.ide.refactoring
 
 import com.intellij.lang.refactoring.RefactoringSupportProvider
-import com.intellij.plugin.powershell.psi.PowerShellPsiElement
+import com.intellij.plugin.powershell.psi.PowerShellComponent
 import com.intellij.psi.PsiElement
 
 class PowerShellElementRefactoringSupportProvider : RefactoringSupportProvider() {
 
-  override fun isSafeDeleteAvailable(element: PsiElement): Boolean = isComponent(element)
+  override fun isSafeDeleteAvailable(element: PsiElement): Boolean = element is PowerShellComponent
 
   override fun isInplaceRenameAvailable(element: PsiElement, context: PsiElement?): Boolean = false
 
   override fun isMemberInplaceRenameAvailable(element: PsiElement, context: PsiElement?): Boolean =
-      isComponent(element) && !isBracedVariable(element) && !isVariableWithNamespace(element)
+      isAvailable(element) && !isBracedVariable(element) && !isVariableWithNamespace(element)
 
-  override fun isAvailable(context: PsiElement): Boolean = context is PowerShellPsiElement
+  override fun isAvailable(context: PsiElement): Boolean = context is PowerShellComponent
 
 }
