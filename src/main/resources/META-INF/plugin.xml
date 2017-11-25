@@ -84,7 +84,9 @@
   </extensions>
 
   <actions>
-    <!-- Add your actions here -->
+    <action id="NewPowerShellFile" class="com.intellij.plugin.powershell.ide.actions.NewPowerShellFileAction">
+      <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFromTemplate"/>
+    </action>
   </actions>
 
 </idea-plugin>
