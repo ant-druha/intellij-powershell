@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templateSet group="PowerShell">
-    <template name="sout" value="Write-Object $ARG$" description="Write object value to standard output" toReformat="true" toShortenFQNames="false">
+    <template name="sout" value="Write-Output $ARG$" description="Write object value to standard output" toReformat="true" toShortenFQNames="false">
         <variable name="ARG" expression="" defaultValue="" alwaysStopAt="true" />
         <context>
             <option name="PowerShell" value="true" />
             <option name="powershell.context.statement" value="true" />
         </context>
     </template>
-    <template name="wo" value="Write-Object $ARG$" description="Write object value to standard output" toReformat="true" toShortenFQNames="false">
+    <template name="wo" value="Write-Output $ARG$" description="Write object value to standard output" toReformat="true" toShortenFQNames="false">
         <variable name="ARG" expression="" defaultValue="" alwaysStopAt="true" />
         <context>
             <option name="PowerShell" value="true" />
