@@ -25,6 +25,8 @@ abstract class PowerShellReferencePsiElementImpl(node: ASTNode) : PowerShellPsiE
     return PowerShellResolveUtil.toCandidateInfoArray(elements)
   }
 
+  abstract override fun getNameElement(): PsiElement?
+
   override fun getElement(): PsiElement = this
 
   override fun getReference(): PsiReference? = this

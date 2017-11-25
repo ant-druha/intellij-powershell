@@ -27,4 +27,4 @@ internal fun isMember(element: PsiElement?): Boolean {
 internal fun isComponent(element: PsiElement): Boolean = element is PowerShellComponent
 
 internal fun isVariableWithNamespace(element: PsiElement): Boolean =
-    element is PowerShellVariable && StringUtil.isNotEmpty(element.getNamespace())
+    element is PowerShellVariable && StringUtil.isNotEmpty(element.getScopeName())

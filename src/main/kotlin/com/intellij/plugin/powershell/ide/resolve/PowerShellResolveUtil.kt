@@ -26,7 +26,7 @@ object PowerShellResolveUtil {
 //    val refName = reference.canonicalText
 //
 //    if (component is PowerShellVariable) {
-//      val ns = component.getNamespace()
+//      val ns = component.getScopeName()
 //      if (!"function".equals(ns, true) || reference !is PowerShellCallableReference) return component.getQualifiedName() == refName
 //    }
 //    return component.name == refName

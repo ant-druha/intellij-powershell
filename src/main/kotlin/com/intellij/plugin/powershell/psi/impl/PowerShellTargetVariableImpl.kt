@@ -3,6 +3,7 @@ package com.intellij.plugin.powershell.psi.impl
 import com.intellij.lang.ASTNode
 import com.intellij.navigation.ItemPresentation
 import com.intellij.openapi.util.TextRange
+import com.intellij.openapi.util.text.StringUtil
 import com.intellij.plugin.powershell.ide.resolve.PowerShellResolveUtil
 import com.intellij.plugin.powershell.ide.resolve.PowerShellResolver
 import com.intellij.plugin.powershell.ide.search.PowerShellComponentType
@@ -23,15 +24,26 @@ import javax.swing.Icon
 open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractComponent(node), PowerShellVariable, PowerShellReferencePsiElement, PsiPolyVariantReference {
   override fun getNameElement(): PsiElement? = nameIdentifier
 
-  override fun getQualifiedName(): String {
-    val ns = getNamespace() ?: "Variable"
-    return ns + ":" + name
+  override fun getQualifiedName(): String {//variable can not have qualifier?, but it can have qualified name: it means including the scope
+    val ns = getScopeName() ?: "Variable"
+    return ns + ":" + getShortName()
   }
+
+  private fun getShortName(): String? = nameIdentifier?.text
 
 
   override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
     val elements = ResolveCache.getInstance(project).resolveWithCaching(this, PowerShellResolver.INSTANCE, true, incompleteCode)
     return PowerShellResolveUtil.toCandidateInfoArray(elements)
+  }
+
+  override fun getName(): String? = getShortName()
+//    return getExplicitName()  //if explicit name-> highlighting and usages are not correctly processed (need to be customized)
+
+  private fun getExplicitName(): String? {
+    var ns = getScopeName()
+    ns = if (StringUtil.isNotEmpty(ns)) ns + ":" else ""
+    return ns + getShortName()
   }
 
   override fun getElement(): PsiElement = this
@@ -46,8 +58,8 @@ open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractCompo
   override fun getRangeInElement(): TextRange = TextRange(getPrefixNode().textLength, node.textLength - (getSuffixNode()?.textLength ?: 0))
 
   override fun getCanonicalText(): String {
-    val varName = nameIdentifier?.text
-    val ns = getNamespace() ?: "Variable"
+    val varName = getShortName()
+    val ns = getScopeName() ?: "Variable"
     return ns + ":" + varName
   }
 
@@ -57,7 +69,7 @@ open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractCompo
   override fun setName(name: String): PsiElement {
     val identifier = getNameElement()
     val variable = PowerShellPsiElementFactory.createVariableFromText(project, name, isBracedVariable())
-    val identifierNew = variable?.nameIdentifier
+    val identifierNew = variable?.getNameElement()
     if (identifierNew != null && identifier != null) {
       node.replaceChild(identifier.node, identifierNew.node)
     }
@@ -101,17 +113,17 @@ open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractCompo
 
   override fun getPresentation(): ItemPresentation {
     return object : ItemPresentation {
-      override fun getLocationString(): String? = getNamespace()
+      override fun getLocationString(): String? = getScopeName()
 
       override fun getIcon(unused: Boolean): Icon? = getIcon(0)
 
-      override fun getPresentableText(): String? = getPrefix() + name + (getSuffix() ?: "")
+      override fun getPresentableText(): String? = getPrefix() + getExplicitName() + (getSuffix() ?: "")
     }
   }
 
   override fun getIcon(flags: Int): Icon? = PowerShellComponentType.VARIABLE.getIcon()
 
-  override fun getNamespace(): String? = findChildByType<PsiElement>(SIMPLE_ID)?.text
+  override fun getScopeName(): String? = findChildByType<PsiElement>(SIMPLE_ID)?.text
 
   override fun getPrefix(): String = getPrefixNode().text
 
@@ -122,10 +134,12 @@ open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractCompo
   private fun getSuffixNode(): ASTNode? = node.findChildByType(RCURLY)
 
   override fun getReference(): PowerShellReferencePsiElement? {
-    return if (getNamespace().equals("function", true) && !isLhsAssignmentTarget()) {
+    return if (getScopeName().equals("function", true) && !isLhsAssignmentTarget()) {
       //if context is PowerShellAssignmentStatement, then this is function declaration
       object : PowerShellCallableReferenceExpression(node) {
-        override fun getNameElement(): PsiElement? = nameIdentifier
+        override fun getNameElement(): PsiElement? = this@PowerShellTargetVariableImpl.getNameElement()
+        override fun getRangeInElement(): TextRange = this@PowerShellTargetVariableImpl.rangeInElement
+//        override fun getCanonicalText(): String = this@PowerShellTargetVariableImpl.canonicalText
       }
     } else this
 //    return PowerShellReferencePsiElementImpl(node)

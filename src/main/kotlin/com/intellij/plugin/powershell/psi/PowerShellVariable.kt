@@ -5,7 +5,7 @@ package com.intellij.plugin.powershell.psi
  */
 interface PowerShellVariable : PowerShellQualifiedElement, PowerShellComponent, PowerShellReferencePsiElement {
   override fun getReference(): PowerShellReferencePsiElement?
-  fun getNamespace(): String?
+  fun getScopeName(): String?
   fun getPrefix(): String
   fun getSuffix(): String?
 }

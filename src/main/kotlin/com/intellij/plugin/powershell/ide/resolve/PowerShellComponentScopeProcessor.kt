@@ -26,16 +26,14 @@ class PowerShellComponentScopeProcessor : PsiScopeProcessor {
 
   override fun execute(element: PsiElement, state: ResolveState): Boolean {
     if (element is PowerShellTargetVariableExpression) {
-      val name = element.name
-      if (name != null) {
-        val oldVar = myCollectedVariables[name]
-        if (oldVar == null || oldVar.textOffset > element.textOffset) {
-          myCollectedVariables.put(name, element)
-        } else if (element.containingFile !== oldVar.containingFile) {
-          myCollectedVariables.put(name, element)//should not happen if the file is the same
-          // if there already variable with the same name defined it should be located in the same local context
-          throw AssertionError("Elements are defined in different files")
-        }
+      val name = element.getQualifiedName()
+      val oldVar = myCollectedVariables[name]
+      if (oldVar == null || oldVar.textOffset > element.textOffset) {
+        myCollectedVariables.put(name, element)
+      } else if (element.containingFile !== oldVar.containingFile) {
+        myCollectedVariables.put(name, element)//should not happen if the file is the same
+        // if there already variable with the same name defined it should be located in the same local context
+        throw AssertionError("Elements are defined in different files")
       }
     } else if (element is PowerShellComponent) {//todo fix psi generation ('extends' PS Component)
       myResult.add(element)

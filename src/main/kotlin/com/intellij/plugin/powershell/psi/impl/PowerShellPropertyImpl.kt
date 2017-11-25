@@ -39,7 +39,7 @@ open class PowerShellPropertyImpl(node: ASTNode) : /*PowerShellAbstractComponent
 
   override fun getSuffix(): String? = getVariable()?.getSuffix()
 
-  override fun getNamespace(): String? = getVariable()?.getNamespace()
+  override fun getScopeName(): String? = getVariable()?.getScopeName()
 
   override fun getIcon(flags: Int): Icon? = PowerShellComponentType.FIELD.getIcon()
 }
