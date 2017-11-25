@@ -71,6 +71,28 @@ open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractCompo
   override fun isSoft(): Boolean = false
 
   override fun isReferenceTo(element: PsiElement?): Boolean = element != null && element == resolve()
+//    return isReferenceToTarget(element)
+
+  //if we resolve several definitions to closes target
+//  private fun isReferenceToTarget(element: PsiElement?): Boolean {
+//    if (element == null) return false
+//    val target = resolve()
+//    if (target == this || target == null) return false
+//    val targetName = (target as? PowerShellTargetVariableExpression)?.name
+//    val theirName = (element as? PowerShellTargetVariableExpression)?.name
+//    if (StringUtil.isNotEmpty(targetName) && theirName == targetName) {
+//      val ourScopeOwner = PowerShellResolveUtil.getMaxLocalScopeForTargetOrReference(target)
+//      val theirScopeOwner = PowerShellResolveUtil.getMaxLocalScopeForTargetOrReference(element)
+//      if (resolvesToSameLocal(element, ourScopeOwner, theirScopeOwner)) {
+//        return true
+//      }
+//    }
+//    return false
+//  }
+//
+//  private fun resolvesToSameLocal(element: PsiElement, ourScopeOwner: PsiElement?, theirScopeOwner: PsiElement?): Boolean {
+//    return ourScopeOwner === theirScopeOwner
+//  }
 
   override fun getQualifier(): PsiElement? {
     val dot = findChildByType<PsiElement>(PowerShellTypes.DOT)

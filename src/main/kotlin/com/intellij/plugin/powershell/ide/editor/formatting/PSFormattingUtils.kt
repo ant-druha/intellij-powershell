@@ -75,12 +75,12 @@ internal fun isIfStatementContext(node: ASTNode): Boolean {
   return node.treeParent?.elementType === PowerShellTypes.IF_STATEMENT
 }
 
-internal fun isFunctionDeclarationContext(node: ASTNode): Boolean {
-  return node.treeParent?.elementType === PowerShellTypes.FUNCTION_STATEMENT
+internal fun isFunctionDeclaration(node: ASTNode): Boolean {
+  return node.elementType === PowerShellTypes.FUNCTION_STATEMENT
 }
 
-internal fun isMethodDeclarationContext(node: ASTNode): Boolean {
-  return node.treeParent?.elementType === PowerShellTypes.METHOD_DECLARATION_STATEMENT
+internal fun isMethodDeclaration(node: ASTNode): Boolean {
+  return node.elementType === PowerShellTypes.METHOD_DECLARATION_STATEMENT
 }
 
 internal fun isParameterClauseContext(node: ASTNode): Boolean {
@@ -108,12 +108,17 @@ internal fun isPipelineContext(node: ASTNode): Boolean {
   return node.treeParent?.elementType === PowerShellTypes.PIPELINE
 }
 
-internal fun isConstructorDeclarationContext(node: ASTNode): Boolean {
-  return node.treeParent?.elementType === PowerShellTypes.CONSTRUCTOR_DECLARATION_STATEMENT
+internal fun isConstructorDeclaration(node: ASTNode): Boolean {
+  return node.elementType === PowerShellTypes.CONSTRUCTOR_DECLARATION_STATEMENT
+}
+
+internal fun isCallableDeclaration(node: ASTNode): Boolean {
+  return isFunctionDeclaration(node) || isMethodDeclaration(node) || isConstructorDeclaration(node)
 }
 
 internal fun isCallableDeclarationContext(node: ASTNode): Boolean {
-  return isFunctionDeclarationContext(node) || isMethodDeclarationContext(node) || isConstructorDeclarationContext(node)
+  val parent = node.treeParent
+  return parent != null && isCallableDeclaration(parent)
 }
 
 internal fun isAttribute(node: ASTNode): Boolean {

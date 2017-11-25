@@ -8,6 +8,7 @@ import com.intellij.plugin.powershell.psi.PowerShellComponent
 import com.intellij.plugin.powershell.psi.PowerShellPsiElement
 import com.intellij.psi.PsiElement
 import com.intellij.psi.ResolveState
+import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.scope.PsiScopeProcessor
 import javax.swing.Icon
 
@@ -37,14 +38,18 @@ open class PowerShellPsiElementImpl(node: ASTNode) : ASTWrapperPsiElement(node),
 
   private fun processDeclarationsImpl(processor: PsiScopeProcessor, state: ResolveState, lastParent: PsiElement?, place: PsiElement): Boolean {
     val result = HashSet<PowerShellComponent>()
-    for (ch in children) {
-      if (ch is PowerShellComponent) {
-        result.add(ch)
-      } else if (ch is PowerShellAssignmentExpression) {
-        result += ch.targetVariables
+//    PowerShellResolveUtil.collectChildrenDeclarations(this, result, processor, state, lastParent)
+    children.forEach { child ->
+      if (child === lastParent) return@forEach
+      when (child) {
+        is PowerShellComponent -> result.add(child)
+        is PowerShellAssignmentExpression -> result += child.targetVariables
+        !is LeafPsiElement -> {
+          if (!child.processDeclarations(processor, state, lastParent, place)) return false
+        }
       }
     }
-//    return result.none { processor.execute(it, state).not() }
+
     return result.none { place.textOffset > it.textOffset && processor.execute(it, state).not() }
   }
 }

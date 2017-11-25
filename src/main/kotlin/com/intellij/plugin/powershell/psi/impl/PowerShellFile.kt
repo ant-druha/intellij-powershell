@@ -5,8 +5,8 @@ import com.intellij.navigation.ItemPresentation
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.plugin.powershell.PowerShellFileType
 import com.intellij.plugin.powershell.PowerShellIcons
+import com.intellij.plugin.powershell.ide.resolve.PowerShellResolveUtil
 import com.intellij.plugin.powershell.lang.PowerShellLanguage
-import com.intellij.plugin.powershell.psi.PowerShellAssignmentExpression
 import com.intellij.plugin.powershell.psi.PowerShellComponent
 import com.intellij.plugin.powershell.psi.PowerShellPsiElement
 import com.intellij.psi.FileViewProvider
@@ -19,9 +19,9 @@ import javax.swing.Icon
  * Andrey 17/07/17.
  */
 class PowerShellFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, PowerShellLanguage.INSTANCE), PowerShellPsiElement {
-    override fun getFileType(): FileType {
-        return PowerShellFileType()
-    }
+  override fun getFileType(): FileType {
+    return PowerShellFileType()
+  }
 
   override fun getPresentation(): ItemPresentation {
     return object : ItemPresentation {
@@ -45,13 +45,7 @@ class PowerShellFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider,
 
   private fun processDeclarationsImpl(processor: PsiScopeProcessor, state: ResolveState, lastParent: PsiElement?, place: PsiElement): Boolean {
     val result = HashSet<PowerShellComponent>()
-    for (ch in children) {
-      if (ch is PowerShellComponent) {
-        result.add(ch)
-      } else if (ch is PowerShellAssignmentExpression) {
-        result += ch.targetVariables
-      }
-    }
+    PowerShellResolveUtil.collectChildrenDeclarations(this, result, processor, state, lastParent)
     return result.none { place.textOffset > it.textOffset && processor.execute(it, state).not() }
   }
 }

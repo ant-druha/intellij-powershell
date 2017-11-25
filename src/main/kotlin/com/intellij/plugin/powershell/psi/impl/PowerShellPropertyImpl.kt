@@ -4,13 +4,13 @@ import com.intellij.lang.ASTNode
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.UnfairTextRange
 import com.intellij.plugin.powershell.ide.search.PowerShellComponentType
-import com.intellij.plugin.powershell.psi.PowerShellAssignmentExpression
-import com.intellij.plugin.powershell.psi.PowerShellIdentifier
-import com.intellij.plugin.powershell.psi.PowerShellTargetVariableExpression
-import com.intellij.plugin.powershell.psi.PowerShellVariable
+import com.intellij.plugin.powershell.psi.*
+import com.intellij.psi.PsiElement
 import javax.swing.Icon
 
-open class PowerShellPropertyImpl(node: ASTNode) : /*PowerShellAbstractComponent*/PowerShellTargetVariableImpl(node) {
+open class PowerShellPropertyImpl(node: ASTNode) : /*PowerShellAbstractComponent*/PowerShellTargetVariableImpl(node), PowerShellMemberDeclaration {
+
+  override fun getContainingClass(): PsiElement? = context
 
   override fun getRangeInElement(): TextRange {
     val myVar = getVariable()

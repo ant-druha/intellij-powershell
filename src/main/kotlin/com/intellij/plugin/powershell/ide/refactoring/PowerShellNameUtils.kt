@@ -31,13 +31,8 @@ object PowerShellNameUtils {
     isBracedVariable(element) -> PowerShellTokenTypeSets.BRACED_VARIABLE_IDENTIFIERS.contains(getTokenType(name, _PowerShellLexer.VAR_BRACED))
     isSimpleVariable(element) -> PowerShellTokenTypeSets.SIMPLE_VARIABLE_IDENTIFIERS.contains(getTokenType(name, _PowerShellLexer.VAR_SIMPLE))
     isFunctionStatement(element) -> {
-      val tt = getTokenType(name, _PowerShellLexer.FUNCTION_ID)
-      if (PowerShellTokenTypeSets.FUNCTION_IDENTIFIERS.contains(tt)) {
-        true
-      } else {
-        val identifierNew = PowerShellPsiElementFactory.createIdentifierFromText(element.project, name, true)
-        identifierNew != null
-      }
+      PowerShellTokenTypeSets.FUNCTION_IDENTIFIERS.contains(getTokenType(name, _PowerShellLexer.FUNCTION_ID))
+          || PowerShellPsiElementFactory.createIdentifierFromText(element.project, name, true) != null
     }
     isMember(element) -> PowerShellTokenTypeSets.MEMBER_IDENTIFIERS.contains(getTokenType(name))
     else -> PowerShellTokenTypeSets.IDENTIFIERS.contains(getTokenType(name))

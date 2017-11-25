@@ -31,7 +31,7 @@ class PowerShellStructureViewElement(element: PowerShellPsiElement) : PsiTreeEle
         result.add(PowerShellStructureViewElement(myElement, true))
         return result
       }
-      PowerShellResolveUtil.processDeclarationsImpl(myElement, resolveProcessor, ResolveState.initial(), null, null)
+      PowerShellResolveUtil.processChildDeclarations(myElement, resolveProcessor, ResolveState.initial(), null, null)
     } else if (myElement is PowerShellClassDeclarationStatement) {
       PowerShellResolveUtil.processClassMembers(myElement, resolveProcessor, ResolveState.initial(), null, null)
     } else if (myElement is PowerShellEnumDeclarationStatement) {

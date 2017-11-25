@@ -469,7 +469,7 @@ private class_member_declaration_list ::= class_member_declaration (statement_te
 private class_member_declaration ::= property_declaration_statement | constructor_declaration_statement | method_declaration_statement
 
 property_declaration_statement ::= (member_declaration_attribute nls?)* property_definition_expression
-{mixin="com.intellij.plugin.powershell.psi.impl.PowerShellMemberDeclarationImpl"
+{mixin="com.intellij.plugin.powershell.psi.impl.PowerShellPropertyImpl"
 implements="com.intellij.plugin.powershell.psi.PowerShellMemberDeclaration"}
 private property_definition_expression ::= expression
 private member_declaration_attribute ::= declaration_modifier_attribute | attribute
