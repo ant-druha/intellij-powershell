@@ -75,6 +75,12 @@
     <renameInputValidator implementation="com.intellij.plugin.powershell.ide.refactoring.PowerShellElementRenameInputValidator"/>
     <renamePsiElementProcessor implementation="com.intellij.plugin.powershell.ide.refactoring.PowerShellRenamePsiElementProcessor"/>
 
+    <liveTemplateContext implementation="com.intellij.plugin.powershell.ide.editor.generate.PowerShellLanguageContext"/>
+    <liveTemplateContext implementation="com.intellij.plugin.powershell.ide.editor.generate.PowerShellDeclarationContext"/>
+    <liveTemplateContext implementation="com.intellij.plugin.powershell.ide.editor.generate.PowerShellStatementContext"/>
+
+    <defaultLiveTemplatesProvider implementation="com.intellij.plugin.powershell.ide.editor.generate.PowerShellLiveTemplatesProvider"/>
+
   </extensions>
 
   <actions>

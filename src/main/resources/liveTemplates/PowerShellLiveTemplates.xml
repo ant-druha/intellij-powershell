@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templateSet group="PowerShell">
+    <template name="sout" value="Write-Object $ARG$" description="Write object value to standard output" toReformat="true" toShortenFQNames="false">
+        <variable name="ARG" expression="" defaultValue="" alwaysStopAt="true" />
+        <context>
+            <option name="PowerShell" value="true" />
+            <option name="powershell.context.statement" value="true" />
+        </context>
+    </template>
+    <template name="wo" value="Write-Object $ARG$" description="Write object value to standard output" toReformat="true" toShortenFQNames="false">
+        <variable name="ARG" expression="" defaultValue="" alwaysStopAt="true" />
+        <context>
+            <option name="PowerShell" value="true" />
+            <option name="powershell.context.statement" value="true" />
+        </context>
+    </template>
+    <template name="fun0" value="function $NAME$ {&#10;    $END$&#10;}" description="Function with no parameters" toReformat="true" toShortenFQNames="false">
+        <variable name="NAME" expression="" defaultValue="" alwaysStopAt="true" />
+        <context>
+            <option name="powershell.context.statement" value="true" />
+        </context>
+    </template>
+    <template name="fun" value="function $NAME$($PARAMS$) {&#10;    $END$&#10;}" description="Function with parameters" toReformat="true" toShortenFQNames="false">
+        <variable name="NAME" expression="" defaultValue="" alwaysStopAt="true" />
+        <variable name="PARAMS" expression="" defaultValue="" alwaysStopAt="true" />
+        <context>
+            <option name="powershell.context.statement" value="true" />
+        </context>
+    </template>
+</templateSet>
