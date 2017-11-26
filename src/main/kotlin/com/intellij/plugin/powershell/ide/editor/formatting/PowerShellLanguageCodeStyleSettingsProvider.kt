@@ -312,6 +312,8 @@ class PowerShellLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsPro
 
     defaultSettings.SPACE_BEFORE_ARRAY_INITIALIZER_LBRACE = true
 
+    defaultSettings.SPACE_AFTER_TYPE_CAST = false
+
     defaultSettings.CATCH_ON_NEW_LINE = true
     defaultSettings.FINALLY_ON_NEW_LINE = true
 

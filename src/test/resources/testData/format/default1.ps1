@@ -145,7 +145,7 @@ class Child : Person
         $this.School = $s
     }
 }
-[Child] $littleOne = [Child]::
+[Child]$littleOne = [Child]::
         new(10, "Silver Fir Elementary School")
 $littleOne.Age
 

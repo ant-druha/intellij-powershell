@@ -14,7 +14,7 @@ foreach ($i in get-childitem | sort-object length)
 -not-not$false         # False
 -not1.23                # False
 !"xyz"                # False
-[int] $x = 10.6         # type int, value 11
+[int]$x = 10.6         # type int, value 11
 switch -regex (asas)
 {
     " ^5" {
@@ -145,7 +145,7 @@ class Child: Person
         $this.School = $s
     }
 }
-[Child] $littleOne = [Child]::
+[Child]$littleOne = [Child]::
         new(10, "Silver Fir Elementary School")
 $littleOne.Age
 
