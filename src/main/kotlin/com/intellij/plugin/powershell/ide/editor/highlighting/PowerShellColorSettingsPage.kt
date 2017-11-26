@@ -27,7 +27,8 @@ class PowerShellColorSettingsPage : ColorSettingsPage {
       AttributesDescriptor("Type reference", PowerShellSyntaxHighlighter.TYPE_REFERENCE),
       AttributesDescriptor("Variable name", PowerShellSyntaxHighlighter.VARIABLE_NAME),
       AttributesDescriptor("Property access", PowerShellSyntaxHighlighter.PROPERTY_REFERENCE),
-      AttributesDescriptor("Method call", PowerShellSyntaxHighlighter.METHOD_CALL)
+      AttributesDescriptor("Method call", PowerShellSyntaxHighlighter.METHOD_CALL),
+      AttributesDescriptor("Method declaration", PowerShellSyntaxHighlighter.METHOD_DECLARATION)
   )
 
   init {
@@ -41,6 +42,7 @@ class PowerShellColorSettingsPage : ColorSettingsPage {
     additionalTags.put("var name", PowerShellSyntaxHighlighter.VARIABLE_NAME)
     additionalTags.put("property access", PowerShellSyntaxHighlighter.PROPERTY_REFERENCE)
     additionalTags.put("method call", PowerShellSyntaxHighlighter.METHOD_CALL)
+    additionalTags.put("method declaration", PowerShellSyntaxHighlighter.METHOD_DECLARATION)
   }
 
   override fun getHighlighter(): SyntaxHighlighter {
@@ -88,7 +90,7 @@ class PowerShellColorSettingsPage : ColorSettingsPage {
         "    {\n" +
         "        \$this.<property access>Age<property access> = \$<var name>a</var name>\n" +
         "    }\n" +
-        "    DoSomething(\$<var name>x</var name>)\n" +
+        "    <method declaration>DoSomething</method declaration>(\$<var name>x</var name>)\n" +
         "    {\n" +
         "        \$this.<method call>DoSomething</method call>(\$<var name>x</var name>)\n" +
         "    }\n" +
@@ -97,7 +99,7 @@ class PowerShellColorSettingsPage : ColorSettingsPage {
         "{\n" +
         "    [<type ref>string</type ref>]\$<var name>School</var name>\n" +
         "\n" +
-        "    Child([<type ref>int</type ref>]\$<var name>a</var name>, [<type ref>string</type ref>]\$<var name>s</var name>): base(\$<var name>a</var name>)\n" +
+        "    <method declaration>Child</method declaration>([<type ref>int</type ref>]\$<var name>a</var name>, [<type ref>string</type ref>]\$<var name>s</var name>): base(\$<var name>a</var name>)\n" +
         "    {\n" +
         "        \$this.<property access>School</property access> = \$<var name>s</var name>\n" +
         "    }\n" +

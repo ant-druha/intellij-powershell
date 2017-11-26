@@ -24,11 +24,16 @@ class PowerShellAnnotator : Annotator {
       e is PowerShellReferenceTypeElement -> createInfoAnnotation(holder, e, PowerShellSyntaxHighlighter.TYPE_REFERENCE)
       e is PowerShellTargetVariableExpression -> annotateVariable(holder, e, PowerShellSyntaxHighlighter.VARIABLE_NAME)
       e is PowerShellMemberAccessExpression -> annotateMemberAccess(holder, e, PowerShellSyntaxHighlighter.PROPERTY_REFERENCE)
-      e is PowerShellInvocationExpression -> annotateMethodCall(holder, e, PowerShellSyntaxHighlighter.METHOD_CALL)
+      e is PowerShellInvocationExpression -> annotateMethodCallName(holder, e, PowerShellSyntaxHighlighter.METHOD_CALL)
+      e is PowerShellCallableDeclaration -> annotateFunctionName(holder, e, PowerShellSyntaxHighlighter.METHOD_DECLARATION)
     }
   }
 
-  private fun annotateMethodCall(holder: AnnotationHolder, call: PowerShellInvocationExpression, attributes: TextAttributesKey) {
+  private fun annotateFunctionName(holder: AnnotationHolder, callable: PowerShellCallableDeclaration, attributes: TextAttributesKey) {
+    createInfoAnnotation(holder, callable.nameIdentifier, attributes)
+  }
+
+  private fun annotateMethodCallName(holder: AnnotationHolder, call: PowerShellInvocationExpression, attributes: TextAttributesKey) {
     createInfoAnnotation(holder, call.member, attributes)
   }
 

@@ -496,8 +496,10 @@ private member_declaration_attribute ::= declaration_modifier_attribute | attrib
 private declaration_modifier_attribute ::= 'hidden' | 'static'
 
 constructor_declaration_statement ::= class_name method_argument_expression_list nls? base_constructor_call? nls? method_block
-{mixin="com.intellij.plugin.powershell.psi.impl.PowerShellMemberDeclarationImpl"
-implements="com.intellij.plugin.powershell.psi.PowerShellMemberDeclaration"}
+{
+  mixin="com.intellij.plugin.powershell.psi.impl.PowerShellCallableDeclarationImpl"
+  implements="com.intellij.plugin.powershell.psi.PowerShellCallableDeclaration"
+}
 
 private method_block ::= statement_block
 
@@ -506,8 +508,10 @@ method_argument_expression_list ::= LP nls? parameter_list? nls? RP
 private base_constructor_call ::= COLON 'base' method_argument_expression_list
 
 method_declaration_statement ::= (member_declaration_attribute nls?)* method_name method_argument_expression_list nls? method_block
-{mixin="com.intellij.plugin.powershell.psi.impl.PowerShellMemberDeclarationImpl"
-implements="com.intellij.plugin.powershell.psi.PowerShellMemberDeclaration"}
+{
+  mixin="com.intellij.plugin.powershell.psi.impl.PowerShellCallableDeclarationImpl"
+  implements="com.intellij.plugin.powershell.psi.PowerShellCallableDeclaration"
+}
 private method_name ::= simple_name_identifier
 
 enum_declaration_statement ::= enum_declaration | enum_with_flags_declaration
@@ -527,13 +531,15 @@ enum_label_declaration ::= label_expression (EQ expression)?
  implements="com.intellij.plugin.powershell.psi.PowerShellMemberDeclaration"}
 
 function_statement ::= ('function' | 'filter') nls? function_statement_tail
-{pin=1 mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractComponent"
-implements="com.intellij.plugin.powershell.psi.PowerShellComponent"}
+{
+  pin=1 mixin="com.intellij.plugin.powershell.psi.impl.PowerShellCallableDeclarationImpl"
+  implements="com.intellij.plugin.powershell.psi.PowerShellCallableDeclaration"
+}
 workflow_statement ::= 'workflow' nls? function_statement_tail
 {
-    elementType=function_statement
-    mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractComponent"
-    implements="com.intellij.plugin.powershell.psi.PowerShellComponent"
+  elementType=function_statement
+  mixin="com.intellij.plugin.powershell.psi.impl.PowerShellCallableDeclarationImpl"
+  implements="com.intellij.plugin.powershell.psi.PowerShellCallableDeclaration"
 }
 
 private function_statement_tail ::= function_name nls? function_parameter_declaration? nls? LCURLY script_block? RCURLY

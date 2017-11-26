@@ -27,6 +27,7 @@ class PowerShellSyntaxHighlighter : SyntaxHighlighterBase() {
     private val POWER_SHELL_VARIABLE = "POWER_SHELL_VARIABLE"
     private val POWER_SHELL_PROPERTY_REF_NAME = "POWER_SHELL_PROPERTY_REF_NAME"
     private val POWER_SHELL_METHOD_CALL_NAME = "POWER_SHELL_METHOD_CALL_NAME"
+    private val POWER_SHELL_METHOD_DECLARATION_NAME = "POWER_SHELL_METHOD_DECLARATION_NAME"
 
     val ATTRIBUTES = HashMap<IElementType, TextAttributesKey>()
     val KEYWORD = createTextAttributesKey(POWER_SHELL_KEYWORD, DefaultLanguageHighlighterColors.KEYWORD)
@@ -39,6 +40,7 @@ class PowerShellSyntaxHighlighter : SyntaxHighlighterBase() {
     val VARIABLE_NAME = createTextAttributesKey(POWER_SHELL_VARIABLE, DefaultLanguageHighlighterColors.LOCAL_VARIABLE)
     val PROPERTY_REFERENCE = createTextAttributesKey(POWER_SHELL_PROPERTY_REF_NAME, DefaultLanguageHighlighterColors.IDENTIFIER)
     val METHOD_CALL = createTextAttributesKey(POWER_SHELL_METHOD_CALL_NAME, DefaultLanguageHighlighterColors.FUNCTION_CALL)
+    val METHOD_DECLARATION = createTextAttributesKey(POWER_SHELL_METHOD_DECLARATION_NAME, DefaultLanguageHighlighterColors.FUNCTION_DECLARATION)
     // val COMMAND_NAME_ATTR = createTextAttributesKey(POWER_SHELL_COMMAND_NAME, DefaultLanguageHighlighterColors.MARKUP_ATTRIBUTE)
   }
 
