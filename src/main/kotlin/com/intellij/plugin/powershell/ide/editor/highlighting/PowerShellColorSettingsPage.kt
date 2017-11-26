@@ -28,7 +28,8 @@ class PowerShellColorSettingsPage : ColorSettingsPage {
       AttributesDescriptor("Variable name", PowerShellSyntaxHighlighter.VARIABLE_NAME),
       AttributesDescriptor("Property access", PowerShellSyntaxHighlighter.PROPERTY_REFERENCE),
       AttributesDescriptor("Method call", PowerShellSyntaxHighlighter.METHOD_CALL),
-      AttributesDescriptor("Method declaration", PowerShellSyntaxHighlighter.METHOD_DECLARATION)
+      AttributesDescriptor("Method declaration", PowerShellSyntaxHighlighter.METHOD_DECLARATION),
+      AttributesDescriptor("Label", PowerShellSyntaxHighlighter.LABEL)
   )
 
   init {
@@ -43,6 +44,7 @@ class PowerShellColorSettingsPage : ColorSettingsPage {
     additionalTags.put("property access", PowerShellSyntaxHighlighter.PROPERTY_REFERENCE)
     additionalTags.put("method call", PowerShellSyntaxHighlighter.METHOD_CALL)
     additionalTags.put("method declaration", PowerShellSyntaxHighlighter.METHOD_DECLARATION)
+    additionalTags.put("label", PowerShellSyntaxHighlighter.LABEL)
   }
 
   override fun getHighlighter(): SyntaxHighlighter {
@@ -76,10 +78,10 @@ class PowerShellColorSettingsPage : ColorSettingsPage {
         " \$<var name>sum</var name> += \$<var name>i</var name>.<property access>length</property access>\n" +
         " }\n" +
         "\n" +
-        "# 3) variable name token: '\$<var name>_</var name>.<property access>length</property access> ' and 'get-childitem'\n" +
-        "switch -regex -casesensitive (<command name>get-childitem</command name> | sort length)\n" +
+        "# 3) variable name token: '\$_.length' and 'get-childitem'\n" +
+        ":<label>labelA</label> switch -regex -casesensitive (<command name>get-childitem</command name> | sort length)\n" +
         "{\n" +
-        " \"^5\" {\"length for \$<var name>_</var name> started with 5\" ; continue}\n" +
+        " \"^5\" {\"length for \$<var name>_</var name> started with 5\" ; continue <label>labelA</label>}\n" +
         " { \$<var name>_</var name>.<property access>length</property access> > 20000 } {\"length of \$<var name>_</var name> is greater than 20000\"}\n" +
         " default {\"Didn't match anything else...\"}\n" +
         "}\n\n" +

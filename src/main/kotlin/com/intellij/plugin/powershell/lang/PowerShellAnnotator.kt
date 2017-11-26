@@ -26,6 +26,8 @@ class PowerShellAnnotator : Annotator {
       e is PowerShellMemberAccessExpression -> annotateMemberAccess(holder, e, PowerShellSyntaxHighlighter.PROPERTY_REFERENCE)
       e is PowerShellInvocationExpression -> annotateMethodCallName(holder, e, PowerShellSyntaxHighlighter.METHOD_CALL)
       e is PowerShellCallableDeclaration -> annotateFunctionName(holder, e, PowerShellSyntaxHighlighter.METHOD_DECLARATION)
+      e is PowerShellLabel-> createInfoAnnotation(holder, e.identifier, PowerShellSyntaxHighlighter.LABEL)
+      e is PowerShellLabelReferenceExpression -> createInfoAnnotation(holder, e.identifier, PowerShellSyntaxHighlighter.LABEL)
     }
   }
 
