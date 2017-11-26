@@ -153,3 +153,16 @@ do
 {
     "{0,1}`t{1,2}" -f $i, ($i * $i)
 } while (++$i -le 5)                    # loop 5 times
+
+:labelA switch -regex -casesensitive (get-childitem | sort length)
+{
+    "^5" {
+        "length for $_ started with 5"; continue labelA
+    }
+    { $_.length > 20000 } {
+        "length of $_ is greater than 20000"
+    }
+    default {
+        "Didn't match anything else..."
+    }
+}

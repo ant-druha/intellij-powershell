@@ -7,17 +7,7 @@ import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IElementType
 
 
-fun isLabel(node: ASTNode): Boolean {
-  if (node.elementType != PowerShellTypes.SIMPLE_ID) return false
-
-  val treeNext = findSiblingSkipping(node, arrayOf(PowerShellTypes.NLS, TokenType.WHITE_SPACE))
-  val nodeNextType = treeNext?.elementType
-  if (nodeNextType == PowerShellTypes.SWITCH_STATEMENT || nodeNextType == PowerShellTypes.FOREACH_STATEMENT || nodeNextType == PowerShellTypes.FOR_STATEMENT || nodeNextType == PowerShellTypes.WHILE_STATEMENT
-      || nodeNextType == PowerShellTypes.DO_STATEMENT)
-    return true
-
-  return false
-}
+fun isLabelContext(node: ASTNode): Boolean = node.treeParent?.elementType === PowerShellTypes.LABEL
 
 internal fun findSiblingSkipping(node: ASTNode, toSkip: Array<IElementType>, forward: Boolean = true): ASTNode? {
   var result = if (forward) node.treeNext else node.treePrev
