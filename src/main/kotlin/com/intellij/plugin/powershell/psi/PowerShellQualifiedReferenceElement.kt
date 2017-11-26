@@ -5,8 +5,8 @@ import com.intellij.psi.PsiElement
 /**
  * Andrey 18/08/17.
  */
-interface PowerShellQualifiedElement : PowerShellPsiElement {
-  fun getQualifier(): PsiElement?
+interface PowerShellQualifiedReferenceElement<out Q: PsiElement> : PowerShellReferencePsiElement {
+  fun getQualifier(): Q?
   /**
    * returns full name of the element, including namespace
    */

@@ -1,9 +1,6 @@
 package com.intellij.plugin.powershell.ide.resolve
 
-import com.intellij.plugin.powershell.psi.PowerShellCallableReference
-import com.intellij.plugin.powershell.psi.PowerShellComponent
-import com.intellij.plugin.powershell.psi.PowerShellReferencePsiElement
-import com.intellij.plugin.powershell.psi.PowerShellVariable
+import com.intellij.plugin.powershell.psi.*
 import com.intellij.psi.PsiElement
 import com.intellij.psi.ResolveState
 import com.intellij.psi.impl.source.resolve.ResolveCache
@@ -21,10 +18,11 @@ class PowerShellResolver<T> : ResolveCache.AbstractResolver<T, List<PsiElement>>
 
   private fun resolveReference(ref: T): List<PsiElement> {
     val result = ArrayList<PowerShellComponent>()
-    val resolveProcessor = if (ref is PowerShellCallableReference) {//  $function: F  # invokes function F -> also callable reference (when ns== "function")
-      PowerShellCallableResolveProcessor(ref)
-    } else {
-      PowerShellVariableResolveProcessor(ref)
+    val resolveProcessor = when (ref) {
+      is PowerShellCallableReference -> //  $function: F  # invokes function F -> also callable reference (when ns== "function")
+        PowerShellCallableResolveProcessor(ref)
+      is PowerShellReferenceTypeElement -> PowerShellTypeResolveProcessor(ref)
+      else -> PowerShellVariableResolveProcessor(ref)
     }
     PsiTreeUtil.treeWalkUp(resolveProcessor, ref, null, ResolveState.initial())
     val res = resolveProcessor.getResult()
@@ -79,6 +77,20 @@ class PowerShellVariableResolveProcessor(ref: PowerShellReferencePsiElement) : P
           return setResult(element)
         }
       } else if (element.name.equals(refName, true)) {
+        return setResult(element)
+      }
+    }
+    return true
+  }
+
+}
+
+class PowerShellTypeResolveProcessor(ref: PowerShellReferenceTypeElement) : PowerShellResolveProcessor<PowerShellReferencePsiElement>(ref) {
+
+  override fun execute(element: PsiElement, state: ResolveState): Boolean {
+    if (element is PowerShellClassDeclarationStatement || element is PowerShellEnumDeclarationStatement) {
+      val refName = myRef.canonicalText
+      if ((element as PowerShellComponent).name.equals(refName, true)) {
         return setResult(element)
       }
     }

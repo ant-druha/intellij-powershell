@@ -13,6 +13,7 @@ public interface PowerShellTypes {
   IElementType ADDITIVE_EXPRESSION = new PowerShellElementType("ADDITIVE_EXPRESSION");
   IElementType ARRAY_EXPRESSION = new PowerShellElementType("ARRAY_EXPRESSION");
   IElementType ARRAY_LITERAL_EXPRESSION = new PowerShellElementType("ARRAY_LITERAL_EXPRESSION");
+  IElementType ARRAY_TYPE_ELEMENT = new PowerShellElementType("ARRAY_TYPE_ELEMENT");
   IElementType ASSIGNMENT_EXPRESSION = new PowerShellElementType("ASSIGNMENT_EXPRESSION");
   IElementType ATTRIBUTE = new PowerShellElementType("ATTRIBUTE");
   IElementType ATTRIBUTE_ARGUMENT = new PowerShellElementType("ATTRIBUTE_ARGUMENT");
@@ -44,6 +45,7 @@ public interface PowerShellTypes {
   IElementType FOR_CLAUSE = new PowerShellElementType("FOR_CLAUSE");
   IElementType FOR_STATEMENT = new PowerShellElementType("FOR_STATEMENT");
   IElementType FUNCTION_STATEMENT = new PowerShellElementType("FUNCTION_STATEMENT");
+  IElementType GENERIC_TYPE_ELEMENT = new PowerShellElementType("GENERIC_TYPE_ELEMENT");
   IElementType HASH_LITERAL_EXPRESSION = new PowerShellElementType("HASH_LITERAL_EXPRESSION");
   IElementType IDENTIFIER = new PowerShellElementType("IDENTIFIER");
   IElementType IF_STATEMENT = new PowerShellElementType("IF_STATEMENT");
@@ -69,6 +71,7 @@ public interface PowerShellTypes {
   IElementType RANGE_EXPRESSION = new PowerShellElementType("RANGE_EXPRESSION");
   IElementType REAL_LITERAL_EXPRESSION = new PowerShellElementType("REAL_LITERAL_EXPRESSION");
   IElementType REFERENCE_IDENTIFIER = new PowerShellElementType("REFERENCE_IDENTIFIER");
+  IElementType REFERENCE_TYPE_ELEMENT = new PowerShellElementType("REFERENCE_TYPE_ELEMENT");
   IElementType REFERENCE_VARIABLE = new PowerShellElementType("REFERENCE_VARIABLE");
   IElementType RESOURCE_BLOCK = new PowerShellElementType("RESOURCE_BLOCK");
   IElementType SCRIPT_BLOCK_EXPRESSION = new PowerShellElementType("SCRIPT_BLOCK_EXPRESSION");
@@ -80,6 +83,7 @@ public interface PowerShellTypes {
   IElementType TARGET_VARIABLE_EXPRESSION = new PowerShellElementType("TARGET_VARIABLE_EXPRESSION");
   IElementType TRAP_STATEMENT = new PowerShellElementType("TRAP_STATEMENT");
   IElementType TRY_STATEMENT = new PowerShellElementType("TRY_STATEMENT");
+  IElementType TYPE_ELEMENT = new PowerShellElementType("TYPE_ELEMENT");
   IElementType TYPE_LITERAL_EXPRESSION = new PowerShellElementType("TYPE_LITERAL_EXPRESSION");
   IElementType UNARY_EXPRESSION = new PowerShellElementType("UNARY_EXPRESSION");
   IElementType VERBATIM_COMMAND_ARGUMENT = new PowerShellElementType("VERBATIM_COMMAND_ARGUMENT");
@@ -217,6 +221,9 @@ public interface PowerShellTypes {
       else if (type == ARRAY_LITERAL_EXPRESSION) {
         return new PowerShellArrayLiteralExpressionImplGen(node);
       }
+      else if (type == ARRAY_TYPE_ELEMENT) {
+        return new PowerShellArrayTypeElementImplGen(node);
+      }
       else if (type == ASSIGNMENT_EXPRESSION) {
         return new PowerShellAssignmentExpressionImplGen(node);
       }
@@ -307,6 +314,9 @@ public interface PowerShellTypes {
       else if (type == FUNCTION_STATEMENT) {
         return new PowerShellFunctionStatementImplGen(node);
       }
+      else if (type == GENERIC_TYPE_ELEMENT) {
+        return new PowerShellGenericTypeElementImplGen(node);
+      }
       else if (type == HASH_LITERAL_EXPRESSION) {
         return new PowerShellHashLiteralExpressionImplGen(node);
       }
@@ -381,6 +391,9 @@ public interface PowerShellTypes {
       }
       else if (type == REFERENCE_IDENTIFIER) {
         return new PowerShellReferenceIdentifierImplGen(node);
+      }
+      else if (type == REFERENCE_TYPE_ELEMENT) {
+        return new PowerShellReferenceTypeElementImplGen(node);
       }
       else if (type == REFERENCE_VARIABLE) {
         return new PowerShellReferenceVariableImplGen(node);
