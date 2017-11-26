@@ -105,6 +105,6 @@ class PowerShellColorSettingsPage : ColorSettingsPage {
         "    }\n" +
         "}\n" +
         "[<type ref>Child</type ref>]\$<var name>littleOne</var name> = [<type ref>Child</type ref>]::<method call>new</method call>(10, \"Silver Fir Elementary School\")\n" +
-        "Write-Output \"Child's age is \$( \$<var name>littleOne</var name>.<property access>Age</property access> )\""
+        "<command name>Write-Output</command name> \"Child's age is \$( \$<var name>littleOne</var name>.<property access>Age</property access> )\""
   }
 }
