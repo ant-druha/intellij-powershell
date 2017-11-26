@@ -465,10 +465,14 @@ private generic_type_arguments ::= type_element nls? (',' nls? type_element)*
 //attributes
 
 flow_control_statement ::= break_continue_statement | throw_return_exit_statement
-private break_continue_statement ::= ('break' | 'continue') label_expression?
+private break_continue_statement ::= ('break' | 'continue') label_reference_expression?
 private throw_return_exit_statement ::= ('throw' | 'return' | 'exit') pipeline? {pin=1}
-private label_expression ::= simple_name_identifier | unary_expression
-
+label_reference_expression ::= label_identifier_expression
+{
+  mixin="com.intellij.plugin.powershell.psi.impl.PowerShellReferencePsiElementImpl"
+  implements="com.intellij.plugin.powershell.psi.PowerShellReferencePsiElement"
+}
+private label_identifier_expression::= simple_name_identifier | unary_expression
 // class/enum
 class_declaration_statement ::= attribute_list? 'class' class_name (nls? base_class_clause)? (nls? interface_list)? nls? class_block
 {mixin="com.intellij.plugin.powershell.psi.impl.PowerShellMemberDeclarationImpl"
@@ -526,9 +530,11 @@ private enum_block ::= LCURLY nls? enum_block_body? nls? RCURLY
 enum_block_body ::= (label_list | statement_terminators)+
 {elementType=block_body}
 private label_list ::= enum_label_declaration (statement_terminators enum_label_declaration)*
-enum_label_declaration ::= label_expression (EQ expression)?
-{mixin="com.intellij.plugin.powershell.psi.impl.PowerShellMemberDeclarationImpl"
- implements="com.intellij.plugin.powershell.psi.PowerShellMemberDeclaration"}
+enum_label_declaration ::= label_identifier_expression (EQ expression)?
+{
+  mixin="com.intellij.plugin.powershell.psi.impl.PowerShellMemberDeclarationImpl"
+  implements="com.intellij.plugin.powershell.psi.PowerShellMemberDeclaration"
+}
 
 function_statement ::= ('function' | 'filter') nls? function_statement_tail
 {
@@ -708,7 +714,13 @@ private requires_comment ::= REQUIRES_COMMENT_START ws generic_argument_rule+//H
 
 private statement_terminators ::= sep+
 
-private label ::= ':' nws SIMPLE_ID// todo ALNUM?
+label ::= ':' nws label_name
+{
+  mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractComponent"
+  implements="com.intellij.plugin.powershell.psi.PowerShellComponent"
+}
+label_name ::=  SIMPLE_ID// todo ALNUM?
+{elementType=identifier}
 
 private nws ::= <<isNotWhiteSpace>>
 private ncm ::= <<isNotComment>>

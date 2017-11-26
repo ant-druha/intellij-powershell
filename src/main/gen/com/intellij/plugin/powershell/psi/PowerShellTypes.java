@@ -53,6 +53,8 @@ public interface PowerShellTypes {
   IElementType INTEGER_LITERAL_EXPRESSION = new PowerShellElementType("INTEGER_LITERAL_EXPRESSION");
   IElementType INVOCATION_EXPRESSION = new PowerShellElementType("INVOCATION_EXPRESSION");
   IElementType KEY_EXPRESSION = new PowerShellElementType("KEY_EXPRESSION");
+  IElementType LABEL = new PowerShellElementType("LABEL");
+  IElementType LABEL_REFERENCE_EXPRESSION = new PowerShellElementType("LABEL_REFERENCE_EXPRESSION");
   IElementType LOGICAL_EXPRESSION = new PowerShellElementType("LOGICAL_EXPRESSION");
   IElementType MEMBER_ACCESS_EXPRESSION = new PowerShellElementType("MEMBER_ACCESS_EXPRESSION");
   IElementType METHOD_DECLARATION_STATEMENT = new PowerShellElementType("METHOD_DECLARATION_STATEMENT");
@@ -337,6 +339,12 @@ public interface PowerShellTypes {
       }
       else if (type == KEY_EXPRESSION) {
         return new PowerShellKeyExpressionImplGen(node);
+      }
+      else if (type == LABEL) {
+        return new PowerShellLabelImplGen(node);
+      }
+      else if (type == LABEL_REFERENCE_EXPRESSION) {
+        return new PowerShellLabelReferenceExpressionImplGen(node);
       }
       else if (type == LOGICAL_EXPRESSION) {
         return new PowerShellLogicalExpressionImplGen(node);
