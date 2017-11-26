@@ -612,9 +612,10 @@ verbatim_command_argument ::= VERBATIM_ARG_START VERBATIM_ARG_INPUT //(verbatim_
 private primary_expression ::= value (invocation_expression | member_access_expression | element_access_expression | post_increment_expression | post_decrement_expression)*
 
 left member_access_expression ::= nws ( DOT | COLON2 ) nls? member_name
+{methods=[getMember]}
 left element_access_expression ::= nws SQBR_L nls? expression nls? SQBR_R
 left invocation_expression ::= nws (DOT | COLON2 ) nls? member_name call_arguments
-
+{methods=[getMember]}
 private call_arguments ::= ncm nls? parenthesized_argument_list | primary_expression
 parenthesized_argument_list ::= LP nls? argument_expression_list? nls? RP
 private argument_expression_list ::= <<parse_call_arguments expression_list_rule>>

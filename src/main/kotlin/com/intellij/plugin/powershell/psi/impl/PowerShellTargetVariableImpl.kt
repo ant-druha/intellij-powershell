@@ -123,7 +123,9 @@ open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractCompo
 
   override fun getIcon(flags: Int): Icon? = PowerShellComponentType.VARIABLE.getIcon()
 
-  override fun getScopeName(): String? = findChildByType<PsiElement>(SIMPLE_ID)?.text
+  override fun getScopeName(): String? = getScope()?.text
+
+  override fun getScope(): PsiElement? = findChildByType(SIMPLE_ID)
 
   override fun getPrefix(): String = getPrefixNode().text
 

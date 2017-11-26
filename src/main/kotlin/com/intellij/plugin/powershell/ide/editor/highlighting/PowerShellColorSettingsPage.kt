@@ -22,7 +22,12 @@ class PowerShellColorSettingsPage : ColorSettingsPage {
       AttributesDescriptor("Comment", PowerShellSyntaxHighlighter.COMMENT),
       AttributesDescriptor("Number", PowerShellSyntaxHighlighter.NUMBER),
       AttributesDescriptor("String", PowerShellSyntaxHighlighter.STRING),
-      AttributesDescriptor("Command name", PowerShellSyntaxHighlighter.COMMAND_NAME)
+      AttributesDescriptor("Command name", PowerShellSyntaxHighlighter.COMMAND_NAME),
+      AttributesDescriptor("Type name", PowerShellSyntaxHighlighter.TYPE_NAME),
+      AttributesDescriptor("Type reference", PowerShellSyntaxHighlighter.TYPE_REFERENCE),
+      AttributesDescriptor("Variable name", PowerShellSyntaxHighlighter.VARIABLE_NAME),
+      AttributesDescriptor("Property access", PowerShellSyntaxHighlighter.PROPERTY_REFERENCE),
+      AttributesDescriptor("Method call", PowerShellSyntaxHighlighter.METHOD_CALL)
   )
 
   init {
@@ -31,6 +36,11 @@ class PowerShellColorSettingsPage : ColorSettingsPage {
     additionalTags.put("number", PowerShellSyntaxHighlighter.NUMBER)
     additionalTags.put("string", PowerShellSyntaxHighlighter.STRING)
     additionalTags.put("command name", PowerShellSyntaxHighlighter.COMMAND_NAME)
+    additionalTags.put("type name", PowerShellSyntaxHighlighter.TYPE_NAME)
+    additionalTags.put("type ref", PowerShellSyntaxHighlighter.TYPE_REFERENCE)
+    additionalTags.put("var name", PowerShellSyntaxHighlighter.VARIABLE_NAME)
+    additionalTags.put("property access", PowerShellSyntaxHighlighter.PROPERTY_REFERENCE)
+    additionalTags.put("method call", PowerShellSyntaxHighlighter.METHOD_CALL)
   }
 
   override fun getHighlighter(): SyntaxHighlighter {
@@ -58,18 +68,41 @@ class PowerShellColorSettingsPage : ColorSettingsPage {
   }
 
   override fun getDemoText(): String {
-    return "foreach (\$i in <command name>get-childitem</command name> | <command name>sort-object</command name> length)\n" +
+    return "foreach (\$<var name>i</var name> in <command name>get-childitem</command name> | <command name>sort-object</command name> length)\n" +
         " {\n" +
-        " \$i  #highlight\n" +
-        " \$sum += \$i.length\n" +
+        " \$<var name>i</var name>  #highlight\n" +
+        " \$<var name>sum</var name> += \$<var name>i</var name>.<property access>length</property access>\n" +
         " }\n" +
         "\n" +
-        "# 3) variable name token: '\$_.length ' and 'get-childitem'\n" +
+        "# 3) variable name token: '\$<var name>_</var name>.<property access>length</property access> ' and 'get-childitem'\n" +
         "switch -regex -casesensitive (<command name>get-childitem</command name> | sort length)\n" +
         "{\n" +
-        " \"^5\" {\"length for \$_ started with 5\" ; continue}\n" +
-        " { \$_.length > 20000 } {\"length of \$_ is greater than 20000\"}\n" +
+        " \"^5\" {\"length for \$<var name>_</var name> started with 5\" ; continue}\n" +
+        " { \$<var name>_</var name>.<property access>length</property access> > 20000 } {\"length of \$<var name>_</var name> is greater than 20000\"}\n" +
         " default {\"Didn't match anything else...\"}\n" +
-        "}"
+        "}\n\n" +
+        "class <type name>Person</type name>\n" +
+        "{\n" +
+        "    [<type ref>int</type ref>]\$<var name>Age</var name>\n" +
+        "    Person([<type ref>int</type ref>]\$<var name>a</var name>)\n" +
+        "    {\n" +
+        "        \$this.<property access>Age<property access> = \$<var name>a</var name>\n" +
+        "    }\n" +
+        "    DoSomething(\$<var name>x</var name>)\n" +
+        "    {\n" +
+        "        \$this.<method call>DoSomething</method call>(\$<var name>x</var name>)\n" +
+        "    }\n" +
+        "}\n" +
+        "class <type name>Child</type name>: <type ref>Person</type ref>\n" +
+        "{\n" +
+        "    [<type ref>string</type ref>]\$<var name>School</var name>\n" +
+        "\n" +
+        "    Child([<type ref>int</type ref>]\$<var name>a</var name>, [<type ref>string</type ref>]\$<var name>s</var name>): base(\$<var name>a</var name>)\n" +
+        "    {\n" +
+        "        \$this.<property access>School</property access> = \$<var name>s</var name>\n" +
+        "    }\n" +
+        "}\n" +
+        "[<type ref>Child</type ref>]\$<var name>littleOne</var name> = [<type ref>Child</type ref>]::<method call>new</method call>(10, \"Silver Fir Elementary School\")\n" +
+        "Write-Output \"Child's age is \$( \$<var name>littleOne</var name>.<property access>Age</property access> )\""
   }
 }

@@ -22,6 +22,11 @@ class PowerShellSyntaxHighlighter : SyntaxHighlighterBase() {
     private val POWER_SHELL_STRING = "POWER_SHELL_STRING"
     private val POWER_SHELL_LINE_COMMENT = "POWER_SHELL_LINE_COMMENT"
     private val POWER_SHELL_COMMAND_NAME = "POWER_SHELL_COMMAND_NAME"
+    private val POWER_SHELL_TYPE_NAME = "POWER_SHELL_TYPE_NAME"
+    private val POWER_SHELL_TYPE_REFERENCE = "POWER_SHELL_TYPE_REFERENCE"
+    private val POWER_SHELL_VARIABLE = "POWER_SHELL_VARIABLE"
+    private val POWER_SHELL_PROPERTY_REF_NAME = "POWER_SHELL_PROPERTY_REF_NAME"
+    private val POWER_SHELL_METHOD_CALL_NAME = "POWER_SHELL_METHOD_CALL_NAME"
 
     val ATTRIBUTES = HashMap<IElementType, TextAttributesKey>()
     val KEYWORD = createTextAttributesKey(POWER_SHELL_KEYWORD, DefaultLanguageHighlighterColors.KEYWORD)
@@ -29,6 +34,11 @@ class PowerShellSyntaxHighlighter : SyntaxHighlighterBase() {
     val STRING = createTextAttributesKey(POWER_SHELL_STRING, DefaultLanguageHighlighterColors.STRING)
     val NUMBER = createTextAttributesKey(POWER_SHELL_NUMBER, DefaultLanguageHighlighterColors.NUMBER)
     val COMMAND_NAME = createTextAttributesKey(POWER_SHELL_COMMAND_NAME, DefaultLanguageHighlighterColors.MARKUP_ATTRIBUTE)
+    val TYPE_NAME = createTextAttributesKey(POWER_SHELL_TYPE_NAME, DefaultLanguageHighlighterColors.CLASS_NAME)
+    val TYPE_REFERENCE = createTextAttributesKey(POWER_SHELL_TYPE_REFERENCE, DefaultLanguageHighlighterColors.CLASS_REFERENCE)
+    val VARIABLE_NAME = createTextAttributesKey(POWER_SHELL_VARIABLE, DefaultLanguageHighlighterColors.LOCAL_VARIABLE)
+    val PROPERTY_REFERENCE = createTextAttributesKey(POWER_SHELL_PROPERTY_REF_NAME, DefaultLanguageHighlighterColors.IDENTIFIER)
+    val METHOD_CALL = createTextAttributesKey(POWER_SHELL_METHOD_CALL_NAME, DefaultLanguageHighlighterColors.FUNCTION_CALL)
     // val COMMAND_NAME_ATTR = createTextAttributesKey(POWER_SHELL_COMMAND_NAME, DefaultLanguageHighlighterColors.MARKUP_ATTRIBUTE)
   }
 
@@ -46,6 +56,6 @@ class PowerShellSyntaxHighlighter : SyntaxHighlighterBase() {
     fillMap(ATTRIBUTES, PowerShellTokenTypeSets.COMMENTS, COMMENT)
     fillMap(ATTRIBUTES, PowerShellTokenTypeSets.STRINGS, STRING)
     fillMap(ATTRIBUTES, PowerShellTokenTypeSets.NUMBERS, NUMBER)
-//    fillMap(PowerShellSyntaxHighlighter.ATTRIBUTES, COMMAND_NAME_ATTR, PowerShellTypes.COMMAND_NAME) todo: via Annotator
+//    fillMap(PowerShellSyntaxHighlighter.ATTRIBUTES, COMMAND_NAME_ATTR, PowerShellTypes.COMMAND_NAME) //via Annotator
   }
 }
