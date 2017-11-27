@@ -13,6 +13,7 @@ import com.intellij.psi.PsiPolyVariantReference
 import com.intellij.psi.PsiReference
 import com.intellij.psi.ResolveResult
 import com.intellij.psi.impl.source.resolve.ResolveCache
+import com.intellij.psi.tree.IElementType
 import java.util.*
 
 /**
@@ -38,7 +39,7 @@ abstract class PowerShellReferencePsiElementImpl(node: ASTNode) : PowerShellPsiE
 
   override fun getVariants(): Array<Any> {
     val elements = ResolveCache.getInstance(project)
-        .resolveWithCaching(this, PowerShellComponentResolveProcessor.INSTANCE, true, true) ?: return emptyArray<Any>()
+        .resolveWithCaching(this, PowerShellComponentResolveProcessor.INSTANCE, true, true) ?: return emptyArray()
 
     val lookupElements = ArrayList<LookupElement>()
 
@@ -46,7 +47,14 @@ abstract class PowerShellReferencePsiElementImpl(node: ASTNode) : PowerShellPsiE
       addLookupElement(e, lookupElements)
     }
 
+    for (keyword in PowerShellTokenTypeSets.KEYWORDS.types) {
+      addKeyword(keyword, lookupElements)
+    }
     return lookupElements.toArray()
+  }
+
+  private fun addKeyword(kw: IElementType, elements: ArrayList<LookupElement>) {
+    elements.add(LookupElementBuilder.create(kw.toString().toLowerCase()).bold())
   }
 
   private fun addLookupElement(e: PsiElement, lookupElements: ArrayList<LookupElement>) {
