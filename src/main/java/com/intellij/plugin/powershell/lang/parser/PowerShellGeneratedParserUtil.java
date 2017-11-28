@@ -47,7 +47,7 @@ public class PowerShellGeneratedParserUtil {
   }
 
   //private call_arguments ::= ncm nls? LP nls? argument_expression_list? nls? RP | primary_expression
-  public static boolean parse_call_arguments(PsiBuilder b, int l, GeneratedParserUtilBase.Parser argument_expression_list_parser) {
+  public static boolean parse_argument_list(PsiBuilder b, int l, GeneratedParserUtilBase.Parser argument_expression_list_parser) {
     boolean oldState = saveState(b, PARSING_CALL_ARGUMENTS, true);
     final boolean result = argument_expression_list_parser.parse(b, l);
     putState(b, PARSING_CALL_ARGUMENTS, oldState);

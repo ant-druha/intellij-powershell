@@ -60,4 +60,6 @@ public class PowerShellParserTest extends ParsingTestCase {
   
   public void testEnumDeclaration() throws Exception { doTest(true); }
 
+  public void testParamBlock() throws Exception { doTest(true); }
+
 }

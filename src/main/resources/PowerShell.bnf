@@ -216,14 +216,16 @@ private attribute_list ::= (attribute nls?)+
 attribute ::= SQBR_L nls? attribute_name LP nls? attribute_arguments? nls? RP nls? SQBR_R | type_literal_expression
 private attribute_name ::= type_element
 
-private attribute_arguments ::= attribute_argument (nls? COMMA nls? attribute_argument)*
-attribute_argument ::= simple_name_identifier '=' nls? unary_expression | simple_name_identifier | unary_expression
+private attribute_arguments ::= <<parse_argument_list attribute_arguments_rule>>
+private attribute_arguments_rule ::= attribute_argument (nls? COMMA nls? attribute_argument)*
 
+attribute_argument ::= simple_name_identifier '=' nls? expression | simple_name_identifier | expression
 
-private script_parameter_list ::= script_parameter (nls? COMMA nls? script_parameter)*
+private script_parameter_list ::= <<parse_argument_list script_parameter_list_rule>>
+private script_parameter_list_rule ::= script_parameter (nls? COMMA nls? script_parameter)*
 
 private script_parameter ::= attribute_list? nls? target_variable_expression nls? script_parameter_default?
-private script_parameter_default ::= '=' nls? unary_expression //expression todo: do not parse comma as an array_literal_expression
+private script_parameter_default ::= '=' nls? expression
 
 private script_block_body ::= named_block_list | (statement_list | statement_terminators)+
 
@@ -427,7 +429,8 @@ private reserved_statement_keywords ::= 'class'|'data'|'do'|'elseif'|'exit'|'fil
 
 
 
-try_statement ::= 'try' nls? statement_block nls? (catch_clause nls?)* finally_clause? {pin=1}
+try_statement ::= 'try' nls? statement_block (nls? catch_clauses)? (nls? finally_clause)? {pin=1}
+private catch_clauses ::= catch_clause (nls? catch_clause)*
 catch_clause ::= 'catch' nls? catch_type_list? nls? statement_block {pin=1}
 private catch_type_list ::= type_literal_expression nls? ( ',' nls? type_literal_expression nls? )*
 finally_clause ::= 'finally' nls? statement_block {pin=1}
@@ -630,7 +633,7 @@ left invocation_expression ::= nws (DOT | COLON2 ) nls? member_name call_argumen
 {methods=[getMember]}
 private call_arguments ::= ncm nls? parenthesized_argument_list | primary_expression
 parenthesized_argument_list ::= LP nls? argument_expression_list? nls? RP
-private argument_expression_list ::= <<parse_call_arguments expression_list_rule>>
+private argument_expression_list ::= <<parse_argument_list expression_list_rule>>
 private expression_list_rule ::= expression ( nls? COMMA nls? expression)*
 
 left post_increment_expression ::= PP

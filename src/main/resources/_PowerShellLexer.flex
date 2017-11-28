@@ -69,7 +69,7 @@ import static com.intellij.plugin.powershell.psi.PowerShellTypes.*;
 %column
 
 EOL=\R
-WHITE_SPACE_CHAR=[\ \t\f]|{BACKTICK}{NL}
+WHITE_SPACE_CHAR=[\ \t\f\xA0]|{BACKTICK}{NL}
 BACKTICK="`"
 WHITE_SPACE={WHITE_SPACE_CHAR}+
 

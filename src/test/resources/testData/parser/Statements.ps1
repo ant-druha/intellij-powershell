@@ -397,3 +397,17 @@ $a.Length    #
 $a.Length    #
 1
 ${   } = 12
+
+#try statement blocks
+try
+{
+    $Reference = Import-Csv $Path -ErrorAction Stop
+}
+catch
+{
+    throw "Reference file not found"
+}
+
+#Convert the CSV into the same format that the results from Sympa will be coming out in
+#Create empty collection
+$ReferenceArray = New-Object System.Collections.ArrayList
