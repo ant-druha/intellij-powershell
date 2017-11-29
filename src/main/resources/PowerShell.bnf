@@ -590,7 +590,7 @@ private switch_filename ::= command_argument | primary_expression
 private generic_argument_rule ::= generic_chars_or_path_expression (nls? COMMA generic_chars_or_path_expression)* | array_literal_expression
 private generic_chars_or_path_expression ::= path_expression | command_name_char_tokens
 command_name_char_tokens ::= generic_token_chars | allowed_identifier_keywords
-{elementType=command_name}
+{elementType=reference_identifier}
 command_argument ::= generic_argument_rule
 
 path_expression ::=  path_item nws (
