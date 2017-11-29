@@ -26,16 +26,15 @@ class PowerShellStructureViewElement(element: PowerShellPsiElement) : PsiTreeEle
     val result = mutableListOf<StructureViewTreeElement>()
     val resolveProcessor = PowerShellComponentScopeProcessor()
     val myElement = element
-    if (myElement is PowerShellFile) {
-      if (!myIsRoot) {
-        result.add(PowerShellStructureViewElement(myElement, true))
-        return result
+    when (myElement) {
+      is PowerShellFile -> {
+        if (!myIsRoot) {
+          result.add(PowerShellStructureViewElement(myElement, true))
+        }
+        PowerShellResolveUtil.processChildDeclarations(myElement, resolveProcessor, ResolveState.initial(), null, null)
       }
-      PowerShellResolveUtil.processChildDeclarations(myElement, resolveProcessor, ResolveState.initial(), null, null)
-    } else if (myElement is PowerShellClassDeclarationStatement) {
-      PowerShellResolveUtil.processClassMembers(myElement, resolveProcessor, ResolveState.initial(), null, null)
-    } else if (myElement is PowerShellEnumDeclarationStatement) {
-      PowerShellResolveUtil.processEnumMembers(myElement, resolveProcessor, ResolveState.initial(), null, null)
+      is PowerShellClassDeclarationStatement -> PowerShellResolveUtil.processClassMembers(myElement, resolveProcessor, ResolveState.initial(), null, null)
+      is PowerShellEnumDeclarationStatement -> PowerShellResolveUtil.processEnumMembers(myElement, resolveProcessor, ResolveState.initial(), null, null)
     }
     val declarations: List<PowerShellComponent> = resolveProcessor.getResult()
     declarations.filter { d -> PowerShellStructureViewModel.getSuitableClasses().any { it.isInstance(d) } }
