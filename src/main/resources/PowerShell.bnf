@@ -563,7 +563,7 @@ private generic_identifier ::=  generic_token_with_sub_expr | generic_token_part
 
 
 private function_parameter_declaration ::= parameter_clause
-parameter_clause ::= LP nls? parameter_list nls? RP
+parameter_clause ::= LP nls? parameter_list? nls? RP
 //private parameter_list ::= parameter_with_initializer (COMMA parameter_with_initializer)*
 private parameter_list ::= script_parameter_list
 //private script_parameter_list ::= script_parameter (nls? ',' script_parameter)*
