@@ -62,4 +62,6 @@ public class PowerShellParserTest extends ParsingTestCase {
 
   public void testParamBlock() throws Exception { doTest(true); }
 
+  public void testComment() throws Exception { doTest(true); }
+
 }

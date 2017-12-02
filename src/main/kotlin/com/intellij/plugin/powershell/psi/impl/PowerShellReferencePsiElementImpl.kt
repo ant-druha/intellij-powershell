@@ -73,8 +73,17 @@ abstract class PowerShellReferencePsiElementImpl(node: ASTNode) : PowerShellPsiE
 
   override fun getRangeInElement(): TextRange {
     val refRange = element.textRange
-    return TextRange(textRange.startOffset - refRange.startOffset, refRange.endOffset - refRange.startOffset)
+    return TextRange(refRange.startOffset - textRange.startOffset, refRange.endOffset - textRange.startOffset)
   }
+
+//  override fun getTextRange(): TextRange { //todo
+//    val start = textOffset
+//    return TextRange(start, start + textLength)
+//  }
+
+//  override fun getTextOffset(): Int {
+//    return getNameElement()?.textOffset ?: super.getTextOffset()
+//  }
 
   override fun getCanonicalText(): String = node.text
 

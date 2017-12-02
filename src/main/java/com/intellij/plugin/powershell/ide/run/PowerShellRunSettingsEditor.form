@@ -22,22 +22,13 @@
           <text value="Script:"/>
         </properties>
       </component>
-      <component id="1188d" class="javax.swing.JLabel">
-        <constraints>
-          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <labelFor value="f8105"/>
-          <text value="Script parameters:"/>
-        </properties>
-      </component>
       <component id="3c024" class="javax.swing.JLabel">
         <constraints>
           <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <labelFor value="e57b5"/>
-          <text value="Command options:"/>
+          <text value="Command parameters"/>
         </properties>
       </component>
       <component id="f8105" class="javax.swing.JTextField" binding="parametersTextField">
@@ -66,6 +57,15 @@
           <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
         </constraints>
       </vspacer>
+      <component id="1188d" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <labelFor value="f8105"/>
+          <text value="Script arguments:"/>
+        </properties>
+      </component>
     </children>
   </grid>
 </form>

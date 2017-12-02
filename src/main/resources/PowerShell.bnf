@@ -181,7 +181,7 @@ configuration_block_body ::= top_script_block
 private configuration_block_body_recover ::= !(nls? RCURLY statement_terminators? ('configuration' | <<eof>> | SQBR_L))
 
 //node_block ::= node_token nls? node_name nls? LCURLY nls? node_block_body? nls? RCURLY {pin=1} //possible variant: node_token command_call_expression
-node_block ::= node_token nls? generic_argument_rule+
+node_block ::= node_token nls? command_argument_list+
 {pin=1}
 
 private node_token ::= SIMPLE_ID
@@ -330,7 +330,7 @@ expression ::=   assignment_expression
                | array_literal_expression
                | unary_expression
 
-assignment_expression ::= expression (!is_in_call_arguments assignment_operator) statement
+assignment_expression ::= expression (!is_in_call_arguments assignment_operator) nls? statement
 {rightAssociative=true methods=[getTargetVariables] pin=2}
 
 logical_expression ::=   expression ( OP_AND | OP_OR | OP_XOR ) nls? expression
@@ -384,7 +384,7 @@ implements="com.intellij.plugin.powershell.psi.PowerShellReferencePsiElement"}
 
 private command_name_expression ::= path_expression | command_name//todo parse path_item where appropriate: path_item all bare identifiers including command_name
 command_name ::= command_name_identifier //generic_token
-command_name_identifier ::= generic_token_with_sub_expr | generic_token_part | allowed_identifier_keywords //generic_token
+command_name_identifier ::= generic_token_with_sub_expr | generic_token_part //generic_token
 {elementType=identifier}
 
 
@@ -396,16 +396,16 @@ private generic_token_with_subexpr_start ::= generic_token_part nws DS nws LP
 private generic_token_part ::= (expandable_string_literal | verbatim_here_string_literal | target_variable_expression | generic_token_chars) generic_token_chars_tail?
 
 private generic_token_chars ::= generic_id_part_tokens_start generic_token_chars_tail?
-private generic_id_part_tokens_start ::= SIMPLE_ID | GENERIC_ID_PART | STAR | PERS
+private generic_id_part_tokens_start ::= SIMPLE_ID | GENERIC_ID_PART | STAR | PERS | allowed_identifier_keywords | DEC_INTEGER | REAL_NUM
 private generic_token_chars_tail ::= ( nws generic_id_part_tokens )+
-private generic_id_part_tokens ::= generic_id_part_tokens_start | DOT | PATH_SEP | DIV
+private generic_id_part_tokens ::= generic_id_part_tokens_start | DOT | PATH_SEP | DIV | PARAM_TOKEN | PLUS | DASH | STAR | PERS
 
-private command_element ::= command_parameter | command_argument | redirection
+private command_element ::= command_parameter | redirection | command_argument_list //command_argument_comma_list
 private command_invocation_operator ::= '&' | DOT
 private command_module ::= primary_expression
 
-private redirection ::= merging_redirection_operator | file_redirection_operator  redirected_file_name
-private redirected_file_name ::= command_argument | primary_expression
+redirection ::= merging_redirection_operator | file_redirection_operator  redirected_file_name
+private redirected_file_name ::= command_argument_list | primary_expression
 
 
 sequence_statement ::= 'sequence' statement_block
@@ -423,7 +423,7 @@ private data_command ::= command_name_expr
 private command_name_expr ::= primary_expression | command_name_expression
 
 private allowed_identifier_keywords ::= 'param'|'until'|'workflow'|'end'|'define'|'finally'|'parallel'|'continue'|'begin'|'dynamicparam'|'in'
-|'process'|'break'|'else'|'inlinescript'|'catch'|'this'|'hidden'|'foreach'|'static'
+|'process'|'break'|'else'|'inlinescript'|'catch'|'this'|'hidden'|'foreach'|'static'|'data'
 private reserved_statement_keywords ::= 'class'|'data'|'do'|'elseif'|'exit'|'filter'|'for'|'foreach'|'from'|'function'|'if'|'return'|'switch'|'throw'
 |'trap'|'try'|'using'|'var'|'while'|'configuration'|'enum'
 
@@ -585,13 +585,24 @@ private switch_parameter ::=   '-regex'
                              | '-parallel'
 
 private switch_condition ::= LP nls? pipeline nls? RP | '-file' nls? switch_filename
-private switch_filename ::= command_argument | primary_expression
-//private generic_argument_rule ::= array_literal_expression !(nws PATH_SEP | nws COLON) | command_name_expression (nls? COMMA command_name_expression)*
-private generic_argument_rule ::= generic_chars_or_path_expression (nls? COMMA generic_chars_or_path_expression)* | array_literal_expression
-private generic_chars_or_path_expression ::= path_expression | command_name_char_tokens
+private switch_filename ::= parse_command_argument | primary_expression
+
+//private command_argument_comma_list ::= <<parseCommandArgumentCommaList command_argument_list>>
+//private command_argument_comma_list ::= command_argument_list
+private command_argument_list ::= command_argument ( (COMMA | EQ) command_argument)* | array_literal_expression
+//command_argument ::= generic_chars_or_path_expression
+private parse_command_argument ::= <<parseCommandArgumentCommaList generic_chars_or_path_expression>>
+command_argument ::= parse_command_argument
+//noinspection BnfUnusedRule
+private argument_separator_condition ::= &argument_separator_token
+//noinspection BnfUnusedRule
+private argument_separator_condition_no_ws ::= &argument_separation_token_no_ws
+private argument_separator_token ::= argument_separation_token_no_ws | ws
+private argument_separation_token_no_ws ::= COMMA | LP | RP | LCURLY | RCURLY | sep | DS | PIPE | AMP | BACKTICK | DQ_OPEN | DQ_CLOSE | nls | <<eof>>
+
+private generic_chars_or_path_expression ::= path_expression | primary_expression | command_name_char_tokens
 command_name_char_tokens ::= generic_token_chars | allowed_identifier_keywords
 {elementType=reference_identifier}
-command_argument ::= generic_argument_rule
 
 path_expression ::=  path_item nws (
                               (
@@ -616,7 +627,7 @@ relative_path_item ::= relative_path
 
 private path_item_name ::= relative_path | path_name_tokens | allowed_identifier_keywords | reference_variable
 private path_name_tokens ::= path_name_part_tokens_start (nws (path_name_part_tokens_start | DOT))*
-private path_name_part_tokens_start ::= generic_id_part_tokens_start | DEC_INTEGER
+private path_name_part_tokens_start ::= generic_id_part_tokens_start | PARAM_TOKEN | PLUS | DASH
 private relative_path ::= DOT | DOT_DOT | PATH_SEP
 command_parameter ::= PARAM_TOKEN | binary_operator
 private binary_operator ::= OP_C | OP_NOT | OP_BNOT | OP_BAND | OP_BOR | OP_BXOR | OP_AND | OP_OR | OP_XOR
@@ -678,14 +689,17 @@ key_expression ::= simple_name_identifier | unary_expression
 private switch_block_body ::= nls? '{' switch_body? '}'
 switch_body ::= nls? switch_clause+ nls? | nls
 {elementType=block_body}
-private switch_clause ::= switch_clause_condition switch_clause_block statement_terminators?
+private switch_clause ::= switch_clause_condition nls? switch_clause_block statement_terminators?
 switch_clause_block ::= statement_block
-private switch_clause_condition ::= generic_argument_rule | primary_expression
+private switch_clause_condition ::= parse_command_argument | primary_expression
 
 
-foreach_statement ::= 'foreach' nls? '-parallel'? nls?
-                                LP nls? target_variable_expression nls? 'in' nls? pipeline nls? RP nls? statement_block
+foreach_statement ::= 'foreach' nls? foreach_parameters? nls? foreach_clause nls?
+                                nls? statement_block
 {pin=1}
+private foreach_parameters ::= '-parallel' throttlelimit_parameter | throttlelimit_parameter '-parallel' | '-parallel' | throttlelimit_parameter
+private throttlelimit_parameter ::= '-throttlelimit' primary_expression
+private foreach_clause ::= LP nls? target_variable_expression nls? 'in' nls? pipeline nls? RP
 for_statement ::=   'for' nls? for_clause nls? statement_block
 {pin=1}
 for_clause ::= LP nls? for_initializer? sep
@@ -713,7 +727,7 @@ private nls ::= (comment? NLS comment?)+ //NLS
 private new_line_char ::= LF
 
 comment ::= !is_id requires_comment | !is_id SINGLE_LINE_COMMENT | DELIMITED_COMMENT
-private requires_comment ::= REQUIRES_COMMENT_START ws generic_argument_rule+//HASH nws 'requires' ws command_argument+
+private requires_comment ::= REQUIRES_COMMENT_START ws command_argument_list+//HASH nws 'requires' ws command_argument+
 
 private statement_terminators ::= sep+
 

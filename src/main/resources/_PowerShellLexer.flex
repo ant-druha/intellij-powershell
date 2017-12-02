@@ -69,25 +69,25 @@ import static com.intellij.plugin.powershell.psi.PowerShellTypes.*;
 %column
 
 EOL=\R
-WHITE_SPACE_CHAR=[\ \t\f\xA0]|{BACKTICK}{NL}
+WHITE_SPACE_CHAR=[\ \t\f\xA0\u2002]|{BACKTICK}{NL}
 BACKTICK="`"
 WHITE_SPACE={WHITE_SPACE_CHAR}+
 
 COMPARISON_TOKEN="as"|"ccontains"|"ceq"|"cge"|"cgt"|"cle"|"clike"|"clt"|"cmatch"|"cne"|"cnotcontains"|"cnotlike"|"cnotmatch"|"contains"
-|"creplace"|"csplit"|"eq"|"ge"|"gt"|"icontains"|"ieq"|"ige"|"igt"|"ile"|"ilike"|"ilt"|"imatch"|"in"|"ine"|"inotcontains"|"inotlike"
+|"creplace"|"csplit"|[eE][qQ]|"ge"|"gt"|"icontains"|"ieq"|"ige"|"igt"|"ile"|"ilike"|"ilt"|"imatch"|"in"|"ine"|"inotcontains"|"inotlike"
 |"inotmatch"|"ireplace"|"is"|"isnot"|"isplit"|"join"|"le"|"like"|"lt"|"match"|"ne"|"notcontains"|"notin"|"notlike"|"notmatch"
 |"replace"|"shl"|"shr"|"split"
 OP_C={DASH}{COMPARISON_TOKEN}
 OP_MR=("*>&1"|"2>&1"|"3>&1"|"4>&1"|"5>&1"|"6>&1"|"*>&2"|"1>&2"|"3>&2"|"4>&2"|"5>&2"|"6>&2")
 OP_FR=(">"|">>"|"2>"|"2>>"|"3>"|"3>>"|"4>"|"4>>"|"5>"|"5>>"|"6>"|"6>>"|"*>"|"*>>"|"<")
-OP_NOT={DASH}"not"
-OP_BNOT={DASH}"bnot"
-OP_BAND={DASH}"band"
-OP_BOR={DASH}"bor"
-OP_BXOR={DASH}"bxor"
-OP_AND={DASH}"and"
-OP_OR={DASH}"or"
-OP_XOR={DASH}"xor"
+OP_NOT={DASH}[nN][oO][tT]
+OP_BNOT={DASH}[bB][nN][oO][tT]
+OP_BAND={DASH}[bB][aA][nN][dD]
+OP_BOR={DASH}[bB][oO][rR]
+OP_BXOR={DASH}[bB][xX][oO][rR]
+OP_AND={DASH}[aA][nN][dD]
+OP_OR={DASH}[oO][rR]
+OP_XOR={DASH}[xX][oO][rR]
 EXCL_MARK="!"
 
 NL=(\r|\n|\r\n)
@@ -96,12 +96,12 @@ CH_DQ=(\"|“|”|„)
 CH_SQ=(\'|‘|’|‚|‛)
 //BRACED_VAR="${"{VAR_SCOPE}?{WHITE_SPACE}?{BRACED_ID}"}"
 //EXPAND_STRING_CHARS=([^\$\"\“\”\„\`\r\n]|{BRACED_VAR}|"$"[^\"\“\”\„\`\r\n]|"$"(\`.)|(\`.)|{CH_DQ}{CH_DQ})+
-EXPANDABLE_STRING_PART=([^\$\"\“\”\„\`\r\n]/*|{BRACED_VAR}|"$"[^\"\“\”\„\`\r\n]|"$"(\`.)*/|(\`.)|{CH_DQ}{CH_DQ})+
+EXPANDABLE_STRING_PART=([^\$\"\“\”\„\`]/*|{BRACED_VAR}|"$"[^\"\“\”\„\`\r\n]|"$"(\`.)*/|(\`.)|{CH_DQ}{CH_DQ})+
 //EXPANDABLE_HERE_STRING_PART=(([^\"\“\”\„\\]|\\.)+(\r|\n|\r\n))
 EXPANDABLE_HERE_STRING_PART=({EXPANDABLE_STRING_PART}|(\r|\n|\r\n))+
 //EXPANDABLE_STRING={CH_DQ}{EXPAND_STRING_CHARS}?"$"*{CH_DQ}
 
-VERBATIM_STRING_CHARS=([^\'\‘\’\‚\‛\r\n]|{CH_SQ}{CH_SQ})+
+VERBATIM_STRING_CHARS=([^\'\‘\’\‚\‛]|{CH_SQ}{CH_SQ})+
 VERBATIM_STRING={CH_SQ}{VERBATIM_STRING_CHARS}?{CH_SQ}
 
 EXPANDABLE_HERE_STRING_START=@{CH_DQ}([ \t\n\x0B\f\r])*(\r|\n|\r\n)
@@ -150,9 +150,12 @@ VAR_ID={VAR_ID_CHAR}+
 QMARK="?"
 HAT="^"
 GENERIC_ID_PART_FIRST_CHAR=([^@\*\/\\\.\=\[\]\%\-\–\—\―\}\{\(\)\,\;\"\“\”\„\'\|\&\$\s\n\r\#\:\`0-9!\+]|(`.))
-GENERIC_ID_PART_CHAR={GENERIC_ID_PART_FIRST_CHAR}|([\*\/\+\-\–\—\―\%0-9!@])
-GENERIC_ID_PART={GENERIC_ID_PART_FIRST_CHAR}{GENERIC_ID_PART_CHAR}*
-GENERIC_ID_PART_TOKENS=({SIMPLE_ID}|{GENERIC_ID_PART}|{STAR})({SIMPLE_ID}|{GENERIC_ID_PART}|{STAR}|{DOT}|"\\"|{DIV})*
+GENERIC_ID_PART_CHAR={GENERIC_ID_PART_FIRST_CHAR}|([0-9!@])
+GENERIC_ID_PART={GENERIC_ID_PART_FIRST_CHAR}(({GENERIC_ID_PART_CHAR}*[\-\–\—\―]{GENERIC_ID_PART_FIRST_CHAR}+)?|{GENERIC_ID_PART_CHAR}*)
+GENERIC_ID_PART_TOKEN_START={SIMPLE_ID}|{GENERIC_ID_PART}|{STAR}
+GENERIC_ID_PART_TOKEN={GENERIC_ID_PART_TOKEN_START}|{DOT}|\+|"\\"|{DIV}|{DASH}|\*|{PERS}
+GENERIC_ID_PART_TOKEN_TAIL={GENERIC_ID_PART_TOKEN_START}|{DOT}|\+|"\\"|{DIV}|{DASH}|\*|{PERS}
+GENERIC_ID_PART_TOKENS={GENERIC_ID_PART_TOKEN_START}{GENERIC_ID_PART_TOKEN_TAIL}*
 
 BRACED_ID_CHAR=([^\}\`]|(`.))
 BRACED_ID={BRACED_ID_CHAR}+
@@ -161,7 +164,7 @@ SINGLE_LINE_COMMENT_CHARS=[^\n\r]+
 SINGLE_LINE_COMMENT={HASH}{SINGLE_LINE_COMMENT_CHARS}?//??todo: #\n
 DELIMITED_COMENT_START=<{HASH}
 DELIMITED_COMENT_END={HASH}+>
-DELIMITED_COMMENT_CHARS=({HASH}*[^#>]+)+//todo
+DELIMITED_COMMENT_CHARS=(>|{HASH}*[^#>])+
 DELIMITED_COMMENT={DELIMITED_COMENT_START}{DELIMITED_COMMENT_CHARS}?{DELIMITED_COMENT_END}
 
 //AMP_ARG=\&/*[^&]*/[\w]
@@ -171,7 +174,7 @@ LETTERS=[a-zA-Z]+
 DASH=[\-\–\—\―]
 MM="--"
 PARAM_TOKEN=({DASH}|{DIV})(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\_|\?){PARAMETER_CHAR}*:?
-PARAMETER_CHAR=[^\{\}\(\)\;\,\|\&\.\[\:\s\n\r]
+PARAMETER_CHAR=[^\{\}\(\)\;\,\|\&\.\[\:\s\n\r\'\‘\’\‚\‛\"\“\”\„]
 VERBATIM_ARG_START={MM}{PERS}
 VERBATIM_ARG_INPUT=[^\|\r\n]+
 BRACED_VAR_START={DS}{LCURLY}

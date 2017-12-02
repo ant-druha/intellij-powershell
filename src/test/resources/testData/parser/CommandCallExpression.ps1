@@ -30,3 +30,30 @@ Get-ChildItem "E:\Files\*.*" | Where-Object Length –xor 0
 Get-ChildItem "E:\Files\*.*" | Where-Object Length –and 0
 
 cmdkey /list
+
+msbuild CmderLauncher.vcxproj /p:configuration=Release
+
+& $7zipexe x -o"C:\Install" $apprendazip
+
+my.exe 01/01/2012
+
+#some-cmd.exe 'Count101', -p 'Count102', 'Count104' 210
+
+msbuild CmderLauncher.vcxproj /property:WarningLevel`;OutputDirbinDebug #command argument is not parsed
+
+$reponse=Invoke-WebRequest -Uri http://localhost:50342/oauth2/token -Method POST -Body $postBody -UseBasicParsing -Headers $headers
+
+(Get-WmiObject Win32_PhysicalMemory | measure-object Capacity -sum).sum/1mb
+(measure-object Capacity -sum).sum+1mb
+(measure-object Capacity -sum).sum%1mb
+(measure-object Capacity -sum).sum*1mb
+(measure-object Capacity -sum).sum-1mb
+
+Switch-SqlAvailabilityGroup -Path $Path -AllowDataLoss -force
+
+process-me
+process-1
+process1
+
+my.exe 11 2 4
+my.exe *11 *2 4 3 *3*

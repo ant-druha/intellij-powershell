@@ -72,6 +72,7 @@ public interface PowerShellTypes {
   IElementType PROPERTY_DECLARATION_STATEMENT = new PowerShellElementType("PROPERTY_DECLARATION_STATEMENT");
   IElementType RANGE_EXPRESSION = new PowerShellElementType("RANGE_EXPRESSION");
   IElementType REAL_LITERAL_EXPRESSION = new PowerShellElementType("REAL_LITERAL_EXPRESSION");
+  IElementType REDIRECTION = new PowerShellElementType("REDIRECTION");
   IElementType REFERENCE_IDENTIFIER = new PowerShellElementType("REFERENCE_IDENTIFIER");
   IElementType REFERENCE_TYPE_ELEMENT = new PowerShellElementType("REFERENCE_TYPE_ELEMENT");
   IElementType REFERENCE_VARIABLE = new PowerShellElementType("REFERENCE_VARIABLE");
@@ -396,6 +397,9 @@ public interface PowerShellTypes {
       }
       else if (type == REAL_LITERAL_EXPRESSION) {
         return new PowerShellRealLiteralExpressionImplGen(node);
+      }
+      else if (type == REDIRECTION) {
+        return new PowerShellRedirectionImplGen(node);
       }
       else if (type == REFERENCE_IDENTIFIER) {
         return new PowerShellReferenceIdentifierImplGen(node);

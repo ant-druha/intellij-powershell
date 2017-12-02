@@ -411,3 +411,20 @@ catch
 #Convert the CSV into the same format that the results from Sympa will be coming out in
 #Create empty collection
 $ReferenceArray = New-Object System.Collections.ArrayList
+
+if (($VM -eQ  $Null) -Or !($true)) {
+
+}
+
+workflow Throttle-Me
+{
+    [cmdletbinding()]
+    param (
+    [int]$ThrottleLimit = 5
+    )
+    foreach -parallel -throttlelimit $ThrottleLimit ($n in 1..5)
+    {
+        "Working on $n"
+        "{0:hh}:{0:mm}:{0:ss}" -f (Get-Date)
+    }
+}

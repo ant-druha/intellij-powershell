@@ -31,8 +31,11 @@ public class PowerShellLexerTest extends LexerTestCase {
 
   public void testGenericNames() {
     doTest("Get-Power", "GENERIC_ID_PART ('Get-Power')");
-    doTest("Get-Power2", "GENERIC_ID_PART ('Get-Power2')");
-    doTest("Get-Power!2", "GENERIC_ID_PART ('Get-Power!2')");
+    doTest("Get-Power2", "GENERIC_ID_PART ('Get-Power')\n" +
+        "DEC_INTEGER ('2')");
+    doTest("Get-Power!2", "GENERIC_ID_PART ('Get-Power')\n" +
+        "! ('!')\n" +
+        "DEC_INTEGER ('2')");
     doTest("echoargs.exe --% \"%path%\"", "SIMPLE_ID ('echoargs')\n" + ". ('.')\n" + "SIMPLE_ID ('exe')\n" +
         "WHITE_SPACE (' ')\n" + "--% ('--%')"
         + "\n" + "VERBATIM_ARG_INPUT (' \"%path%\"')");
@@ -195,7 +198,7 @@ public class PowerShellLexerTest extends LexerTestCase {
     doTest("@„\n" + "„@", "EXPANDABLE_HERE_STRING_START ('@„\\n')\n" +
         "EXPANDABLE_HERE_STRING_END ('„@')");
     doTest("@\"\n" + "line 1\n" + "\"@", "EXPANDABLE_HERE_STRING_START ('@\"\\n')\n" +
-        "EXPANDABLE_HERE_STRING_PART ('line 1\\n')\n" +
+        "EXPANDABLE_STRING_PART ('line 1\\n')\n" +
         "EXPANDABLE_HERE_STRING_END ('\"@')");
   }
 
