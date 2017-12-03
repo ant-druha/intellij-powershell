@@ -73,21 +73,91 @@ WHITE_SPACE_CHAR=[\ \t\f\xA0\u2002]|{BACKTICK}{NL}
 BACKTICK="`"
 WHITE_SPACE={WHITE_SPACE_CHAR}+
 
-COMPARISON_TOKEN="as"|"ccontains"|"ceq"|"cge"|"cgt"|"cle"|"clike"|"clt"|"cmatch"|"cne"|"cnotcontains"|"cnotlike"|"cnotmatch"|"contains"
-|"creplace"|"csplit"|[eE][qQ]|"ge"|"gt"|"icontains"|"ieq"|"ige"|"igt"|"ile"|"ilike"|"ilt"|"imatch"|"in"|"ine"|"inotcontains"|"inotlike"
-|"inotmatch"|"ireplace"|"is"|"isnot"|"isplit"|"join"|"le"|"like"|"lt"|"match"|"ne"|"notcontains"|"notin"|"notlike"|"notmatch"
-|"replace"|"shl"|"shr"|"split"
+//comparison operators
+AS=[aA][sS]
+NOT=[nN][oO][tT]
+CNOT=[cC]{NOT}
+INOT=[iI]{NOT}
+IS=[iI][sS]
+ISNOT={IS}{NOT}
+
+IN=[iI][nN]
+NOTIN={NOT}{IN}
+
+LIKE=[lL][iI][kK][eE]
+NOTLIKE={NOT}{LIKE}
+ILIKE=[iI]{LIKE}
+INOTLIKE={INOT}{LIKE}
+CLIKE=[cC]{LIKE}
+CNOTLIKE={CNOT}{LIKE}
+
+MATCH=[mM][aA][tT][cC][hH]
+NOTMATCH={NOT}{MATCH}
+CMATCH=[cC]{MATCH}
+CNOTMATCH={CNOT}{MATCH}
+IMATCH=[iI]{MATCH}
+INOTMATCH={INOT}{MATCH}
+
+CONTAINS=[cC][oO][nN][tT][aA][iI][nN][sS]
+NOTCONTAINS={NOT}{CONTAINS}
+CCONTAINS=[cC]{CONTAINS}
+CNOTCONTAINS={CNOT}{CONTAINS}
+ICONTAINS=[iI]{CONTAINS}
+INOTCONTAINS={INOT}{CONTAINS}
+
+REPLACE=[rR][eE][pP][lL][aA][cC][eE]
+CREPLACE=[cC]{REPLACE}
+IREPLACE=[iI]{REPLACE}
+
+SPLIT=[sS][pP][lL][iI][tT]
+CSPLIT=[cC]{SPLIT}
+ISPLIT=[iI]{SPLIT}
+
+EQ=[eE][qQ]
+NE=[nN][eE]
+GE=[gG][eE]
+GT=[gG][tT]
+LE=[lL][eE]
+LT=[lL][tT]
+
+CEQ=[cC]{EQ}
+CNE=[cC]{NE}
+CGE=[cC]{GE}
+CGT=[cC]{GT}
+CLE=[cC]{LE}
+CLT=[cC]{LT}
+
+IEQ=[iI]{EQ}
+INE=[iI]{NE}
+IGE=[iI]{GE}
+IGT=[iI]{GT}
+ILE=[iI]{LE}
+ILT=[iI]{LT}
+
+JOIN=[jJ][oO][iI][nN]
+
+SHL=[sS][hH][lL]
+SHR=[sS][hH][rR]
+
+AND=[aA][nN][dD]
+OR=[oO][rR]
+
+COMPARISON_TOKEN={AS}|{CCONTAINS}|{CEQ}|{CGE}|{CGT}|{CLE}|{CLIKE}|{CLT}|{CMATCH}|{CNE}|{CNOTCONTAINS}|{CNOTLIKE}|{CNOTMATCH}|{CONTAINS}
+|{CREPLACE}|{CSPLIT}|{EQ}|{GE}|{GT}|{ICONTAINS}|{IEQ}|{IGE}|{IGT}|{ILE}|{ILIKE}|{ILT}|{IMATCH}|{IN}|{INE}|{INOTCONTAINS}|{INOTLIKE}
+|{INOTMATCH}|{IREPLACE}|{IS}|{ISNOT}|{ISPLIT}|{JOIN}|{LE}|{LIKE}|{LT}|{MATCH}|{NE}|{NOTCONTAINS}|{NOTIN}|{NOTLIKE}|{NOTMATCH}
+|{REPLACE}|{SHL}|{SHR}|{SPLIT}
+
 OP_C={DASH}{COMPARISON_TOKEN}
 OP_MR=("*>&1"|"2>&1"|"3>&1"|"4>&1"|"5>&1"|"6>&1"|"*>&2"|"1>&2"|"3>&2"|"4>&2"|"5>&2"|"6>&2")
 OP_FR=(">"|">>"|"2>"|"2>>"|"3>"|"3>>"|"4>"|"4>>"|"5>"|"5>>"|"6>"|"6>>"|"*>"|"*>>"|"<")
-OP_NOT={DASH}[nN][oO][tT]
-OP_BNOT={DASH}[bB][nN][oO][tT]
-OP_BAND={DASH}[bB][aA][nN][dD]
-OP_BOR={DASH}[bB][oO][rR]
-OP_BXOR={DASH}[bB][xX][oO][rR]
-OP_AND={DASH}[aA][nN][dD]
-OP_OR={DASH}[oO][rR]
-OP_XOR={DASH}[xX][oO][rR]
+OP_NOT={DASH}{NOT}
+OP_AND={DASH}{AND}
+OP_OR={DASH}{OR}
+OP_XOR={DASH}[xX]{OR}
+OP_BNOT={DASH}[bB]{NOT}
+OP_BAND={DASH}[bB]{AND}
+OP_BXOR={DASH}[bB][xX]{OR}
+OP_BOR={DASH}[bB]{OR}
 EXCL_MARK="!"
 
 NL=(\r|\n|\r\n)
@@ -340,7 +410,8 @@ BRACED_VAR_START={DS}{LCURLY}
   {SQBR_R}                         { return SQBR_R; }
   {OP_MR}                          { return OP_MR; }
   {OP_FR}/[^#]                     { return OP_FR; }
-  {OP_C}/{PARAMETER_CHAR}*         { return OP_C; }
+  {OP_C}/[^a-zA-Z]+                { return OP_C; }
+//  {OP_C}/{PARAMETER_CHAR}*         { return OP_C; }
   {OP_BNOT}/{PARAMETER_CHAR}*      { return OP_BNOT; }
   {OP_BAND}/{PARAMETER_CHAR}*      { return OP_BAND; }
   {OP_BOR}/{PARAMETER_CHAR}*       { return OP_BOR; }
