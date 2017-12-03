@@ -169,16 +169,17 @@ private top_level_element ::= sep* ( top_script_block | statement_list | configu
 {recoverWhile=top_level_recover}
 private top_level_recover ::= !(reserved_statement_keywords | sep | nls | RCURLY | LCURLY | RP | SQBR_L)
 private configuration_block_list ::= configuration_block (statement_terminators configuration_block)* statement_terminators?
-configuration_block ::= attribute_list? 'configuration' nls? configuration_name nls? LCURLY configuration_block_body? RCURLY
+configuration_block ::= attribute_list? 'configuration' nls? configuration_name nls? configuration_block_block
 {pin=2 recoverWhile=configuration_block_recover
 mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractComponent"
 implements="com.intellij.plugin.powershell.psi.PowerShellComponent"}
-private configuration_block_recover ::= !(statement_terminators? ('configuration' | <<eof>> | SQBR_L))
+private configuration_block_recover ::= !(statement_terminators? ('configuration' | <<eof>> | SQBR_L| statement_stop_tokens))
 private configuration_name ::= function_name
 
+private configuration_block_block ::= LCURLY configuration_block_body? RCURLY {pin=1}
 configuration_block_body ::= top_script_block
 {elementType=block_body recoverWhile=configuration_block_body_recover}
-private configuration_block_body_recover ::= !(nls? RCURLY statement_terminators? ('configuration' | <<eof>> | SQBR_L))
+private configuration_block_body_recover ::= !(nls? RCURLY statement_terminators? ('configuration' | <<eof>> | SQBR_L | statement_stop_tokens))
 
 //node_block ::= node_token nls? node_name nls? LCURLY nls? node_block_body? nls? RCURLY {pin=1} //possible variant: node_token command_call_expression
 node_block ::= node_token nls? command_argument_list+
