@@ -248,3 +248,8 @@ dir –Verbose –Debug –WarningAction Continue *> output2.txt
 # e_rror output redirected to named file, verbose output redirected
 # to the same location as e_rror output
 dir –Verbose 4>&2 2> e_rror2.txt
+
+1 -eq$aa
+1 -eqaa
+1 -xoraa
+1 -xor$aa
