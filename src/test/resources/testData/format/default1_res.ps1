@@ -95,13 +95,12 @@ while ($true)
 }
 function ValidateScriptTest
 {
-    param (
-    [Parameter(Mandatory = $true)]
-    [ValidateScript({
-        ($_ -ge 1 -and $_ -le 3) -or ($_ -ge 20)
-    })]
-    [int]
-    $Count)
+    param ([Parameter(Mandatory = $true)]
+        [ValidateScript({
+            ($_ -ge 1 -and $_ -le 3) -or ($_ -ge 20)
+        })]
+        [int]
+        $Count)
     $Count = 0
     $Count += 0
 }

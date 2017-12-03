@@ -13,13 +13,21 @@ class PowerShellCodeStyleSettings(settings: CodeStyleSettings?) : CustomCodeStyl
   @JvmField
   var PIPELINE_TAIL_WRAP = CommonCodeStyleSettings.DO_NOT_WRAP
   @JvmField
+  var BLOCK_PARAMETER_CLAUSE_WRAP = CommonCodeStyleSettings.DO_NOT_WRAP
+  @JvmField
   var ALIGN_MULTILINE_CATCH_TYPE_LIST = false
   @JvmField
   var ALIGN_MULTILINE_ATTRIBUTE_ARGUMENT = false
   @JvmField
   var ALIGN_MULTILINE_PIPELINE_STATEMENT = false
   @JvmField
+  var ALIGN_MULTILINE_BLOCK_PARAMETERS = false
+  @JvmField
   var KEEP_SIMPLE_HASH_LITERAL_IN_ONE_LINE = true
+  @JvmField
+  var BLOCK_PARAMETERS_LPAREN_ON_NEXT_LINE = false
+  @JvmField
+  var BLOCK_PARAMETERS_RPAREN_ON_NEXT_LINE = true
   @JvmField
   var SPACE_WITHIN_SUB_EXPRESSION_PARENTHESES = true
   @JvmField

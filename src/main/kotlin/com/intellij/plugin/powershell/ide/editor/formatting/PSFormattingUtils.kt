@@ -87,6 +87,11 @@ internal fun isParameterClauseContext(node: ASTNode): Boolean {
   return node.treeParent?.elementType === PowerShellTypes.PARAMETER_CLAUSE
 }
 
+
+internal fun isBlockParameterClauseContext(node: ASTNode): Boolean {
+  return node.treeParent?.elementType === PowerShellTypes.BLOCK_PARAMETER_CLAUSE
+}
+
 internal fun isBlockBodyContext(node: ASTNode): Boolean {
   return node.treeParent?.elementType === PowerShellTypes.BLOCK_BODY
 }
@@ -222,6 +227,8 @@ internal fun isFirstNodeInForParameter(node: ASTNode): Boolean {
 }
 
 internal fun isFunctionParameter(childNode: ASTNode) = isParameterClauseContext(childNode) && canBeParameter(childNode)
+
+internal fun isBlockParameter(childNode: ASTNode) = isBlockParameterClauseContext(childNode) && canBeParameter(childNode)
 
 internal fun isCallArgument(node: ASTNode): Boolean {
   return node.psi is PowerShellExpression && node.treeParent?.elementType === PowerShellTypes.PARENTHESIZED_ARGUMENT_LIST

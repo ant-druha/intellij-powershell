@@ -45,6 +45,14 @@ class PowerShellFormatterTest : FormatterTestCase() {
     doTest("indent_brace", "indent_brace_pipeline_wrap_res")
   }
 
+  fun testBlockParametersWrap() {
+    doTest("wrap_block_parameters", "wrap_block_parameters_default_res")
+    val psSettings = getPowerShellSettings()
+    psSettings.ALIGN_MULTILINE_BLOCK_PARAMETERS = true
+    psSettings.BLOCK_PARAMETER_CLAUSE_WRAP = CommonCodeStyleSettings.WRAP_ALWAYS
+    doTest("wrap_block_parameters", "wrap_block_parameters_res")
+  }
+
   fun testDefault1() {
     val tempTestSettings = getCommonSettings()
     tempTestSettings.KEEP_LINE_BREAKS = false
@@ -184,7 +192,7 @@ class PowerShellFormatterTest : FormatterTestCase() {
     assertEquals(textAfter, file.text)
   }
 
-  private fun getPowerShellSettings(): PowerShellCodeStyleSettings  = settings.getCustomSettings(PowerShellCodeStyleSettings::class.java)
+  private fun getPowerShellSettings(): PowerShellCodeStyleSettings = settings.getCustomSettings(PowerShellCodeStyleSettings::class.java)
 
   private fun getCommonSettings() = FormatterTestCase.getSettings(PowerShellLanguage.INSTANCE)
 }

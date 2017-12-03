@@ -19,6 +19,7 @@ public interface PowerShellTypes {
   IElementType ATTRIBUTE_ARGUMENT = new PowerShellElementType("ATTRIBUTE_ARGUMENT");
   IElementType BITWISE_EXPRESSION = new PowerShellElementType("BITWISE_EXPRESSION");
   IElementType BLOCK_BODY = new PowerShellElementType("BLOCK_BODY");
+  IElementType BLOCK_PARAMETER_CLAUSE = new PowerShellElementType("BLOCK_PARAMETER_CLAUSE");
   IElementType CAST_EXPRESSION = new PowerShellElementType("CAST_EXPRESSION");
   IElementType CATCH_CLAUSE = new PowerShellElementType("CATCH_CLAUSE");
   IElementType CLASS_DECLARATION_STATEMENT = new PowerShellElementType("CLASS_DECLARATION_STATEMENT");
@@ -241,6 +242,9 @@ public interface PowerShellTypes {
       }
       else if (type == BLOCK_BODY) {
         return new PowerShellBlockBodyImplGen(node);
+      }
+      else if (type == BLOCK_PARAMETER_CLAUSE) {
+        return new PowerShellBlockParameterClauseImplGen(node);
       }
       else if (type == CAST_EXPRESSION) {
         return new PowerShellCastExpressionImplGen(node);

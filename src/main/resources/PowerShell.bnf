@@ -210,7 +210,7 @@ private block_body_stop_tokens ::= reserved_statement_keywords | sep | nls | RCU
 
 private statement_list ::= statement ( statement_terminators statement )* {pin=1 recoverWhile=top_level_recover}
 private top_script_block ::= nls? top_script_block_content nls? | nls
-private top_script_block_content ::= param_block? statement_terminators? script_block_body | param_block statement_terminators?
+private top_script_block_content ::= block_parameter_clause? statement_terminators? script_block_body | block_parameter_clause statement_terminators?
 private function_block::= LCURLY function_block_body? RCURLY
 {pin=1}
 function_block_body ::= (nls? attribute_list nls?)? top_script_block
@@ -223,7 +223,7 @@ private block_body_recover ::= !RCURLY
 script_block ::= top_script_block
 {elementType=block_body}
 
-private param_block ::= attribute_list? nls? 'param' nls? LP nls? script_parameter_list? nls? RP {pin=3}
+block_parameter_clause ::= attribute_list? nls? 'param' nls? LP nls? script_parameter_list? nls? RP {pin=3}
 
 private attribute_list ::= (attribute nls?)+
 attribute ::= SQBR_L nls? attribute_name LP nls? attribute_arguments? nls? RP nls? SQBR_R | type_literal_expression

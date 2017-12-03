@@ -290,10 +290,30 @@ class PowerShellLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsPro
             "BINARY_OPERATION_WRAP",
             CodeStyleSettingsCustomizable.WRAP_OPTIONS,
             CodeStyleSettingsCustomizable.WRAP_VALUES)
+
         consumer.showCustomOption(PowerShellCodeStyleSettings::class.java, "ALIGN_MULTILINE_PIPELINE_STATEMENT",
             MessagesBundle.message("code.style.align.multiline"),
             MessagesBundle.message("wrapping.pipeline")
         )
+
+        consumer.showCustomOption(PowerShellCodeStyleSettings::class.java, "BLOCK_PARAMETER_CLAUSE_WRAP",
+                                  MessagesBundle.message("wrapping.block.parameters"),
+                                  null,
+                                  CodeStyleSettingsCustomizable.OptionAnchor.AFTER,
+                                  "METHOD_PARAMETERS_WRAP",
+                                  CodeStyleSettingsCustomizable.WRAP_OPTIONS,
+                                  CodeStyleSettingsCustomizable.WRAP_VALUES)
+
+        consumer.showCustomOption(PowerShellCodeStyleSettings::class.java, "ALIGN_MULTILINE_BLOCK_PARAMETERS",
+                                  MessagesBundle.message("code.style.align.multiline"),
+                                  MessagesBundle.message("wrapping.block.parameters")
+        )
+
+        consumer.showCustomOption(PowerShellCodeStyleSettings::class.java, "BLOCK_PARAMETERS_LPAREN_ON_NEXT_LINE",
+                                  "New line after '('", MessagesBundle.message("wrapping.block.parameters"))
+        consumer.showCustomOption(PowerShellCodeStyleSettings::class.java, "BLOCK_PARAMETERS_RPAREN_ON_NEXT_LINE",
+                                  "Place ')' on new line", MessagesBundle.message("wrapping.block.parameters"))
+
 
       }
       LanguageCodeStyleSettingsProvider.SettingsType.INDENT_SETTINGS -> consumer.showStandardOptions("INDENT_SIZE",
