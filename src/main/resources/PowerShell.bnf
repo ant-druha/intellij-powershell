@@ -587,11 +587,11 @@ private switch_parameter ::=   '-regex'
 private switch_condition ::= LP nls? pipeline nls? RP | '-file' nls? switch_filename
 private switch_filename ::= parse_command_argument | primary_expression
 
-//private command_argument_comma_list ::= <<parseCommandArgumentCommaList command_argument_list>>
+//private command_argument_comma_list ::= <<parseCommandArgumentInner command_argument_list>>
 //private command_argument_comma_list ::= command_argument_list
 private command_argument_list ::= command_argument ( (COMMA | EQ) command_argument)* | array_literal_expression
 //command_argument ::= generic_chars_or_path_expression
-private parse_command_argument ::= <<parseCommandArgumentCommaList generic_chars_or_path_expression>>
+private parse_command_argument ::= <<parseCommandArgumentInner generic_chars_or_path_expression>>
 command_argument ::= parse_command_argument
 //noinspection BnfUnusedRule
 private argument_separator_condition ::= &argument_separator_token

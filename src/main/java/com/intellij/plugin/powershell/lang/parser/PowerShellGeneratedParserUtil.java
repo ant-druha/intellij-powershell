@@ -24,7 +24,7 @@ public class PowerShellGeneratedParserUtil {
     return builder.eof() || builder.rawLookup(-1) == TokenType.WHITE_SPACE || builder.rawLookup(-1) == COMMENT;
   }
 
-  public static boolean parseCommandArgumentCommaList(PsiBuilder b, int i, GeneratedParserUtilBase.Parser argumentsCommaListParser) {
+  public static boolean parseCommandArgumentInner(PsiBuilder b, int i, GeneratedParserUtilBase.Parser argumentsCommaListParser) {
     boolean r = argumentsCommaListParser.parse(b, i + 1);
     if (!r) {
       if (!PowerShellParser.argument_separator_condition_no_ws(b, i + 1)) {
