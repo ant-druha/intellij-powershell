@@ -155,7 +155,7 @@
 //    PARAM_ARGUMENT='regexp:([\w][\w$0-9\-]*)' //todo
     LETTERS='regexp:[a-zA-Z]+'
 //    ALNUM='regexp:\p{Alnum}+'
-    PARAM_TOKEN='regexp:(\-|/)(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\_|\?)[^\{\}\(\)\;\,\|\&\.\[\:\s\n\r]+:?'
+    CMD_PARAMETER='regexp:(\-|/)(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\_|\?)[^\{\}\(\)\;\,\|\&\.\[\:\s\n\r]+:?'
 
     space = 'regexp:\s+' //???
   ]
@@ -411,7 +411,7 @@ private generic_token_part ::= (expandable_string_literal | verbatim_here_string
 private generic_token_chars ::= generic_id_part_tokens_start generic_token_chars_tail?
 private generic_id_part_tokens_start ::= SIMPLE_ID | GENERIC_ID_PART | STAR | PERS | allowed_identifier_keywords | DEC_INTEGER | REAL_NUM
 private generic_token_chars_tail ::= ( nws generic_id_part_tokens )+
-private generic_id_part_tokens ::= generic_id_part_tokens_start | DOT | PATH_SEP | DIV | PARAM_TOKEN | PLUS | DASH | STAR | PERS
+private generic_id_part_tokens ::= generic_id_part_tokens_start | DOT | PATH_SEP | DIV | CMD_PARAMETER | PLUS | DASH | STAR | PERS
 
 private command_element ::= command_parameter | redirection | command_argument_list //command_argument_comma_list
 private command_invocation_operator ::= '&' | DOT
@@ -650,9 +650,9 @@ relative_path_item ::= relative_path
 
 private path_item_name ::= relative_path | path_name_tokens | allowed_identifier_keywords | reference_variable
 private path_name_tokens ::= path_name_part_tokens_start (nws (path_name_part_tokens_start | DOT))*
-private path_name_part_tokens_start ::= generic_id_part_tokens_start | PARAM_TOKEN | PLUS | DASH
+private path_name_part_tokens_start ::= generic_id_part_tokens_start | CMD_PARAMETER | PLUS | DASH
 private relative_path ::= DOT | DOT_DOT | PATH_SEP
-command_parameter ::= PARAM_TOKEN | binary_operator
+command_parameter ::= CMD_PARAMETER | binary_operator
 private binary_operator ::= OP_C | OP_NOT | OP_BNOT | OP_BAND | OP_BOR | OP_BXOR | OP_AND | OP_OR | OP_XOR
 verbatim_command_argument ::= VERBATIM_ARG_START VERBATIM_ARG_INPUT //(verbatim_command_string | AMP_ARG | generic_token_chars )+
 //private verbatim_command_string ::= EXPANDABLE_STRING //TODO: 02/09/17 variable substitution:

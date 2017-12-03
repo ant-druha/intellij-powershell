@@ -101,6 +101,7 @@ public interface PowerShellTypes {
   IElementType BREAK = new PowerShellTokenType("break");
   IElementType CATCH = new PowerShellTokenType("catch");
   IElementType CLASS = new PowerShellTokenType("class");
+  IElementType CMD_PARAMETER = new PowerShellTokenType("CMD_PARAMETER");
   IElementType COLON = new PowerShellTokenType(":");
   IElementType COLON2 = new PowerShellTokenType("::");
   IElementType COMMA = new PowerShellTokenType(",");
@@ -174,7 +175,6 @@ public interface PowerShellTypes {
   IElementType OP_XOR = new PowerShellTokenType("OP_XOR");
   IElementType PARALLEL = new PowerShellTokenType("parallel");
   IElementType PARAM = new PowerShellTokenType("param");
-  IElementType PARAM_TOKEN = new PowerShellTokenType("PARAM_TOKEN");
   IElementType PATH_SEP = new PowerShellTokenType("\\");
   IElementType PERS = new PowerShellTokenType("%");
   IElementType PIPE = new PowerShellTokenType("|");

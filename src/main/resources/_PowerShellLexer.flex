@@ -243,7 +243,7 @@ DELIMITED_COMMENT={DELIMITED_COMENT_START}{DELIMITED_COMMENT_CHARS}?{DELIMITED_C
 LETTERS=[a-zA-Z]+
 DASH=[\-\–\—\―]
 MM="--"
-PARAM_TOKEN=({DASH}|{DIV})(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\_|\?){PARAMETER_CHAR}*:?
+CMD_PARAMETER=({DASH}|{DIV})(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\_|\?){PARAMETER_CHAR}*:?
 PARAMETER_CHAR=[^\{\}\(\)\;\,\|\&\.\[\:\s\n\r\'\‘\’\‚\‛\"\“\”\„]
 VERBATIM_ARG_START={MM}{PERS}
 VERBATIM_ARG_INPUT=[^\|\r\n]+
@@ -439,7 +439,7 @@ BRACED_VAR_START={DS}{LCURLY}
 //  {PARAM_ARGUMENT}                 { return PARAM_ARGUMENT; }
 //  {ALNUM}                          { return ALNUM; }
   {LETTERS}                        { return LETTERS; }
-  {PARAM_TOKEN}                    { return PARAM_TOKEN; }
+  {CMD_PARAMETER}                    { return CMD_PARAMETER; }
 
 }
 
