@@ -504,7 +504,7 @@ private interface_name ::= type_element
 private class_block ::= LCURLY class_block_body? RCURLY
 {pin=1}
 
-class_block_body ::= nls? (class_member_declaration_list | statement_terminators)+ nls?
+class_block_body ::= nls? (class_member_declaration_list | statement_terminators)+ nls? | nls
 {
   elementType=block_body
   recoverWhile=block_body_recover
@@ -549,7 +549,7 @@ private enum_name ::= simple_name_identifier
 private enum_block ::= LCURLY enum_block_body? RCURLY
 {pin=1}
 
-enum_block_body ::= nls? (label_list | statement_terminators)+ nls?
+enum_block_body ::= nls? (label_list | statement_terminators)+ nls? | nls
 {
   elementType=block_body
   recoverWhile=block_body_recover
