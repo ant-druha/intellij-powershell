@@ -207,6 +207,8 @@ private block_body_stop_tokens ::= reserved_statement_keywords | sep | nls | RCU
 private statement_list ::= statement ( statement_terminators statement )* {pin=1 recoverWhile=top_level_recover}
 private top_script_block ::= nls? top_script_block_content nls? | nls
 private top_script_block_content ::= param_block? statement_terminators? script_block_body | param_block statement_terminators?
+function_block_body ::= (nls? attribute_list nls?)? top_script_block
+{elementType=block_body}
 script_block ::= top_script_block
 {elementType=block_body}
 
@@ -551,7 +553,7 @@ workflow_statement ::= 'workflow' nls? function_statement_tail
   implements="com.intellij.plugin.powershell.psi.PowerShellCallableDeclaration"
 }
 
-private function_statement_tail ::= function_name nls? function_parameter_declaration? nls? LCURLY script_block? RCURLY
+private function_statement_tail ::= function_name nls? function_parameter_declaration? nls? LCURLY function_block_body? RCURLY
 private function_name ::= primary_expression | identifier //command_name_expr
 identifier ::= generic_identifier
 //{implements="com.intellij.plugin.powershell.psi.PSIdentifier"

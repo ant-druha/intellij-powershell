@@ -428,3 +428,10 @@ workflow Throttle-Me
         "{0:hh}:{0:mm}:{0:ss}" -f (Get-Date)
     }
 }
+
+function Get-NCCustomerList
+{
+    [CmdletBinding()]
+
+    $Keypair = New-Object "$Script:NameSpace.T_KeyPair"
+}
