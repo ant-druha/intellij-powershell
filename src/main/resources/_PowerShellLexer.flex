@@ -410,16 +410,16 @@ BRACED_VAR_START={DS}{LCURLY}
   {SQBR_R}                         { return SQBR_R; }
   {OP_MR}                          { return OP_MR; }
   {OP_FR}/[^#]                     { return OP_FR; }
-  {OP_C}/[^a-zA-Z]+                { return OP_C; }
+  {OP_C}/[^a-zA-Z]+{PARAMETER_CHAR}*       { return OP_C; }
 //  {OP_C}/{PARAMETER_CHAR}*         { return OP_C; }
-  {OP_BNOT}/{PARAMETER_CHAR}*      { return OP_BNOT; }
-  {OP_BAND}/{PARAMETER_CHAR}*      { return OP_BAND; }
-  {OP_BOR}/{PARAMETER_CHAR}*       { return OP_BOR; }
-  {OP_BXOR}/{PARAMETER_CHAR}*      { return OP_BXOR; }
-  {OP_NOT}/{PARAMETER_CHAR}*       { return OP_NOT; }
-  {OP_AND}/{PARAMETER_CHAR}*       { return OP_AND; }
-  {OP_OR}/{PARAMETER_CHAR}*        { return OP_OR; }
-  {OP_XOR}/{PARAMETER_CHAR}*       { return OP_XOR; }
+  {OP_BNOT}/[^a-zA-Z]+{PARAMETER_CHAR}*    { return OP_BNOT; }
+  {OP_BAND}/[^a-zA-Z]+{PARAMETER_CHAR}*    { return OP_BAND; }
+  {OP_BOR}/[^a-zA-Z]+{PARAMETER_CHAR}*     { return OP_BOR; }
+  {OP_BXOR}/[^a-zA-Z]+{PARAMETER_CHAR}*    { return OP_BXOR; }
+  {OP_NOT}/[^a-zA-Z]+{PARAMETER_CHAR}*     { return OP_NOT; }
+  {OP_AND}/[^a-zA-Z]+{PARAMETER_CHAR}*     { return OP_AND; }
+  {OP_OR}/[^a-zA-Z]+{PARAMETER_CHAR}*      { return OP_OR; }
+  {OP_XOR}/[^a-zA-Z]+{PARAMETER_CHAR}*     { return OP_XOR; }
   {EXCL_MARK}                      { return EXCL_MARK; }
   {NLS}                            { return NLS; }
   {CH_DQ}                          { pushState(STRING); return DQ_OPEN; }
