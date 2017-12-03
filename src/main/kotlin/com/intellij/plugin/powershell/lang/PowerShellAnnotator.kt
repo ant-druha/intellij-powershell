@@ -26,9 +26,19 @@ class PowerShellAnnotator : Annotator {
       e is PowerShellMemberAccessExpression -> annotateMemberAccess(holder, e, PowerShellSyntaxHighlighter.PROPERTY_REFERENCE)
       e is PowerShellInvocationExpression -> annotateMethodCallName(holder, e, PowerShellSyntaxHighlighter.METHOD_CALL)
       e is PowerShellCallableDeclaration -> annotateFunctionName(holder, e, PowerShellSyntaxHighlighter.METHOD_DECLARATION)
-      e is PowerShellLabel-> createInfoAnnotation(holder, e.identifier, PowerShellSyntaxHighlighter.LABEL)
+      e is PowerShellLabel -> createInfoAnnotation(holder, e.identifier, PowerShellSyntaxHighlighter.LABEL)
       e is PowerShellLabelReferenceExpression -> createInfoAnnotation(holder, e.identifier, PowerShellSyntaxHighlighter.LABEL)
+      shouldAnnotateAsParameter(e) -> createInfoAnnotation(holder, e, PowerShellSyntaxHighlighter.COMMAND_PARAMETER)
     }
+  }
+
+  private fun shouldAnnotateAsParameter(element: PsiElement): Boolean {
+    if (element is PowerShellCommandParameter) return true
+
+    val parameterNode = element.node
+    if (parameterNode?.elementType !== PowerShellTypes.CMD_PARAMETER) return false
+    val parent = parameterNode?.treeParent ?: return false
+    return parent.elementType === PowerShellTypes.FOREACH_STATEMENT || parent.elementType === PowerShellTypes.SWITCH_STATEMENT
   }
 
   private fun annotateFunctionName(holder: AnnotationHolder, callable: PowerShellCallableDeclaration, attributes: TextAttributesKey) {

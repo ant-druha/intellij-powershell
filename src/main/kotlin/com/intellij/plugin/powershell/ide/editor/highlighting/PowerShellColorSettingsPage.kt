@@ -23,6 +23,7 @@ class PowerShellColorSettingsPage : ColorSettingsPage {
       AttributesDescriptor("Number", PowerShellSyntaxHighlighter.NUMBER),
       AttributesDescriptor("String", PowerShellSyntaxHighlighter.STRING),
       AttributesDescriptor("Command name", PowerShellSyntaxHighlighter.COMMAND_NAME),
+      AttributesDescriptor("Command parameter", PowerShellSyntaxHighlighter.COMMAND_PARAMETER),
       AttributesDescriptor("Type name", PowerShellSyntaxHighlighter.TYPE_NAME),
       AttributesDescriptor("Type reference", PowerShellSyntaxHighlighter.TYPE_REFERENCE),
       AttributesDescriptor("Variable name", PowerShellSyntaxHighlighter.VARIABLE_NAME),
@@ -38,6 +39,7 @@ class PowerShellColorSettingsPage : ColorSettingsPage {
     additionalTags.put("number", PowerShellSyntaxHighlighter.NUMBER)
     additionalTags.put("string", PowerShellSyntaxHighlighter.STRING)
     additionalTags.put("command name", PowerShellSyntaxHighlighter.COMMAND_NAME)
+    additionalTags.put("command parameter", PowerShellSyntaxHighlighter.COMMAND_PARAMETER)
     additionalTags.put("type name", PowerShellSyntaxHighlighter.TYPE_NAME)
     additionalTags.put("type ref", PowerShellSyntaxHighlighter.TYPE_REFERENCE)
     additionalTags.put("var name", PowerShellSyntaxHighlighter.VARIABLE_NAME)
@@ -79,7 +81,7 @@ class PowerShellColorSettingsPage : ColorSettingsPage {
         " }\n" +
         "\n" +
         "# 3) variable name token: '\$_.length' and 'get-childitem'\n" +
-        ":<label>labelA</label> switch -regex -casesensitive (<command name>get-childitem</command name> | sort length)\n" +
+        ":<label>labelA</label> switch <command parameter>-regex</command parameter> <command parameter>-casesensitive</command parameter> (<command name>get-childitem</command name> | sort length)\n" +
         "{\n" +
         " \"^5\" {\"length for \$<var name>_</var name> started with 5\" ; continue <label>labelA</label>}\n" +
         " { \$<var name>_</var name>.<property access>length</property access> > 20000 } {\"length of \$<var name>_</var name> is greater than 20000\"}\n" +
