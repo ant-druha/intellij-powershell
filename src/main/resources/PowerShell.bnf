@@ -199,6 +199,9 @@ private parse_node_block ::= is_dsc node_block
 
 private statement_block ::= LCURLY block_body? RCURLY
 block_body ::= nls? block_body_content nls? | nls
+{
+  recoverWhile=block_body_recover
+}
 private block_body_content ::= (statement_list | statement_terminators)+ {recoverWhile=statement_block_recover}
 
 private statement_block_recover ::= !block_body_stop_tokens
@@ -207,8 +210,15 @@ private block_body_stop_tokens ::= reserved_statement_keywords | sep | nls | RCU
 private statement_list ::= statement ( statement_terminators statement )* {pin=1 recoverWhile=top_level_recover}
 private top_script_block ::= nls? top_script_block_content nls? | nls
 private top_script_block_content ::= param_block? statement_terminators? script_block_body | param_block statement_terminators?
+private function_block::= LCURLY function_block_body? RCURLY
+{pin=1}
 function_block_body ::= (nls? attribute_list nls?)? top_script_block
-{elementType=block_body}
+{
+  elementType=block_body
+  recoverWhile=block_body_recover
+}
+private block_body_recover ::= !RCURLY
+
 script_block ::= top_script_block
 {elementType=block_body}
 
@@ -490,11 +500,16 @@ private base_class_name ::= type_element
 private interface_list ::= COMMA nls? interface_name (nls? COMMA nls? interface_name)*
 private interface_name ::= type_element
 
-private class_block ::= LCURLY nls? class_block_body? nls? RCURLY
+private class_block ::= LCURLY class_block_body? RCURLY
+{pin=1}
 
-class_block_body ::= (class_member_declaration_list | statement_terminators)+
-{elementType=block_body}
+class_block_body ::= nls? (class_member_declaration_list | statement_terminators)+ nls?
+{
+  elementType=block_body
+  recoverWhile=block_body_recover
+}
 private class_member_declaration_list ::= class_member_declaration (statement_terminators class_member_declaration)*
+{recoverWhile=top_level_recover}
 private class_member_declaration ::= property_declaration_statement | constructor_declaration_statement | method_declaration_statement
 
 property_declaration_statement ::= (member_declaration_attribute nls?)* property_definition_expression
@@ -530,11 +545,16 @@ implements="com.intellij.plugin.powershell.psi.PowerShellMemberDeclaration"}
 private enum_with_flags_declaration ::= attribute /*SQBR_L SIMPLE_ID LP RP SQBR_R */nls? enum_declaration
 private enum_declaration ::= 'enum' enum_name nls? enum_block
 private enum_name ::= simple_name_identifier
-private enum_block ::= LCURLY nls? enum_block_body? nls? RCURLY
+private enum_block ::= LCURLY enum_block_body? RCURLY
+{pin=1}
 
-enum_block_body ::= (label_list | statement_terminators)+
-{elementType=block_body}
+enum_block_body ::= nls? (label_list | statement_terminators)+ nls?
+{
+  elementType=block_body
+  recoverWhile=block_body_recover
+}
 private label_list ::= enum_label_declaration (statement_terminators enum_label_declaration)*
+{recoverWhile=top_level_recover}
 enum_label_declaration ::= label_identifier_expression (EQ expression)?
 {
   mixin="com.intellij.plugin.powershell.psi.impl.PowerShellMemberDeclarationImpl"
@@ -553,7 +573,7 @@ workflow_statement ::= 'workflow' nls? function_statement_tail
   implements="com.intellij.plugin.powershell.psi.PowerShellCallableDeclaration"
 }
 
-private function_statement_tail ::= function_name nls? function_parameter_declaration? nls? LCURLY function_block_body? RCURLY
+private function_statement_tail ::= function_name nls? function_parameter_declaration? nls? function_block
 private function_name ::= primary_expression | identifier //command_name_expr
 identifier ::= generic_identifier
 //{implements="com.intellij.plugin.powershell.psi.PSIdentifier"
