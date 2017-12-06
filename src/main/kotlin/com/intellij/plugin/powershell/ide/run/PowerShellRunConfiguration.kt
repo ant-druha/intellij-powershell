@@ -19,11 +19,11 @@ class PowerShellRunConfiguration(project: Project, configurationFactory: Configu
 
   private val SCRIPT_PATH_URL = "scriptUrl"
   private val SCRIPT_PARAMETERS = "scriptParameters"
-  private val SCRIPT_OPTIONS = "scriptOptions"
+  private val COMMAND_OPTIONS = "commandOptions"
 
   private var scriptPath: String? = null
   private var scriptParameters: String? = null
-  private var scriptOptions: String? = null
+  private var commandOptions: String? = null
 
   override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = PowerShellRunSettingsEditor(project, this)
 
@@ -31,9 +31,9 @@ class PowerShellRunConfiguration(project: Project, configurationFactory: Configu
   override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState? =
       PowerShellScriptCommandLineState(this, environment)
 
-   fun getScriptPath(): String? = scriptPath
+   fun getScriptPath(): String = StringUtil.notNullize(scriptPath)
 
-   fun getScriptParameters(): String? = scriptParameters
+   fun getScriptParameters(): String = StringUtil.notNullize(scriptParameters)
 
    fun setScriptPath(scriptPath: String) {
     this.scriptPath = scriptPath
@@ -48,15 +48,15 @@ class PowerShellRunConfiguration(project: Project, configurationFactory: Configu
     super.readExternal(element)
     val scriptUrl = element.getAttributeValue(SCRIPT_PATH_URL)
     val scriptParams = element.getAttributeValue(SCRIPT_PARAMETERS)
-    val scriptOptions = element.getAttributeValue(SCRIPT_OPTIONS)
+    val commandOptions = element.getAttributeValue(COMMAND_OPTIONS)
     if (!StringUtil.isEmpty(scriptUrl)) {
       scriptPath = scriptUrl
     }
     if (!StringUtil.isEmpty(scriptParams)) {
       scriptParameters = scriptParams
     }
-    if (!StringUtil.isEmpty(scriptOptions)) {
-      this.scriptOptions = scriptOptions
+    if (!StringUtil.isEmpty(commandOptions)) {
+      this.commandOptions = commandOptions
     }
   }
 
@@ -69,14 +69,14 @@ class PowerShellRunConfiguration(project: Project, configurationFactory: Configu
     if (!StringUtil.isEmpty(scriptParameters)) {
       element.setAttribute(SCRIPT_PARAMETERS, scriptParameters)
     }
-    if (!StringUtil.isEmpty(scriptOptions)) {
-      element.setAttribute(SCRIPT_OPTIONS, scriptOptions)
+    if (!StringUtil.isEmpty(commandOptions)) {
+      element.setAttribute(COMMAND_OPTIONS, commandOptions)
     }
   }
 
-   fun getScriptOptions(): String? = scriptOptions
+   fun getCommandOptions(): String = StringUtil.notNullize(commandOptions)
 
-   fun setScriptOptions(scriptOptions: String) {
-    this.scriptOptions = scriptOptions
+   fun setCommandOptions(commandOptions: String) {
+    this.commandOptions = commandOptions
   }
 }

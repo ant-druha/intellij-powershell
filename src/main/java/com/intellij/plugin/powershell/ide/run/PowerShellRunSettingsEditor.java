@@ -16,7 +16,7 @@ public class PowerShellRunSettingsEditor extends SettingsEditor<PowerShellRunCon
   private JPanel mainPanel;
   private TextFieldWithBrowseButton scriptTextField;
   private JTextField parametersTextField;
-  private JTextField scriptOptionsTextField;
+  private JTextField commandOptionsTextField;
 
   public PowerShellRunSettingsEditor(Project project, PowerShellRunConfiguration runConfiguration) {
     this.runConfiguration = runConfiguration;
@@ -29,7 +29,7 @@ public class PowerShellRunSettingsEditor extends SettingsEditor<PowerShellRunCon
   protected void resetEditorFrom(@NotNull PowerShellRunConfiguration configuration) {
     String scriptPath = configuration.getScriptPath();
     String scriptParameters = configuration.getScriptParameters();
-    String scriptOptions = configuration.getScriptOptions();
+    String commandOptions = configuration.getCommandOptions();
     if (!StringUtil.isEmpty(scriptPath)) {
       scriptTextField.setText(scriptPath);
       String[] parts = scriptPath.split("/");
@@ -40,8 +40,8 @@ public class PowerShellRunSettingsEditor extends SettingsEditor<PowerShellRunCon
     if (!StringUtil.isEmpty(scriptParameters)) {
       parametersTextField.setText(scriptParameters);
     }
-    if (!StringUtil.isEmpty(scriptOptions)) {
-      scriptOptionsTextField.setText(scriptOptions);
+    if (!StringUtil.isEmpty(commandOptions)) {
+      commandOptionsTextField.setText(commandOptions);
     }
   }
 
@@ -49,7 +49,7 @@ public class PowerShellRunSettingsEditor extends SettingsEditor<PowerShellRunCon
   protected void applyEditorTo(@NotNull PowerShellRunConfiguration configuration) {
     configuration.setScriptPath(scriptTextField.getText().trim());
     configuration.setScriptParameters(parametersTextField.getText().trim());
-    configuration.setScriptOptions(scriptOptionsTextField.getText().trim());
+    configuration.setCommandOptions(commandOptionsTextField.getText().trim());
   }
 
   @NotNull
