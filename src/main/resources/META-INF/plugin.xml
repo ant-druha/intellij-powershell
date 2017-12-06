@@ -1,26 +1,41 @@
 <idea-plugin>
   <id>com.intellij.plugin.adernov.powershell</id>
   <name>PowerShell</name>
-  <version>1.0</version>
-  <vendor email="andrey.dernov@gmail.com" url="http://www.yourcompany.com">YourCompany</vendor>
+  <version>0.0.1</version>
+  <vendor email="andrey.dernov@gmail.com" url="https://twitter.com/ant_druha">Andrey</vendor>
 
   <description><![CDATA[
-    PowerShell intellisense support for IntelliJ Editor<br>
+    Provides <a href="https://docs.microsoft.com/en-us/powershell/scripting/powershell-scripting">PowerShell</a> intellisense support for IntelliJ Editor<br>
     ]]></description>
 
   <change-notes><![CDATA[
-    1.0 - Initial intellisense support.<br>
+  <html>
+        <dl>
+            <dt>0.0.1 Initial editor intellisense support:<br></dt>
+            <dd>&#183; Syntax highlighting;</dd>
+            <dd>&#183; Variables and declared types reference resolve and find usages;</dd>
+            <dd>&#183; Reference and keyword completion;</dd>
+            <dd>&#183; Rename refactoring;</dd>
+            <dd>&#183; Structure view;</dd>
+            <dd>&#183; Colors and Fonts;</dd>
+            <dd>&#183; Code style;</dd>
+            <dd>&#183; Live templates;</dd>
+            <dd>&#183; Run Configuration.</dd>
+        </dl>
+  </html>
     ]]>
   </change-notes>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-  <idea-version since-build="145.0"/>
+  <idea-version since-build="163.0"/>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
        on how to target different products -->
   <!-- uncomment to enable plugin in all products
   <depends>com.intellij.modules.lang</depends>
   -->
+  <depends>com.intellij.modules.platform</depends>
+  <depends>com.intellij.modules.lang</depends>
 
   <extensions defaultExtensionNs="com.intellij">
 
