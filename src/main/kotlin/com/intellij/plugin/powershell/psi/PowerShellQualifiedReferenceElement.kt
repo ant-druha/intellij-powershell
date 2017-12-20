@@ -1,14 +1,11 @@
 package com.intellij.plugin.powershell.psi
 
-import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiQualifiedReference
 
 /**
  * Andrey 18/08/17.
  */
-interface PowerShellQualifiedReferenceElement<out Q: PsiElement> : PowerShellReferencePsiElement {
-  fun getQualifier(): Q?
-  /**
-   * returns full name of the element, including namespace
-   */
-  fun getQualifiedName(): String
+interface PowerShellQualifiedReferenceElement<out Q : PowerShellPsiElement> : PowerShellReferencePsiElement, PsiQualifiedReference {
+  override fun getQualifier(): Q?
+  override fun getReferenceName(): String?
 }

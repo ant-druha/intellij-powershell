@@ -342,9 +342,16 @@ expression ::=   assignment_expression
                | range_expression
                | array_literal_expression
                | unary_expression
-
+{
+  implements='com.intellij.plugin.powershell.psi.types.PowerShellTypedElement'
+  mixin='com.intellij.plugin.powershell.psi.impl.PowerShellExpressionImpl'
+}
 assignment_expression ::= expression (!is_in_call_arguments assignment_operator) nls? statement
-{rightAssociative=true methods=[getTargetVariables] pin=2}
+{
+  pin=2
+  rightAssociative=true
+  methods=[getTargetVariables getRHSElement]
+}
 
 logical_expression ::=   expression ( OP_AND | OP_OR | OP_XOR ) nls? expression
 
@@ -385,6 +392,9 @@ private expression_with_unary_operator ::= prefix_op nls? unary_expression | cas
 //private pre_decrement_expression ::= '--' nls? lvalue //unary_expression
 
 cast_expression ::= type_literal_expression unary_expression
+{
+  methods=[getCastType]
+}
 
 //private attributed_expression ::= type_literal variable
 
@@ -392,9 +402,14 @@ left pipeline_tail ::= ( PIPE nls? command_call_expression )+
 {elementType=pipeline}
 
 command_call_expression ::= command_invocation_operator ( (command_module command_name_expr command_element* ) | command_name_expr command_element* ) | command_name_expression command_element*
-{mixin="com.intellij.plugin.powershell.psi.impl.PowerShellCallableReferenceExpression"
-implements="com.intellij.plugin.powershell.psi.PowerShellReferencePsiElement"}
-
+{
+  mixin="com.intellij.plugin.powershell.psi.impl.PowerShellCommandCallExpressionImpl"
+  implements="com.intellij.plugin.powershell.psi.PowerShellReferencePsiElement"
+}
+/**
+  implements='com.intellij.plugin.powershell.psi.PowerShellQualifiedReferenceElement<com.intellij.plugin.powershell.psi.PowerShellExpression>'
+  mixin='com.intellij.plugin.powershell.psi.impl.PowerShellInvocationExpressionImpl'
+ */
 private command_name_expression ::= path_expression | command_name//todo parse path_item where appropriate: path_item all bare identifiers including command_name
 command_name ::= command_name_identifier //generic_token
 command_name_identifier ::= generic_token_with_sub_expr | generic_token_part //generic_token
@@ -451,6 +466,9 @@ finally_clause ::= 'finally' nls? statement_block {pin=1}
 private trap_pipeline ::= trap_statement statement?
 trap_statement ::= 'trap' nls? type_literal_expression? nls? statement_block {pin=1}
 type_literal_expression ::= SQBR_L type_element SQBR_R
+{
+  methods=[getType]
+}
 type_element ::= array_type_element | generic_type_element | reference_type_element
 {
   implements='com.intellij.plugin.powershell.psi.types.PowerShellTypedElement'
@@ -458,6 +476,9 @@ type_element ::= array_type_element | generic_type_element | reference_type_elem
 }
 
 array_type_element ::= array_type_name nls? dimension? SQBR_R
+{
+  methods=[getType]//todo creaet type array
+}
 generic_type_element ::= generic_type_name nls? generic_type_arguments SQBR_R
 reference_type_element ::= simple_type_identifier compound_type_identifier*
 {
@@ -487,12 +508,13 @@ label_reference_expression ::= label_identifier_expression
 {
   mixin="com.intellij.plugin.powershell.psi.impl.PowerShellReferencePsiElementImpl"
   implements="com.intellij.plugin.powershell.psi.PowerShellReferencePsiElement"
+  methods=[getType]
 }
 private label_identifier_expression::= simple_name_identifier | unary_expression
 // class/enum
 class_declaration_statement ::= attribute_list? 'class' class_name (nls? base_class_clause)? (nls? interface_list)? nls? class_block
-{mixin="com.intellij.plugin.powershell.psi.impl.PowerShellMemberDeclarationImpl"
-implements="com.intellij.plugin.powershell.psi.PowerShellMemberDeclaration"}
+{mixin="com.intellij.plugin.powershell.psi.impl.PowerShellClassDeclarationImpl"
+implements="com.intellij.plugin.powershell.psi.PowerShellClassDeclaration"}
 private class_name ::= simple_name_identifier
 
 private base_class_clause ::= COLON nls? base_class_name
@@ -514,16 +536,24 @@ private class_member_declaration_list ::= class_member_declaration (statement_te
 private class_member_declaration ::= property_declaration_statement | constructor_declaration_statement | method_declaration_statement
 
 property_declaration_statement ::= (member_declaration_attribute nls?)* property_definition_expression
-{mixin="com.intellij.plugin.powershell.psi.impl.PowerShellPropertyImpl"
-implements="com.intellij.plugin.powershell.psi.PowerShellMemberDeclaration"}
+{
+  mixin="com.intellij.plugin.powershell.psi.impl.PowerShellPropertyImpl"
+  implements=[
+    "com.intellij.plugin.powershell.psi.PowerShellMemberDeclaration"
+    "com.intellij.plugin.powershell.psi.PowerShellAttributesHolder"
+  ]
+}
 private property_definition_expression ::= expression
 private member_declaration_attribute ::= declaration_modifier_attribute | attribute
 private declaration_modifier_attribute ::= 'hidden' | 'static'
 
 constructor_declaration_statement ::= class_name method_argument_expression_list nls? base_constructor_call? nls? method_block
 {
-  mixin="com.intellij.plugin.powershell.psi.impl.PowerShellCallableDeclarationImpl"
-  implements="com.intellij.plugin.powershell.psi.PowerShellCallableDeclaration"
+  mixin="com.intellij.plugin.powershell.psi.impl.PowerShellMethodDeclarationImpl"
+  implements=[
+    "com.intellij.plugin.powershell.psi.PowerShellMemberDeclaration"
+    "com.intellij.plugin.powershell.psi.PowerShellCallableDeclaration"
+  ]
 }
 
 private method_block ::= statement_block
@@ -534,14 +564,20 @@ private base_constructor_call ::= COLON 'base' method_argument_expression_list
 
 method_declaration_statement ::= (member_declaration_attribute nls?)* method_name method_argument_expression_list nls? method_block
 {
-  mixin="com.intellij.plugin.powershell.psi.impl.PowerShellCallableDeclarationImpl"
-  implements="com.intellij.plugin.powershell.psi.PowerShellCallableDeclaration"
+  mixin="com.intellij.plugin.powershell.psi.impl.PowerShellMethodDeclarationImpl"
+  implements=[
+    "com.intellij.plugin.powershell.psi.PowerShellMemberDeclaration"
+    "com.intellij.plugin.powershell.psi.PowerShellAttributesHolder"
+    "com.intellij.plugin.powershell.psi.PowerShellCallableDeclaration"
+  ]
 }
 private method_name ::= simple_name_identifier
 
 enum_declaration_statement ::= enum_declaration | enum_with_flags_declaration
-{mixin="com.intellij.plugin.powershell.psi.impl.PowerShellMemberDeclarationImpl"
-implements="com.intellij.plugin.powershell.psi.PowerShellMemberDeclaration"}
+{
+  mixin="com.intellij.plugin.powershell.psi.impl.PowerShellEnumDeclarationImpl"
+  implements="com.intellij.plugin.powershell.psi.PowerShellEnumDeclaration"
+}
 
 private enum_with_flags_declaration ::= attribute /*SQBR_L SIMPLE_ID LP RP SQBR_R */nls? enum_declaration
 private enum_declaration ::= 'enum' enum_name nls? enum_block
@@ -661,10 +697,18 @@ verbatim_command_argument ::= VERBATIM_ARG_START VERBATIM_ARG_INPUT //(verbatim_
 private primary_expression ::= value (invocation_expression | member_access_expression | element_access_expression | post_increment_expression | post_decrement_expression)*
 
 left member_access_expression ::= nws ( DOT | COLON2 ) nls? member_name
-{methods=[getMember]}
+{
+  implements='com.intellij.plugin.powershell.psi.PowerShellQualifiedReferenceElement<com.intellij.plugin.powershell.psi.PowerShellExpression>'
+  mixin='com.intellij.plugin.powershell.psi.impl.PowerShellMemberAccessExpressionImpl'
+  methods=[getIdentifier]
+}
 left element_access_expression ::= nws SQBR_L nls? expression nls? SQBR_R
 left invocation_expression ::= nws (DOT | COLON2 ) nls? member_name call_arguments
-{methods=[getMember]}
+{
+  implements='com.intellij.plugin.powershell.psi.PowerShellQualifiedReferenceElement<com.intellij.plugin.powershell.psi.PowerShellExpression>'
+  mixin='com.intellij.plugin.powershell.psi.impl.PowerShellInvocationExpressionImpl'
+  methods=[getIdentifier]
+}
 private call_arguments ::= ncm nls? parenthesized_argument_list | primary_expression
 parenthesized_argument_list ::= LP nls? argument_expression_list? nls? RP
 private argument_expression_list ::= <<parse_argument_list expression_list_rule>>
@@ -673,7 +717,7 @@ private expression_list_rule ::= expression ( nls? COMMA nls? expression)*
 left post_increment_expression ::= PP
 left post_decrement_expression ::= MM
 
-private member_name ::=   simple_name_reference
+private member_name ::=   simple_name_reference //todo reference_expression ? (to be able to use 'function type' for it)
                         | string_literal_expression
 //->                        | string_literal_with_subexpression
                         | expression_with_unary_operator //prefix_op unary_expression //

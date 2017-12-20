@@ -17,7 +17,8 @@ enum class PowerShellComponentType(icon: Icon) {
   ENUM(PlatformIcons.ENUM_ICON),
   ENUM_LABEL(PlatformIcons.FIELD_ICON),
   METHOD(PlatformIcons.METHOD_ICON),
-  FIELD(PlatformIcons.FIELD_ICON),
+  CONSTRUCTOR(PlatformIcons.METHOD_ICON),
+  PROPERTY(PlatformIcons.FIELD_ICON),
   FUNCTION(PlatformIcons.FUNCTION_ICON),
   VARIABLE(PlatformIcons.VARIABLE_ICON),
   FILE(PowerShellIcons.FILE),
@@ -27,13 +28,13 @@ enum class PowerShellComponentType(icon: Icon) {
     fun typeOf(element: PsiElement): PowerShellComponentType? {
       return when (element) {
         is PowerShellFunctionStatement -> FUNCTION
-        is PowerShellPropertyDeclarationStatement -> FIELD
+        is PowerShellPropertyDeclarationStatement -> PROPERTY
         is PowerShellVariable -> VARIABLE
         is PowerShellClassDeclarationStatement -> CLASS
         is PowerShellEnumDeclarationStatement -> ENUM
         is PowerShellEnumLabelDeclaration -> ENUM_LABEL
         is PowerShellMethodDeclarationStatement -> METHOD
-        is PowerShellConstructorDeclarationStatement -> METHOD
+        is PowerShellConstructorDeclarationStatement -> CONSTRUCTOR
         is PowerShellConfigurationBlock -> DSC_CONFIGURATION
         is PowerShellFile -> FILE
         else -> null

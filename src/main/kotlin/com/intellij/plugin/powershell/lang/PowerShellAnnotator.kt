@@ -46,11 +46,11 @@ class PowerShellAnnotator : Annotator {
   }
 
   private fun annotateMethodCallName(holder: AnnotationHolder, call: PowerShellInvocationExpression, attributes: TextAttributesKey) {
-    createInfoAnnotation(holder, call.member, attributes)
+    createInfoAnnotation(holder, call.identifier, attributes)
   }
 
   private fun annotateMemberAccess(holder: AnnotationHolder, expression: PowerShellMemberAccessExpression, attributes: TextAttributesKey) {
-    createInfoAnnotation(holder, expression.member, attributes)
+    createInfoAnnotation(holder, expression.identifier, attributes)
   }
 
   private fun annotateVariable(holder: AnnotationHolder, variable: PowerShellTargetVariableExpression, attributes: TextAttributesKey) {

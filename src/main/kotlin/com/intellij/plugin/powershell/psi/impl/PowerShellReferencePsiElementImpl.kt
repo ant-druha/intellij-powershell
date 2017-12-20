@@ -5,13 +5,13 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.lang.ASTNode
 import com.intellij.openapi.util.TextRange
 import com.intellij.plugin.powershell.ide.resolve.PowerShellComponentResolveProcessor
+import com.intellij.plugin.powershell.ide.resolve.PowerShellResolveResult
 import com.intellij.plugin.powershell.ide.resolve.PowerShellResolveUtil
 import com.intellij.plugin.powershell.ide.resolve.PowerShellResolver
 import com.intellij.plugin.powershell.psi.*
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiPolyVariantReference
 import com.intellij.psi.PsiReference
-import com.intellij.psi.ResolveResult
 import com.intellij.psi.impl.source.resolve.ResolveCache
 import com.intellij.psi.tree.IElementType
 import java.util.*
@@ -21,18 +21,18 @@ import java.util.*
  */
 abstract class PowerShellReferencePsiElementImpl(node: ASTNode) : PowerShellPsiElementImpl(node), PowerShellReferencePsiElement, PsiPolyVariantReference {
 
-  override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
+  override fun multiResolve(incompleteCode: Boolean): Array<PowerShellResolveResult> {
     val elements = ResolveCache.getInstance(project).resolveWithCaching(this, PowerShellResolver.INSTANCE, true, incompleteCode)
-    return PowerShellResolveUtil.toCandidateInfoArray(elements)
+    return PowerShellResolveUtil.toCandidateInfoArray2(elements)
   }
 
-  override fun getNameElement(): PsiElement? = findChildByClass(PowerShellIdentifier::class.java)
+  override fun getNameElement(): PsiElement? = findChildByClass(PowerShellIdentifier::class.java) //todo
 
   override fun getElement(): PsiElement = this
 
   override fun getReference(): PsiReference? = this
 
-  override fun resolve(): PsiElement? {
+  override fun resolve(): PowerShellComponent? {
     val res = multiResolve(false)
     return if (res.isNotEmpty()) res[0].element else null
   }
@@ -72,7 +72,7 @@ abstract class PowerShellReferencePsiElementImpl(node: ASTNode) : PowerShellPsiE
   }
 
   override fun getRangeInElement(): TextRange {
-    val refRange = element.textRange
+    val refRange = element.textRange ?: this.textRange
     return TextRange(refRange.startOffset - textRange.startOffset, refRange.endOffset - textRange.startOffset)
   }
 

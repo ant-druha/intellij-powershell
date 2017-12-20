@@ -5,12 +5,17 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.UnfairTextRange
 import com.intellij.plugin.powershell.ide.search.PowerShellComponentType
 import com.intellij.plugin.powershell.psi.*
-import com.intellij.psi.PsiElement
+import com.intellij.plugin.powershell.psi.types.PowerShellType
 import javax.swing.Icon
 
-open class PowerShellPropertyImpl(node: ASTNode) : /*PowerShellAbstractComponent*/PowerShellTargetVariableImpl(node), PowerShellMemberDeclaration {
+abstract class PowerShellPropertyImpl(node: ASTNode) : PowerShellTargetVariableImpl(node), PowerShellMemberDeclaration, PowerShellAttributesHolder {
 
-  override fun getContainingClass(): PsiElement? = context
+  override fun getType(): PowerShellType {
+    getAttributeList().mapNotNull { it.typeLiteralExpression }.forEach { return it.typeElement.getType() }
+    return super.getType()
+  }
+
+  override fun getContainingClass(): PowerShellTypeDeclaration? = (context as? PowerShellBlockBody)?.context as? PowerShellTypeDeclaration
 
   override fun getRangeInElement(): TextRange {
     val myVar = getVariable()
@@ -41,5 +46,5 @@ open class PowerShellPropertyImpl(node: ASTNode) : /*PowerShellAbstractComponent
 
   override fun getScopeName(): String? = getVariable()?.getScopeName()
 
-  override fun getIcon(flags: Int): Icon? = PowerShellComponentType.FIELD.getIcon()
+  override fun getIcon(flags: Int): Icon? = PowerShellComponentType.PROPERTY.getIcon()
 }

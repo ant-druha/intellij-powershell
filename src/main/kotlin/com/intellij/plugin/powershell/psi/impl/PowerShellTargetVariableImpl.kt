@@ -4,27 +4,63 @@ import com.intellij.lang.ASTNode
 import com.intellij.navigation.ItemPresentation
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.text.StringUtil
+import com.intellij.plugin.powershell.ide.resolve.PowerShellResolveResult
 import com.intellij.plugin.powershell.ide.resolve.PowerShellResolveUtil
 import com.intellij.plugin.powershell.ide.resolve.PowerShellResolver
 import com.intellij.plugin.powershell.ide.search.PowerShellComponentType
 import com.intellij.plugin.powershell.psi.*
 import com.intellij.plugin.powershell.psi.PowerShellTypes.*
+import com.intellij.plugin.powershell.psi.types.PowerShellType
+import com.intellij.plugin.powershell.psi.types.impl.PowerShellImmediateClassTypeImpl
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiPolyVariantReference
-import com.intellij.psi.ResolveResult
-import com.intellij.psi.ResolveState
 import com.intellij.psi.impl.source.resolve.ResolveCache
-import com.intellij.psi.scope.PsiScopeProcessor
 import com.intellij.psi.tree.TokenSet
+import com.intellij.psi.util.PsiTreeUtil
 import javax.swing.Icon
 
 /**
  * Andrey 18/08/17.
  */
 open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractComponent(node), PowerShellVariable, PowerShellReferencePsiElement, PsiPolyVariantReference {
+
+  override fun getType(): PowerShellType {
+    //in case of $this variable resolves to class declaration
+    if (isInstanceThis()) {
+      //todo where create it (need somewhere in PIS element getType())?
+      val enclosingType = resolve()
+      if (enclosingType is PowerShellTypeDeclaration) return PowerShellImmediateClassTypeImpl(enclosingType)
+    }
+    val resolved = findInitialDefinition()
+    val context = resolved.context
+    if (context is PowerShellCastExpression) {
+      return context.castType
+    }
+    val initializer = findInitializer(resolved)
+    if (initializer is PowerShellExpression) {
+      return initializer.getType()
+    }
+    return (initializer as? PowerShellExpression)?.getType() ?: PowerShellType.UNKNOWN
+  }
+
+  private fun isInstanceThis(): Boolean {
+    return "this".equals(name, true)
+  }
+
+  private fun findInitializer(resolved: PowerShellVariable): PowerShellPsiElement? {
+    val assignment = PsiTreeUtil.getParentOfType(resolved, PowerShellAssignmentExpression::class.java, true, PowerShellBlockBody::class.java)
+    return assignment?.rhsElement
+  }
+
+  //resolve is needed to find the initialization point (with the initializer) as we can have variables as reference
+  //type initializer info //do an annotation check only for properties (! or parameters !)
+  private fun findInitialDefinition(): PowerShellVariable {
+    return resolve() as? PowerShellVariable ?: this
+  }
+
   override fun getNameElement(): PsiElement? = nameIdentifier
 
-  override fun getQualifiedName(): String {//variable can not have qualifier?, but it can have qualified name: it means including the scope
+  override fun getQualifiedName(): String {
     val ns = getScopeName() ?: "Variable"
     return ns + ":" + getShortName()
   }
@@ -32,13 +68,12 @@ open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractCompo
   private fun getShortName(): String? = nameIdentifier?.text
 
 
-  override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
+  override fun multiResolve(incompleteCode: Boolean): Array<PowerShellResolveResult> {
     val elements = ResolveCache.getInstance(project).resolveWithCaching(this, PowerShellResolver.INSTANCE, true, incompleteCode)
-    return PowerShellResolveUtil.toCandidateInfoArray(elements)
+    return PowerShellResolveUtil.toCandidateInfoArray2(elements)
   }
 
   override fun getName(): String? = getShortName()
-//    return getExplicitName()  //if explicit name-> highlighting and usages are not correctly processed (need to be customized)
 
   private fun getExplicitName(): String? {
     var ns = getScopeName()
@@ -48,7 +83,9 @@ open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractCompo
 
   override fun getElement(): PsiElement = this
 
-  override fun resolve(): PsiElement? {
+  override fun resolve(): PowerShellComponent? {
+    //todo resolve it in Resolver
+    if (isInstanceThis()) return PsiTreeUtil.findFirstContext(this, false) { c -> c is PowerShellTypeDeclaration } as? PowerShellComponent
     val res = multiResolve(false)
     return if (res.isEmpty()) this else res[0].element
   }
@@ -106,11 +143,6 @@ open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractCompo
 //    return ourScopeOwner === theirScopeOwner
 //  }
 
-  override fun getQualifier(): PsiElement? {
-    val dot = findChildByType<PsiElement>(PowerShellTypes.DOT)
-    return dot?.prevSibling //todo
-  }
-
   override fun getPresentation(): ItemPresentation {
     return object : ItemPresentation {
       override fun getLocationString(): String? = getScopeName()
@@ -138,7 +170,7 @@ open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractCompo
   override fun getReference(): PowerShellReferencePsiElement? {
     return if (getScopeName().equals("function", true) && !isLhsAssignmentTarget()) {
       //if context is PowerShellAssignmentStatement, then this is function declaration
-      object : PowerShellCallableReferenceExpression(node) {
+      object : PowerShellCommandCallExpressionImpl(node) {
         override fun getNameElement(): PsiElement? = this@PowerShellTargetVariableImpl.getNameElement()
         override fun getRangeInElement(): TextRange = this@PowerShellTargetVariableImpl.rangeInElement
 //        override fun getCanonicalText(): String = this@PowerShellTargetVariableImpl.canonicalText
@@ -149,7 +181,5 @@ open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractCompo
 
   fun isLhsAssignmentTarget(): Boolean = context?.firstChild == this && context is PowerShellAssignmentExpression
 
-  override fun processDeclarations(processor: PsiScopeProcessor, state: ResolveState, lastParent: PsiElement?, place: PsiElement): Boolean =
-      super.processDeclarations(processor, state, lastParent, place)
 }
 

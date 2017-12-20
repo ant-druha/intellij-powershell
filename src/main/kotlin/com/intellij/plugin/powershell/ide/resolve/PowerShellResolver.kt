@@ -11,17 +11,18 @@ import java.util.*
 /**
  * Andrey 21/08/17.
  */
-class PowerShellResolver<T> : ResolveCache.AbstractResolver<T, List<PsiElement>> where T : PowerShellReferencePsiElement {
+class PowerShellResolver<T> : ResolveCache.AbstractResolver<T, List<PowerShellResolveResult>> where T : PowerShellReferencePsiElement {
   companion object {
     val INSTANCE = PowerShellResolver<PowerShellReferencePsiElement>()
   }
 
-  private fun resolveReference(ref: T): List<PsiElement> {
-    val result = ArrayList<PowerShellComponent>()
+  private fun resolveReference(ref: T): List<PowerShellResolveResult> {
+    val result = ArrayList<PowerShellResolveResult>()
     val resolveProcessor = when (ref) {
       is PowerShellCallableReference -> //  $function: F  # invokes function F -> also callable reference (when ns== "function")
         PowerShellCallableResolveProcessor(ref)
       is PowerShellReferenceTypeElement -> PowerShellTypeResolveProcessor(ref)
+      is PowerShellQualifiedReferenceElement<*> -> PowerShellQualifiedElementResolveProcessor(ref)
       else -> PowerShellVariableResolveProcessor(ref)
     }
     PsiTreeUtil.treeWalkUp(resolveProcessor, ref, null, ResolveState.initial())
@@ -30,22 +31,22 @@ class PowerShellResolver<T> : ResolveCache.AbstractResolver<T, List<PsiElement>>
     return result
   }
 
-  override fun resolve(ref: T, incompleteCode: Boolean): List<PsiElement> {
+  override fun resolve(ref: T, incompleteCode: Boolean): List<PowerShellResolveResult> {
 
     return resolveReference(ref)
   }
 }
 
 abstract class PowerShellResolveProcessor<out R : PowerShellReferencePsiElement>(protected val myRef: R) : BaseScopeProcessor() {
-  protected var myResult: PowerShellComponent? = null //todo should navigate to closest declaration (of function or variable)
+  protected var myResult: PowerShellResolveResult? = null //todo should navigate to closest declaration (of function or variable)
 
-  fun getResult(): PowerShellComponent? {
+  fun getResult(): PowerShellResolveResult? {
     return myResult
   }
 
   protected fun setResult(element: PowerShellComponent): Boolean {
-    if (myResult == null || myResult!!.textOffset > element.textOffset) {
-      myResult = element
+    if (myResult == null || myResult!!.element.textOffset > element.textOffset) {
+      myResult = PowerShellResolveResult(element)
     }
     return true
   }
@@ -70,16 +71,15 @@ class PowerShellCallableResolveProcessor(ref: PowerShellCallableReference) : Pow
 class PowerShellVariableResolveProcessor(ref: PowerShellReferencePsiElement) : PowerShellResolveProcessor<PowerShellReferencePsiElement>(ref) {
 
   override fun execute(element: PsiElement, state: ResolveState): Boolean {
-    if (element is PowerShellComponent) {
-      val refName = myRef.canonicalText
-      if (element is PowerShellVariable) {
-        if (element.getQualifiedName().equals(refName, true)) {
-          return setResult(element)
-        }
-      } else if (element.name.equals(refName, true)) {
+    val refName = myRef.canonicalText
+    if (element is PowerShellVariable) {
+      if (element.getQualifiedName().equals(refName, true)) {
         return setResult(element)
       }
+    } else if (element is PowerShellComponent && element.name.equals(refName, true)) {
+      return setResult(element)
     }
+
     return true
   }
 
@@ -98,3 +98,14 @@ class PowerShellTypeResolveProcessor(ref: PowerShellReferenceTypeElement) : Powe
   }
 
 }
+
+class PowerShellQualifiedElementResolveProcessor(ref: PowerShellQualifiedReferenceElement<PowerShellPsiElement>) : PowerShellResolveProcessor<PowerShellQualifiedReferenceElement<*>>(ref) {
+  override fun execute(element: PsiElement, state: ResolveState): Boolean {
+    val qualifier = myRef.qualifier
+//    val definition = qualifier?.resolve()
+
+    return true
+  }
+
+}
+

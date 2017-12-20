@@ -1,9 +1,7 @@
 package com.intellij.plugin.powershell.ide.resolve
 
-import com.intellij.plugin.powershell.psi.PowerShellAssignmentExpression
-import com.intellij.plugin.powershell.psi.PowerShellClassDeclarationStatement
-import com.intellij.plugin.powershell.psi.PowerShellComponent
-import com.intellij.plugin.powershell.psi.PowerShellEnumDeclarationStatement
+import com.intellij.plugin.powershell.psi.*
+import com.intellij.plugin.powershell.psi.impl.PowerShellQualifiedReferenceExpression
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementResolveResult
 import com.intellij.psi.ResolveResult
@@ -20,6 +18,11 @@ object PowerShellResolveUtil {
   fun toCandidateInfoArray(elements: List<PsiElement>?): Array<ResolveResult> {
     if (elements == null) return ResolveResult.EMPTY_ARRAY
     return Array(elements.size) { PsiElementResolveResult(elements[it]) }
+  }
+
+  fun toCandidateInfoArray2(elements: List<PowerShellResolveResult>?): Array<PowerShellResolveResult> {
+    if (elements == null) return PowerShellResolveResult.EMPTY_ARRAY
+    return Array(elements.size) { elements[it] }
   }
 
 //  fun areNamesEqual(component: PowerShellComponent, reference: PowerShellReferencePsiElement): Boolean {
@@ -67,6 +70,15 @@ object PowerShellResolveUtil {
                          state: ResolveState, lastParent: PsiElement?, place: PsiElement?) {
     val enumBody = enum.blockBody ?: return
     processChildDeclarations(enumBody, processor, state, lastParent, place)
+  }
+
+  fun getMemberScopeProcessor(ref: PowerShellQualifiedReferenceExpression): PowerShellMemberScopeProcessor? {
+    val name = ref.referenceName ?: return null
+    return when (ref) {
+      is PowerShellInvocationExpression -> PSMethodScopeProcessor(name)
+      is PowerShellMemberAccessExpression -> PSFieldScopeProcessor(name)
+      else -> null
+    }
   }
 
 //  fun getMaxLocalScopeForTargetOrReference(element: PsiElement): PsiElement? {
