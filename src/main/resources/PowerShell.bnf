@@ -477,7 +477,7 @@ type_element ::= array_type_element | generic_type_element | reference_type_elem
 
 array_type_element ::= array_type_name nls? dimension? SQBR_R
 {
-  methods=[getType]//todo creaet type array
+  methods=[getType]
 }
 generic_type_element ::= generic_type_name nls? generic_type_arguments SQBR_R
 reference_type_element ::= simple_type_identifier compound_type_identifier*

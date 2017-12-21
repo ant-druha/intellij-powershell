@@ -3,6 +3,7 @@ package com.intellij.plugin.powershell.psi.impl;
 import com.intellij.lang.ASTNode;
 import com.intellij.plugin.powershell.psi.*;
 import com.intellij.plugin.powershell.psi.types.PowerShellType;
+import com.intellij.plugin.powershell.psi.types.impl.PowerShellArrayClassTypeImpl;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.impl.source.tree.TreeUtil;
@@ -62,7 +63,7 @@ public class PowerShellPsiImplUtil {
 
   @NotNull
   public static PowerShellType getType(@NotNull PowerShellArrayTypeElement array) {
-    return array.getReferenceTypeElement().getType();//todo create Array Type
+    return new PowerShellArrayClassTypeImpl(array);
   }
 
   @NotNull

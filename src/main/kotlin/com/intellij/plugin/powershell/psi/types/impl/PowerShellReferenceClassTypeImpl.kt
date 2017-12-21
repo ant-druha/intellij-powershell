@@ -1,6 +1,6 @@
 package com.intellij.plugin.powershell.psi.types.impl
 
-import com.intellij.plugin.powershell.lang.resolve.PowerShellTypeReference
+import com.intellij.plugin.powershell.ide.resolve.PsNames
 import com.intellij.plugin.powershell.psi.PowerShellComponent
 import com.intellij.plugin.powershell.psi.PowerShellReferenceTypeElement
 import com.intellij.plugin.powershell.psi.types.PowerShellReferenceClassType
@@ -15,13 +15,11 @@ class PowerShellReferenceClassTypeImpl(private val myReference: PowerShellRefere
     return myReference.resolve()
   }
 
-  override fun getReference(): PowerShellTypeReference? = null
-
   override fun getReferenceName(): String? {
     return myReference.referenceName
   }
 
   override fun getName(): String {
-    return getReferenceName() ?: "<Unnamed>"
+    return getReferenceName() ?: PsNames.UNNAMED
   }
 }

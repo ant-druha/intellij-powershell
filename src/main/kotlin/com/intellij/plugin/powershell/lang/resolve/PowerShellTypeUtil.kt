@@ -16,7 +16,7 @@ object PowerShellTypeUtil {
 //
 //      }
 //    }
-//    return PowerShellType.UNKNOWN
+//    return PowerShellType.UNNAMED
 //  }
 
   fun inferExpressionType(e: PowerShellExpression): PowerShellType {
