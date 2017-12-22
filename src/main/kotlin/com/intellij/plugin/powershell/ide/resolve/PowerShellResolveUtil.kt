@@ -2,12 +2,17 @@ package com.intellij.plugin.powershell.ide.resolve
 
 import com.intellij.plugin.powershell.psi.*
 import com.intellij.plugin.powershell.psi.impl.PowerShellQualifiedReferenceExpression
+import com.intellij.plugin.powershell.psi.types.PowerShellArrayClassType
+import com.intellij.plugin.powershell.psi.types.PowerShellClassType
+import com.intellij.plugin.powershell.psi.types.PowerShellType
+import com.intellij.plugin.powershell.psi.types.PowerShellTypeVisitor
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementResolveResult
 import com.intellij.psi.ResolveResult
 import com.intellij.psi.ResolveState
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.scope.PsiScopeProcessor
+import com.intellij.util.Processor
 
 /**
  * Andrey 21/08/17.
@@ -24,16 +29,6 @@ object PowerShellResolveUtil {
     if (elements == null) return PowerShellResolveResult.EMPTY_ARRAY
     return Array(elements.size) { elements[it] }
   }
-
-//  fun areNamesEqual(component: PowerShellComponent, reference: PowerShellReferencePsiElement): Boolean {
-//    val refName = reference.canonicalText
-//
-//    if (component is PowerShellVariable) {
-//      val ns = component.getScopeName()
-//      if (!"function".equals(ns, true) || reference !is PowerShellCallableReference) return component.getQualifiedName() == refName
-//    }
-//    return component.name == refName
-//  }
 
   fun processChildDeclarations(context: PsiElement, processor: PsiScopeProcessor, state: ResolveState, lastParent: PsiElement?, place: PsiElement?): Boolean {
     val result = HashSet<PowerShellComponent>()
@@ -81,22 +76,59 @@ object PowerShellResolveUtil {
     }
   }
 
-//  fun getMaxLocalScopeForTargetOrReference(element: PsiElement): PsiElement? {
-//    var currentScope: PsiElement?
-//    if (element is PowerShellVariable || element is PowerShellReferenceVariable) {
-//      //local scope: function/method definition, current file, type declaration
-//      currentScope = element.context
-//      var maxScopeReached = false
-//      while (!maxScopeReached && currentScope != null) {
-//        maxScopeReached = isCallableDeclaration(currentScope.node)
-//            || currentScope is PowerShellClassDeclarationStatement
-//            || currentScope is PowerShellEnumDeclarationStatement
-//            || currentScope is PowerShellFile
-//        currentScope = if (maxScopeReached) currentScope else currentScope.context
-//      }
-//      return currentScope
-//    }
-//    return null
-//  }
+  fun hasDefaultConstructor(clazz: PowerShellTypeDeclaration): Boolean {
+    val baseClass = clazz.getBaseClass()?.resolve()
+    return (baseClass !is PowerShellTypeDeclaration || hasDefaultConstructor(baseClass))
+        && !clazz.getMembers().any { it is PowerShellConstructorDeclarationStatement }
+
+  }
+
+  fun processMembersForType(psType: PowerShellType, incompleteCode: Boolean, resolveProcessor: PowerShellMemberScopeProcessor): Boolean {
+    val declarationsProvider = Processor<PowerShellMemberScopeProcessor> { processor ->
+      psType.accept(object : PowerShellTypeVisitor<Boolean>() {
+
+        override fun visitClassType(o: PowerShellClassType): Boolean {
+          return processClassType(o)
+        }
+
+        override fun visitArrayClassType(o: PowerShellArrayClassType): Boolean {
+          val componentType = o.getComponentType()//todo resolve to the actual array class
+          return if (componentType is PowerShellClassType) {
+            processClassType(componentType)
+          } else {
+            processClassType(o)
+          }
+        }
+
+        private fun processClassType(o: PowerShellClassType): Boolean {
+          val resolved = o.resolve()
+          if (resolved is PowerShellTypeDeclaration) {
+            return processMembers(resolved, processor)
+          }
+          return false
+        }
+      }) ?: false
+    }
+    return processDeclarations(declarationsProvider, incompleteCode, resolveProcessor)
+  }
+
+  private fun processDeclarations(declarationsProvider: Processor<PowerShellMemberScopeProcessor>,
+                                  incompleteCode: Boolean,
+                                  resolveProcessor: PowerShellMemberScopeProcessor): Boolean {
+    return declarationsProvider.process(resolveProcessor)
+  }
+
+  private fun processMembers(clazz: PowerShellTypeDeclaration, resolveProcessor: PowerShellMemberScopeProcessor): Boolean {
+    val members = clazz.getMembers()
+    members.forEach {
+      if (!resolveProcessor.doExecute(it, ResolveState.initial())) return true
+    }
+    val baseClass = clazz.getBaseClass()
+    if (baseClass != null) {
+      val baseDeclaration = baseClass.resolve()
+      if (baseDeclaration is PowerShellTypeDeclaration && processMembers(baseDeclaration, resolveProcessor)) return true
+    }
+    return resolveProcessor.getResult().isNotEmpty()
+  }
 
 }

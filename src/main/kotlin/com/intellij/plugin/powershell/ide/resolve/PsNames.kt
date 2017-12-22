@@ -6,7 +6,6 @@ object PsNames {
   val CONSTRUCTOR_CALL = "new"
   @JvmField
   val INSTANCE_THIS = "this"
-
   @JvmField
   val UNNAMED = "<Unnamed>"
 }

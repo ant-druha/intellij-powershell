@@ -7,6 +7,7 @@ import com.intellij.openapi.util.text.StringUtil
 import com.intellij.plugin.powershell.ide.resolve.PowerShellResolveResult
 import com.intellij.plugin.powershell.ide.resolve.PowerShellResolveUtil
 import com.intellij.plugin.powershell.ide.resolve.PowerShellResolver
+import com.intellij.plugin.powershell.ide.resolve.PsNames
 import com.intellij.plugin.powershell.ide.search.PowerShellComponentType
 import com.intellij.plugin.powershell.psi.*
 import com.intellij.plugin.powershell.psi.PowerShellTypes.*
@@ -27,7 +28,7 @@ open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractCompo
   override fun getType(): PowerShellType {
     //in case of $this variable resolves to class declaration
     if (isInstanceThis()) {
-      //todo where create it (need somewhere in PIS element getType())?
+      //todo where create it (need somewhere in PSI element getType())?
       val enclosingType = resolve()
       if (enclosingType is PowerShellTypeDeclaration) return PowerShellImmediateClassTypeImpl(enclosingType)
     }
@@ -44,7 +45,7 @@ open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractCompo
   }
 
   private fun isInstanceThis(): Boolean {
-    return "this".equals(name, true)
+    return PsNames.INSTANCE_THIS.equals(name, true)
   }
 
   private fun findInitializer(resolved: PowerShellVariable): PowerShellPsiElement? {
