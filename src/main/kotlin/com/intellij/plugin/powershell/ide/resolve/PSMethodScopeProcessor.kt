@@ -8,7 +8,7 @@ import com.intellij.psi.ResolveState
 /**
  * Andrey 19/12/17.
  */
-class PSMethodScopeProcessor(name: String) : PowerShellMemberScopeProcessor(name) {
+class PSMethodScopeProcessor(private val myName: String) : PowerShellMemberScopeProcessor() {
 
   override fun doExecute(psMember: PowerShellMemberDeclaration, state: ResolveState): Boolean {
     if (psMember is PowerShellMethodDeclarationStatement) {

@@ -8,7 +8,7 @@ import com.intellij.psi.scope.BaseScopeProcessor
 /**
  * Andrey 19/12/17.
  */
-abstract class PowerShellMemberScopeProcessor(protected val myName: String) : BaseScopeProcessor() {
+open class PowerShellMemberScopeProcessor : BaseScopeProcessor() {
   protected val myResult: ArrayList<PowerShellResolveResult> = ArrayList()
 
   override fun execute(element: PsiElement, state: ResolveState): Boolean {
@@ -18,7 +18,10 @@ abstract class PowerShellMemberScopeProcessor(protected val myName: String) : Ba
     return true
   }
 
-  abstract fun doExecute(psMember: PowerShellMemberDeclaration, state: ResolveState): Boolean
+  open fun doExecute(psMember: PowerShellMemberDeclaration, state: ResolveState): Boolean {
+    myResult.add(PowerShellResolveResult(psMember))
+    return true
+  }
 
   fun getResult(): List<PowerShellResolveResult> {
     return myResult
