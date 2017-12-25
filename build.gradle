@@ -39,7 +39,7 @@ sourceSets {
 }
 
 group 'com.intellij.plugin'
-version '0.0.1'
+version '0.0.2'
 
 repositories {
     flatDir {

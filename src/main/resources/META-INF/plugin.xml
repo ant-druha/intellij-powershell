@@ -1,16 +1,22 @@
 <idea-plugin>
   <id>com.intellij.plugin.adernov.powershell</id>
   <name>PowerShell</name>
-  <version>0.0.1</version>
+  <version>0.0.2</version>
   <vendor email="andrey.dernov@gmail.com" url="https://twitter.com/ant_druha">Andrey</vendor>
 
   <description><![CDATA[
-    Provides <a href="https://docs.microsoft.com/en-us/powershell/scripting/powershell-scripting">PowerShell</a> intellisense support for IntelliJ Editor<br>
+    Provides <a href="https://docs.microsoft.com/en-us/powershell/scripting/powershell-scripting">PowerShell</a> intellisense and script execution support for IntelliJ IDEs.<br>
+    <br>
+    <b>Plugin page:</b> <a href="https://plugins.jetbrains.com/plugin/10249">https://plugins.jetbrains.com/plugin/10249</a>
     ]]></description>
 
   <change-notes><![CDATA[
   <html>
         <dl>
+            <dt>0.0.2 Enhanced completion<br></dt>
+            <dd>&#183; Resolve and completion of declared in script type members (methods, properties, constructors);</dd>
+            <dd>&#183; Completion for different contexts (references, types, properties).</dd>
+
             <dt>0.0.1 Initial editor intellisense support:<br></dt>
             <dd>&#183; Syntax highlighting;</dd>
             <dd>&#183; Variables and declared types reference resolve and find usages;</dd>
