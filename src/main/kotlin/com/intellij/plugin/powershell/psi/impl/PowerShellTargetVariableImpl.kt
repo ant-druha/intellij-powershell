@@ -91,7 +91,7 @@ open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractCompo
     return if (res.isEmpty()) this else res[0].element
   }
 
-  override fun getVariants(): Array<Any> = emptyArray() //todo list all existing variables + all functions of type: "$Function: funName"
+  override fun getVariants(): Array<Any> = emptyArray()
 
   override fun getRangeInElement(): TextRange = TextRange(getPrefixNode().textLength, node.textLength - (getSuffixNode()?.textLength ?: 0))
 
@@ -114,7 +114,7 @@ open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractCompo
     return this
   }
 
-  private fun isBracedVariable() = firstChild.node.elementType === BRACED_VAR_START
+  override fun isBracedVariable() = firstChild.node.elementType === BRACED_VAR_START
 
   override fun bindToElement(element: PsiElement): PsiElement = this
 
@@ -174,10 +174,8 @@ open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractCompo
       object : PowerShellCommandCallExpressionImpl(node) {
         override fun getNameElement(): PsiElement? = this@PowerShellTargetVariableImpl.getNameElement()
         override fun getRangeInElement(): TextRange = this@PowerShellTargetVariableImpl.rangeInElement
-//        override fun getCanonicalText(): String = this@PowerShellTargetVariableImpl.canonicalText
       }
     } else this
-//    return PowerShellReferencePsiElementImpl(node)
   }
 
   fun isLhsAssignmentTarget(): Boolean = context?.firstChild == this && context is PowerShellAssignmentExpression

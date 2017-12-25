@@ -96,6 +96,9 @@
 
     <defaultLiveTemplatesProvider implementation="com.intellij.plugin.powershell.ide.editor.generate.PowerShellLiveTemplatesProvider"/>
 
+    <completion.contributor language="PowerShell"
+                            implementationClass="com.intellij.plugin.powershell.ide.editor.completion.PowerShellCompletionContributor"/>
+
   </extensions>
 
   <actions>

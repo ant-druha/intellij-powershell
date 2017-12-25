@@ -12,6 +12,7 @@ interface PowerShellVariable : PowerShellComponent, PowerShellReferencePsiElemen
   fun getScope(): PsiElement?
   fun getPrefix(): String
   fun getSuffix(): String?
+  fun isBracedVariable(): Boolean
   /**
    * returns full name of the element, including namespace
    */

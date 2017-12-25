@@ -315,7 +315,7 @@ private expandable_here_string_content ::= ( expandable_string_content | EXPANDA
 private variable ::= DS nws predefined_var_id | simple_variable | braced_variable
 predefined_var_id ::= DS | QMARK | HAT
 {elementType=identifier}
-reference_variable ::= variable
+//reference_variable ::= variable
 
 target_variable_expression ::= variable
 {mixin="com.intellij.plugin.powershell.psi.impl.PowerShellTargetVariableImpl"
@@ -393,7 +393,7 @@ private expression_with_unary_operator ::= prefix_op nls? unary_expression | cas
 
 cast_expression ::= type_literal_expression unary_expression
 {
-  methods=[getCastType]
+  methods=[getCastType getType]
 }
 
 //private attributed_expression ::= type_literal variable
@@ -684,7 +684,7 @@ path_item ::= path_item_name
 relative_path_item ::= relative_path
 {elementType=path_item}
 
-private path_item_name ::= relative_path | path_name_tokens | allowed_identifier_keywords | reference_variable
+private path_item_name ::= relative_path | path_name_tokens | allowed_identifier_keywords | target_variable_expression
 private path_name_tokens ::= path_name_part_tokens_start (nws (path_name_part_tokens_start | DOT))*
 private path_name_part_tokens_start ::= generic_id_part_tokens_start | CMD_PARAMETER | PLUS | DASH
 private relative_path ::= DOT | DOT_DOT | PATH_SEP
@@ -736,7 +736,9 @@ private value ::=   parenthesized_expression
                   | target_variable_expression
 
 parenthesized_expression ::= LP nls? <<allow_any_expression pipeline>> nls? RP
-
+{
+  methods=[getType]
+}
 sub_expression ::= DS nws LP nls? statement_list_rule? nls? RP
 private statement_list_rule ::= <<allow_any_expression statement_list>>
 array_expression ::= AT nws LP nls? statement_list_rule? nls? RP

@@ -4,7 +4,6 @@ import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.lang.ASTNode
 import com.intellij.openapi.util.TextRange
-import com.intellij.plugin.powershell.ide.resolve.PowerShellComponentResolveProcessor
 import com.intellij.plugin.powershell.ide.resolve.PowerShellResolveResult
 import com.intellij.plugin.powershell.ide.resolve.PowerShellResolveUtil
 import com.intellij.plugin.powershell.ide.resolve.PowerShellResolver
@@ -38,19 +37,7 @@ abstract class PowerShellReferencePsiElementImpl(node: ASTNode) : PowerShellPsiE
   }
 
   override fun getVariants(): Array<Any> {
-    val elements = ResolveCache.getInstance(project)
-        .resolveWithCaching(this, PowerShellComponentResolveProcessor.INSTANCE, true, true) ?: return emptyArray()
-
-    val lookupElements = ArrayList<LookupElement>()
-
-    for (e in elements) {
-      addLookupElement(e, lookupElements)
-    }
-
-    for (keyword in PowerShellTokenTypeSets.KEYWORDS.types) {
-      addKeyword(keyword, lookupElements)
-    }
-    return lookupElements.toArray()
+    return emptyArray()
   }
 
   private fun addKeyword(kw: IElementType, elements: ArrayList<LookupElement>) {
@@ -75,15 +62,6 @@ abstract class PowerShellReferencePsiElementImpl(node: ASTNode) : PowerShellPsiE
     val refRange = element.textRange ?: this.textRange
     return TextRange(refRange.startOffset - textRange.startOffset, refRange.endOffset - textRange.startOffset)
   }
-
-//  override fun getTextRange(): TextRange { //todo
-//    val start = textOffset
-//    return TextRange(start, start + textLength)
-//  }
-
-//  override fun getTextOffset(): Int {
-//    return getNameElement()?.textOffset ?: super.getTextOffset()
-//  }
 
   override fun getCanonicalText(): String = node.text
 

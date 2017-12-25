@@ -8,4 +8,5 @@ import com.intellij.psi.PsiQualifiedReference
 interface PowerShellQualifiedReferenceElement<out Q : PowerShellPsiElement> : PowerShellReferencePsiElement, PsiQualifiedReference {
   override fun getQualifier(): Q?
   override fun getReferenceName(): String?
+  fun isTypeMemberAccess(): Boolean
 }

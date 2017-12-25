@@ -78,6 +78,17 @@ public class PowerShellPsiImplUtil {
     return typeLiteral.getTypeElement().getType();
   }
 
+  @NotNull
+  public static PowerShellType getType(@NotNull PowerShellCastExpression castExpression) {
+    return getCastType(castExpression);
+  }
+
+  @NotNull
+  public static PowerShellType getType(@NotNull PowerShellParenthesizedExpression expression) {
+    PowerShellExpression exprInParenthesis = PsiTreeUtil.getChildOfType(expression, PowerShellExpression.class);
+    return exprInParenthesis != null ? exprInParenthesis.getType() : PowerShellType.Companion.getUNKNOWN();
+  }
+
   @Contract(pure = true)
   public static boolean isTypeDeclarationContext(@NotNull PsiElement element) {
     PsiElement context = element.getContext();

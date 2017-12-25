@@ -8,4 +8,6 @@ object PsNames {
   val INSTANCE_THIS = "this"
   @JvmField
   val UNNAMED = "<Unnamed>"
+  @JvmField
+  val NAMESPACE_FUNCTION = "function"
 }

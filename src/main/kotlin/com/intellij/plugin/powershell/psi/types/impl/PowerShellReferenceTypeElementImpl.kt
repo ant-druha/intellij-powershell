@@ -10,6 +10,7 @@ import com.intellij.psi.PsiElement
 
 open class PowerShellReferenceTypeElementImpl(node: ASTNode) : PowerShellReferencePsiElementImpl(node), PowerShellReferenceTypeElement,
     PowerShellQualifiedReferenceElement<PowerShellReferenceTypeElement> {
+  override fun isTypeMemberAccess(): Boolean = false
 
   override fun getReferenceName(): String? {
     return getNameElement()?.text

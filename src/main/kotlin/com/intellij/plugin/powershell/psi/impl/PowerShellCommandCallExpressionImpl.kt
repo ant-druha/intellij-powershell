@@ -1,6 +1,7 @@
 package com.intellij.plugin.powershell.psi.impl
 
 import com.intellij.lang.ASTNode
+import com.intellij.openapi.util.TextRange
 import com.intellij.plugin.powershell.lang.resolve.PowerShellTypeUtil
 import com.intellij.plugin.powershell.psi.PowerShellCallableReference
 import com.intellij.plugin.powershell.psi.PowerShellCommandName
@@ -16,7 +17,10 @@ open class PowerShellCommandCallExpressionImpl(node: ASTNode) : PowerShellRefere
     return PowerShellTypeUtil.inferExpressionType(this)
   }
 
-//  override fun getElement(): PsiElement = getNameElement() ?: super.getElement()
+  override fun getRangeInElement(): TextRange {
+    val refRange = getNameElement()?.textRange ?: this.textRange
+    return TextRange(refRange.startOffset - textRange.startOffset, refRange.endOffset - textRange.startOffset)
+  }
 
   override fun getNameElement(): PsiElement? = findChildByClass(PowerShellCommandName::class.java)?.identifier
 

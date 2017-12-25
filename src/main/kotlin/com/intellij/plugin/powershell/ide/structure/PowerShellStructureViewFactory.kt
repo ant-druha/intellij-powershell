@@ -17,7 +17,7 @@ class PowerShellStructureViewFactory : PsiStructureViewFactory {
         return PowerShellStructureViewModel(psiFile, editor)
       }
 
-      override fun isRootNodeShown() = false
+      override fun isRootNodeShown() = true
     }
   }
 }

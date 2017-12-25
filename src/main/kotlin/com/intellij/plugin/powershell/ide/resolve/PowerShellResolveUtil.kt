@@ -92,7 +92,7 @@ object PowerShellResolveUtil {
         }
 
         override fun visitArrayClassType(o: PowerShellArrayClassType): Boolean {
-          val componentType = o.getComponentType()//todo resolve to the actual array class
+          val componentType = o.getComponentType()//todo resolve to the actual array class (PS actually tries to resolve to component type in some cases)
           return if (componentType is PowerShellClassType) {
             processClassType(componentType)
           } else {
@@ -128,6 +128,7 @@ object PowerShellResolveUtil {
       val baseDeclaration = baseClass.resolve()
       if (baseDeclaration is PowerShellTypeDeclaration && processMembers(baseDeclaration, resolveProcessor)) return true
     }
+    //todo create fake PSI element for default constructor?
     return resolveProcessor.getResult().isNotEmpty()
   }
 

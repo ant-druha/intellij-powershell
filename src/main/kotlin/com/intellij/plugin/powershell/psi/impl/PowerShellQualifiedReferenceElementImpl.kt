@@ -5,9 +5,14 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.plugin.powershell.psi.PowerShellPsiElement
 import com.intellij.plugin.powershell.psi.PowerShellQualifiedReferenceElement
 import com.intellij.plugin.powershell.psi.PowerShellReferenceIdentifier
+import com.intellij.plugin.powershell.psi.PowerShellTypes
 import com.intellij.psi.PsiElement
 
 abstract class PowerShellQualifiedReferenceElementImpl<out Q : PowerShellPsiElement>(node: ASTNode) : PowerShellReferencePsiElementImpl(node), PowerShellQualifiedReferenceElement<Q> {
+
+  override fun isTypeMemberAccess(): Boolean {
+    return findChildByType<PsiElement>(PowerShellTypes.COLON2) != null
+  }
 
   override fun getNavigationElement(): PsiElement {
     return getNameElement() ?: super.getNavigationElement()
@@ -16,11 +21,6 @@ abstract class PowerShellQualifiedReferenceElementImpl<out Q : PowerShellPsiElem
   override fun getReferenceName(): String? {
     return getNameElement()?.text
   }
-
-//  override fun getQualifier(): Q? {
-//    val q: PowerShellPsiElement? = PsiTreeUtil.findChildOfAnyType(this, PowerShellReferencePsiElement::class.java, PowerShellExpression::class.java)
-//    return q as? Q //todo
-//  }
 
   override fun getNameElement(): PsiElement? {
     return findChildByClass(PowerShellReferenceIdentifier::class.java)
