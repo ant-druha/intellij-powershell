@@ -165,3 +165,7 @@ do
         "Didn't match anything else..."
     }
 }
+function global:Write-Debugger($Data)
+{
+[System.IO.File]::AppendAllText($_Debugger.Path, ($Data | Out-String), [System.Text.Encoding]::Unicode)
+}

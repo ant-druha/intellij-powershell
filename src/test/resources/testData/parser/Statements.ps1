@@ -435,3 +435,14 @@ function Get-NCCustomerList
 
     $Keypair = New-Object "$Script:NameSpace.T_KeyPair"
 }
+
+function global:Write-Debugger($Data)
+{
+[System.IO.File]::AppendAllText($_Debugger.Path, ($Data | Out-String), [System.Text.Encoding]::Unicode)
+}
+for (; ; ) {
+}
+for () {
+}
+for (1; 1; 1) {
+}

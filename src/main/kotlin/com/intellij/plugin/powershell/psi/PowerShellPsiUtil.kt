@@ -1,8 +1,7 @@
 package com.intellij.plugin.powershell.psi
 
 import com.intellij.lang.ASTNode
-import com.intellij.plugin.powershell.psi.PowerShellTypes.PATH_EXPRESSION
-import com.intellij.plugin.powershell.psi.PowerShellTypes.TARGET_VARIABLE_EXPRESSION
+import com.intellij.plugin.powershell.psi.PowerShellTypes.*
 import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IElementType
 
@@ -20,10 +19,14 @@ internal fun findSiblingSkippingWS(node: ASTNode, forward: Boolean = true): ASTN
   return findSiblingSkipping(node, arrayOf(PowerShellTypes.NLS, TokenType.WHITE_SPACE), forward)
 }
 
-fun isVariableScope(node: ASTNode): Boolean {
+fun isTargetVariableContext(node: ASTNode): Boolean {
   return node.treeParent.elementType == TARGET_VARIABLE_EXPRESSION
 }
 
-fun isPathExpression(node: ASTNode): Boolean {
+fun isFunctionDeclarationContext(node: ASTNode): Boolean {
+  return node.treeParent.elementType == FUNCTION_STATEMENT
+}
+
+fun isPathExpressionContext(node: ASTNode): Boolean {
   return node.treeParent.elementType == PATH_EXPRESSION
 }

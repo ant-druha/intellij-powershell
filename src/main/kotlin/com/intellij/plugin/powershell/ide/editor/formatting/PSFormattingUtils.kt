@@ -7,7 +7,7 @@ import com.intellij.plugin.powershell.psi.impl.PowerShellPsiImplUtil
 import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IElementType
 
-internal fun canAddSpaceBefore(node: ASTNode): Boolean = !isLabelContext(node) && !isVariableScope(node) && !isPathExpression(node)
+internal fun canAddSpaceBefore(node: ASTNode): Boolean = !isLabelContext(node) && !isTargetVariableContext(node) && !isPathExpressionContext(node) && !isFunctionDeclarationContext(node)
 
 internal fun isFinallyClauseContext(node: ASTNode): Boolean {
   return node.treeParent?.elementType === PowerShellTypes.FINALLY_CLAUSE
