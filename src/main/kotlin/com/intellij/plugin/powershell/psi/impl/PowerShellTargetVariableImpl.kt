@@ -49,6 +49,7 @@ open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractCompo
   }
 
   private fun findInitializer(resolved: PowerShellVariable): PowerShellPsiElement? {
+    if (this == resolved) return null
     val assignment = PsiTreeUtil.getParentOfType(resolved, PowerShellAssignmentExpression::class.java, true, PowerShellBlockBody::class.java)
     return assignment?.rhsElement
   }

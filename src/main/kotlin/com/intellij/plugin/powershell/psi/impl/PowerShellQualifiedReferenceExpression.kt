@@ -1,6 +1,7 @@
 package com.intellij.plugin.powershell.psi.impl
 
 import com.intellij.lang.ASTNode
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.plugin.powershell.ide.resolve.PowerShellMemberScopeProcessor
 import com.intellij.plugin.powershell.ide.resolve.PowerShellResolveResult
 import com.intellij.plugin.powershell.ide.resolve.PowerShellResolveUtil
@@ -12,6 +13,7 @@ import com.intellij.plugin.powershell.psi.types.PowerShellType
 
 abstract class PowerShellQualifiedReferenceExpression(node: ASTNode) : PowerShellQualifiedReferenceElementImpl<PowerShellExpression>(node), PowerShellQualifiedReferenceElement<PowerShellExpression>, PowerShellExpression {
 
+  val LOG = Logger.getInstance(javaClass)
   override fun getType(): PowerShellType {
     val resolved = resolve()
     if (resolved != null) {
@@ -30,8 +32,12 @@ abstract class PowerShellQualifiedReferenceExpression(node: ASTNode) : PowerShel
 
   override fun multiResolve(incompleteCode: Boolean): Array<PowerShellResolveResult> {
     val qType = getQualifierType()
+    if (qType == PowerShellType.UNKNOWN) {
+      LOG.debug("Type is unknown for reference: '$text'")
+      return emptyArray()
+    }
     val resolveProcessor = PowerShellResolveUtil.getMemberScopeProcessor(this)
-    if (resolveProcessor != null && qType != null && qType != PowerShellType.UNKNOWN) {
+    if (resolveProcessor != null && qType != null) {
       if (PowerShellResolveUtil.processMembersForType(qType, incompleteCode, resolveProcessor)) return extractResults(resolveProcessor)
     }
     return super.multiResolve(incompleteCode)
