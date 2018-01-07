@@ -533,7 +533,8 @@ class_block_body ::= nls? (class_member_declaration_list | statement_terminators
 }
 private class_member_declaration_list ::= class_member_declaration (statement_terminators class_member_declaration)*
 {recoverWhile=top_level_recover}
-private class_member_declaration ::= property_declaration_statement | constructor_declaration_statement | method_declaration_statement
+private class_member_declaration ::= property_declaration_statement | constructor_declaration_statement | method_declaration_statement | incomplete_declaration
+incomplete_declaration ::= attribute //for completion
 
 property_declaration_statement ::= (member_declaration_attribute nls?)* property_definition_expression
 {
