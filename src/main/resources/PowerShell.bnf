@@ -225,7 +225,7 @@ script_block ::= top_script_block
 
 block_parameter_clause ::= attribute_list? nls? 'param' nls? LP nls? script_parameter_list? nls? RP {pin=3}
 
-private attribute_list ::= (attribute nls?)+
+private attribute_list ::= (attribute nls?)+ !(nws member_access_operator)
 attribute ::= SQBR_L nls? attribute_name LP nls? attribute_arguments? nls? RP nls? SQBR_R | type_literal_expression
 private attribute_name ::= type_element
 
@@ -697,14 +697,15 @@ verbatim_command_argument ::= VERBATIM_ARG_START VERBATIM_ARG_INPUT //(verbatim_
 
 private primary_expression ::= value (invocation_expression | member_access_expression | element_access_expression | post_increment_expression | post_decrement_expression)*
 
-left member_access_expression ::= nws ( DOT | COLON2 ) nls? member_name
+private member_access_operator::= DOT | COLON2
+left member_access_expression ::= nws member_access_operator nls? member_name
 {
   implements='com.intellij.plugin.powershell.psi.PowerShellQualifiedReferenceElement<com.intellij.plugin.powershell.psi.PowerShellExpression>'
   mixin='com.intellij.plugin.powershell.psi.impl.PowerShellMemberAccessExpressionImpl'
   methods=[getIdentifier]
 }
 left element_access_expression ::= nws SQBR_L nls? expression nls? SQBR_R
-left invocation_expression ::= nws (DOT | COLON2 ) nls? member_name call_arguments
+left invocation_expression ::= nws member_access_operator nls? member_name call_arguments
 {
   implements='com.intellij.plugin.powershell.psi.PowerShellQualifiedReferenceElement<com.intellij.plugin.powershell.psi.PowerShellExpression>'
   mixin='com.intellij.plugin.powershell.psi.impl.PowerShellInvocationExpressionImpl'
