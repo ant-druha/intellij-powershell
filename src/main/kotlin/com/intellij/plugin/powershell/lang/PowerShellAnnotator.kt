@@ -28,8 +28,13 @@ class PowerShellAnnotator : Annotator {
       e is PowerShellCallableDeclaration -> annotateFunctionName(holder, e, PowerShellSyntaxHighlighter.METHOD_DECLARATION)
       e is PowerShellLabel -> createInfoAnnotation(holder, e.identifier, PowerShellSyntaxHighlighter.LABEL)
       e is PowerShellLabelReferenceExpression -> createInfoAnnotation(holder, e.identifier, PowerShellSyntaxHighlighter.LABEL)
+      e is PowerShellIncompleteDeclaration -> createErrorAnnotation(holder, e, "Incomplete declaration")
       shouldAnnotateAsParameter(e) -> createInfoAnnotation(holder, e, PowerShellSyntaxHighlighter.COMMAND_PARAMETER)
     }
+  }
+
+  private fun createErrorAnnotation(holder: AnnotationHolder, e: PsiElement, msg: String) {
+    holder.createErrorAnnotation(e, msg)
   }
 
   private fun shouldAnnotateAsParameter(element: PsiElement): Boolean {
