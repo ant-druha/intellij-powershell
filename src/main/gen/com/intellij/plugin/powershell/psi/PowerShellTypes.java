@@ -1,12 +1,12 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.plugin.powershell.psi;
 
-import com.intellij.lang.ASTNode;
-import com.intellij.plugin.powershell.lang.lexer.PowerShellTokenType;
-import com.intellij.plugin.powershell.lang.parser.PowerShellElementType;
-import com.intellij.plugin.powershell.psi.impl.*;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.tree.IElementType;
+import com.intellij.psi.PsiElement;
+import com.intellij.lang.ASTNode;
+import com.intellij.plugin.powershell.lang.parser.PowerShellElementType;
+import com.intellij.plugin.powershell.lang.lexer.PowerShellTokenType;
+import com.intellij.plugin.powershell.psi.impl.*;
 
 public interface PowerShellTypes {
 
@@ -50,6 +50,7 @@ public interface PowerShellTypes {
   IElementType HASH_LITERAL_EXPRESSION = new PowerShellElementType("HASH_LITERAL_EXPRESSION");
   IElementType IDENTIFIER = new PowerShellElementType("IDENTIFIER");
   IElementType IF_STATEMENT = new PowerShellElementType("IF_STATEMENT");
+  IElementType INCOMPLETE_DECLARATION = new PowerShellElementType("INCOMPLETE_DECLARATION");
   IElementType INLINESCRIPT_STATEMENT = new PowerShellElementType("INLINESCRIPT_STATEMENT");
   IElementType INTEGER_LITERAL_EXPRESSION = new PowerShellElementType("INTEGER_LITERAL_EXPRESSION");
   IElementType INVOCATION_EXPRESSION = new PowerShellElementType("INVOCATION_EXPRESSION");
@@ -331,6 +332,9 @@ public interface PowerShellTypes {
       }
       else if (type == IF_STATEMENT) {
         return new PowerShellIfStatementImplGen(node);
+      }
+      else if (type == INCOMPLETE_DECLARATION) {
+        return new PowerShellIncompleteDeclarationImplGen(node);
       }
       else if (type == INLINESCRIPT_STATEMENT) {
         return new PowerShellInlinescriptStatementImplGen(node);
