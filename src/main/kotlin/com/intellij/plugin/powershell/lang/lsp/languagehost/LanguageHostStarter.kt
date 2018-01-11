@@ -10,6 +10,7 @@ import com.intellij.openapi.util.text.StringUtil
 import com.intellij.plugin.powershell.lang.lsp.LSPInitMain
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.checkExists
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.getLanguageHostLogsDir
+import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.getModulesDir
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.getPSExtensionDir
 import com.sun.jna.Pointer
 import com.sun.jna.platform.win32.Kernel32
@@ -83,7 +84,7 @@ class LanguageHostStarter {
     val logPath = createLogPath()
     val args = "-EditorServicesVersion '1.5.1' -HostName 'IntelliJ Editor Host' -HostProfileId 'JetBrains.IJ' " +
         "-HostVersion '1.5.1' -AdditionalModules @('PowerShellEditorServices.VSCode') " +
-        "-BundledModulesPath '${getPSExtensionDir()}/modules' -EnableConsoleRepl " +
+        "-BundledModulesPath '${getModulesDir()}' -EnableConsoleRepl " +
         "-LogLevel 'Diagnostic' -LogPath '$logPath' -SessionDetailsPath '$sessionDetailsPath' -FeatureFlags @()"
     val scriptText = "$startupScript $args\n"
 
@@ -180,7 +181,7 @@ class LanguageHostStarter {
       FileUtil.toCanonicalPath("${getLanguageHostLogsDir()}/EditorServices-IJ-${getSessionCount()}.log")
 
   private fun createSessionDetailsPath(): String =
-      FileUtil.toCanonicalPath("${getLanguageHostLogsDir()}/sessions/PSES-IJ-${System.currentTimeMillis()}-session.info")
+      FileUtil.toCanonicalPath("${getPSExtensionDir()}/sessions/PSES-IJ-${System.currentTimeMillis()}-session.info")
 
 
   fun closeConnection() {

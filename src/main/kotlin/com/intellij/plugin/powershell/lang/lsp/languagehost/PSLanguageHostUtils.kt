@@ -8,7 +8,13 @@ object PSLanguageHostUtils {
   private val LOG: Logger = Logger.getInstance(javaClass)
 
   fun getLanguageHostLogsDir(): String {
-    return FileUtil.toCanonicalPath(getPSExtensionDir() ?: System.getProperty("idea.log.path") + "/PowerShell")
+    val extDir = getPSExtensionDir()
+    if (extDir == null || !checkExists(extDir)) return FileUtil.toCanonicalPath(System.getProperty("idea.log.path") + "/PowerShell")
+    return FileUtil.toCanonicalPath(extDir + "/logs")
+  }
+
+  fun getModulesDir(): String {
+    return FileUtil.toCanonicalPath(getPSExtensionDir() + "/modules")
   }
 
   fun getPSExtensionDir(): String? {
