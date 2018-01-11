@@ -167,5 +167,5 @@ do
 }
 function global:Write-Debugger($Data)
 {
-[System.IO.File]::AppendAllText($_Debugger.Path, ($Data | Out-String), [System.Text.Encoding]::Unicode)
+    [System.IO.File]::AppendAllText($_Debugger.Path, ($Data | Out-String), [System.Text.Encoding]::Unicode)
 }
