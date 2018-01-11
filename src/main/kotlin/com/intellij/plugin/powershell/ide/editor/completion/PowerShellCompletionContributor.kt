@@ -254,6 +254,6 @@ class PowerShellCompletionContributor : CompletionContributor() {
       builder = builder.withInsertHandler(ParenthesesInsertHandler.WITH_PARAMETERS)
     }
     if (kind == CompletionItemKind.Keyword) builder = builder.withBoldness(true)
-    return builder.withPresentableText(presentableText).appendTailText("\t\t$tailText", true).withAutoCompletionPolicy(AutoCompletionPolicy.SETTINGS_DEPENDENT)
+    return builder.withPresentableText(presentableText).appendTailText("    $tailText", true).withAutoCompletionPolicy(AutoCompletionPolicy.SETTINGS_DEPENDENT)
   }
 }
