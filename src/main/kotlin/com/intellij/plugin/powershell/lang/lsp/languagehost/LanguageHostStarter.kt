@@ -114,7 +114,8 @@ class LanguageHostStarter {
     val pid = getProcessID(process)
     var msg = "PowerShell language host process started"
     if (pid.compareTo(-1) != 0) msg += ", pid: $pid"
-    LOG.info("$msg.")
+    msg += ", session info: $sessionInfo."
+    LOG.info(msg)
     process.outputStream.close()
     return sessionInfo
   }
