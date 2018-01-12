@@ -2,11 +2,15 @@ package com.intellij.plugin.powershell.lang.lsp.languagehost
 
 import com.google.common.io.Files
 import com.google.gson.JsonParser
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
+import com.intellij.notification.Notifications
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
+import com.intellij.plugin.powershell.PowerShellIcons
 import com.intellij.plugin.powershell.lang.lsp.LSPInitMain
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.checkExists
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.getLanguageHostLogsDir
@@ -15,11 +19,10 @@ import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.
 import com.sun.jna.Pointer
 import com.sun.jna.platform.win32.Kernel32
 import com.sun.jna.platform.win32.WinNT
-import java.io.File
-import java.io.InputStream
-import java.io.OutputStream
+import java.io.*
 import java.net.Socket
 import java.nio.charset.Charset
+import java.util.concurrent.TimeUnit
 
 
 class LanguageHostStarter {
@@ -82,10 +85,13 @@ class LanguageHostStarter {
     }
     val sessionDetailsPath = createSessionDetailsPath()
     val logPath = createLogPath()
-    val args = "-EditorServicesVersion '1.5.1' -HostName 'IntelliJ Editor Host' -HostProfileId 'JetBrains.IJ' " +
-        "-HostVersion '1.5.1' -AdditionalModules @('PowerShellEditorServices.VSCode') " +
+//    val editorServicesVersion = "1.4.1"
+    val editorServicesVersion = "1.5.1"
+    val logLevel = "Verbose" //""Diagnostic" -< does not work for older PS versions
+    val args = "-EditorServicesVersion '$editorServicesVersion' -HostName 'IntelliJ Editor Host' -HostProfileId 'JetBrains.IJ' " +
+        "-HostVersion '$editorServicesVersion' -AdditionalModules @('PowerShellEditorServices.VSCode') " +
         "-BundledModulesPath '${getModulesDir()}' -EnableConsoleRepl " +
-        "-LogLevel 'Diagnostic' -LogPath '$logPath' -SessionDetailsPath '$sessionDetailsPath' -FeatureFlags @()"
+        "-LogLevel '$logLevel' -LogPath '$logPath' -SessionDetailsPath '$sessionDetailsPath' -FeatureFlags @()"
     val scriptText = "$startupScript $args\n"
 
     val encoding = "utf8"
@@ -106,6 +112,7 @@ class LanguageHostStarter {
     val process = Runtime.getRuntime().exec(psCommand)
     powerShellProcess = process
 
+    if (!checkOutput(process)) {}//todo
     //todo retry starting language service process one more time
     if (!waitForSessionFile(fileWithSessionInfo)) return null
 
@@ -120,6 +127,24 @@ class LanguageHostStarter {
     return sessionInfo
   }
 
+  private fun checkOutput(process: Process): Boolean {
+    val editorServicesVersion = "1.5.1"
+    process.waitFor(3000L, TimeUnit.MILLISECONDS)
+    val br = BufferedReader(InputStreamReader(process.inputStream))
+    val result = if (br.ready()) br.readLine() else ""
+    if ("needs_install".equals(result)) {
+      //todo: notify user to run command: "Install-Module "PowerShellEditorServices" -RequiredVersion $editorServicesVersion"
+      val content = "required 'PowerShellEditorServices' module is not installed. " +
+          "Please run 'Install-Module \"PowerShellEditorServices\" -RequiredVersion $editorServicesVersion'"
+      val title = "PowerShellEditorServices module with $editorServicesVersion version not found."
+      val notify = Notification("PowerShell.ESM.Needs.Install", PowerShellIcons.FILE, title, null, content, NotificationType.INFORMATION, null)
+  //      notify.addAction(BrowseNotificationAction("Download...", "http://git-scm.com/download"))
+      Notifications.Bus.notify(notify)
+      return false
+    }
+    return true
+  }
+
   private fun readSessionFile(sessionFile: File): SessionInfo? {
     try {
       val line = Files.readFirstLine(sessionFile, Charset.forName("utf8"))
@@ -127,7 +152,10 @@ class LanguageHostStarter {
       val langServicePort = jsonResult.get("languageServicePort")?.asInt
       val debugServicePort = jsonResult.get("debugServicePort")?.asInt
       val status = jsonResult.get("status")?.asString
-      if (langServicePort == null || debugServicePort == null) return null
+      if (langServicePort == null || debugServicePort == null) {
+        LOG.warn("languageServicePort or debugServicePort are null")
+        return null
+      }
       return SessionInfo(langServicePort, debugServicePort, null, status)
     } catch (e: Exception) {
       LOG.error("Error reading/parsing session details file $sessionFile: $e")
