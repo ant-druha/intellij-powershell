@@ -196,6 +196,9 @@ class LanguageServerEndpoint(val project: Project) {
         Thread.sleep(500)
         checkCount--
       }
+      if (checkCount <=0) {
+        LOG.warn("Wait time elapsed for the server to start for project '${project.name}'")
+      }
     } catch (e: Exception) {
       LOG.warn("Error while waiting the server for the '${project.name}' project to start: $e")
     }
