@@ -106,7 +106,7 @@ class LanguageHostStarter {
     val fileWithSessionInfo = File(sessionDetailsPath)
     sessionInfoFile = fileWithSessionInfo
     val executableName = if (SystemInfo.isUnix) "powershell" else "powershell.exe"
-    val psCommand = "$executableName ${scriptFile.canonicalPath}"
+    val psCommand = "$executableName -NoProfile -NonInteractive ${scriptFile.canonicalPath}"
 
     LOG.info("Language server starting... exe: '$psCommand',\n launch command: $startupScript $args")
     val process = Runtime.getRuntime().exec(psCommand)
