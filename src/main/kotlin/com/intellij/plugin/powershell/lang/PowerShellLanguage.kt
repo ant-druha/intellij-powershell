@@ -15,8 +15,4 @@ class PowerShellLanguage : Language("PowerShell") {
         @JvmStatic val INSTANCE = PowerShellLanguage()
     }
 
-    fun getExtensions(): Array<String> {
-        return arrayOf("ps1")
-    }
-
 }
