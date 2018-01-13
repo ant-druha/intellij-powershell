@@ -5,7 +5,9 @@ import com.google.gson.JsonParser
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
+import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
@@ -13,9 +15,11 @@ import com.intellij.openapi.util.text.StringUtil
 import com.intellij.plugin.powershell.PowerShellIcons
 import com.intellij.plugin.powershell.lang.lsp.LSPInitMain
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.checkExists
+import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.findPSExtensionsDir
+import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.getEditorServicesModuleVersion
+import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.getEditorServicesStartupScript
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.getLanguageHostLogsDir
-import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.getModulesDir
-import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.getPSExtensionDir
+import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.getPSExtensionModulesDir
 import com.sun.jna.Pointer
 import com.sun.jna.platform.win32.Kernel32
 import com.sun.jna.platform.win32.WinNT
@@ -33,14 +37,23 @@ class LanguageHostStarter {
   private var powerShellProcess: Process? = null
   private var sessionInfo: SessionInfo? = null
 
-  private data class SessionInfo(val languageServicePort: Int, val debugServicePort: Int, val powerShellVersion: String?, val status: String?)
-
   companion object {
     @Volatile private var sessionCount = 0
+    private val myHostDetails = HostDetails(ApplicationNamesInfo.getInstance().fullProductName, "com.intellij.plugin.PowerShell", ApplicationInfo.getInstance().fullVersion)
+    private var cachedEditorServicesModuleVersion: String? = null
+    private var cachedPowerShellExtensionDir: String? = null
+
+    private data class HostDetails(val name: String, val profileId: String, val version: String)
+    private data class SessionInfo(val languageServicePort: Int, val debugServicePort: Int, val powerShellVersion: String?, val status: String?) {
+      override fun toString(): String {
+        return "{languageServicePort:$languageServicePort,debugServicePort:$debugServicePort,powerShellVersion:$powerShellVersion,status:$status}"
+      }
+    }
   }
 
   /**
-   * @throws PSEditorServicesScriptNotFound
+   * @throws PowerShellExtensionError
+   * @throws PowerShellExtensionNotFound
    */
   fun establishConnection(): Pair<InputStream?, OutputStream?> {
     val port = getServerPort() ?: return Pair(null, null)//long operation
@@ -63,7 +76,8 @@ class LanguageHostStarter {
   }
 
   /**
-   * @throws PSEditorServicesScriptNotFound
+   * @throws PowerShellExtensionError
+   * @throws PowerShellExtensionNotFound
    */
   private fun getServerPort(): Int? {
     sessionInfo = startServerSession()
@@ -75,7 +89,8 @@ class LanguageHostStarter {
   }
 
   /**
-   * @throws PSEditorServicesScriptNotFound
+   * @throws PowerShellExtensionError
+   * @throws PowerShellExtensionNotFound
    */
   private fun startServerSession(): SessionInfo? {
     val startupScript = getStartupScriptPath()
@@ -85,25 +100,24 @@ class LanguageHostStarter {
     }
     val sessionDetailsPath = createSessionDetailsPath()
     val logPath = createLogPath()
-//    val editorServicesVersion = "1.4.1"
-    val editorServicesVersion = "1.5.1"
+    val editorServicesVersion = getEditorServicesVersion()
+    val additionalModules = "PowerShellEditorServices.VSCode"//todo
     val logLevel = "Verbose" //""Diagnostic" -< does not work for older PS versions
-    val args = "-EditorServicesVersion '$editorServicesVersion' -HostName 'IntelliJ Editor Host' -HostProfileId 'JetBrains.IJ' " +
-        "-HostVersion '$editorServicesVersion' -AdditionalModules @('PowerShellEditorServices.VSCode') " +
-        "-BundledModulesPath '${getModulesDir()}' -EnableConsoleRepl " +
+    val args = "-EditorServicesVersion '$editorServicesVersion' -HostName '${myHostDetails.name}' -HostProfileId '${myHostDetails.profileId}' " +
+        "-HostVersion '${myHostDetails.version}' -AdditionalModules @('$additionalModules') " +
+        "-BundledModulesPath '${getPSExtensionModulesDir()}' -EnableConsoleRepl " +
         "-LogLevel '$logLevel' -LogPath '$logPath' -SessionDetailsPath '$sessionDetailsPath' -FeatureFlags @()"
     val scriptText = "$startupScript $args\n"
 
-    val encoding = "utf8"
     val scriptFile = File.createTempFile("start-pses-host", ".ps1")
-
     try {
-      Files.write(scriptText, scriptFile, Charset.forName(encoding))
+      FileUtil.writeToFile(scriptFile, scriptText)
     } catch (e: Exception) {
       LOG.error("Error writing $scriptFile script file: $e")
     }
 
     val fileWithSessionInfo = File(sessionDetailsPath)
+    FileUtil.createParentDirs(fileWithSessionInfo)
     sessionInfoFile = fileWithSessionInfo
     val executableName = if (SystemInfo.isUnix) "powershell" else "powershell.exe"
     val psCommand = "$executableName -NoProfile -NonInteractive ${scriptFile.canonicalPath}"
@@ -112,19 +126,34 @@ class LanguageHostStarter {
     val process = Runtime.getRuntime().exec(psCommand)
     powerShellProcess = process
 
-    if (!checkOutput(process)) {}//todo
+    if (!checkOutput(process)) {//todo
+    }
     //todo retry starting language service process one more time
     if (!waitForSessionFile(fileWithSessionInfo)) return null
 
     val sessionInfo = readSessionFile(fileWithSessionInfo) ?: return null
 
     val pid = getProcessID(process)
-    var msg = "PowerShell language host process started"
+    var msg = "PowerShell language host process started, $sessionInfo"
     if (pid.compareTo(-1) != 0) msg += ", pid: $pid"
-    msg += ", session info: $sessionInfo."
-    LOG.info(msg)
+    LOG.info("$msg.")
     process.outputStream.close()
     return sessionInfo
+  }
+
+  /**
+   * @throws PowerShellExtensionNotFound
+   */
+  private fun getEditorServicesVersion(): String? {
+    var result = cachedEditorServicesModuleVersion
+    if (StringUtil.isNotEmpty(result)) return result
+    result = getEditorServicesModuleVersion(getPSExtensionModulesDir())//todo check info from settings then try to guess
+    cachedEditorServicesModuleVersion = result
+    return result
+  }
+
+  private fun getPSExtensionModulesDir(): String {
+    return getPSExtensionModulesDir(getPowerShellExtensionPath())
   }
 
   private fun checkOutput(process: Process): Boolean {
@@ -138,7 +167,7 @@ class LanguageHostStarter {
           "Please run 'Install-Module \"PowerShellEditorServices\" -RequiredVersion $editorServicesVersion'"
       val title = "PowerShellEditorServices module with $editorServicesVersion version not found."
       val notify = Notification("PowerShell.ESM.Needs.Install", PowerShellIcons.FILE, title, null, content, NotificationType.INFORMATION, null)
-  //      notify.addAction(BrowseNotificationAction("Download...", "http://git-scm.com/download"))
+      //      notify.addAction(BrowseNotificationAction("Download...", "http://git-scm.com/download"))
       Notifications.Bus.notify(notify)
       return false
     }
@@ -163,7 +192,6 @@ class LanguageHostStarter {
     }
   }
 
-  //{"status":"started","channel":"tcp","debugServicePort":18690,"languageServicePort":18648}
   private fun waitForSessionFile(fileWithSessionInfo: File): Boolean {
     var tries = 25
     val waitTimeoutMillis = 500L
@@ -184,24 +212,25 @@ class LanguageHostStarter {
   }
 
   /**
-   * @throws  PSEditorServicesScriptNotFound
+   * @throws PowerShellExtensionError
+   * @throws PowerShellExtensionNotFound
    */
   private fun getStartupScriptPath(): String {
     val lspInitMain = ApplicationManager.getApplication().getComponent(LSPInitMain::class.java)
-    val path = lspInitMain.state.editorServicesStartupScript.trim()
+    val path = lspInitMain.getPowerShellInfo().editorServicesStartupScript.trim()
     if (StringUtil.isEmpty(path)) {
-      LOG.warn("PowerShell language host startup script is not specified in settings.")
-
-      LOG.warn("Trying to guess...")
-      val result = FileUtil.toCanonicalPath("${getPSExtensionDir()}/scripts/Start-EditorServices.ps1")
+      LOG.warn("PowerShell language host startup script is not specified in settings. Trying to discover...")
+      val result = getEditorServicesStartupScript(getPowerShellExtensionPath())
       if (!checkExists(result)) {
-        LOG.warn("Guessed script path $result does not exist.")
-        throw PSEditorServicesScriptNotFound()
+        val reason = "Guessed script path $result does not exist."
+        LOG.warn(reason)
+        throw PowerShellExtensionError(reason)
       }
       return result
     } else if (!checkExists(path)) {
-      LOG.warn("Specified in settings PowerShell language host startup script $path does not exist.")
-      throw PSEditorServicesScriptNotFound()
+      val reason = "Specified in settings PowerShell language host startup script $path does not exist."
+      LOG.warn(reason)
+      throw PowerShellExtensionError(reason)
     }
     return path
   }
@@ -210,7 +239,22 @@ class LanguageHostStarter {
       FileUtil.toCanonicalPath("${getLanguageHostLogsDir()}/EditorServices-IJ-${getSessionCount()}.log")
 
   private fun createSessionDetailsPath(): String =
-      FileUtil.toCanonicalPath("${getPSExtensionDir()}/sessions/PSES-IJ-${System.currentTimeMillis()}-session.info")
+      FileUtil.toCanonicalPath("${getPowerShellExtensionPath()}/sessions/PSES-IJ-${System.currentTimeMillis()}-session.info")
+
+  /**
+   * @throws PowerShellExtensionNotFound
+   */
+  private fun getPowerShellExtensionPath(): String {
+    var result = cachedPowerShellExtensionDir
+    if (StringUtil.isNotEmpty(result)) return result!!
+
+    val lspMain = ApplicationManager.getApplication().getComponent(LSPInitMain::class.java)
+    result = lspMain.getPowerShellInfo().powerShellExtensionPath?.trim()
+    if (StringUtil.isEmpty(result)) result = findPSExtensionsDir()
+    cachedPowerShellExtensionDir = result
+
+    return result!!
+  }
 
 
   fun closeConnection() {

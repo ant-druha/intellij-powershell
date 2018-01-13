@@ -16,24 +16,29 @@ import com.intellij.plugin.powershell.lang.lsp.ide.listeners.EditorLSPListener
 import com.intellij.plugin.powershell.lang.lsp.languagehost.LanguageServerEndpoint
 import com.intellij.psi.PsiDocumentManager
 
-@State(name = "PowerShellSettings", storages = arrayOf(Storage(file = "powerShellSettings.xml", roamingType = RoamingType.PER_OS)))
-class LSPInitMain : ApplicationComponent, PersistentStateComponent<LSPInitMain.State> {
+@State(name = "PowerShellSettings", storages = arrayOf(Storage(file = "powerShellSettings.xml", roamingType = RoamingType.DISABLED)))
+class LSPInitMain : ApplicationComponent, PersistentStateComponent<LSPInitMain.PowerShellExtensionInfo> {
 
-  data class State(var editorServicesStartupScript: String = "")
-
-  private var myState: State? = null
+  data class PowerShellExtensionInfo(var editorServicesStartupScript: String = "",
+                                     var powerShellExtensionPath: String? = null,
+                                     var editorServicesModuleVersion: String? = null)
+  private var myPowerShellExtensionInfo: PowerShellExtensionInfo = PowerShellExtensionInfo()
   private val myDisposable = Disposer.newDisposable()
 
-  override fun loadState(state: State) {
-    myState = state
+  override fun loadState(powerShellExtensionInfo: PowerShellExtensionInfo) {
+    myPowerShellExtensionInfo = powerShellExtensionInfo
   }
 
-  override fun getState(): LSPInitMain.State {
-    return myState ?: LSPInitMain.State("")
+  override fun getState(): LSPInitMain.PowerShellExtensionInfo {
+    return myPowerShellExtensionInfo
   }
 
-  fun setPSEditorServicesPath(path: String) {
-    myState = LSPInitMain.State(path)
+  fun getPowerShellInfo(): LSPInitMain.PowerShellExtensionInfo {
+    return myPowerShellExtensionInfo
+  }
+
+  fun setPSExtensionInfo(info: PowerShellExtensionInfo?) {
+    myPowerShellExtensionInfo = info?: PowerShellExtensionInfo()
   }
 
   companion object {

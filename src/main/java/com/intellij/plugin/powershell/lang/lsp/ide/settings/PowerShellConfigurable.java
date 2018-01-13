@@ -1,14 +1,19 @@
 package com.intellij.plugin.powershell.lang.lsp.ide.settings;
 
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SearchableConfigurable;
+import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.plugin.powershell.lang.lsp.LSPInitMain;
+import com.intellij.plugin.powershell.lang.lsp.languagehost.PowerShellExtensionError;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+
+import static com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.INSTANCE;
 
 public class PowerShellConfigurable implements SearchableConfigurable {
 
@@ -36,28 +41,62 @@ public class PowerShellConfigurable implements SearchableConfigurable {
 
     @Override
     public boolean isModified() {
-        return myOldValue != null && !getScriptPathFromForm().equals(myOldValue);
+        return !getScriptPathFromForm().equals(StringUtil.notNullize(myOldValue));
     }
 
     @Override
     public void reset() {
         LSPInitMain lspInitMain = ApplicationManager.getApplication().getComponent(LSPInitMain.class);
-        String pathFromSettings = lspInitMain.getState().getEditorServicesStartupScript();
-        getPSJpanel().getEditorServicesStartupScriptTextField().setText(pathFromSettings);
+        String pathFromSettings = lspInitMain.getPowerShellInfo().getPowerShellExtensionPath();
+        getPSJpanel().getPowerShellExtensionPathTextField().setText(pathFromSettings);
+        getPSJpanel().setVersionLabelValue(lspInitMain.getPowerShellInfo().getEditorServicesModuleVersion());
         myOldValue = pathFromSettings;
     }
 
     @Override
-    public void apply() {
+    public void apply() throws ConfigurationException {
         String pathFromForm = getScriptPathFromForm();
-        myOldValue = pathFromForm;
+        String trimmed = pathFromForm.trim();
+        LSPInitMain.PowerShellExtensionInfo powerShellInfo = null;
         LSPInitMain lspInitMain = ApplicationManager.getApplication().getComponent(LSPInitMain.class);
-        lspInitMain.setPSEditorServicesPath(StringUtil.notNullize(pathFromForm));
+        if (StringUtil.isNotEmpty(trimmed)) {
+            powerShellInfo = createPowerShellInfo(trimmed);
+            if (powerShellInfo == null) {
+                getPSJpanel().setVersionLabelValue(null);
+                throw new ConfigurationException("Can not validate PowerShell extension");
+            }
+        }
+        myOldValue = pathFromForm;
+        lspInitMain.setPSExtensionInfo(powerShellInfo);
+        getPSJpanel()
+                .setVersionLabelValue(powerShellInfo != null ? powerShellInfo.getEditorServicesModuleVersion() : "");
+    }
+
+
+    @Nullable
+    static LSPInitMain.PowerShellExtensionInfo createPowerShellInfo(@NotNull final String psExtDir) throws ConfigurationException {
+        try {
+            if (!FileUtil.exists(psExtDir)) throw new ConfigurationException("Path " + psExtDir + "does not exist.");
+
+            String editorServicesVersion = INSTANCE
+                    .getEditorServicesModuleVersion(INSTANCE.getPSExtensionModulesDir(psExtDir));
+            if (StringUtil.isEmpty(editorServicesVersion))
+                throw new ConfigurationException("Can not detect Editor Services module version");
+
+            String startupScript = INSTANCE.getEditorServicesStartupScript(psExtDir);
+            if (StringUtil.isEmpty(startupScript))
+                throw new ConfigurationException("Can not find Editor Services startup script");
+
+            return new LSPInitMain.PowerShellExtensionInfo(startupScript, psExtDir, editorServicesVersion);
+        } catch (PowerShellExtensionError e) {
+            e.printStackTrace();// TODO: 13/01/2018 handle
+            return null;
+        }
     }
 
     @NotNull
     private String getScriptPathFromForm() {
-        return getPSJpanel().getEditorServicesStartupScriptTextField().getText();
+        return getPSJpanel().getPowerShellExtensionPathTextField().getText();
     }
 
     private PowerShellJPanelComponent getPSJpanel() {

@@ -196,7 +196,7 @@ class LanguageServerEndpoint(val project: Project) {
         Thread.sleep(500)
         checkCount--
       }
-      if (checkCount <=0) {
+      if (checkCount <= 0) {
         LOG.warn("Wait time elapsed for the server to start for project '${project.name}'")
       }
     } catch (e: Exception) {
@@ -232,8 +232,15 @@ class LanguageServerEndpoint(val project: Project) {
       launcherFuture = launcher.startListening()
       sendInitializeRequest(server)
       return true
-    } catch (e: PSEditorServicesScriptNotFound) {
-      LOG.warn("PowerShell editor services language host is not found")
+    } catch (e: Exception) {
+      when (e) {
+        is PowerShellExtensionError -> {
+          LOG.error("PowerShell extension error: ${e.message}")
+        }
+        is PowerShellExtensionNotFound -> {
+          LOG.error("PowerShell extension not found")
+        }
+      }
       setStatus(ServerStatus.FAILED)
       return false
     }
