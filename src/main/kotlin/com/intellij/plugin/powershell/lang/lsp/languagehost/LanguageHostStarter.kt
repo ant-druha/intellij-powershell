@@ -2,6 +2,7 @@ package com.intellij.plugin.powershell.lang.lsp.languagehost
 
 import com.google.common.io.Files
 import com.google.gson.JsonParser
+import com.intellij.notification.BrowseNotificationAction
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
@@ -13,6 +14,7 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.plugin.powershell.PowerShellIcons
+import com.intellij.plugin.powershell.ide.MessagesBundle
 import com.intellij.plugin.powershell.lang.lsp.LSPInitMain
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.checkExists
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.findPSExtensionsDir
@@ -157,17 +159,15 @@ class LanguageHostStarter {
   }
 
   private fun checkOutput(process: Process): Boolean {
-    val editorServicesVersion = "1.5.1"
+    val editorServicesVersion = getEditorServicesVersion()
     process.waitFor(3000L, TimeUnit.MILLISECONDS)
     val br = BufferedReader(InputStreamReader(process.inputStream))
     val result = if (br.ready()) br.readLine() else ""
-    if ("needs_install".equals(result)) {
-      //todo: notify user to run command: "Install-Module "PowerShellEditorServices" -RequiredVersion $editorServicesVersion"
-      val content = "required 'PowerShellEditorServices' module is not installed. " +
-          "Please run 'Install-Module \"PowerShellEditorServices\" -RequiredVersion $editorServicesVersion'"
-      val title = "PowerShellEditorServices module with $editorServicesVersion version not found."
-      val notify = Notification("PowerShell.ESM.Needs.Install", PowerShellIcons.FILE, title, null, content, NotificationType.INFORMATION, null)
-      //      notify.addAction(BrowseNotificationAction("Download...", "http://git-scm.com/download"))
+    if ("needs_install" == result) {
+      val content = "Required $editorServicesVersion 'PowerShellEditorServices' module is not found. Please install PowerShell VS Code extension"
+      val title = "PowerShellEditorServices $editorServicesVersion module not found."
+      val notify = Notification("PowerShell Extension Not Found", PowerShellIcons.FILE, title, null, content, NotificationType.INFORMATION, null)
+      notify.addAction(BrowseNotificationAction("Install VSCode PowerShell", MessagesBundle.message("vs.code.powershell.extension.install.link")))
       Notifications.Bus.notify(notify)
       return false
     }

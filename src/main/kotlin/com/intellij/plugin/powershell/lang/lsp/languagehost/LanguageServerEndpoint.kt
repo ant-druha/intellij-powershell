@@ -3,6 +3,10 @@
  */
 package com.intellij.plugin.powershell.lang.lsp.languagehost
 
+import com.intellij.notification.BrowseNotificationAction
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
+import com.intellij.notification.Notifications
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileEditor.FileDocumentManager
@@ -11,8 +15,11 @@ import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.project.ProjectManagerListener
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.plugin.powershell.PowerShellIcons
+import com.intellij.plugin.powershell.ide.MessagesBundle
 import com.intellij.plugin.powershell.lang.lsp.client.PSLanguageClientImpl
 import com.intellij.plugin.powershell.lang.lsp.ide.EditorEventManager
 import com.intellij.plugin.powershell.lang.lsp.ide.LSPRequestManager
@@ -66,6 +73,7 @@ class LanguageServerEndpoint(val project: Project) {
   companion object {
     private val uriToLanguageServerConnection = mutableMapOf<URI, LanguageServerEndpoint>()
     private val editorToLanguageServerConnection = mutableMapOf<Editor, LanguageServerEndpoint>()
+    private var installExtensionNotificationShown = false
   }
 
   fun connectEditor(editor: Editor?) {
@@ -235,16 +243,30 @@ class LanguageServerEndpoint(val project: Project) {
     } catch (e: Exception) {
       when (e) {
         is PowerShellExtensionError -> {
-          LOG.error("PowerShell extension error: ${e.message}")
+          LOG.warn("PowerShell extension error: ${e.message}")
+          showInstallPSNotification()
         }
         is PowerShellExtensionNotFound -> {
-          LOG.error("PowerShell extension not found")
+          LOG.warn("PowerShell extension not found")
+          showInstallPSNotification()
         }
       }
       setStatus(ServerStatus.FAILED)
       return false
     }
 
+  }
+
+  private fun showInstallPSNotification() {
+    if (installExtensionNotificationShown) return
+    val title = "PowerShell VSCode extension is not installed"
+    val settings = if (SystemInfo.isMac) "Preferences" else "Settings"
+    val content = MessagesBundle.message("vs.code.powershell.extension.install.message", settings)
+    val installPSExt = Notification("PowerShell Extension Not Found", PowerShellIcons.FILE, title, null, content, NotificationType.INFORMATION, null)
+    installPSExt.addAction(BrowseNotificationAction("Install VSCode PowerShell", MessagesBundle.message("vs.code.powershell.extension.install.link")))
+
+    Notifications.Bus.notify(installPSExt)
+    installExtensionNotificationShown = true
   }
 
   private fun sendInitializeRequest(server: LanguageServer) {
