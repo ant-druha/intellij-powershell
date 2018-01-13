@@ -259,7 +259,7 @@ class LanguageServerEndpoint(val project: Project) {
 
   private fun showInstallPSNotification() {
     if (installExtensionNotificationShown) return
-    val title = "PowerShell VSCode extension is not installed"
+    val title = "PowerShell extension is not installed"
     val settings = if (SystemInfo.isMac) "Preferences" else "Settings"
     val content = MessagesBundle.message("vs.code.powershell.extension.install.message", settings)
     val installPSExt = Notification("PowerShell Extension Not Found", PowerShellIcons.FILE, title, null, content, NotificationType.INFORMATION, null)
