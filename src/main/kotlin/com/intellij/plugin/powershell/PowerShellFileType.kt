@@ -14,19 +14,23 @@ class PowerShellFileType : LanguageFileType(PowerShellLanguage.INSTANCE) {
     val INSTANCE = PowerShellFileType()
   }
 
-    override fun getIcon(): Icon? {
-        return PowerShellIcons.FILE
-    }
+  override fun getIcon(): Icon? {
+    return PowerShellIcons.FILE
+  }
 
-    override fun getName(): String {
-        return "PowerShell file"
-    }
+  override fun getName(): String {
+    return "PowerShell file"
+  }
 
-    override fun getDefaultExtension(): String {
-        return "ps1"
-    }
+  override fun getDefaultExtension(): String {
+    return "ps1"
+  }
 
-    override fun getDescription(): String {
-        return "PowerShell file"
-    }
+  override fun getDescription(): String {
+    return "PowerShell file"
+  }
+
+  fun getExtensions(): Array<String> {
+    return arrayOf(defaultExtension, "psm1", "psd1")
+  }
 }
