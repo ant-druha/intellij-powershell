@@ -20,18 +20,19 @@ public class PowerShellConfigurable implements SearchableConfigurable {
   private PowerShellJPanelComponent myPowerShellSettingsComponent;
   private String myOldValue;
   private static Logger LOG = Logger.getInstance("com.intellij.plugin.powershell.lang.lsp.ide.settings.PowerShellConfigurable");
-
+  public static String ID = "Setting.PowerShell";
+  public static String NAME = "PowerShell";
 
   @NotNull
   @Override
   public String getId() {
-    return "Setting.PowerShell";
+    return ID;
   }
 
   @Nls
   @Override
   public String getDisplayName() {
-    return "PowerShell";
+    return NAME;
   }
 
   @Nullable
