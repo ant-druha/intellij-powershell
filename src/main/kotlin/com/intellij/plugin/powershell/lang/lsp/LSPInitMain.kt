@@ -21,7 +21,11 @@ class LSPInitMain : ApplicationComponent, PersistentStateComponent<LSPInitMain.P
 
   data class PowerShellExtensionInfo(var editorServicesStartupScript: String = "",
                                      var powerShellExtensionPath: String? = null,
-                                     var editorServicesModuleVersion: String? = null)
+                                     var editorServicesModuleVersion: String? = null,
+                                     var isUseLanguageServer: Boolean = true) {
+    constructor(isUseLanguageServer: Boolean) : this("", "", "", isUseLanguageServer)
+  }
+
   private var myPowerShellExtensionInfo: PowerShellExtensionInfo = PowerShellExtensionInfo()
   private val myDisposable = Disposer.newDisposable()
 
@@ -38,7 +42,7 @@ class LSPInitMain : ApplicationComponent, PersistentStateComponent<LSPInitMain.P
   }
 
   fun setPSExtensionInfo(info: PowerShellExtensionInfo?) {
-    myPowerShellExtensionInfo = info?: PowerShellExtensionInfo()
+    myPowerShellExtensionInfo = info ?: PowerShellExtensionInfo()
   }
 
   companion object {
@@ -57,6 +61,9 @@ class LSPInitMain : ApplicationComponent, PersistentStateComponent<LSPInitMain.P
     }
 
     fun editorOpened(editor: Editor) {
+      val lspMain = ApplicationManager.getApplication().getComponent(LSPInitMain::class.java)
+      if (!lspMain.myPowerShellExtensionInfo.isUseLanguageServer) return
+
       val project = editor.project ?: return
       val file = PsiDocumentManager.getInstance(project).getPsiFile(editor.document)
       if (file?.fileType !is PowerShellFileType) return

@@ -8,6 +8,9 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.plugin.powershell.ide.MessagesBundle;
 import com.intellij.plugin.powershell.lang.lsp.LSPInitMain;
+import com.intellij.ui.components.JBCheckBox;
+import com.intellij.ui.components.JBLabel;
+import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,6 +21,8 @@ public class PowerShellJPanelComponent {
   private JPanel myPanel;
   private TextFieldWithBrowseButton myPSExtensionPathTextField;
   private JLabel myDetectedESVersionLabel;
+  private JCheckBox myIsUseLanguageServerCheckBox;
+  private JLabel myPathToPSExtensionLabel;
   @Nullable
   private LSPInitMain.PowerShellExtensionInfo myDetectedInfo;
 
@@ -30,10 +35,12 @@ public class PowerShellJPanelComponent {
   }
 
   void setVersionLabelValue(@Nullable String version) {
-    myDetectedESVersionLabel
-        .setText(MessagesBundle.INSTANCE.message("ps.editor.services.detected.version.label") + " " + StringUtil
-            .notNullize(version));
+    myDetectedESVersionLabel.setText(MessagesBundle.INSTANCE.message("ps.editor.services.detected.version.label") + " " + StringUtil.notNullize(version));
     setVersionLabelVisible(StringUtil.isNotEmpty(version));
+  }
+
+  String getPowerShellExtensionPath() {
+    return myPSExtensionPathTextField.getText().trim();
   }
 
   private void setVersionLabelVisible(boolean aFlag) {
@@ -56,27 +63,47 @@ public class PowerShellJPanelComponent {
           setVersionLabelValue(null);
           return;
         }
-        if (myPSExtensionPathTextField.getText().trim().equals(path)) return;
+        if (getPowerShellExtensionPath().equals(path)) return;
 
-        myDetectedInfo = PowerShellConfigurable.createPowerShellInfo(path);
+        myDetectedInfo = PowerShellConfigurable.createPowerShellInfo(path, myIsUseLanguageServerCheckBox.isSelected());
         setVersionLabelValue(myDetectedInfo != null ? myDetectedInfo.getEditorServicesModuleVersion() : null);
       }
     };
     fileChooserDescriptor.withShowHiddenFiles(true);
     JTextField textField = textFieldWithBrowseButton.getChildComponent();
     textField.setDisabledTextColor(UIUtil.getLabelDisabledForeground());
-    textFieldWithBrowseButton
-        .addBrowseFolderListener(description, null, null, fileChooserDescriptor, TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT);
+    textFieldWithBrowseButton.addBrowseFolderListener(description, null, null, fileChooserDescriptor, TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT);
     FileChooserFactory.getInstance().installFileCompletion(textField, fileChooserDescriptor, true, null);
     return textFieldWithBrowseButton;
   }
 
   private void createUIComponents() {
-    this.myPSExtensionPathTextField = createTextFieldWithBrowseButton(MessagesBundle.INSTANCE
-        .message("powershell.editor.services.path.text"));
+    myIsUseLanguageServerCheckBox = new JBCheckBox(MessagesBundle.INSTANCE.message("settings.powershell.lsp.is.enabled.box.text"));
+    myPathToPSExtensionLabel = new JBLabel(MessagesBundle.INSTANCE.message("powershell.extension.path.form.label"));
+    myPSExtensionPathTextField = createTextFieldWithBrowseButton(MessagesBundle.INSTANCE.message("powershell.editor.services.path.text"));
+    myIsUseLanguageServerCheckBox.addChangeListener(e -> allControlsSetEnabled(myIsUseLanguageServerCheckBox.isSelected()));
   }
 
-  TextFieldWithBrowseButton getPowerShellExtensionPathTextField() {
-    return myPSExtensionPathTextField;
+  boolean getIsUseLanguageServer() {
+    return myIsUseLanguageServerCheckBox.isSelected();
+  }
+
+  void isUseLanguageServerSetSelected(boolean value) {
+    myIsUseLanguageServerCheckBox.setSelected(value);
+    allControlsSetEnabled(myIsUseLanguageServerCheckBox.isSelected());
+  }
+
+  private void allControlsSetEnabled(boolean value) {
+    myPSExtensionPathTextField.setEnabled(value);
+    myPathToPSExtensionLabel.setEnabled(value);
+    myDetectedESVersionLabel.setEnabled(value);
+  }
+
+  void powerShellPathTextFieldSetEnabled(boolean isEnabled) {
+    myPSExtensionPathTextField.setEnabled(isEnabled);
+  }
+
+  void setPowerShellExtensionPath(String path) {
+    myPSExtensionPathTextField.setText(path);
   }
 }

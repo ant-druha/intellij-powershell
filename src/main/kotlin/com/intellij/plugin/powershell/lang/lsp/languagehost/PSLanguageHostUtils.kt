@@ -27,9 +27,7 @@ object PSLanguageHostUtils {
     return join(psExtensionDir, "scripts/Start-EditorServices.ps1")
   }
 
-  /**
-   * @throws PowerShellExtensionNotFound
-   */
+  @Throws(PowerShellExtensionNotFound::class)
   fun findPSExtensionsDir(): String {
     val home = System.getProperty("user.home")
     val vsExtensions = join(home, ".vscode/extensions")

@@ -19,6 +19,7 @@ import static com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHos
 public class PowerShellConfigurable implements SearchableConfigurable {
   private PowerShellJPanelComponent myPowerShellSettingsComponent;
   private String myOldValue;
+  private boolean myOldIsEnabled;
   private static Logger LOG = Logger.getInstance("com.intellij.plugin.powershell.lang.lsp.ide.settings.PowerShellConfigurable");
   public static String ID = "Setting.PowerShell";
   public static String NAME = "PowerShell";
@@ -43,41 +44,45 @@ public class PowerShellConfigurable implements SearchableConfigurable {
 
   @Override
   public boolean isModified() {
-    return !getScriptPathFromForm().equals(StringUtil.notNullize(myOldValue));
+    return !getScriptPathFromForm().equals(StringUtil.notNullize(myOldValue)) || myOldIsEnabled != getPSJpanel().getIsUseLanguageServer();
   }
 
   @Override
   public void reset() {
     LSPInitMain lspInitMain = ApplicationManager.getApplication().getComponent(LSPInitMain.class);
     String pathFromSettings = lspInitMain.getPowerShellInfo().getPowerShellExtensionPath();
-    getPSJpanel().getPowerShellExtensionPathTextField().setText(pathFromSettings);
+    boolean isEnabledInSettings = lspInitMain.getPowerShellInfo().isUseLanguageServer();
+    getPSJpanel().isUseLanguageServerSetSelected(isEnabledInSettings);
+    getPSJpanel().setPowerShellExtensionPath(pathFromSettings);
+    getPSJpanel().powerShellPathTextFieldSetEnabled(isEnabledInSettings);
     getPSJpanel().setVersionLabelValue(lspInitMain.getPowerShellInfo().getEditorServicesModuleVersion());
     myOldValue = pathFromSettings;
+    myOldIsEnabled = isEnabledInSettings;
   }
 
   @Override
   public void apply() throws ConfigurationException {
     String pathFromForm = getScriptPathFromForm();
-    String trimmed = pathFromForm.trim();
-    LSPInitMain.PowerShellExtensionInfo powerShellInfo = null;
+    boolean isEnabled = getPSJpanel().getIsUseLanguageServer();
     LSPInitMain lspInitMain = ApplicationManager.getApplication().getComponent(LSPInitMain.class);
-    if (StringUtil.isNotEmpty(trimmed)) {
-      powerShellInfo = createPowerShellInfo(trimmed);
-      if (powerShellInfo == null) {
-        getPSJpanel().setVersionLabelValue(null);
-        throw new ConfigurationException("Can not validate PowerShell extension");
-      }
+    LSPInitMain.PowerShellExtensionInfo powerShellInfo = createPowerShellInfo(pathFromForm, isEnabled);
+    if (powerShellInfo == null) {
+      getPSJpanel().setVersionLabelValue(null);
+      throw new ConfigurationException("Can not validate PowerShell extension");
     }
     myOldValue = pathFromForm;
+    myOldIsEnabled = isEnabled;
     lspInitMain.setPSExtensionInfo(powerShellInfo);
-    getPSJpanel()
-        .setVersionLabelValue(powerShellInfo != null ? powerShellInfo.getEditorServicesModuleVersion() : "");
+    getPSJpanel().setVersionLabelValue(powerShellInfo.getEditorServicesModuleVersion());
+    getPSJpanel().powerShellPathTextFieldSetEnabled(isEnabled);
   }
 
 
   @Nullable
-  static LSPInitMain.PowerShellExtensionInfo createPowerShellInfo(@NotNull final String psExtDir) throws ConfigurationException {
+  static LSPInitMain.PowerShellExtensionInfo createPowerShellInfo(@NotNull final String psExtDir, boolean isEnabled) throws ConfigurationException {
     try {
+      if (StringUtil.isEmpty(psExtDir)) return new LSPInitMain.PowerShellExtensionInfo(isEnabled);
+
       if (!FileUtil.exists(psExtDir)) throw new ConfigurationException("Path " + psExtDir + "does not exist.");
 
       String editorServicesVersion = INSTANCE
@@ -89,7 +94,7 @@ public class PowerShellConfigurable implements SearchableConfigurable {
       if (StringUtil.isEmpty(startupScript))
         throw new ConfigurationException("Can not find Editor Services startup script");
 
-      return new LSPInitMain.PowerShellExtensionInfo(startupScript, psExtDir, editorServicesVersion);
+      return new LSPInitMain.PowerShellExtensionInfo(startupScript, psExtDir, editorServicesVersion, isEnabled);
     } catch (PowerShellExtensionError e) {
       LOG.warn("Configuration error: " + e.getMessage());
       return null;
@@ -98,7 +103,7 @@ public class PowerShellConfigurable implements SearchableConfigurable {
 
   @NotNull
   private String getScriptPathFromForm() {
-    return getPSJpanel().getPowerShellExtensionPathTextField().getText();
+    return getPSJpanel().getPowerShellExtensionPath();
   }
 
   private PowerShellJPanelComponent getPSJpanel() {
