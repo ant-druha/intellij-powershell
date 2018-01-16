@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.intellij.plugin.adernov.powershell</id>
   <name>PowerShell</name>
-  <version>0.0.2</version>
+  <version>0.0.3</version>
   <vendor email="andrey.dernov@gmail.com" url="https://twitter.com/ant_druha">Andrey</vendor>
 
   <description><![CDATA[
@@ -13,6 +13,11 @@
   <change-notes><![CDATA[
   <html>
         <dl>
+            <dt>0.0.3 Bug fix update<br></dt>
+            <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/3">3</a> - Support PowerShell Scopes like Global or Local for functions</dd>
+            <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/5">5</a> - Support more PowerShell file extensions.</dd>
+            <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/7">7</a> - StackOverflowError on resolving variable that has not definition</dd>
+
             <dt>0.0.2 Enhanced completion<br></dt>
             <dd>&#183; Resolve and completion of declared in script type members (methods, properties, constructors);</dd>
             <dd>&#183; Completion for different contexts (references, types, properties).</dd>
@@ -29,8 +34,7 @@
             <dd>&#183; Run Configuration.</dd>
         </dl>
   </html>
-    ]]>
-  </change-notes>
+    ]]></change-notes>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
   <idea-version since-build="163.0"/>
