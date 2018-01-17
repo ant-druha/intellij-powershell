@@ -23,7 +23,7 @@ class LSPInitMain : ApplicationComponent, PersistentStateComponent<LSPInitMain.P
                                      var powerShellExtensionPath: String? = null,
                                      var editorServicesModuleVersion: String? = null,
                                      var isUseLanguageServer: Boolean = true) {
-    constructor(isUseLanguageServer: Boolean) : this("", "", "", isUseLanguageServer)
+    constructor(isUseLanguageServer: Boolean) : this("", null, null, isUseLanguageServer)
   }
 
   private var myPowerShellExtensionInfo: PowerShellExtensionInfo = PowerShellExtensionInfo()

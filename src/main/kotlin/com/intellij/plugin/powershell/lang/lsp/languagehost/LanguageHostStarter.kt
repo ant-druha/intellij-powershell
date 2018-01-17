@@ -44,6 +44,9 @@ class LanguageHostStarter {
     private val myHostDetails = HostDetails(ApplicationNamesInfo.getInstance().fullProductName, "com.intellij.plugin.PowerShell", ApplicationInfo.getInstance().fullVersion)
     private var cachedEditorServicesModuleVersion: String? = null
     private var cachedPowerShellExtensionDir: String? = null
+    private var autoDetectedPowerShellExtensionDir: String? = null
+
+    fun getDiscoveredPowerShellExtensionDir(): String? = autoDetectedPowerShellExtensionDir
 
     private data class HostDetails(val name: String, val profileId: String, val version: String)
     private data class SessionInfo(val languageServicePort: Int, val debugServicePort: Int, val powerShellVersion: String?, val status: String?) {
@@ -250,7 +253,10 @@ class LanguageHostStarter {
 
     val lspMain = ApplicationManager.getApplication().getComponent(LSPInitMain::class.java)
     result = lspMain.getPowerShellInfo().powerShellExtensionPath?.trim()
-    if (StringUtil.isEmpty(result)) result = findPSExtensionsDir()
+    if (StringUtil.isEmpty(result)) {
+      result = findPSExtensionsDir()
+      autoDetectedPowerShellExtensionDir = result
+    }
     cachedPowerShellExtensionDir = result
 
     return result!!

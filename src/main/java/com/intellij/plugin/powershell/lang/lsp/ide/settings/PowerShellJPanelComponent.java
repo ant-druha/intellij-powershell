@@ -8,6 +8,9 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.plugin.powershell.ide.MessagesBundle;
 import com.intellij.plugin.powershell.lang.lsp.LSPInitMain;
+import com.intellij.plugin.powershell.lang.lsp.languagehost.LanguageHostStarter;
+import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils;
+import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBTextField;
@@ -25,6 +28,7 @@ public class PowerShellJPanelComponent {
   private JLabel myPathToPSExtensionLabel;
   @Nullable
   private LSPInitMain.PowerShellExtensionInfo myDetectedInfo;
+  private JBTextField myPathToPSExtDirjTextField;
 
   JPanel getMyPanel() {
     return myPanel;
@@ -53,7 +57,8 @@ public class PowerShellJPanelComponent {
 //    }
 
   private TextFieldWithBrowseButton createTextFieldWithBrowseButton(@NotNull String description) {
-    TextFieldWithBrowseButton textFieldWithBrowseButton = new TextFieldWithBrowseButton(new JTextField(0));
+    myPathToPSExtDirjTextField = new JBTextField(0);
+    TextFieldWithBrowseButton textFieldWithBrowseButton = new TextFieldWithBrowseButton(myPathToPSExtDirjTextField);
     FileChooserDescriptor fileChooserDescriptor = new FileChooserDescriptor(false, true, false, false, false, false) {
       @Override
       public void validateSelectedFiles(VirtualFile[] files) throws Exception {
@@ -103,7 +108,21 @@ public class PowerShellJPanelComponent {
     myPSExtensionPathTextField.setEnabled(isEnabled);
   }
 
-  void setPowerShellExtensionPath(String path) {
-    myPSExtensionPathTextField.setText(path);
+  void setPowerShellExtensionPath(@Nullable String path) {
+    if (path == null) {
+      setAutoDetectedPowerShellExtensionPath();
+    } else {
+      myPSExtensionPathTextField.setText(path);
+    }
+  }
+
+  private void setAutoDetectedPowerShellExtensionPath() {
+    String discoveredPath = LanguageHostStarter.Companion.getDiscoveredPowerShellExtensionDir();
+    if (StringUtil.isNotEmpty(discoveredPath) && PSLanguageHostUtils.INSTANCE.checkExists(discoveredPath)) {
+      myPathToPSExtDirjTextField.getEmptyText().setText(discoveredPath + " (auto detected)");
+    } else {
+      myPathToPSExtDirjTextField.getEmptyText().setText("Not found", SimpleTextAttributes
+          .merge(SimpleTextAttributes.GRAYED_ITALIC_ATTRIBUTES, SimpleTextAttributes.ERROR_ATTRIBUTES));
+    }
   }
 }
