@@ -80,3 +80,8 @@ compileTestKotlin {
 //        coroutines "enable"
 //    }
 //}
+prepareSandbox {
+    from("${project.rootDir}/language_host/v1.5.0") {
+        into "${intellij.pluginName}/lib/"
+    }
+}
