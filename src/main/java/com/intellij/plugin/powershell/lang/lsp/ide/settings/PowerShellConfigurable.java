@@ -72,7 +72,7 @@ public class PowerShellConfigurable implements SearchableConfigurable {
     myOldValue = pathFromForm;
     myOldIsEnabled = isEnabled;
     lspInitMain.setPSExtensionInfo(powerShellInfo);
-    getPSJpanel().setVersionLabelValue(powerShellInfo.getEditorServicesModuleVersion());
+    getPSJpanel().fillPowerShellInfo(powerShellInfo);
     getPSJpanel().powerShellPathTextFieldSetEnabled(isEnabled);
   }
 

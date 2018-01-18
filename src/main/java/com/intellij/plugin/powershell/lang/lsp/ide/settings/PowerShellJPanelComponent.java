@@ -76,7 +76,7 @@ public class PowerShellJPanelComponent {
 
   @NotNull
   private String getEditorServicesVersionText(@Nullable String version) {
-    return MessagesBundle.INSTANCE.message("ps.editor.services.detected.version.label") + StringUtil.notNullize(version);
+    return MessagesBundle.INSTANCE.message("ps.editor.services.detected.version.label") + " " + StringUtil.notNullize(version);
   }
 
   String getPowerShellExtensionPath() {
@@ -133,6 +133,7 @@ public class PowerShellJPanelComponent {
     myPSExtensionPathTextField.setEnabled(value);
     myPathToPSExtensionLabel.setEnabled(value);
     myDetectedESVersionLabel.setEnabled(value && !LanguageHostStarter.Companion.isUseBundledPowerShellExtension());
+    myExplanationTextPane.setEnabled(value);
   }
 
   void powerShellPathTextFieldSetEnabled(boolean isEnabled) {
