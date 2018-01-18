@@ -187,12 +187,13 @@ class LanguageHostStarter {
       val jsonResult = JsonParser().parse(line).asJsonObject
       val langServicePort = jsonResult.get("languageServicePort")?.asInt
       val debugServicePort = jsonResult.get("debugServicePort")?.asInt
+      val powerShellVersion = jsonResult.get("powerShellVersion")?.asString
       val status = jsonResult.get("status")?.asString
       if (langServicePort == null || debugServicePort == null) {
         LOG.warn("languageServicePort or debugServicePort are null")
         return null
       }
-      return SessionInfo(langServicePort, debugServicePort, null, status)
+      return SessionInfo(langServicePort, debugServicePort, powerShellVersion, status)
     } catch (e: Exception) {
       LOG.error("Error reading/parsing session details file $sessionFile: $e")
       return null
