@@ -41,7 +41,7 @@ class LanguageHostStarter {
   companion object {
     @Volatile
     private var sessionCount = 0
-    private val myHostDetails = HostDetails(ApplicationNamesInfo.getInstance().fullProductName, "com.intellij.plugin.PowerShell", ApplicationInfo.getInstance().fullVersion)
+    private val myHostDetails = HostDetails(ApplicationNamesInfo.getInstance().fullProductName, "com.intellij.plugin.PowerShell", ApplicationInfo.getInstance().strictVersion)
     private var cachedEditorServicesModuleVersion: String? = null
     private var cachedPowerShellExtensionDir: String? = null
     private var isUseBundledPowerShellExtensionPath: Boolean = false
@@ -174,6 +174,9 @@ class LanguageHostStarter {
       notify.addAction(BrowseNotificationAction("Install VSCode PowerShell", MessagesBundle.message("powershell.vs.code.extension.install.link")))
       Notifications.Bus.notify(notify)
       return false
+    }
+    if (StringUtil.isNotEmpty(result)) {
+      LOG.warn("Startup script output not empty:\n$result")
     }
     return true
   }
