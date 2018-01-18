@@ -53,9 +53,8 @@ public class PowerShellConfigurable implements SearchableConfigurable {
     String pathFromSettings = lspInitMain.getPowerShellInfo().getPowerShellExtensionPath();
     boolean isEnabledInSettings = lspInitMain.getPowerShellInfo().isUseLanguageServer();
     getPSJpanel().isUseLanguageServerSetSelected(isEnabledInSettings);
-    getPSJpanel().setPowerShellExtensionPath(pathFromSettings);
+    getPSJpanel().fillPowerShellInfo(lspInitMain.getPowerShellInfo());
     getPSJpanel().powerShellPathTextFieldSetEnabled(isEnabledInSettings);
-    getPSJpanel().setVersionLabelValue(lspInitMain.getPowerShellInfo().getEditorServicesModuleVersion());
     myOldValue = pathFromSettings;
     myOldIsEnabled = isEnabledInSettings;
   }
@@ -85,8 +84,7 @@ public class PowerShellConfigurable implements SearchableConfigurable {
 
       if (!FileUtil.exists(psExtDir)) throw new ConfigurationException("Path " + psExtDir + "does not exist.");
 
-      String editorServicesVersion = INSTANCE
-          .getEditorServicesModuleVersion(INSTANCE.getPSExtensionModulesDir(psExtDir));
+      String editorServicesVersion = INSTANCE.getEditorServicesModuleVersion(INSTANCE.getPSExtensionModulesDir(psExtDir));
       if (StringUtil.isEmpty(editorServicesVersion))
         throw new ConfigurationException("Can not detect Editor Services module version");
 

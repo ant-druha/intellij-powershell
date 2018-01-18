@@ -250,7 +250,7 @@ class LanguageServerEndpoint(val project: Project) {
           showPowerShellNotConfiguredNotification()
         }
         is PowerShellExtensionNotFound -> {
-          LOG.warn("PowerShell extension not found")
+          LOG.warn("PowerShell extension not found", e)
           showPowerShellNotConfiguredNotification()
         }
       }
@@ -270,7 +270,7 @@ class LanguageServerEndpoint(val project: Project) {
       if (configureLink == event.description) {
         ShowSettingsUtilImpl.showSettingsDialog(project, PowerShellConfigurable.ID, PowerShellConfigurable.NAME)
       } else if (downloadLink == event.description) {
-        BrowserUtil.browse(MessagesBundle.message("vs.code.powershell.extension.install.link"))
+        BrowserUtil.browse(MessagesBundle.message("powershell.vs.code.extension.install.link"))
       }
     }
     val installPSExt = Notification("PowerShell Extension Not Found", PowerShellIcons.FILE, title, null, XmlStringUtil.wrapInHtml(content), NotificationType.INFORMATION, listener)

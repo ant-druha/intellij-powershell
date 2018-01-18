@@ -7,6 +7,7 @@ import java.io.File
 
 object PSLanguageHostUtils {
   private val LOG: Logger = Logger.getInstance(javaClass)
+  val BUNDLED_PSES_PATH = join(PathManager.getPluginsPath(), "PowerShell/lib/LanguageHost")
 
   fun getLanguageHostLogsDir(): String {
     val extDir: String
@@ -20,15 +21,24 @@ object PSLanguageHostUtils {
   }
 
   fun getPSExtensionModulesDir(psExtensionDir: String): String {
-    return join(psExtensionDir, "modules")
+    return if (isExtensionDirectoryFormat(psExtensionDir)) join(psExtensionDir, "modules")
+    else psExtensionDir
   }
 
   fun getEditorServicesStartupScript(psExtensionDir: String): String {
-    return join(psExtensionDir, "scripts/Start-EditorServices.ps1")
+    return if (isExtensionDirectoryFormat(psExtensionDir)) join(psExtensionDir, "scripts/Start-EditorServices.ps1")
+    else join(BUNDLED_PSES_PATH, "scripts/Start-EditorServices.ps1")
+  }
+
+  /**
+   * if this path is a 'ms-vscode.PowerShell-XXX' extension directory
+   */
+  private fun isExtensionDirectoryFormat(psExtensionDir: String): Boolean {
+    return checkExists("$psExtensionDir/scripts") && checkExists("$psExtensionDir/modules")
   }
 
   @Throws(PowerShellExtensionNotFound::class)
-  fun findPSExtensionsDir(): String {
+  private fun findPSExtensionsDir(): String {
     val home = System.getProperty("user.home")
     val vsExtensions = join(home, ".vscode/extensions")
     val psExtensions = File(vsExtensions).listFiles { _, name -> name.contains("powershell", true) }
@@ -42,14 +52,14 @@ object PSLanguageHostUtils {
   }
 
   @Throws(PowerShellExtensionError::class)
-  fun getEditorServicesModuleVersion(moduleBase: String): String? {
+  fun getEditorServicesModuleVersion(moduleBase: String): String {
     return getModuleVersion(moduleBase, "PowerShellEditorServices")
   }
 
   /**
    * @throws PowerShellExtensionError
    */
-  private fun getModuleVersion(moduleBase: String, moduleName: String): String? {
+  private fun getModuleVersion(moduleBase: String, moduleName: String): String {
     val moduleFile = join(moduleBase, "$moduleName/$moduleName.psd1")
     if (!checkExists(moduleFile)) throw PowerShellExtensionError("Module manifest file not found: $moduleFile")
     val lines = FileUtil.loadLines(moduleFile)
@@ -59,7 +69,7 @@ object PSLanguageHostUtils {
         return l.trimStart { c -> c != '=' }.substringAfter('=').trim().trim { c -> c == '\'' }
       }
     }
-    return null
+    throw PowerShellExtensionError("ModuleVersion info not found in: $moduleFile")
   }
 
   fun checkExists(path: String?): Boolean {
