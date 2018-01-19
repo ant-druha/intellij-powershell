@@ -111,7 +111,7 @@ class LanguageHostStarter {
     val logPath = createLogPath(psExtensionPath)
     val editorServicesVersion = getEditorServicesVersion(psExtensionPath)
     val bundledModulesPath = getPSExtensionModulesDir(psExtensionPath)
-    val additionalModules = "PowerShellEditorServices.VSCode"//todo detect all from bundledModulesPath
+    val additionalModules = ""//todo check if something could be added here
     val logLevel = "Verbose" //""Diagnostic" -< does not work for older PS versions
     val args = "-EditorServicesVersion '$editorServicesVersion' -HostName '${myHostDetails.name}' -HostProfileId '${myHostDetails.profileId}' " +
         "-HostVersion '${myHostDetails.version}' -AdditionalModules @('$additionalModules') " +
@@ -166,6 +166,7 @@ class LanguageHostStarter {
   private fun checkOutput(process: Process, editorServicesVersion: String): Boolean {
     process.waitFor(3000L, TimeUnit.MILLISECONDS)
     val br = BufferedReader(InputStreamReader(process.inputStream))
+    val er = BufferedReader(InputStreamReader(process.errorStream))
     val result = if (br.ready()) br.readLine() else ""
     if ("needs_install" == result) {
       val content = "Required $editorServicesVersion 'PowerShellEditorServices' module is not found. Please install PowerShell VS Code extension"
@@ -176,7 +177,14 @@ class LanguageHostStarter {
       return false
     }
     if (StringUtil.isNotEmpty(result)) {
-      LOG.warn("Startup script output not empty:\n$result")
+      LOG.info("Startup script output:\n$result")
+    }
+    if (er.ready()){
+      var errorOutput = ""
+      for (line in er.readLines()) {
+        errorOutput += line
+      }
+      if (StringUtil.isNotEmpty(errorOutput)) LOG.info("Startup script error output:\n$errorOutput")
     }
     return true
   }
