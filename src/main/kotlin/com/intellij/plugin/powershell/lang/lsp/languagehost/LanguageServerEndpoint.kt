@@ -52,7 +52,8 @@ class LanguageServerEndpoint(val project: Project) {
   private val connectedEditors: MutableMap<URI, EditorEventManager> = HashMap()
   private val rootPath = project.basePath
   private var capabilitiesAlreadyRequested: Boolean = false
-  @Volatile private var myStatus: ServerStatus = ServerStatus.STOPPED
+  @Volatile
+  private var myStatus: ServerStatus = ServerStatus.STOPPED
   private var languageHostStarter: LanguageHostStarter? = null
   private var crashCount: Int = 0
   private var myFailedStarts = 0
@@ -87,9 +88,9 @@ class LanguageServerEndpoint(val project: Project) {
     val file = FileDocumentManager.getInstance().getFile(editor.document) ?: return
     val uri = VfsUtil.toUri(file)
     if (!connectedEditors.contains(uri)) {
-      checkStarted()
+      checkStarted(editor)
       if (initializeFuture != null) {
-        val capabilities = getServerCapabilities()
+        val capabilities = getServerCapabilities(editor)
         if (capabilities != null) {
           initializeFuture?.thenRun {
             try {
@@ -130,10 +131,10 @@ class LanguageServerEndpoint(val project: Project) {
     }
   }
 
-  private fun getServerCapabilities(): ServerCapabilities? {
+  private fun getServerCapabilities(editor: Editor): ServerCapabilities? {
     if (initializeResult != null) return initializeResult?.capabilities
     try {
-      checkStarted()
+      checkStarted(editor)
       initializeFuture?.get(if (capabilitiesAlreadyRequested) 0 else 5000 /*Timeout.INIT_TIMEOUT*/, TimeUnit.MILLISECONDS)
     } catch (e: Exception) {
       LOG.warn("PowerShell language host not initialized after 5s\nCheck settings", e)
@@ -184,8 +185,8 @@ class LanguageServerEndpoint(val project: Project) {
 
   private val scheduleStartLock = Any()
 
-  private fun checkStarted() {
-    waitIfStarting()//When 'editor opened' notification comes but the server has not been started yet.
+  private fun checkStarted(editor: Editor) {
+    waitIfStarting(editor)//When 'editor opened' notification comes but the server has not been started yet.
     synchronized(scheduleStartLock, {
       val oldStatus = getStatus()
       if (oldStatus == ServerStatus.STOPPED || shouldRetryFailedStart()) {
@@ -199,16 +200,18 @@ class LanguageServerEndpoint(val project: Project) {
     })
   }
 
-  private fun waitIfStarting() {
+  private fun waitIfStarting(editor: Editor) {
     var checkCount = 15
     try {
+      LOG.debug("Waiting the language server for the '${project.name}' project to start to connect document: ${editor.document}")
       while (getStatus() == ServerStatus.STARTING && checkCount > 0) {
-        LOG.info("Waiting the language server for the '${project.name}' project to start... $checkCount.")
         Thread.sleep(500)
         checkCount--
       }
       if (checkCount <= 0) {
         LOG.warn("Wait time elapsed for the server to start for project '${project.name}'")
+      } else {
+        LOG.debug("Language server started for the '${project.name}' project. Can proceed with document: ${editor.document}")
       }
     } catch (e: Exception) {
       LOG.warn("Error while waiting the server for the '${project.name}' project to start: $e")
@@ -313,11 +316,11 @@ class LanguageServerEndpoint(val project: Project) {
       setStatus(ServerStatus.STARTED)
       return@thenApply res
     }.exceptionally {
-      LOG.warn("Server initialization completed exceptionally for $rootPath. Initialize result: $initializeResult, Cause: $it")
-      initializeResult = null
-      setStatus(ServerStatus.FAILED)
-      return@exceptionally null
-    }
+          LOG.warn("Server initialization completed exceptionally for $rootPath. Initialize result: $initializeResult, Cause: $it")
+          initializeResult = null
+          setStatus(ServerStatus.FAILED)
+          return@exceptionally null
+        }
   }
 
   private fun shouldRetryFailedStart(): Boolean {

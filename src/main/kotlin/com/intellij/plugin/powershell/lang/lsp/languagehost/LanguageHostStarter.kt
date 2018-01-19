@@ -215,7 +215,7 @@ class LanguageHostStarter {
       while (!fileWithSessionInfo.exists() && tries > 0) {
         tries--
         Thread.sleep(waitTimeoutMillis)
-        LOG.info("Waiting for session info file ${fileWithSessionInfo.path} ... Tries left: $tries")
+        LOG.debug("Waiting for session info file ${fileWithSessionInfo.path} ... Tries left: $tries")
       }
     } catch (e: Exception) {
       LOG.warn("Error while waiting session info file: $e")

@@ -70,7 +70,7 @@ class LSPInitMain : ApplicationComponent, PersistentStateComponent<LSPInitMain.P
       ApplicationManager.getApplication().executeOnPooledThread {
         val server = getServer(project)
         server.connectEditor(editor)
-        LOG.info("Registered ${file.name} script for PowerShell language host service.")
+        LOG.info("Registered ${file.name} script for PowerShell language host service")
       }
     }
 
@@ -80,14 +80,14 @@ class LSPInitMain : ApplicationComponent, PersistentStateComponent<LSPInitMain.P
       if (file?.fileType !is PowerShellFileType) return
       val server = projectToLanguageServer[project] ?: return
       server.disconnectEditor(VfsUtil.toUri(file.virtualFile))
-      LOG.info("Removed ${file.name} script from PowerShell language host service.")
+      LOG.info("Removed ${file.name} script from PowerShell language host service")
     }
 
   }
 
   override fun initComponent() {
     EditorFactory.getInstance().addEditorFactoryListener(EditorLSPListener(), myDisposable)
-    LOG.info("PluginMain init finished")
+    LOG.debug("PluginMain init finished")
   }
 
   override fun disposeComponent() {
