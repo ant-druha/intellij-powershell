@@ -2,7 +2,7 @@
   <id>com.intellij.plugin.adernov.powershell</id>
   <name>PowerShell</name>
   <version>0.0.2</version>
-  <vendor email="andrey.dernov@gmail.com" url="https://twitter.com/ant_druha">Andrey</vendor>
+  <vendor email="andrey.dernov@gmail.com" url="https://bitbucket.org/adernov/powershell/issues?status=new&amp;status=open">Andrey</vendor>
 
   <description><![CDATA[
     Provides <a href="https://docs.microsoft.com/en-us/powershell/scripting/powershell-scripting">PowerShell</a> intellisense and script execution support for IntelliJ IDEs.<br>
