@@ -17,7 +17,6 @@ import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.project.ProjectManagerListener
-import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.plugin.powershell.PowerShellIcons
 import com.intellij.plugin.powershell.ide.MessagesBundle
@@ -34,8 +33,6 @@ import org.eclipse.lsp4j.*
 import org.eclipse.lsp4j.jsonrpc.messages.Either
 import org.eclipse.lsp4j.launch.LSPLauncher
 import org.eclipse.lsp4j.services.LanguageServer
-import java.io.File
-import java.io.PrintWriter
 import java.net.URI
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -58,11 +55,11 @@ class LanguageServerEndpoint(val project: Project) {
   private var crashCount: Int = 0
   private var myFailedStarts = 0
 
-  private val dumpFile = File(FileUtil.toCanonicalPath(PSLanguageHostUtils.getLanguageHostLogsDir() + "/protocol_messages_IJ.log"))
-  private var fileWriter: PrintWriter? = null
+//  private val dumpFile = File(FileUtil.toCanonicalPath(PSLanguageHostUtils.getLanguageHostLogsDir() + "/protocol_messages_IJ.log"))
+//  private var fileWriter: PrintWriter? = null
 
   init {
-    dumpFile.parentFile.mkdirs()
+//    dumpFile.parentFile.mkdirs()
     addShutdownHook()
   }
 
@@ -166,8 +163,8 @@ class LanguageServerEndpoint(val project: Project) {
     }
     languageServer?.exit()
     languageServer = null
-    fileWriter?.close()
-    fileWriter = null
+//    fileWriter?.close()
+//    fileWriter = null
     destroyLanguageHostProcess()
     setStatus(ServerStatus.STOPPED)
     LOG.info("Connection to PowerShell language host closed for $rootPath.")
@@ -231,8 +228,8 @@ class LanguageServerEndpoint(val project: Project) {
         setStatus(ServerStatus.FAILED)
         return false
       }
-      fileWriter = PrintWriter(dumpFile)
-      val launcher = LSPLauncher.createClientLauncher(client, inStream, outStream, false, fileWriter)
+//      fileWriter = PrintWriter(dumpFile)
+      val launcher = LSPLauncher.createClientLauncher(client, inStream, outStream, false, null)
       languageServer = launcher.remoteProxy
 
       val server = languageServer
