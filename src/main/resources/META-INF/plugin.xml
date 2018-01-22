@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.intellij.plugin.adernov.powershell</id>
   <name>PowerShell</name>
-  <version>0.0.2</version>
+  <version>1.0.0</version>
   <vendor email="andrey.dernov@gmail.com" url="https://bitbucket.org/adernov/powershell/issues?status=new&amp;status=open">Andrey</vendor>
 
   <description><![CDATA[
@@ -13,6 +13,15 @@
   <change-notes><![CDATA[
   <html>
         <dl>
+            <dt>1.0.0 Language Server Protocol support<br></dt>
+            <dd>&#183; Plugin now bundles <a href="https://github.com/PowerShell/PowerShellEditorServices">PowerShellEditorServices module</a> (same as VSCode) to provide Editor assistance;</dd>
+            <dd>&#183;Supported requests:<br>
+                - <i>textDocument/didOpen</i> (File opened in editor)<br>
+                - <i>textDocument/didClose</i> (File closed in editor)<br>
+                - <i>textDocument/didChange</i> (Editor document text changes)<br>
+                - <i>textDocument/completion</i> (Editor Auto completion).
+            </dd>
+
             <dt>0.0.2 Enhanced completion<br></dt>
             <dd>&#183; Resolve and completion of declared in script type members (methods, properties, constructors);</dd>
             <dd>&#183; Completion for different contexts (references, types, properties).</dd>
