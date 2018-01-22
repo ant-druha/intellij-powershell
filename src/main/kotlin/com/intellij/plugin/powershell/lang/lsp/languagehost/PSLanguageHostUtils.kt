@@ -39,8 +39,9 @@ object PSLanguageHostUtils {
 
   @Throws(PowerShellExtensionNotFound::class)
   private fun findPSExtensionsDir(): String {
-    val home = System.getProperty("user.home")
+    val home = System.getProperty("user.home")?: throw PowerShellExtensionNotFound("")
     val vsExtensions = join(home, ".vscode/extensions")
+    if (!checkExists(vsExtensions)) throw PowerShellExtensionNotFound("The '~/.vscode/extensions' directory does not exist")
     val psExtensions = File(vsExtensions).listFiles { _, name -> name.contains("powershell", true) }
     val result = if (psExtensions.isNotEmpty()) psExtensions.sortedDescending().first() else null
     if (result == null || !result.exists()) {
