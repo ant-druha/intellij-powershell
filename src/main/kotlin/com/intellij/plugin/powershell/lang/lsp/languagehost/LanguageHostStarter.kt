@@ -41,7 +41,7 @@ class LanguageHostStarter {
   companion object {
     @Volatile
     private var sessionCount = 0
-    private val myHostDetails = HostDetails(ApplicationNamesInfo.getInstance().fullProductName, "com.intellij.plugin.PowerShell", ApplicationInfo.getInstance().strictVersion)
+    private val myHostDetails = HostDetails(ApplicationNamesInfo.getInstance().fullProductName, "com.intellij.plugin.PowerShell", getHostVersion())
     private var cachedEditorServicesModuleVersion: String? = null
     private var cachedPowerShellExtensionDir: String? = null
     private var isUseBundledPowerShellExtensionPath: Boolean = false
@@ -50,6 +50,8 @@ class LanguageHostStarter {
     fun setUseBundledPowerShellExtension(value: Boolean) {
       isUseBundledPowerShellExtensionPath = value
     }
+    private fun getHostVersion(): String =
+        "${ApplicationInfo.getInstance().majorVersion}.${ApplicationInfo.getInstance().minorVersion}"
 
     private data class HostDetails(val name: String, val profileId: String, val version: String)
     private data class SessionInfo(val languageServicePort: Int, val debugServicePort: Int, val powerShellVersion: String?, val status: String?) {
