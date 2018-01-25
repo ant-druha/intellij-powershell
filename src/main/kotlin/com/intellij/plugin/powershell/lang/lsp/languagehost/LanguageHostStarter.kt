@@ -135,30 +135,18 @@ class LanguageHostStarter {
     FileUtil.createParentDirs(fileWithSessionInfo)
     FileUtil.createParentDirs(File(logPath))
     sessionInfoFile = fileWithSessionInfo
-    val executableName = if (SystemInfo.isUnix) "powershell" else "powershell.exe"
-    val psCommand = "$executableName -NoProfile -NonInteractive ${scriptFile.canonicalPath}"
-
-    val shell = EnvironmentUtil.getValue("SHELL")
     val command = mutableListOf<String>()
-    if (shell != null) {
+    if (SystemInfo.isUnix) {
+      val shell = EnvironmentUtil.getValue("SHELL") ?: "/bin/bash"
       command.add(shell)
       command.add("-c")
+      command.add("powershell -NoProfile -NonInteractive ${scriptFile.canonicalPath}")
     } else {
-      val psExe = if (SystemInfo.isUnix) { //todo change this
-        "/usr/local/bin/powershell"
-      } else {
-        val winDir = System.getenv("windir")
-        val exe64 = PSLanguageHostUtils.join(winDir, "System32", "WindowsPowerShell", "v1.0", "powershell.exe")
-        val exe32 = PSLanguageHostUtils.join(winDir, "SysWOW64", "WindowsPowerShell", "v1.0", "powershell.exe")
-        if (checkExists(exe64)) exe64 else exe32
-      }
-      if (checkExists(psExe)) command.add(psExe)
-      else {
-        LOG.warn("Can not find full path to powershell executable")
-        command.add("powershell")
-      }
+      command.add("powershell")
+      command.add("-NoProfile")
+      command.add("-NonInteractive")
+      command.add(scriptFile.canonicalPath)
     }
-    command.add(psCommand)
     LOG.info("Language server starting... exe: '$command',\n launch command: $scriptText")
     val commandLine = GeneralCommandLine(command)
     val process = commandLine.createProcess()
