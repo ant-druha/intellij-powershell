@@ -242,6 +242,7 @@ class LanguageServerEndpoint(val project: Project) {
 
       launcherFuture = launcher.startListening()
       sendInitializeRequest(server)
+      LOG.debug("Sent initialize request to server")
       return true
     } catch (e: Exception) {
       when (e) {
@@ -252,6 +253,9 @@ class LanguageServerEndpoint(val project: Project) {
         is PowerShellExtensionNotFound -> {
           LOG.warn("PowerShell extension not found", e)
           showPowerShellNotConfiguredNotification()
+        }
+        else -> {
+          LOG.warn("Can not start language server: ", e)
         }
       }
       setStatus(ServerStatus.FAILED)
