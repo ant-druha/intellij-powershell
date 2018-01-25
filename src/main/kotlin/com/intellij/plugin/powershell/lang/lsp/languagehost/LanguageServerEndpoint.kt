@@ -344,7 +344,7 @@ class LanguageServerEndpoint(val project: Project) {
 
 
   fun crashed(e: Exception) {
-    LOG.error("Crashed: $e")
+    LOG.warn("Crashed: $e")
     crashCount += 1
     if (crashCount < 5) {
       val editors = connectedEditors.toMap().keys
