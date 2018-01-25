@@ -125,6 +125,7 @@ class LanguageHostStarter {
     val scriptText = "${escapePath(startupScript)} $args\n"
 
     val scriptFile = File.createTempFile("start-pses-host", ".ps1")
+    scriptFile.deleteOnExit()
     try {
       FileUtil.writeToFile(scriptFile, scriptText)
     } catch (e: Exception) {
