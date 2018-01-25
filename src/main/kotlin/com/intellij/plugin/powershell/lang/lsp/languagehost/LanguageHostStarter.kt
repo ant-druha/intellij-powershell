@@ -2,6 +2,7 @@ package com.intellij.plugin.powershell.lang.lsp.languagehost
 
 import com.google.common.io.Files
 import com.google.gson.JsonParser
+import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.notification.BrowseNotificationAction
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
@@ -21,6 +22,7 @@ import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.getEditorServicesModuleVersion
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.getEditorServicesStartupScript
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.getPSExtensionModulesDir
+import com.intellij.util.EnvironmentUtil
 import com.sun.jna.Pointer
 import com.sun.jna.platform.win32.Kernel32
 import com.sun.jna.platform.win32.WinNT
@@ -50,6 +52,7 @@ class LanguageHostStarter {
     fun setUseBundledPowerShellExtension(value: Boolean) {
       isUseBundledPowerShellExtensionPath = value
     }
+
     private fun getHostVersion(): String =
         "${ApplicationInfo.getInstance().majorVersion}.${ApplicationInfo.getInstance().minorVersion}"
 
@@ -119,7 +122,7 @@ class LanguageHostStarter {
         "-HostVersion '${myHostDetails.version}' -AdditionalModules @('$additionalModules') " +
         "-BundledModulesPath '$bundledModulesPath' -EnableConsoleRepl " +
         "-LogLevel '$logLevel' -LogPath '$logPath' -SessionDetailsPath '$sessionDetailsPath' -FeatureFlags @()"
-    val scriptText = "$startupScript $args\n"
+    val scriptText = "${escapePath(startupScript)} $args\n"
 
     val scriptFile = File.createTempFile("start-pses-host", ".ps1")
     try {
@@ -135,8 +138,30 @@ class LanguageHostStarter {
     val executableName = if (SystemInfo.isUnix) "powershell" else "powershell.exe"
     val psCommand = "$executableName -NoProfile -NonInteractive ${scriptFile.canonicalPath}"
 
-    LOG.info("Language server starting... exe: '$psCommand',\n launch command: $startupScript $args")
-    val process = Runtime.getRuntime().exec(psCommand)
+    val shell = EnvironmentUtil.getValue("SHELL")
+    val command = mutableListOf<String>()
+    if (shell != null) {
+      command.add(shell)
+      command.add("-c")
+    } else {
+      val psExe = if (SystemInfo.isUnix) { //todo change this
+        "/usr/local/bin/powershell"
+      } else {
+        val winDir = System.getenv("windir")
+        val exe64 = PSLanguageHostUtils.join(winDir, "System32", "WindowsPowerShell", "v1.0", "powershell.exe")
+        val exe32 = PSLanguageHostUtils.join(winDir, "SysWOW64", "WindowsPowerShell", "v1.0", "powershell.exe")
+        if (checkExists(exe64)) exe64 else exe32
+      }
+      if (checkExists(psExe)) command.add(psExe)
+      else {
+        LOG.warn("Can not find full path to powershell executable")
+        command.add("powershell")
+      }
+    }
+    command.add(psCommand)
+    LOG.info("Language server starting... exe: '$command',\n launch command: $scriptText")
+    val commandLine = GeneralCommandLine(command)
+    val process = commandLine.createProcess()
     powerShellProcess = process
 
     if (!checkOutput(process, editorServicesVersion)) {//todo
@@ -153,6 +178,8 @@ class LanguageHostStarter {
     process.outputStream.close()
     return sessionInfo
   }
+
+  private fun escapePath(path: String) = "&(\"$path\")"
 
   /**
    * @throws PowerShellExtensionNotFound
@@ -181,7 +208,7 @@ class LanguageHostStarter {
     if (StringUtil.isNotEmpty(result)) {
       LOG.info("Startup script output:\n$result")
     }
-    if (er.ready()){
+    if (er.ready()) {
       var errorOutput = ""
       for (line in er.readLines()) {
         errorOutput += line
