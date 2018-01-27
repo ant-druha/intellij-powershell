@@ -36,6 +36,8 @@ fun getModuleVersion(moduleBase: String, moduleName: String): String {
   throw PowerShellExtensionError("ModuleVersion info not found in: $moduleFile")
 }
 
+fun escapePath(path: String) = "&(\"$path\")"
+
 fun checkExists(path: String?): Boolean {
   return FileUtil.exists(path)
 }

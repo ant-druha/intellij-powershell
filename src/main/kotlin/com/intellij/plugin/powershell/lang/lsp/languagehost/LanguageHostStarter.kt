@@ -16,6 +16,7 @@ import com.intellij.openapi.util.text.StringUtil
 import com.intellij.plugin.powershell.PowerShellIcons
 import com.intellij.plugin.powershell.ide.MessagesBundle
 import com.intellij.plugin.powershell.ide.run.checkExists
+import com.intellij.plugin.powershell.ide.run.escapePath
 import com.intellij.plugin.powershell.ide.run.findPsExecutable
 import com.intellij.plugin.powershell.lang.lsp.LSPInitMain
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.BUNDLED_PSES_PATH
@@ -162,8 +163,6 @@ class LanguageHostStarter {
     process.outputStream.close()
     return sessionInfo
   }
-
-  private fun escapePath(path: String) = "&(\"$path\")"
 
   /**
    * @throws PowerShellExtensionNotFound
