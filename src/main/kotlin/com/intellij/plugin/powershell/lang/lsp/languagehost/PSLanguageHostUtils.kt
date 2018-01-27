@@ -2,7 +2,9 @@ package com.intellij.plugin.powershell.lang.lsp.languagehost
 
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.util.io.FileUtil
+import com.intellij.plugin.powershell.ide.run.checkExists
+import com.intellij.plugin.powershell.ide.run.getModuleVersion
+import com.intellij.plugin.powershell.ide.run.join
 import java.io.File
 
 object PSLanguageHostUtils {
@@ -39,7 +41,7 @@ object PSLanguageHostUtils {
 
   @Throws(PowerShellExtensionNotFound::class)
   private fun findPSExtensionsDir(): String {
-    val home = System.getProperty("user.home")?: throw PowerShellExtensionNotFound("")
+    val home = System.getProperty("user.home") ?: throw PowerShellExtensionNotFound("Can not get user home directory")
     val vsExtensions = join(home, ".vscode/extensions")
     if (!checkExists(vsExtensions)) throw PowerShellExtensionNotFound("The '~/.vscode/extensions' directory does not exist")
     val psExtensions = File(vsExtensions).listFiles { _, name -> name.contains("powershell", true) }
@@ -57,27 +59,4 @@ object PSLanguageHostUtils {
     return getModuleVersion(moduleBase, "PowerShellEditorServices")
   }
 
-  /**
-   * @throws PowerShellExtensionError
-   */
-  private fun getModuleVersion(moduleBase: String, moduleName: String): String {
-    val moduleFile = join(moduleBase, "$moduleName/$moduleName.psd1")
-    if (!checkExists(moduleFile)) throw PowerShellExtensionError("Module manifest file not found: $moduleFile")
-    val lines = FileUtil.loadLines(moduleFile)
-    for (l in lines) {
-      if (l.contains("ModuleVersion", true)) {
-        //todo can be not in one line
-        return l.trimStart { c -> c != '=' }.substringAfter('=').trim().trim { c -> c == '\'' }
-      }
-    }
-    throw PowerShellExtensionError("ModuleVersion info not found in: $moduleFile")
-  }
-
-  fun checkExists(path: String?): Boolean {
-    return FileUtil.exists(path)
-  }
-
-  fun join(vararg pathPart: String): String {
-    return FileUtil.toCanonicalPath(FileUtil.join(*pathPart))
-  }
 }

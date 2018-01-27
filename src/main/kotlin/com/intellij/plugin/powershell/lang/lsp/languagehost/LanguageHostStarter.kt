@@ -11,18 +11,17 @@ import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.plugin.powershell.PowerShellIcons
 import com.intellij.plugin.powershell.ide.MessagesBundle
+import com.intellij.plugin.powershell.ide.run.checkExists
+import com.intellij.plugin.powershell.ide.run.findPsExecutable
 import com.intellij.plugin.powershell.lang.lsp.LSPInitMain
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.BUNDLED_PSES_PATH
-import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.checkExists
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.getEditorServicesModuleVersion
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.getEditorServicesStartupScript
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.getPSExtensionModulesDir
-import com.intellij.util.EnvironmentUtil
 import com.sun.jna.Pointer
 import com.sun.jna.platform.win32.Kernel32
 import com.sun.jna.platform.win32.WinNT
@@ -67,6 +66,7 @@ class LanguageHostStarter {
   /**
    * @throws PowerShellExtensionError
    * @throws PowerShellExtensionNotFound
+   * @throws PowerShellNotInstalled
    */
   fun establishConnection(): Pair<InputStream?, OutputStream?> {
     val port = getServerPort() ?: return Pair(null, null)//long operation
@@ -91,6 +91,7 @@ class LanguageHostStarter {
   /**
    * @throws PowerShellExtensionError
    * @throws PowerShellExtensionNotFound
+   * @throws PowerShellNotInstalled
    */
   private fun getServerPort(): Int? {
     sessionInfo = startServerSession()
@@ -104,6 +105,7 @@ class LanguageHostStarter {
   /**
    * @throws PowerShellExtensionError
    * @throws PowerShellExtensionNotFound
+   * @throws PowerShellNotInstalled
    */
   private fun startServerSession(): SessionInfo? {
     val psExtensionPath = getPowerShellExtensionPath()
@@ -137,17 +139,10 @@ class LanguageHostStarter {
     FileUtil.createParentDirs(File(logPath))
     sessionInfoFile = fileWithSessionInfo
     val command = mutableListOf<String>()
-    if (SystemInfo.isUnix) {
-      val shell = EnvironmentUtil.getValue("SHELL") ?: "/bin/bash"
-      command.add(shell)
-      command.add("-c")
-      command.add("powershell -NoProfile -NonInteractive ${scriptFile.canonicalPath}")
-    } else {
-      command.add("powershell")
-      command.add("-NoProfile")
-      command.add("-NonInteractive")
-      command.add(scriptFile.canonicalPath)
-    }
+    command.add(findPsExecutable())
+    command.add("-NoProfile")
+    command.add("-NonInteractive")
+    command.add(scriptFile.canonicalPath)
     LOG.info("Language server starting... exe: '$command',\n launch command: $scriptText")
     val commandLine = GeneralCommandLine(command)
     val process = commandLine.createProcess()

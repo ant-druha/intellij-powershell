@@ -54,6 +54,7 @@ class LanguageServerEndpoint(val project: Project) {
   private var languageHostStarter: LanguageHostStarter? = null
   private var crashCount: Int = 0
   private var myFailedStarts = 0
+  private val MAX_FAILED_STARTS = 2
 
 //  private val dumpFile = File(FileUtil.toCanonicalPath(PSLanguageHostUtils.getLanguageHostLogsDir() + "/protocol_messages_IJ.log"))
 //  private var fileWriter: PrintWriter? = null
@@ -75,6 +76,7 @@ class LanguageServerEndpoint(val project: Project) {
     private val uriToLanguageServerConnection = mutableMapOf<URI, LanguageServerEndpoint>()
     private val editorToLanguageServerConnection = mutableMapOf<Editor, LanguageServerEndpoint>()
     private var installExtensionNotificationShown = false
+    private var installPSNotificationShown = false
   }
 
   fun connectEditor(editor: Editor?) {
@@ -254,6 +256,10 @@ class LanguageServerEndpoint(val project: Project) {
           LOG.warn("PowerShell extension not found", e)
           showPowerShellNotConfiguredNotification()
         }
+        is PowerShellNotInstalled -> {
+          LOG.warn("PowerShell is not installed", e)
+          showPowerShellNotInstalledNotification()
+        }
         else -> {
           LOG.warn("Can not start language server: ", e)
         }
@@ -281,6 +287,23 @@ class LanguageServerEndpoint(val project: Project) {
 
     Notifications.Bus.notify(installPSExt)
     installExtensionNotificationShown = true
+  }
+
+  private fun showPowerShellNotInstalledNotification() {
+    if (installPSNotificationShown) return
+    val title = "PowerShell is not installed"
+    val downloadLink = MessagesBundle.message("powershell.download.link")
+    val content = MessagesBundle.message("powershell.install.message", downloadLink)
+    val listener = NotificationListener { _, event ->
+      if (downloadLink == event.description) {
+        BrowserUtil.browse(downloadLink)
+      }
+    }
+    val installPSExt = Notification("PowerShell Extension Not Found", PowerShellIcons.FILE, title, null, XmlStringUtil.wrapInHtml(content), NotificationType.INFORMATION, listener)
+
+    Notifications.Bus.notify(installPSExt)
+    myFailedStarts = MAX_FAILED_STARTS
+    installPSNotificationShown = true
   }
 
   private fun sendInitializeRequest(server: LanguageServer) {
@@ -327,7 +350,7 @@ class LanguageServerEndpoint(val project: Project) {
   private fun shouldRetryFailedStart(): Boolean {
     val thisFailed = getStatus() == ServerStatus.FAILED
     if (thisFailed) myFailedStarts++
-    return thisFailed && myFailedStarts <= 2
+    return thisFailed && myFailedStarts <= MAX_FAILED_STARTS
   }
 
   private fun setStatus(status: ServerStatus) {
