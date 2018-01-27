@@ -40,8 +40,8 @@ class PowerShellScriptCommandLineState(private val runConfiguration: PowerShellR
       val options = commandOptions.split(" ".toRegex()).dropLastWhile({ it.isEmpty() }).toTypedArray()
       if (options.isNotEmpty()) commandString.addAll(Arrays.asList(*options))
     }
-    val escaped = if (scriptPath.contains(' ')) escapePath(scriptPath) else scriptPath
-    commandString.add(escaped)
+    commandString.add("-File")
+    commandString.add(scriptPath)
     if (!StringUtil.isEmpty(scriptParameters)) {
       val regex = Pattern.compile("\"([^\"]*)\"|(\\w+)")
       val matchedParams = ArrayList<String>()
