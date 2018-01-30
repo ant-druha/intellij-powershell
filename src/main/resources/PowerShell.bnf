@@ -256,6 +256,7 @@ private statement ::=   if_statement
                       | trap_pipeline
                       | try_statement
                       | data_statement
+                      | using_statement
                       | inlinescript_statement
                       | parallel_statement
                       | sequence_statement
@@ -443,6 +444,7 @@ parallel_statement ::= 'parallel' statement_block
 inlinescript_statement ::= 'inlinescript' statement_block
 
 
+using_statement ::= 'using' nls? pipeline {pin=1}
 data_statement ::= 'data' nls? data_name? nls? data_commands_allowed? nls? statement_block {pin=1}
 private data_name ::= simple_name_identifier
 private data_commands_allowed ::= '-supportedcommand' nls? data_commands_list
