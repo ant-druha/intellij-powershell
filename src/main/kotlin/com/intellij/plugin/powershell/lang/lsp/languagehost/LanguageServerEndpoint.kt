@@ -12,8 +12,6 @@ import com.intellij.notification.Notifications
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileEditor.FileDocumentManager
-import com.intellij.openapi.fileEditor.FileEditorManager
-import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.project.ProjectManagerListener
@@ -28,6 +26,7 @@ import com.intellij.plugin.powershell.lang.lsp.ide.listeners.EditorMouseListener
 import com.intellij.plugin.powershell.lang.lsp.ide.listeners.EditorMouseMotionListenerImpl
 import com.intellij.plugin.powershell.lang.lsp.ide.listeners.SelectionListenerImpl
 import com.intellij.plugin.powershell.lang.lsp.ide.settings.PowerShellConfigurable
+import com.intellij.plugin.powershell.lang.lsp.util.getTextEditor
 import com.intellij.xml.util.XmlStringUtil
 import org.eclipse.lsp4j.*
 import org.eclipse.lsp4j.jsonrpc.messages.Either
@@ -382,11 +381,8 @@ class LanguageServerEndpoint(val project: Project) {
 
   private fun connectEditor(uri: URI) {
     val file = VfsUtil.findFileByURL(uri.toURL()) ?: return
-    val editors = FileEditorManager.getInstance(project).getAllEditors(file)
-        .filterIsInstance<TextEditor>().map { e -> e.editor }
-    if (editors.isNotEmpty()) {
-      connectEditor(editors.first())
-    }
+    val editor = getTextEditor(file, project) ?: return
+    connectEditor(editor)
   }
 
   private fun destroyLanguageHostProcess() {
