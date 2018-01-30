@@ -46,7 +46,7 @@ public class PowerShellJPanelComponent {
 
   PowerShellJPanelComponent() {
     setVersionLabelVisible(false);
-    String pathDescription = MessagesBundle.INSTANCE.message("powershell.extension.path.form.description", PS_VSCODE_LINK, PS_ES_LINK);
+    String pathDescription = MessagesBundle.INSTANCE.message("powershell.extension.path.form.description", PS_ES_LINK);
     myExplanationTextPane.setEditorKit(UIUtil.getHTMLEditorKit());
     myExplanationTextPane.setEditable(false);
     myExplanationTextPane.setBackground(UIUtil.getWindowColor());
