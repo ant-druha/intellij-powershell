@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.intellij.plugin.adernov.powershell</id>
   <name>PowerShell</name>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
   <vendor email="andrey.dernov@gmail.com" url="https://bitbucket.org/adernov/powershell/issues?status=new&amp;status=open">Andrey</vendor>
 
   <description><![CDATA[
@@ -13,9 +13,14 @@
   <change-notes><![CDATA[
   <html>
         <dl>
+          <dt>1.0.2 Update<br></dt>
+          <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/11">11</a> - "using" keyword not picked up in;</dd>
+          <dd>&#183; More pre-defined <a href="https://www.jetbrains.com/help/idea/live-templates.html">Live Templates</a> snippets;</dd>
+          <dd>&#183; Use '-File' parameter to specify the script file to run.</dd>
+
           <dt>1.0.1 Bug fix update<br></dt>
           <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/8">8</a> - Exception shown on LSP communication failure</dd>
-          <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/9">8</a> - Language server fails to start if path to startup script contains spaces.</dd>
+          <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/9">9</a> - Language server fails to start if path to startup script contains spaces.</dd>
 
             <dt>1.0.0 Language Server Protocol support<br></dt>
             <dd>&#183; Plugin now bundles <a href="https://github.com/PowerShell/PowerShellEditorServices">PowerShellEditorServices module</a> (same as VSCode) to provide Editor assistance;</dd>
