@@ -65,6 +65,7 @@
   -->
   <depends>com.intellij.modules.platform</depends>
   <depends>com.intellij.modules.lang</depends>
+  <depends optional="true">org.intellij.intelliLang</depends>
 
   <extensions defaultExtensionNs="com.intellij">
 
