@@ -128,7 +128,10 @@
 
     <completion.contributor language="PowerShell"
                             implementationClass="com.intellij.plugin.powershell.ide.editor.completion.PowerShellCompletionContributor"/>
+    <multiHostInjector implementation="com.intellij.plugin.powershell.ide.injection.PowerShellLanguageInjector" id="powershell" order="first,before TemporaryPlacesInjector"/>
 
+    <lang.elementManipulator forClass="com.intellij.plugin.powershell.psi.PowerShellStringLiteralExpression"
+                             implementationClass="com.intellij.plugin.powershell.ide.injection.PowerShellStringManipulator"/>
     <lang.documentationProvider language="PowerShell"
                                 implementationClass="com.intellij.plugin.powershell.ide.editor.documentation.PowerShellDocumentationProvider"/>
     <!--LSP-->
@@ -140,6 +143,10 @@
                              bundle="messages.MessagesBundle"
                              key="settings.powershell"/>
 
+  </extensions>
+  <extensions defaultExtensionNs="org.intellij.intelliLang">
+    <languageSupport implementation="com.intellij.plugin.powershell.ide.injection.PowerShellLanguageInjectionSupport"/>
+    <!--<injectionConfig config="injection/powerShellInjections.xml"/>-->
   </extensions>
 
   <actions>

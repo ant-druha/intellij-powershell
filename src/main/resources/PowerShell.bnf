@@ -298,6 +298,10 @@ real_literal_expression ::= REAL_NUM
 
 //String literals
 string_literal_expression ::= expandable_string_literal | verbatim_string_literal | expandable_here_string_literal | verbatim_here_string_literal
+{
+  implements="com.intellij.plugin.powershell.psi.PowerShellAbstractStringLiteralExpression"
+  mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractStringLiteralExpressionImpl"
+}
 private expandable_string_literal ::= dq_open expandable_string_content? dq_close
 private expandable_string_content ::= ( string_literal_entry | target_variable_expression | sub_expression )+
 private string_literal_entry ::= EXPANDABLE_STRING_PART
