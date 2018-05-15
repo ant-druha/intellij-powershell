@@ -189,6 +189,7 @@ open class PowerShellBlockImpl(node: ASTNode, wrap: Wrap?, alignment: Alignment?
       isInvocationExpressionQualifier(node) -> Indent.getContinuationIndent()
       isExpressionInPipelineTail(node) -> Indent.getContinuationIndent()
       isAttributeArgument(node) -> Indent.getContinuationIndent()
+      type === EXPANDABLE_HERE_STRING_END -> Indent.getAbsoluteNoneIndent()
       else -> Indent.getNoneIndent()
     }
   }
