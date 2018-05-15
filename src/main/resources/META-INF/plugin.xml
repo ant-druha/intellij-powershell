@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.intellij.plugin.adernov.powershell</id>
   <name>PowerShell</name>
-  <version>1.0.2</version>
+  <version>1.1.0</version>
   <vendor email="andrey.dernov@gmail.com" url="https://bitbucket.org/adernov/powershell/issues?status=new&amp;status=open">Andrey</vendor>
 
   <description><![CDATA[
@@ -13,6 +13,12 @@
   <change-notes><![CDATA[
   <html>
         <dl>
+          <dt>1.1.0<br></dt>
+          <dd>&#183; Language injections in interpolated strings;</dd>
+          <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/19">19</a> - Source formatting does not omit "@ at the beginning of line;</dd>
+          <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/20">20</a> - Handle drive letters in unc path.</dd>
+
+          
           <dt>1.0.2 Update<br></dt>
           <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/11">11</a> - "using" keyword not picked up in;</dd>
           <dd>&#183; More pre-defined <a href="https://www.jetbrains.com/help/idea/live-templates.html">Live Templates</a> snippets;</dd>
@@ -56,7 +62,7 @@
   </change-notes>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-  <idea-version since-build="163.0"/>
+  <idea-version since-build="172.4574"/>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
        on how to target different products -->
