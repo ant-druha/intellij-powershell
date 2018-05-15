@@ -674,17 +674,17 @@ command_name_char_tokens ::= generic_token_chars | allowed_identifier_keywords
 path_expression ::=  path_item nws (
                               (
                               ((   (PATH_SEP nws COLON2 nws) (path_item nws PATH_SEP nws COLON2 nws)*  //provider+ drive?
-                                  (nws path_item nws COLON nws PATH_SEP)? //drive
+                                  (nws path_item nws (COLON|DS) nws PATH_SEP)? //drive
                                )
                               |
                                (
-                                  (COLON nws PATH_SEP)     // or drive
+                                  ((COLON|DS) nws PATH_SEP)     // or drive
                                )
                                )
                               (nws path_item) (nws PATH_SEP nws path_item)* (nws PATH_SEP)? // container+
                               )//provider and/or drive and container+
                               | (PATH_SEP nws path_item)+ //just container+
-                              | COLON (nws PATH_SEP)?     // just drive
+                              | (COLON|DS) (nws PATH_SEP)?     // just drive
                               | PATH_SEP //just PATH_SEP
                                 ) | PATH_SEP (nws (path_expression | path_item))?//todo do not produce another path_expression node
                                   | relative_path_item             // just relative path

@@ -31,3 +31,6 @@ cd (Get-Location)\pip #command with 2 arguments: (Get-Location) and \pip todo: c
 cd (Get-Location)\pip\(Get-Location)\
 cd \pip
 cd \pip\wwe
+
+#drive name in unc path 
+$acl = Get-Acl \$( hostname )\e$\"some folder"
