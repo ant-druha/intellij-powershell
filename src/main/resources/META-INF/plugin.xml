@@ -16,7 +16,8 @@
           <dt>1.1.0<br></dt>
           <dd>&#183; Language injections in interpolated strings;</dd>
           <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/19">19</a> - Source formatting does not omit "@ at the beginning of line;</dd>
-          <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/20">20</a> - Handle drive letters in unc path.</dd>
+          <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/20">20</a> - Handle drive letters in unc path;</dd>
+          <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/21">21</a> - NCDFE if IntelliLang plugin is not installed.</dd>
 
           
           <dt>1.0.2 Update<br></dt>
@@ -71,7 +72,7 @@
   -->
   <depends>com.intellij.modules.platform</depends>
   <depends>com.intellij.modules.lang</depends>
-  <depends optional="true">org.intellij.intelliLang</depends>
+  <depends optional="true" config-file="injection.xml">org.intellij.intelliLang</depends>
 
   <extensions defaultExtensionNs="com.intellij">
 
@@ -134,10 +135,7 @@
 
     <completion.contributor language="PowerShell"
                             implementationClass="com.intellij.plugin.powershell.ide.editor.completion.PowerShellCompletionContributor"/>
-    <multiHostInjector implementation="com.intellij.plugin.powershell.ide.injection.PowerShellLanguageInjector" id="powershell" order="first,before TemporaryPlacesInjector"/>
 
-    <lang.elementManipulator forClass="com.intellij.plugin.powershell.psi.PowerShellStringLiteralExpression"
-                             implementationClass="com.intellij.plugin.powershell.ide.injection.PowerShellStringManipulator"/>
     <lang.documentationProvider language="PowerShell"
                                 implementationClass="com.intellij.plugin.powershell.ide.editor.documentation.PowerShellDocumentationProvider"/>
     <!--LSP-->
@@ -149,10 +147,6 @@
                              bundle="messages.MessagesBundle"
                              key="settings.powershell"/>
 
-  </extensions>
-  <extensions defaultExtensionNs="org.intellij.intelliLang">
-    <languageSupport implementation="com.intellij.plugin.powershell.ide.injection.PowerShellLanguageInjectionSupport"/>
-    <!--<injectionConfig config="injection/powerShellInjections.xml"/>-->
   </extensions>
 
   <actions>

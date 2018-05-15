@@ -1,0 +1,15 @@
+<idea-plugin>
+
+
+  <extensions defaultExtensionNs="com.intellij">
+    <multiHostInjector implementation="com.intellij.plugin.powershell.ide.injection.PowerShellLanguageInjector" id="powershell" order="first,before TemporaryPlacesInjector"/>
+
+    <lang.elementManipulator forClass="com.intellij.plugin.powershell.psi.PowerShellStringLiteralExpression"
+                             implementationClass="com.intellij.plugin.powershell.ide.injection.PowerShellStringManipulator"/>
+  </extensions>
+
+  <extensions defaultExtensionNs="org.intellij.intelliLang">
+    <languageSupport implementation="com.intellij.plugin.powershell.ide.injection.PowerShellLanguageInjectionSupport"/>
+    <!--<injectionConfig config="injection/powerShellInjections.xml"/>-->
+  </extensions>
+</idea-plugin>
