@@ -33,4 +33,4 @@ cd \pip
 cd \pip\wwe
 
 #drive name in unc path 
-$acl = Get-Acl \$( hostname )\e$\"some folder"
+$acl = Get-Acl \$(hostname)\e$\"some folder"
