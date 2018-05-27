@@ -122,7 +122,7 @@ class LanguageHostStarter {
     val additionalModules = ""//todo check if something could be added here
     val logLevel = "Verbose" //""Diagnostic" -< does not work for older PS versions
     val args = "-EditorServicesVersion '$editorServicesVersion' -HostName '${myHostDetails.name}' -HostProfileId '${myHostDetails.profileId}' " +
-        "-HostVersion '${myHostDetails.version}' -AdditionalModules @('$additionalModules') " +
+        "-HostVersion '${myHostDetails.version}' -AdditionalModules @() " +
         "-BundledModulesPath '$bundledModulesPath' -EnableConsoleRepl " +
         "-LogLevel '$logLevel' -LogPath '$logPath' -SessionDetailsPath '$sessionDetailsPath' -FeatureFlags @()"
     val scriptText = "${escapePath(startupScript)} $args\n"
