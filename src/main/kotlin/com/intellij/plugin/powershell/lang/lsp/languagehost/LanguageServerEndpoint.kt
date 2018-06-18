@@ -16,9 +16,13 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.project.ProjectManagerListener
 import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.openapi.vfs.VirtualFileEvent
+import com.intellij.openapi.vfs.VirtualFileListener
+import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.plugin.powershell.PowerShellIcons
 import com.intellij.plugin.powershell.ide.MessagesBundle
 import com.intellij.plugin.powershell.lang.lsp.client.PSLanguageClientImpl
+import com.intellij.plugin.powershell.lang.lsp.ide.DEFAULT_DID_CHANGE_CONFIGURATION_PARAMS
 import com.intellij.plugin.powershell.lang.lsp.ide.EditorEventManager
 import com.intellij.plugin.powershell.lang.lsp.ide.LSPRequestManager
 import com.intellij.plugin.powershell.lang.lsp.ide.listeners.DocumentListenerImpl
@@ -27,20 +31,22 @@ import com.intellij.plugin.powershell.lang.lsp.ide.listeners.EditorMouseMotionLi
 import com.intellij.plugin.powershell.lang.lsp.ide.listeners.SelectionListenerImpl
 import com.intellij.plugin.powershell.lang.lsp.ide.settings.PowerShellConfigurable
 import com.intellij.plugin.powershell.lang.lsp.util.getTextEditor
+import com.intellij.plugin.powershell.lang.lsp.util.isRemotePath
 import com.intellij.xml.util.XmlStringUtil
 import org.eclipse.lsp4j.*
 import org.eclipse.lsp4j.jsonrpc.messages.Either
 import org.eclipse.lsp4j.launch.LSPLauncher
 import org.eclipse.lsp4j.services.LanguageServer
 import java.net.URI
+import java.nio.file.Paths
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
 
-class LanguageServerEndpoint(val project: Project) {
+class LanguageServerEndpoint(private val languageHostConnectionManager: LanguageHostConnectionManager, private val project: Project) {
   private val LOG: Logger = Logger.getInstance(javaClass)
-  private var client: PSLanguageClientImpl = PSLanguageClientImpl()
+  private var client: PSLanguageClientImpl = PSLanguageClientImpl(project)
   private var languageServer: LanguageServer? = null
   private var initializeFuture: CompletableFuture<InitializeResult>? = null
   private var launcherFuture: Future<*>? = null
@@ -50,11 +56,15 @@ class LanguageServerEndpoint(val project: Project) {
   private var capabilitiesAlreadyRequested: Boolean = false
   @Volatile
   private var myStatus: ServerStatus = ServerStatus.STOPPED
-  private var languageHostStarter: LanguageHostStarter? = null
   private var crashCount: Int = 0
   private var myFailedStarts = 0
   private val MAX_FAILED_STARTS = 2
+  private var MY_REMOTE_FILES_CHANGE_LISTENER: VirtualFileListener? = null
 
+  override fun toString(): String {
+    val consoleString = if (isConsoleConnection()) " Console" else ""
+    return "[PowerShell Editor Services host$consoleString connection, project: ${project.basePath}]"
+  }
 //  private val dumpFile = File(FileUtil.toCanonicalPath(PSLanguageHostUtils.getLanguageHostLogsDir() + "/protocol_messages_IJ.log"))
 //  private var fileWriter: PrintWriter? = null
 
@@ -65,7 +75,7 @@ class LanguageServerEndpoint(val project: Project) {
 
   private fun addShutdownHook() {
     ProjectManager.getInstance().addProjectManagerListener(project, object : ProjectManagerListener {
-      override fun projectClosed(project: Project?) {
+      override fun projectClosing(project: Project?) {
         stop()
       }
     })
@@ -78,6 +88,20 @@ class LanguageServerEndpoint(val project: Project) {
     private var installPSNotificationShown = false
   }
 
+  fun start() {
+    val projectRoot = rootPath ?: project.name
+    checkStarted(projectRoot)
+    if (initializeFuture != null) {
+      val capabilities = getServerCapabilities(projectRoot)
+      if (capabilities != null) {
+        initializeFuture?.thenRun {
+          //todo move it to LanguageHostConnectionManager (notify it when server initialized)
+          languageServer?.workspaceService?.didChangeConfiguration(DEFAULT_DID_CHANGE_CONFIGURATION_PARAMS)//notify Editor Services to start REPL loop
+        }
+      }
+    }
+  }
+
   fun connectEditor(editor: Editor?) {
     if (editor == null) {
       LOG.warn("Editor is null for " + languageServer)
@@ -86,9 +110,9 @@ class LanguageServerEndpoint(val project: Project) {
     val file = FileDocumentManager.getInstance().getFile(editor.document) ?: return
     val uri = VfsUtil.toUri(file)
     if (!connectedEditors.contains(uri)) {
-      checkStarted(editor)
+      checkStarted(editor.document.toString())
       if (initializeFuture != null) {
-        val capabilities = getServerCapabilities(editor)
+        val capabilities = getServerCapabilities(editor.document.toString())
         if (capabilities != null) {
           initializeFuture?.thenRun {
             try {
@@ -129,10 +153,10 @@ class LanguageServerEndpoint(val project: Project) {
     }
   }
 
-  private fun getServerCapabilities(editor: Editor): ServerCapabilities? {
+  private fun getServerCapabilities(documentPath: String): ServerCapabilities? {
     if (initializeResult != null) return initializeResult?.capabilities
     try {
-      checkStarted(editor)
+      checkStarted(documentPath)
       initializeFuture?.get(if (capabilitiesAlreadyRequested) 0 else 5000 /*Timeout.INIT_TIMEOUT*/, TimeUnit.MILLISECONDS)
     } catch (e: Exception) {
       LOG.warn("PowerShell language host not initialized after 5s\nCheck settings", e)
@@ -148,6 +172,8 @@ class LanguageServerEndpoint(val project: Project) {
     for (e in copy) {
       disconnectEditor(e.key)
     }
+    val listener = MY_REMOTE_FILES_CHANGE_LISTENER
+    if (listener != null) VirtualFileManager.getInstance().removeVirtualFileListener(listener)
 
     initializeFuture?.cancel(true)
     initializeFuture = null
@@ -159,10 +185,10 @@ class LanguageServerEndpoint(val project: Project) {
     try {
       val shutdown: CompletableFuture<Any>? = languageServer?.shutdown()
       shutdown?.get(100, TimeUnit.MILLISECONDS)//otherwise lsp4j stream IOException
+      languageServer?.exit()
     } catch (ignored: Exception) {
       LOG.debug("PowerShell language host shutdown exception: $ignored")
     }
-    languageServer?.exit()
     languageServer = null
 //    fileWriter?.close()
 //    fileWriter = null
@@ -183,47 +209,44 @@ class LanguageServerEndpoint(val project: Project) {
 
   private val scheduleStartLock = Any()
 
-  private fun checkStarted(editor: Editor) {
-    waitIfStarting(editor)//When 'editor opened' notification comes but the server has not been started yet.
-    synchronized(scheduleStartLock, {
+  private fun checkStarted(path: String) {
+    waitIfStarting(path)//When 'editor opened' notification comes but the server has not been started yet.
+    synchronized(scheduleStartLock) {
       val oldStatus = getStatus()
       if (oldStatus == ServerStatus.STOPPED || shouldRetryFailedStart()) {
         //retry n attempts to start if failed
-        var launched = scheduleStart(oldStatus)
+        var launched = scheduleStart()
         while (!launched && shouldRetryFailedStart()) {
           stop()
-          launched = scheduleStart(getStatus())
+          launched = scheduleStart()
         }
       }
-    })
+    }
   }
 
-  private fun waitIfStarting(editor: Editor) {
+  private fun waitIfStarting(editorDocument: String) {
     var checkCount = 15
     try {
-      LOG.debug("Waiting the language server for the '${project.name}' project to start to connect document: ${editor.document}")
+      LOG.debug("Waiting the language server for the '${project.name}' project to start to connect document: $editorDocument")
       while (getStatus() == ServerStatus.STARTING && checkCount > 0) {
         Thread.sleep(500)
         checkCount--
       }
       if (checkCount <= 0) {
         LOG.warn("Wait time elapsed for the server to start for project '${project.name}'")
-      } else {
-        LOG.debug("Language server started for the '${project.name}' project. Can proceed with document: ${editor.document}")
+      } else if (checkCount != 15) {
+        LOG.debug("Language server started for the '${project.name}' project. Can proceed with document: $editorDocument")
       }
     } catch (e: Exception) {
       LOG.warn("Error while waiting the server for the '${project.name}' project to start: $e")
     }
   }
 
-  private fun scheduleStart(oldStatus: ServerStatus): Boolean {
+  private fun scheduleStart(): Boolean {
     setStatus(ServerStatus.STARTING)
-    if (languageHostStarter != null) languageHostStarter?.closeConnection()
-    if (languageHostStarter == null || oldStatus == ServerStatus.FAILED) {
-      languageHostStarter = LanguageHostStarter()
-    }
+    if (languageHostConnectionManager.isConnected()) destroyLanguageHostProcess()
     try {
-      val (inStream, outStream) = languageHostStarter!!.establishConnection() //long operation, suspends the thread
+      val (inStream, outStream) = languageHostConnectionManager.establishConnection() //long operation, suspends the thread
       if (inStream == null || outStream == null) {
         LOG.warn("Connection creation to PowerShell language host failed for $rootPath")
         setStatus(ServerStatus.FAILED)
@@ -242,8 +265,12 @@ class LanguageServerEndpoint(val project: Project) {
       client.connectServer(server, this@LanguageServerEndpoint)
 
       launcherFuture = launcher.startListening()
+      languageHostConnectionManager.connectServer(this)
       sendInitializeRequest(server)
       LOG.debug("Sent initialize request to server")
+
+      if (isConsoleConnection()) addRemoteFilesChangeListener(server)//register vfs listener for saving remote files
+
       return true
     } catch (e: Exception) {
       when (e) {
@@ -267,6 +294,20 @@ class LanguageServerEndpoint(val project: Project) {
       return false
     }
 
+  }
+
+  private fun addRemoteFilesChangeListener(server: LanguageServer) {
+    val listener = object : VirtualFileListener {
+      override fun contentsChanged(event: VirtualFileEvent) {
+        val canonicalPath = event.file.canonicalPath?.replaceFirst("/private", "")
+        if (isRemotePath(canonicalPath)) {
+          val uri = Paths.get(canonicalPath).toUri().toASCIIString()
+          server.textDocumentService?.didSave(DidSaveTextDocumentParams(TextDocumentIdentifier(uri), null))//notify Editor Services to save remote file
+        }
+      }
+    }
+    MY_REMOTE_FILES_CHANGE_LISTENER = listener
+    VirtualFileManager.getInstance().addVirtualFileListener(listener)
   }
 
   private fun showPowerShellNotConfiguredNotification() {
@@ -308,7 +349,7 @@ class LanguageServerEndpoint(val project: Project) {
   private fun sendInitializeRequest(server: LanguageServer) {
     val workspaceClientCapabilities = WorkspaceClientCapabilities()
     workspaceClientCapabilities.applyEdit = true
-    //workspaceClientCapabilities.setDidChangeConfiguration(new DidChangeConfigurationCapabilities)
+    workspaceClientCapabilities.didChangeConfiguration = DidChangeConfigurationCapabilities()
     workspaceClientCapabilities.didChangeWatchedFiles = DidChangeWatchedFilesCapabilities()
     workspaceClientCapabilities.executeCommand = ExecuteCommandCapabilities()
     workspaceClientCapabilities.workspaceEdit = WorkspaceEditCapabilities(true)
@@ -319,6 +360,7 @@ class LanguageServerEndpoint(val project: Project) {
     textDocumentClientCapabilities.completion = CompletionCapabilities(CompletionItemCapabilities(false))
     textDocumentClientCapabilities.definition = DefinitionCapabilities()
     textDocumentClientCapabilities.documentHighlight = DocumentHighlightCapabilities()
+    textDocumentClientCapabilities.synchronization = SynchronizationCapabilities(false, false, true)
     //textDocumentClientCapabilities.setDocumentLink(new DocumentLinkCapabilities)
     //textDocumentClientCapabilities.setDocumentSymbol(new DocumentSymbolCapabilities)
     textDocumentClientCapabilities.formatting = FormattingCapabilities()
@@ -386,8 +428,13 @@ class LanguageServerEndpoint(val project: Project) {
   }
 
   private fun destroyLanguageHostProcess() {
-    languageHostStarter?.closeConnection()
-    languageHostStarter = null
+    languageHostConnectionManager.closeConnection()
   }
+
+  fun shutdown() {
+    stop()
+  }
+
+  private fun isConsoleConnection(): Boolean = languageHostConnectionManager.useConsoleRepl()
 
 }

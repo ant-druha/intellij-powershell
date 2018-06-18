@@ -21,8 +21,8 @@ apply plugin: 'java'
 
 intellij {
     type 'IU'
-    version '2018.1.1'// https://www.jetbrains.com/intellij-repository/[releases|snapshots]
-    plugins 'IntelliLang'
+    version '182.2574.2'// https://www.jetbrains.com/intellij-repository/[releases|snapshots]
+    plugins 'IntelliLang', 'Terminal'
     pluginName 'PowerShell'
     updateSinceUntilBuild = false
 }

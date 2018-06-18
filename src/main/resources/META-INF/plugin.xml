@@ -73,6 +73,7 @@
   <depends>com.intellij.modules.platform</depends>
   <depends>com.intellij.modules.lang</depends>
   <depends optional="true" config-file="injection.xml">org.intellij.intelliLang</depends>
+  <depends optional="true" config-file="powerShellConsole.xml">org.jetbrains.plugins.terminal</depends>
 
   <extensions defaultExtensionNs="com.intellij">
 

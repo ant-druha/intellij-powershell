@@ -1,0 +1,8 @@
+<idea-plugin>
+  <actions>
+    <action id="PowerShellConsoleAction" class="com.intellij.plugin.powershell.ide.actions.PowerShellConsoleAction"
+            text="PowerShell Console..." description="Starts PowerShell console">
+      <add-to-group group-id="ToolsMenu" anchor="last"/>
+    </action>
+  </actions>
+</idea-plugin>

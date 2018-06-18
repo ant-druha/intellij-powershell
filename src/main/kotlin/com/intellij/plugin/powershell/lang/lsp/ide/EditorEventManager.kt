@@ -171,3 +171,10 @@ class EditorEventManager(private val project: Project, private val editor: Edito
 //    }
   }
 }
+
+val DEFAULT_DID_CHANGE_CONFIGURATION_PARAMS = DidChangeConfigurationParams(PowerShellLanguageServerSettingsWrapper(LanguageServerSettings()))
+
+data class PowerShellLanguageServerSettingsWrapper(val Powershell: LanguageServerSettings)
+data class LanguageServerSettings(val EnableProfileLoading: Boolean = true, val ScriptAnalysis: ScriptAnalysisSettings = ScriptAnalysisSettings(), val CodeFormatting: CodeFormattingSettings = CodeFormattingSettings())
+data class CodeFormattingSettings(var NewLineAfterOpenBrace: Boolean = true)
+data class ScriptAnalysisSettings(var Enabled: Boolean = true)

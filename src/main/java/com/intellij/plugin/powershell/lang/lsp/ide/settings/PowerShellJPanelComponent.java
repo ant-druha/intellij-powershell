@@ -11,7 +11,6 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.plugin.powershell.ide.MessagesBundle;
 import com.intellij.plugin.powershell.lang.lsp.LSPInitMain;
-import com.intellij.plugin.powershell.lang.lsp.languagehost.LanguageHostStarter;
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils;
 import com.intellij.ui.HyperlinkAdapter;
 import com.intellij.ui.components.JBCheckBox;
@@ -25,6 +24,8 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
 import java.awt.*;
+
+import static com.intellij.plugin.powershell.lang.lsp.languagehost.EditorServicesLanguageHostStarter.Companion;
 
 public class PowerShellJPanelComponent {
   private static final String PS_VSCODE_LINK = MessagesBundle.INSTANCE.message("powershell.vs.code.extension.install.link");
@@ -132,7 +133,7 @@ public class PowerShellJPanelComponent {
   private void allControlsSetEnabled(boolean value) {
     myPSExtensionPathTextField.setEnabled(value);
     myPathToPSExtensionLabel.setEnabled(value);
-    myDetectedESVersionLabel.setEnabled(value && !LanguageHostStarter.Companion.isUseBundledPowerShellExtension());
+    myDetectedESVersionLabel.setEnabled(value && !Companion.isUseBundledPowerShellExtension());
     myExplanationTextPane.setEnabled(value);
   }
 
@@ -149,7 +150,7 @@ public class PowerShellJPanelComponent {
       }
     } else {
       myPSExtensionPathTextField.setText(path);
-      LanguageHostStarter.Companion.setUseBundledPowerShellExtension(false);
+      Companion.setUseBundledPowerShellExtension(false);
     }
   }
 
@@ -166,6 +167,6 @@ public class PowerShellJPanelComponent {
     myPathToPSExtDirjTextField.getEmptyText().setText("Bundled");
     setVersionLabelValue(version);
     myDetectedESVersionLabel.setEnabled(false);
-    LanguageHostStarter.Companion.setUseBundledPowerShellExtension(true);
+    Companion.setUseBundledPowerShellExtension(true);
   }
 }

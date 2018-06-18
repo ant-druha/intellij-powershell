@@ -7,6 +7,7 @@ import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.plugin.powershell.ide.run.join
 import java.net.URI
 
 
@@ -23,3 +24,7 @@ fun editorToURI(editor: Editor): URI? {
 fun getTextEditor(file: VirtualFile, project: Project): Editor? {
   return FileEditorManager.getInstance(project).getAllEditors(file).filterIsInstance<TextEditor>().map { e -> e.editor }.firstOrNull()
 }
+
+fun isRemotePath(docPath: String?) = docPath != null && docPath.contains(REMOTE_FILES_DIR_PREFIX)
+
+private val REMOTE_FILES_DIR_PREFIX = join(System.getProperty("java.io.tmpdir"), "PSES-") 

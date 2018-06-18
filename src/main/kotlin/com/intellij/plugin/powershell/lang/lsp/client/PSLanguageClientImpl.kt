@@ -3,18 +3,57 @@
  */
 package com.intellij.plugin.powershell.lang.lsp.client
 
+import com.google.gson.JsonObject
+import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.openapi.fileEditor.OpenFileDescriptor
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.plugin.powershell.lang.lsp.languagehost.LanguageServerEndpoint
+import com.intellij.ui.GuiUtils
 import org.eclipse.lsp4j.*
+import org.eclipse.lsp4j.jsonrpc.CompletableFutures
+import org.eclipse.lsp4j.jsonrpc.Endpoint
 import org.eclipse.lsp4j.services.LanguageClient
 import org.eclipse.lsp4j.services.LanguageServer
+import java.io.File
 import java.util.concurrent.CompletableFuture
 
-class PSLanguageClientImpl : LanguageClient {
+class PSLanguageClientImpl(private val project: Project) : LanguageClient, Endpoint {
   private val LOG: Logger = Logger.getInstance(javaClass)
   private var server: LanguageServer? = null
   private var serverEndpoint: LanguageServerEndpoint? = null
 
+  override fun notify(method: String?, parameter: Any?) {
+    LOG.debug("Received notify \"$method\", $parameter from server.")
+  }
+
+  override fun request(method: String?, parameter: Any?): CompletableFuture<*> {
+    LOG.debug("Received request \"$method\", $parameter from server.")
+    if ("editor/openFile" == method) {
+      return handleOpenFileRequest(parameter as? JsonObject)
+    }
+    return CompletableFuture<Any>()
+  }
+
+  private fun handleOpenFileRequest(parameter: JsonObject?): CompletableFuture<EditorCommandResponse> {
+    val ok = EditorCommandResponse.OK
+    val unsupported = EditorCommandResponse.Unsupported
+    return CompletableFutures.computeAsync {
+      if (parameter == null) return@computeAsync unsupported
+//      val isPreview = parameter.get("preview")
+      val filePath = parameter.get("filePath")?.asString
+      val vFile = VfsUtil.findFileByIoFile(File(filePath), true)
+      if (vFile == null || !vFile.exists()) {
+        LOG.warn("File $filePath does not exist or invalid.")
+        return@computeAsync unsupported
+      }
+      val descriptor = OpenFileDescriptor(project, vFile, 0)
+      GuiUtils.invokeLaterIfNeeded({ FileEditorManager.getInstance(project).openTextEditor(descriptor, true) }, ModalityState.NON_MODAL)
+      return@computeAsync ok
+    }
+  }
 
   fun connectServer(server: LanguageServer, serverEndpoint: LanguageServerEndpoint) {
     this.server = server
@@ -82,5 +121,10 @@ class PSLanguageClientImpl : LanguageClient {
    * the client to log a particular message.
    */
   override fun logMessage(message: MessageParams) {
+  }
+
+  private enum class EditorCommandResponse {
+    Unsupported,
+    OK
   }
 }
