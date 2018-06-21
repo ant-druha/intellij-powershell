@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.intellij.plugin.adernov.powershell</id>
   <name>PowerShell</name>
-  <version>1.1.0</version>
+  <version>1.1.1</version>
   <vendor email="andrey.dernov@gmail.com" url="https://bitbucket.org/adernov/powershell/issues?status=new&amp;status=open">Andrey</vendor>
 
   <description><![CDATA[
@@ -13,6 +13,10 @@
   <change-notes><![CDATA[
   <html>
         <dl>
+          <dt>1.1.1 Adding integrated PowerShell console<br></dt>
+          <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/22">20</a> - Integrated PowerShell Console;</dd>
+          <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/18">18</a> - Remote files editing with 'psedit' command in PowerShell console.</dd>
+
           <dt>1.1.0<br></dt>
           <dd>&#183; Language injections in interpolated strings;</dd>
           <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/19">19</a> - Source formatting does not omit "@ at the beginning of line;</dd>
