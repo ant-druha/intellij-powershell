@@ -202,6 +202,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
 
   private fun checkOutput(process: Process, editorServicesVersion: String): Boolean {
     process.waitFor(3000L, TimeUnit.MILLISECONDS)
+    if (useConsoleRepl()) return true
     val br = BufferedReader(InputStreamReader(process.inputStream))
     val er = BufferedReader(InputStreamReader(process.errorStream))
     val result = if (br.ready()) br.readLine() else ""
