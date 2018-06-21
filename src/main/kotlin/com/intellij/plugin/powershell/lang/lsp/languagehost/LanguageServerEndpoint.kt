@@ -63,7 +63,7 @@ class LanguageServerEndpoint(private val languageHostConnectionManager: Language
 
   override fun toString(): String {
     val consoleString = if (isConsoleConnection()) " Console" else ""
-    return "[PowerShell Editor Services host$consoleString connection, project: ${project.basePath}]"
+    return "[PowerShell Editor Services host$consoleString connection, project: $rootPath]"
   }
 //  private val dumpFile = File(FileUtil.toCanonicalPath(PSLanguageHostUtils.getLanguageHostLogsDir() + "/protocol_messages_IJ.log"))
 //  private var fileWriter: PrintWriter? = null
