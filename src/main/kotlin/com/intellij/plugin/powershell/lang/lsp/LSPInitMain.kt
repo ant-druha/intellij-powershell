@@ -83,7 +83,7 @@ class LSPInitMain : ApplicationComponent, PersistentStateComponent<LSPInitMain.P
 
       val project = editor.project ?: return
       val file = PsiDocumentManager.getInstance(project).getPsiFile(editor.document)
-      if (file == null || file.fileType !is PowerShellFileType && !isRemotePath(file.virtualFile.path)) return
+      if (file == null || file.fileType !is PowerShellFileType && !isRemotePath(file.virtualFile?.path)) return
       ApplicationManager.getApplication().executeOnPooledThread {
         val server = getServer(file, project)
         server.connectEditor(editor)
