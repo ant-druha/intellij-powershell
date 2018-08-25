@@ -1,0 +1,19 @@
+// This is a generated file. Not intended for manual editing.
+package com.intellij.plugin.powershell.psi;
+
+import java.util.List;
+import org.jetbrains.annotations.*;
+import com.intellij.psi.PsiElement;
+
+public interface PowerShellStringLiteralExpression extends PowerShellExpression, PowerShellAbstractStringLiteralExpression {
+
+  @NotNull
+  List<PowerShellExpression> getExpressionList();
+
+  @Nullable
+  PsiElement getVerbatimHereString();
+
+  @Nullable
+  PsiElement getVerbatimString();
+
+}
