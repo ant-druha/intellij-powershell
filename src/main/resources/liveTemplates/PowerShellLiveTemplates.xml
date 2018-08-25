@@ -27,4 +27,137 @@
             <option name="powershell.context.statement" value="true" />
         </context>
     </template>
+    <template name="for" value="for ($$$INDEX$ = 0; $$$INDEX$ -lt $$$ARRAY$.Count; $$$INDEX$++) {&#10;    $END$&#10;}" description="'for' loop snippet" toReformat="true" toShortenFQNames="true">
+        <variable name="INDEX" expression="" defaultValue="&quot;i&quot;" alwaysStopAt="true" />
+        <variable name="ARRAY" expression="" defaultValue="&quot;array&quot;" alwaysStopAt="true" />
+        <context>
+            <option name="powershell.context.file" value="true" />
+        </context>
+    </template>
+    <template name="foreach" value="foreach ($$$ITEM$ in $$$COLLECTION$) {&#10;    $END$&#10;}" description="'foreach' loop snippet" toReformat="true" toShortenFQNames="true">
+        <variable name="ITEM" expression="" defaultValue="&quot;item&quot;" alwaysStopAt="true" />
+        <variable name="COLLECTION" expression="complete()" defaultValue="&quot;collection&quot;" alwaysStopAt="true" />
+        <context>
+            <option name="powershell.context.file" value="true" />
+        </context>
+    </template>
+    <template name="if" value="if ($CONDITION$) {&#10;    $END$&#10;}" description="'if' statement snippet" toReformat="true" toShortenFQNames="true">
+        <variable name="CONDITION" expression="" defaultValue="&quot;condition&quot;" alwaysStopAt="true" />
+        <context>
+            <option name="powershell.context.file" value="true" />
+        </context>
+    </template>
+    <template name="else" value="else {&#10;    $END$&#10;}" description="'else' statement snippet" toReformat="true" toShortenFQNames="true">
+        <context>
+            <option name="powershell.context.file" value="true" />
+        </context>
+    </template>
+    <template name="while" value="while ($CONDITION$) {&#10;    $END$&#10;}" description="'while' loop snippet" toReformat="true" toShortenFQNames="true">
+        <variable name="CONDITION" expression="" defaultValue="&quot;condition&quot;" alwaysStopAt="true" />
+        <context>
+            <option name="powershell.context.file" value="true" />
+        </context>
+    </template>
+    <template name="class" value="class $NAME$ {&#10;    $END$&#10;}" description="Class definition snippet" toReformat="true" toShortenFQNames="true">
+        <variable name="NAME" expression="" defaultValue="&quot;ClassName&quot;" alwaysStopAt="true" />
+        <context>
+            <option name="powershell.context.file" value="true" />
+        </context>
+    </template>
+    <template name="cmdlet" value="function $NAME$ {&#10;    [CmdletBinding()]&#10;    param (&#10;        $END$&#10;    )&#10;    &#10;    begin {&#10;    }&#10;    &#10;    process {&#10;    }&#10;    &#10;    end {&#10;    }&#10;}" description="Script cmdlet definition snippet" toReformat="true" toShortenFQNames="true">
+        <variable name="NAME" expression="" defaultValue="&quot;Verb-Noun&quot;" alwaysStopAt="true" />
+        <context>
+            <option name="powershell.context.file" value="true" />
+        </context>
+    </template>
+    <template name="ctor" value="$ClassName$($OptionalParameters$) {&#10;    $END$&#10;}" description="Class constructor definition snippet" toReformat="true" toShortenFQNames="true">
+        <variable name="ClassName" expression="" defaultValue="&quot;ClassName&quot;" alwaysStopAt="true" />
+        <variable name="OptionalParameters" expression="" defaultValue="&quot;OptionalParameters&quot;" alwaysStopAt="true" />
+        <context>
+            <option name="powershell.context.file" value="true" />
+        </context>
+    </template>
+    <template name="do until" value="do {&#10;    $END$&#10;} until ($condition$)" description="'do until' loop snippet" toReformat="true" toShortenFQNames="true">
+        <variable name="condition" expression="" defaultValue="&quot;condition&quot;" alwaysStopAt="true" />
+        <context>
+            <option name="powershell.context.file" value="true" />
+        </context>
+    </template>
+    <template name="do while" value="do {&#10;    $END$&#10;} while ($condition$)" description="'do while' loop snippet" toReformat="true" toShortenFQNames="true">
+        <variable name="condition" expression="" defaultValue="&quot;condition&quot;" alwaysStopAt="true" />
+        <context>
+            <option name="powershell.context.file" value="true" />
+        </context>
+    </template>
+    <template name="DSC Ensure enum" value="enum Ensure {&#10;    Absent&#10;    Present&#10;}" description="DSC Ensure enum definition snippet" toReformat="true" toShortenFQNames="true">
+        <context>
+            <option name="powershell.context.file" value="true" />
+        </context>
+    </template>
+    <template name="DSC resource provider (class-based)" value="[DscResource()]&#10;class NameOfResource {&#10;    [DscProperty(Key)]&#10;    [string] $KeyName&#10;    &#10;    # Gets the resource's current state.&#10;    [NameOfResource] Get() {&#10;        $END$&#10;        return $this&#10;    }&#10;    &#10;    # Sets the desired state of the resource.&#10;    [void] Set() {&#10;        &#10;    }&#10;    &#10;    # Tests if the resource is in the desired state.&#10;    [bool] Test() {&#10;        &#10;    }&#10;}" description="Class-based DSC resource provider snippet" toReformat="true" toShortenFQNames="true">
+        <context>
+            <option name="powershell.context.file" value="true" />
+        </context>
+    </template>
+    <template name="DSC resource provider (function-based)" value="function Get-TargetResource {&#10;    param (&#10;    )&#10;    $END$&#10;}&#10;function Set-TargetResource {&#10;    param (&#10;    )&#10;    &#10;}&#10;function Test-TargetResource {&#10;    param (&#10;    )&#10;    &#10;}" description="Function-based DSC resource provider snippet" toReformat="true" toShortenFQNames="true">
+        <context>
+            <option name="powershell.context.file" value="true" />
+        </context>
+    </template>
+    <template name="elseif" value="elseif ($condition$) {&#10;    $END$&#10;}" description="'elseif' statement snippet" toReformat="true" toShortenFQNames="true">
+        <variable name="condition" expression="" defaultValue="&quot;condition&quot;" alwaysStopAt="true" />
+        <context>
+            <option name="powershell.context.file" value="true" />
+        </context>
+    </template>
+    <template name="ex advanced workflow" value="&lt;#&#10;.Synopsis&#10;    Short description&#10;.DESCRIPTION&#10;    Long description&#10;.EXAMPLE&#10;    Example of how to use this workflow&#10;.EXAMPLE&#10;    Another example of how to use this workflow&#10;.INPUTS&#10;    Inputs to this workflow (if any)&#10;.OUTPUTS&#10;    Output from this workflow (if any)&#10;.NOTES&#10;    General notes&#10;.FUNCTIONALITY&#10;    The functionality that best describes this workflow&#10;#&gt;&#10;workflow Verb-Noun {$END$&#10;    [CmdletBinding(DefaultParameterSetName='Parameter Set 1',&#10;                   HelpUri = 'http://www.microsoft.com/',&#10;                   ConfirmImpact='Medium')]&#10;    [Alias()]&#10;    [OutputType([String])]&#10;    param (&#10;        # Param1 help description&#10;        [Parameter(Mandatory=$true, &#10;                   Position=0,&#10;                   ParameterSetName='Parameter Set 1')]&#10;        [ValidateNotNull()]&#10;        [Alias(&quot;p1&quot;)] &#10;        $Param1,&#10;&#10;        # Param2 help description&#10;        [int]&#10;        $Param2&#10;    )&#10;&#10;    # Saves (persists) the current workflow state and output&#10;    # Checkpoint-Workflow&#10;    # Suspends the workflow&#10;    # Suspend-Workflow&#10;&#10;    # Workflow common parameters are available as variables such as:&#10;    $PSPersist &#10;    $PSComputerName&#10;    $PSCredential&#10;    $PSUseSsl&#10;    $PSAuthentication&#10;&#10;    # Workflow runtime information can be accessed by using the following variables:&#10;    $Input&#10;    $PSSenderInfo&#10;    $PSWorkflowRoot&#10;    $JobCommandName&#10;    $ParentCommandName&#10;    $JobId&#10;    $ParentJobId&#10;    $WorkflowInstanceId&#10;    $JobInstanceId&#10;    $ParentJobInstanceId&#10;    $JobName&#10;    $ParentJobName&#10;&#10;    # Set the progress message ParentActivityId&#10;    $PSParentActivityId&#10;&#10;    # Preference variables that control runtime behavior&#10;    $PSRunInProcessPreference&#10;    $PSPersistPreference&#10;}" description="Example: advanced workflow snippet" toReformat="true" toShortenFQNames="true">
+        <context>
+            <option name="powershell.context.file" value="true" />
+        </context>
+    </template>
+    <template name="ex class" value="class $MyClass$ {&#10;    # Property: Holds name&#10;    [String] $Name&#10;&#10;    # Constructor: Creates a new MyClass object, with the specified name&#10;    $MyClass$([String] $NewName) {&#10;        # Set name for $MyClass$&#10;        $this.Name = $NewName&#10;    }&#10;&#10;    # Method: Method that changes $Name to the default name&#10;    [void] ChangeNameToDefault() {&#10;        $this.Name = &quot;DefaultName&quot;&#10;    }&#10;}" description="Example: class snippet with a constructor, property and a method" toReformat="true" toShortenFQNames="true">
+        <variable name="MyClass" expression="" defaultValue="&quot;MyClass&quot;" alwaysStopAt="true" />
+        <context>
+            <option name="powershell.context.file" value="true" />
+        </context>
+    </template>
+    <template name="parameter" value="# $Parameter_help_description$&#10;[Parameter($AttributeValues$)]&#10;[$ParameterType$]&#10;$$$ParameterName$" description="Parameter declaration snippet" toReformat="true" toShortenFQNames="true">
+        <variable name="Parameter_help_description" expression="" defaultValue="&quot;Parameter help description&quot;" alwaysStopAt="true" />
+        <variable name="AttributeValues" expression="" defaultValue="&quot;AttributeValues&quot;" alwaysStopAt="true" />
+        <variable name="ParameterType" expression="" defaultValue="&quot;ParameterType&quot;" alwaysStopAt="true" />
+        <variable name="ParameterName" expression="" defaultValue="&quot;ParameterName&quot;" alwaysStopAt="true" />
+        <context>
+            <option name="powershell.context.file" value="true" />
+        </context>
+    </template>
+    <template name="manifest" value="@{&#10;    # If authoring a script module, the RootModule is the name of your .psm1 file&#10;    RootModule = 'MyModule.psm1'&#10;&#10;    Author = 'Cool Person &lt;coolperson@email.local&gt;'&#10;&#10;    CompanyName = 'Contoso Inc.'&#10;&#10;    ModuleVersion = '0.1'&#10;&#10;    # Use the New-Guid command to generate a GUID, and copy/paste into the next line&#10;    GUID = '&lt;pasteNewGUIDhere&gt;'&#10;&#10;    Copyright = '2017 Copyright Holder'&#10;&#10;    Description = 'What does this module do?'&#10;&#10;    # Minimum PowerShell version supported by this module (optional, recommended)&#10;    # PowerShellVersion = ''&#10;&#10;    # Which PowerShell Editions does this module work with? (Core, Desktop)&#10;    CompatiblePSEditions = @('Desktop', 'Core')&#10;&#10;    # Which PowerShell functions are exported from your module? (eg. Get-CoolObject)&#10;    FunctionsToExport = @('')&#10;&#10;    # Which PowerShell aliases are exported from your module? (eg. gco)&#10;    AliasesToExport = @('')&#10;&#10;    # Which PowerShell variables are exported from your module? (eg. Fruits, Vegetables)&#10;    VariablesToExport = @('')&#10;&#10;    # PowerShell Gallery: Define your module's metadata&#10;    PrivateData = @{&#10;        PSData = @{&#10;            # What keywords represent your PowerShell module? (eg. cloud, tools, framework, vendor)&#10;            Tags = @('cooltag1', 'cooltag2')&#10;&#10;            # What software license is your code being released under? (see https://opensource.org/licenses)&#10;            LicenseUri = ''&#10;&#10;            # What is the URL to your project's website?&#10;            ProjectUri = ''&#10;&#10;            # What is the URI to a custom icon file for your project? (optional)&#10;            IconUri = ''&#10;&#10;            # What new features, bug fixes, or deprecated features, are part of this release?&#10;            ReleaseNotes = @'&#10;'@&#10;        }&#10;    }&#10;&#10;    # If your module supports updateable help, what is the URI to the help archive? (optional)&#10;    # HelpInfoURI = ''&#10;}" description="Basic skeleton for a PowerShell module manifest" toReformat="true" toShortenFQNames="true">
+        <context>
+            <option name="powershell.context.file" value="true" />
+        </context>
+    </template>
+    <template name="prop" value="[$PopertyType$] $$$PropertyName$" description="Class property definition snippet" toReformat="true" toShortenFQNames="true">
+        <variable name="PopertyType" expression="" defaultValue="&quot;string&quot;" alwaysStopAt="true" />
+        <variable name="PropertyName" expression="" defaultValue="&quot;PropertyName&quot;" alwaysStopAt="true" />
+        <context>
+            <option name="powershell.context.file" value="true" />
+        </context>
+    </template>
+    <template name="switch" value="switch ($$$x$) {&#10;    condition {$END$ }&#10;    Default {}&#10;}" description="'switch' statement snippet" toReformat="true" toShortenFQNames="true">
+        <variable name="x" expression="" defaultValue="&quot;x&quot;" alwaysStopAt="true" />
+        <context>
+            <option name="powershell.context.file" value="true" />
+        </context>
+    </template>
+    <template name="try" value="try {&#10;    $END$&#10;}&#10;catch {&#10;    &#10;}" description="try -catch snippet" toReformat="true" toShortenFQNames="true">
+        <context>
+            <option name="powershell.context.file" value="true" />
+        </context>
+    </template>
+    <template name="workflow foreach-parallel" value="foreach -parallel ($$$item$ in $$$collection$) {&#10;    $END$&#10;}" description="foreach -parallel snippet (for use inside a workflow)" toReformat="true" toShortenFQNames="true">
+        <variable name="item" expression="" defaultValue="&quot;item&quot;" alwaysStopAt="true" />
+        <variable name="collection" expression="" defaultValue="&quot;collection&quot;" alwaysStopAt="true" />
+        <context>
+            <option name="powershell.context.file" value="true" />
+        </context>
+    </template>
 </templateSet>

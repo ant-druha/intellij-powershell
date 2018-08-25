@@ -446,3 +446,5 @@ for () {
 }
 for (1; 1; 1) {
 }
+using namespace System.Text
+using module MyModulename

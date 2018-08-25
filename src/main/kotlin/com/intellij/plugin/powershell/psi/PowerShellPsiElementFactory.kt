@@ -30,8 +30,7 @@ object PowerShellPsiElementFactory {
   fun createVariableFromText(project: Project, text: String, bracedVariable: Boolean = false): PowerShellVariable? {
     val varText = if (bracedVariable) "\${$text}" else "$" + text
     val file = createFile(project, varText)
-    val variable = PsiTreeUtil.findChildOfAnyType(file, PowerShellTargetVariableExpression::class.java)
-    return variable
+    return PsiTreeUtil.findChildOfAnyType(file, PowerShellTargetVariableExpression::class.java)
   }
 
   private fun createFile(project: Project, text: String): PowerShellFile {
@@ -39,5 +38,11 @@ object PowerShellPsiElementFactory {
     val stamp = System.currentTimeMillis()
     val factory = PsiFileFactory.getInstance(project)
     return factory.createFileFromText(name, PowerShellFileType.INSTANCE, text, stamp, false) as PowerShellFile
+  }
+
+  fun createExpression(project: Project, text: String): PowerShellExpression {
+    val file = createFile(project, "\$foo = $text")
+    val assignment = PsiTreeUtil.findChildOfType(file, PowerShellAssignmentExpression::class.java) ?: error("text='$text'")
+    return assignment.rhsElement as? PowerShellExpression ?: error("text='$text'")
   }
 }

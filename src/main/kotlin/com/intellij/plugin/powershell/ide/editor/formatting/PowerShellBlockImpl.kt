@@ -179,34 +179,19 @@ open class PowerShellBlockImpl(node: ASTNode, wrap: Wrap?, alignment: Alignment?
 
   private fun createIndent(node: ASTNode): Indent? {
     val type = node.elementType
-    if (type === BLOCK_BODY) {
-      return getBlockIndent(node)
+    return when {
+      type === BLOCK_BODY -> getBlockIndent(node)
+      type === LCURLY || type === RCURLY -> getBraceIndent(node)
+      isCallArgument(node) || isFunctionParameter(node) -> Indent.getContinuationIndent()
+      isBlockParameter(node) -> Indent.getNormalIndent()
+      isForParameter(node) -> Indent.getContinuationIndent()
+      isRhsBinaryExpressionContext(node) -> Indent.getContinuationIndent()
+      isInvocationExpressionQualifier(node) -> Indent.getContinuationIndent()
+      isExpressionInPipelineTail(node) -> Indent.getContinuationIndent()
+      isAttributeArgument(node) -> Indent.getContinuationIndent()
+      type === EXPANDABLE_HERE_STRING_END -> Indent.getAbsoluteNoneIndent()
+      else -> Indent.getNoneIndent()
     }
-    if (type === LCURLY || type === RCURLY) {
-      return getBraceIndent(node)
-    }
-    if (isCallArgument(node) || isFunctionParameter(node)) {
-      return Indent.getContinuationIndent()
-    }
-    if (isBlockParameter(node)) {
-      return Indent.getNormalIndent()
-    }
-    if (isForParameter(node)) {
-      return Indent.getContinuationIndent()
-    }
-    if (isRhsBinaryExpressionContext(node)) {
-      return Indent.getContinuationIndent()
-    }
-    if (isInvocationExpressionQualifier(node)) {
-      return Indent.getContinuationIndent()
-    }
-    if (isExpressionInPipelineTail(node)) {
-      return Indent.getContinuationIndent()
-    }
-    if (isAttributeArgument(node)) {
-      return Indent.getContinuationIndent()
-    }
-    return Indent.getNoneIndent()
   }
 
   private fun getBraceIndent(braceNode: ASTNode): Indent {

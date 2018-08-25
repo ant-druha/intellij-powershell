@@ -1,8 +1,8 @@
 <idea-plugin>
   <id>com.intellij.plugin.adernov.powershell</id>
   <name>PowerShell</name>
-  <version>0.0.3</version>
-  <vendor email="andrey.dernov@gmail.com" url="https://twitter.com/ant_druha">Andrey</vendor>
+  <version>1.1.1</version>
+  <vendor email="andrey.dernov@gmail.com" url="https://bitbucket.org/adernov/powershell/issues?status=new&amp;status=open">Andrey</vendor>
 
   <description><![CDATA[
     Provides <a href="https://docs.microsoft.com/en-us/powershell/scripting/powershell-scripting">PowerShell</a> intellisense and script execution support for IntelliJ IDEs.<br>
@@ -13,6 +13,35 @@
   <change-notes><![CDATA[
   <html>
         <dl>
+          <dt>1.1.1 Adds integrated PowerShell console<br></dt>
+          <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/22">22</a> - Integrated PowerShell Console;</dd>
+          <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/18">18</a> - Remote files editing with 'psedit' command in PowerShell console.</dd>
+
+          <dt>1.1.0<br></dt>
+          <dd>&#183; Language injections in interpolated strings;</dd>
+          <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/19">19</a> - Source formatting does not omit "@ at the beginning of line;</dd>
+          <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/20">20</a> - Handle drive letters in unc path;</dd>
+          <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/21">21</a> - NCDFE if IntelliLang plugin is not installed.</dd>
+
+          
+          <dt>1.0.2 Update<br></dt>
+          <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/11">11</a> - "using" keyword not picked up in;</dd>
+          <dd>&#183; More pre-defined <a href="https://www.jetbrains.com/help/idea/live-templates.html">Live Templates</a> snippets;</dd>
+          <dd>&#183; Use '-File' parameter to specify the script file to run.</dd>
+
+          <dt>1.0.1 Bug fix update<br></dt>
+          <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/8">8</a> - Exception shown on LSP communication failure</dd>
+          <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/9">9</a> - Language server fails to start if path to startup script contains spaces.</dd>
+
+            <dt>1.0.0 Language Server Protocol support<br></dt>
+            <dd>&#183; Plugin now bundles <a href="https://github.com/PowerShell/PowerShellEditorServices">PowerShellEditorServices module</a> (same as VSCode) to provide Editor assistance;</dd>
+            <dd>&#183;Supported requests:<br>
+                - <i>textDocument/didOpen</i> (File opened in editor)<br>
+                - <i>textDocument/didClose</i> (File closed in editor)<br>
+                - <i>textDocument/didChange</i> (Editor document text changes)<br>
+                - <i>textDocument/completion</i> (Editor Auto completion).
+            </dd>
+
             <dt>0.0.3 Bug fix update<br></dt>
             <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/3">3</a> - Support PowerShell Scopes like Global or Local for functions</dd>
             <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/5">5</a> - Support more PowerShell file extensions.</dd>
@@ -34,10 +63,11 @@
             <dd>&#183; Run Configuration.</dd>
         </dl>
   </html>
-    ]]></change-notes>
+    ]]>
+  </change-notes>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-  <idea-version since-build="163.0"/>
+  <idea-version since-build="172.4574"/>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
        on how to target different products -->
@@ -46,6 +76,8 @@
   -->
   <depends>com.intellij.modules.platform</depends>
   <depends>com.intellij.modules.lang</depends>
+  <depends optional="true" config-file="injection.xml">org.intellij.intelliLang</depends>
+  <depends optional="true" config-file="powerShellConsole.xml">org.jetbrains.plugins.terminal</depends>
 
   <extensions defaultExtensionNs="com.intellij">
 
@@ -109,6 +141,17 @@
     <completion.contributor language="PowerShell"
                             implementationClass="com.intellij.plugin.powershell.ide.editor.completion.PowerShellCompletionContributor"/>
 
+    <lang.documentationProvider language="PowerShell"
+                                implementationClass="com.intellij.plugin.powershell.ide.editor.documentation.PowerShellDocumentationProvider"/>
+    <!--LSP-->
+    <typedHandler implementation="com.intellij.plugin.powershell.lang.lsp.ide.listeners.LSPTypedHandler" id="LSPTypedHandler"/>
+
+    <applicationConfigurable id="Settings.PowerShell"
+                             groupId="language"
+                             instance="com.intellij.plugin.powershell.lang.lsp.ide.settings.PowerShellConfigurable"
+                             bundle="messages.MessagesBundle"
+                             key="settings.powershell"/>
+
   </extensions>
 
   <actions>
@@ -116,5 +159,12 @@
       <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFromTemplate"/>
     </action>
   </actions>
+
+
+  <application-components>
+    <component>
+      <implementation-class>com.intellij.plugin.powershell.lang.lsp.LSPInitMain</implementation-class>
+    </component>
+  </application-components>
 
 </idea-plugin>

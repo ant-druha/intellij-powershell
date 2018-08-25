@@ -90,6 +90,7 @@ public interface PowerShellTypes {
   IElementType TYPE_ELEMENT = new PowerShellElementType("TYPE_ELEMENT");
   IElementType TYPE_LITERAL_EXPRESSION = new PowerShellElementType("TYPE_LITERAL_EXPRESSION");
   IElementType UNARY_EXPRESSION = new PowerShellElementType("UNARY_EXPRESSION");
+  IElementType USING_STATEMENT = new PowerShellElementType("USING_STATEMENT");
   IElementType VERBATIM_COMMAND_ARGUMENT = new PowerShellElementType("VERBATIM_COMMAND_ARGUMENT");
   IElementType WHILE_STATEMENT = new PowerShellElementType("WHILE_STATEMENT");
 
@@ -449,6 +450,9 @@ public interface PowerShellTypes {
       }
       else if (type == UNARY_EXPRESSION) {
         return new PowerShellUnaryExpressionImplGen(node);
+      }
+      else if (type == USING_STATEMENT) {
+        return new PowerShellUsingStatementImplGen(node);
       }
       else if (type == VERBATIM_COMMAND_ARGUMENT) {
         return new PowerShellVerbatimCommandArgumentImplGen(node);

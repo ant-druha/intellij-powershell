@@ -256,6 +256,7 @@ private statement ::=   if_statement
                       | trap_pipeline
                       | try_statement
                       | data_statement
+                      | using_statement
                       | inlinescript_statement
                       | parallel_statement
                       | sequence_statement
@@ -297,6 +298,10 @@ real_literal_expression ::= REAL_NUM
 
 //String literals
 string_literal_expression ::= expandable_string_literal | verbatim_string_literal | expandable_here_string_literal | verbatim_here_string_literal
+{
+  implements="com.intellij.plugin.powershell.psi.PowerShellAbstractStringLiteralExpression"
+  mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractStringLiteralExpressionImpl"
+}
 private expandable_string_literal ::= dq_open expandable_string_content? dq_close
 private expandable_string_content ::= ( string_literal_entry | target_variable_expression | sub_expression )+
 private string_literal_entry ::= EXPANDABLE_STRING_PART
@@ -443,6 +448,7 @@ parallel_statement ::= 'parallel' statement_block
 inlinescript_statement ::= 'inlinescript' statement_block
 
 
+using_statement ::= 'using' nls? pipeline {pin=1}
 data_statement ::= 'data' nls? data_name? nls? data_commands_allowed? nls? statement_block {pin=1}
 private data_name ::= simple_name_identifier
 private data_commands_allowed ::= '-supportedcommand' nls? data_commands_list
@@ -668,17 +674,17 @@ command_name_char_tokens ::= generic_token_chars | allowed_identifier_keywords
 path_expression ::=  path_item nws (
                               (
                               ((   (PATH_SEP nws COLON2 nws) (path_item nws PATH_SEP nws COLON2 nws)*  //provider+ drive?
-                                  (nws path_item nws COLON nws PATH_SEP)? //drive
+                                  (nws path_item nws (COLON|DS) nws PATH_SEP)? //drive
                                )
                               |
                                (
-                                  (COLON nws PATH_SEP)     // or drive
+                                  ((COLON|DS) nws PATH_SEP)     // or drive
                                )
                                )
                               (nws path_item) (nws PATH_SEP nws path_item)* (nws PATH_SEP)? // container+
                               )//provider and/or drive and container+
                               | (PATH_SEP nws path_item)+ //just container+
-                              | COLON (nws PATH_SEP)?     // just drive
+                              | (COLON|DS) (nws PATH_SEP)?     // just drive
                               | PATH_SEP //just PATH_SEP
                                 ) | PATH_SEP (nws (path_expression | path_item))?//todo do not produce another path_expression node
                                   | relative_path_item             // just relative path
