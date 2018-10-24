@@ -157,7 +157,7 @@ class LanguageServerEndpoint(private val languageHostConnectionManager: Language
     if (initializeResult != null) return initializeResult?.capabilities
     try {
       checkStarted(documentPath)
-      initializeFuture?.get(if (capabilitiesAlreadyRequested) 0 else 5000 /*Timeout.INIT_TIMEOUT*/, TimeUnit.MILLISECONDS)
+      initializeFuture?.get(if (capabilitiesAlreadyRequested) 0 else 9000 /*Timeout.INIT_TIMEOUT*/, TimeUnit.MILLISECONDS)
     } catch (e: Exception) {
       LOG.warn("PowerShell language host not initialized after 5s\nCheck settings", e)
       stop()
@@ -179,7 +179,7 @@ class LanguageServerEndpoint(private val languageHostConnectionManager: Language
     initializeFuture = null
     initializeResult = null
     capabilitiesAlreadyRequested = false
-    launcherFuture?.cancel(true)
+    launcherFuture?.cancel(false)
     launcherFuture = null
 
     try {
