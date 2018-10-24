@@ -185,9 +185,16 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
     val process = createProcess(myProject, buildCommandLine(), null)
     val fileWithSessionInfo = getSessionDetailsFile()
     //todo retry starting language service process one more time
-    if (!waitForSessionFile(fileWithSessionInfo)) return null
+    if (!waitForSessionFile(fileWithSessionInfo)) {
+      process.destroyForcibly()
+      return null
+    }
 
-    val sessionInfo = readSessionFile(fileWithSessionInfo) ?: return null
+    val sessionInfo = readSessionFile(fileWithSessionInfo)
+    if (sessionInfo == null) {
+      process.destroyForcibly()
+      return null
+    }
 
     if (!checkOutput(process, getEditorServicesVersion(getPowerShellEditorServicesHome()))) {}
     val pid: Long = getProcessID(process)
