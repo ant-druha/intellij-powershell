@@ -20,7 +20,7 @@ class PowerShellScriptCommandLineState(private val runConfiguration: PowerShellR
 
   override fun startProcess(): ProcessHandler {
     try {
-      val command = buildCommand(runConfiguration.getScriptPath(), runConfiguration.getCommandOptions(), runConfiguration.getScriptParameters())
+      val command = buildCommand(runConfiguration.scriptPath, runConfiguration.getCommandOptions(), runConfiguration.scriptParameters)
       val commandLine = GeneralCommandLine(command)
       val userHome = EnvironmentUtil.getValue("HOME")
       if (StringUtil.isNotEmpty(userHome)) commandLine.setWorkDirectory(userHome)

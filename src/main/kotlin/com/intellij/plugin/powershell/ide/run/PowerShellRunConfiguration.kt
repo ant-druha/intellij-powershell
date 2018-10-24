@@ -21,8 +21,8 @@ class PowerShellRunConfiguration(project: Project, configurationFactory: Configu
   private val SCRIPT_PARAMETERS = "scriptParameters"
   private val COMMAND_OPTIONS = "commandOptions"
 
-  private var scriptPath: String? = null
-  private var scriptParameters: String? = null
+  var scriptPath: String = ""
+  var scriptParameters: String = ""
   private var commandOptions: String? = null
 
   override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = PowerShellRunSettingsEditor(project, this)
@@ -30,18 +30,6 @@ class PowerShellRunConfiguration(project: Project, configurationFactory: Configu
   @Throws(ExecutionException::class)
   override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState? =
       PowerShellScriptCommandLineState(this, environment)
-
-   fun getScriptPath(): String = StringUtil.notNullize(scriptPath)
-
-   fun getScriptParameters(): String = StringUtil.notNullize(scriptParameters)
-
-   fun setScriptPath(scriptPath: String) {
-    this.scriptPath = scriptPath
-  }
-
-   fun setScriptParameters(scriptParameters: String) {
-    this.scriptParameters = scriptParameters
-  }
 
   @Throws(InvalidDataException::class)
   override fun readExternal(element: Element) {

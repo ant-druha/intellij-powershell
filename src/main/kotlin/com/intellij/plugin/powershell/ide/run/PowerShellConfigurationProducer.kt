@@ -14,7 +14,7 @@ class PowerShellConfigurationProducer : RunConfigurationProducer<PowerShellRunCo
     val vFile = file.virtualFile
     val scriptPath = if (vFile != null) file.virtualFile.path else null
     if (scriptPath != null) {
-      configuration?.setScriptPath(scriptPath)
+      configuration?.scriptPath = scriptPath
       val parts = scriptPath.split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
       if (parts.isNotEmpty()) {
         configuration?.name = parts[parts.size - 1]
@@ -27,6 +27,6 @@ class PowerShellConfigurationProducer : RunConfigurationProducer<PowerShellRunCo
   override fun isConfigurationFromContext(configuration: PowerShellRunConfiguration?, context: ConfigurationContext?): Boolean {
     val file = context?.psiLocation?.containingFile ?: return false
     val currentFile = file.virtualFile
-    return currentFile!=null && currentFile.path == configuration?.getScriptPath()
+    return currentFile!=null && currentFile.path == configuration?.scriptPath
   }
 }
