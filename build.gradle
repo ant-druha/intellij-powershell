@@ -52,6 +52,8 @@ repositories {
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre8"
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    compile group: 'no.fiken.oss.junixsocket', name: 'junixsocket-common', version: '1.0.2'
+    compile group: 'no.fiken.oss.junixsocket', name: 'junixsocket-native-common', version: '1.0.2'
 //    compile group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-core', version: '0.21'
     compile ("org.eclipse.lsp4j:org.eclipse.lsp4j:0.3.0") {
         exclude group: 'com.google.code.gson', module: 'gson'
