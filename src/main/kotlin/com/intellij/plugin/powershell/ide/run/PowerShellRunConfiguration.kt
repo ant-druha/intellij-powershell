@@ -18,10 +18,13 @@ class PowerShellRunConfiguration(project: Project, configurationFactory: Configu
     LocatableConfigurationBase(project, configurationFactory, name) {
 
   private val SCRIPT_PATH_URL = "scriptUrl"
+  private val WORKING_DIRECTORY = "workingDirectory"
   private val SCRIPT_PARAMETERS = "scriptParameters"
   private val COMMAND_OPTIONS = "commandOptions"
 
   var scriptPath: String = ""
+  var workingDirectory: String = getDefaultWorkingDirectory()
+    get() = if (StringUtil.isEmptyOrSpaces(field)) getDefaultWorkingDirectory() else field
   var scriptParameters: String = ""
   private var commandOptions: String? = null
 
@@ -37,6 +40,7 @@ class PowerShellRunConfiguration(project: Project, configurationFactory: Configu
     val scriptUrl = element.getAttributeValue(SCRIPT_PATH_URL)
     val scriptParams = element.getAttributeValue(SCRIPT_PARAMETERS)
     val commandOptions = element.getAttributeValue(COMMAND_OPTIONS)
+    val workingDirectory = element.getAttributeValue(WORKING_DIRECTORY)
     if (!StringUtil.isEmpty(scriptUrl)) {
       scriptPath = scriptUrl
     }
@@ -45,6 +49,9 @@ class PowerShellRunConfiguration(project: Project, configurationFactory: Configu
     }
     if (!StringUtil.isEmpty(commandOptions)) {
       this.commandOptions = commandOptions
+    }
+    if (!StringUtil.isEmpty(workingDirectory)) {
+      this.workingDirectory = workingDirectory
     }
   }
 
@@ -59,6 +66,9 @@ class PowerShellRunConfiguration(project: Project, configurationFactory: Configu
     }
     if (!StringUtil.isEmpty(commandOptions)) {
       element.setAttribute(COMMAND_OPTIONS, commandOptions)
+    }
+    if (!StringUtil.isEmpty(workingDirectory)) {
+      element.setAttribute(WORKING_DIRECTORY, workingDirectory)
     }
   }
 

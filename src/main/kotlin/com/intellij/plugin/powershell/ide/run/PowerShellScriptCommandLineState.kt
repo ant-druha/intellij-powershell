@@ -22,8 +22,7 @@ class PowerShellScriptCommandLineState(private val runConfiguration: PowerShellR
     try {
       val command = buildCommand(runConfiguration.scriptPath, runConfiguration.getCommandOptions(), runConfiguration.scriptParameters)
       val commandLine = GeneralCommandLine(command)
-      val userHome = EnvironmentUtil.getValue("HOME")
-      if (StringUtil.isNotEmpty(userHome)) commandLine.setWorkDirectory(userHome)
+      commandLine.setWorkDirectory(runConfiguration.workingDirectory)
       LOG.debug("Command line: " + command.toString())
       LOG.debug("Environment: " + commandLine.parentEnvironment.toString())
       return PowerShellProcessHandler(commandLine)

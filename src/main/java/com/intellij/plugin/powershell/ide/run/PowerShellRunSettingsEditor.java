@@ -1,10 +1,14 @@
 package com.intellij.plugin.powershell.ide.run;
 
+import com.intellij.ide.util.BrowseFilesListener;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
+import com.intellij.openapi.fileChooser.FileChooserFactory;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.TextComponentAccessor;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.ui.components.JBTextField;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,6 +21,8 @@ public class PowerShellRunSettingsEditor extends SettingsEditor<PowerShellRunCon
   private TextFieldWithBrowseButton scriptTextField;
   private JTextField parametersTextField;
   private JTextField commandOptionsTextField;
+  private JBTextField workingDirectoryTextField;
+  private TextFieldWithBrowseButton workingDirectoryTextFieldWithBrowseBtn;
 
   public PowerShellRunSettingsEditor(Project project, PowerShellRunConfiguration runConfiguration) {
     this.runConfiguration = runConfiguration;
@@ -28,6 +34,12 @@ public class PowerShellRunSettingsEditor extends SettingsEditor<PowerShellRunCon
   @Override
   protected void resetEditorFrom(@NotNull PowerShellRunConfiguration configuration) {
     String scriptPath = configuration.getScriptPath();
+    String workingDir = configuration.getWorkingDirectory();
+    if (workingDir.equals(PSExecutionUtilKt.getDefaultWorkingDirectory())) {
+      workingDirectoryTextField.getEmptyText().setText(workingDir);
+    } else {
+      workingDirectoryTextFieldWithBrowseBtn.setText(workingDir);
+    }
     String scriptParameters = configuration.getScriptParameters();
     String commandOptions = configuration.getCommandOptions();
     if (!StringUtil.isEmpty(scriptPath)) {
@@ -48,6 +60,7 @@ public class PowerShellRunSettingsEditor extends SettingsEditor<PowerShellRunCon
   @Override
   protected void applyEditorTo(@NotNull PowerShellRunConfiguration configuration) {
     configuration.setScriptPath(scriptTextField.getText().trim());
+    configuration.setWorkingDirectory(workingDirectoryTextFieldWithBrowseBtn.getText().trim());
     configuration.setScriptParameters(parametersTextField.getText().trim());
     configuration.setCommandOptions(commandOptionsTextField.getText().trim());
   }
@@ -61,5 +74,13 @@ public class PowerShellRunSettingsEditor extends SettingsEditor<PowerShellRunCon
   @Nullable
   public String getScriptName() {
     return runConfiguration.getScriptPath();
+  }
+
+  private void createUIComponents() {
+    workingDirectoryTextField = new JBTextField(0);
+    workingDirectoryTextFieldWithBrowseBtn = new TextFieldWithBrowseButton(workingDirectoryTextField);
+    workingDirectoryTextFieldWithBrowseBtn.addBrowseFolderListener("Choose directory", null, runConfiguration.getProject(), BrowseFilesListener.SINGLE_DIRECTORY_DESCRIPTOR, TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT);
+    JTextField textField = workingDirectoryTextFieldWithBrowseBtn.getChildComponent();
+    FileChooserFactory.getInstance().installFileCompletion(textField, BrowseFilesListener.SINGLE_DIRECTORY_DESCRIPTOR, true, null);
   }
 }

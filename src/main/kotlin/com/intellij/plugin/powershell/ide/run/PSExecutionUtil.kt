@@ -45,3 +45,7 @@ fun checkExists(path: String?): Boolean {
 fun join(vararg pathPart: String): String {
   return FileUtil.toCanonicalPath(FileUtil.join(*pathPart))
 }
+
+fun getDefaultWorkingDirectory(): String {
+  return EnvironmentUtil.getValue("HOME") ?: System.getProperty("user.home") ?: System.getProperty("user.dir") ?: ""
+}
