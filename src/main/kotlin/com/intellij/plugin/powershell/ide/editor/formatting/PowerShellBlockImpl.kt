@@ -502,7 +502,7 @@ class PowerShellSpacingProcessor(private val myCommonSettings: CommonCodeStyleSe
       return simpleSpacing(myCommonSettings.SPACE_AROUND_BITWISE_OPERATORS)
     }
     if (isMultiplicativeOperator(type1) || isMultiplicativeOperator(type2)) {
-      return simpleSpacing(myCommonSettings.SPACE_AROUND_MULTIPLICATIVE_OPERATORS)
+      if (!isIdentifier(node1.treeParent) && !isIdentifier(node2.treeParent)) return simpleSpacing(myCommonSettings.SPACE_AROUND_MULTIPLICATIVE_OPERATORS)
     }
     if (isUnaryOperator(node1) || isUnaryOperator(node2)) {
       return simpleSpacing(myCommonSettings.SPACE_AROUND_UNARY_OPERATOR)
@@ -622,7 +622,7 @@ class PowerShellSpacingProcessor(private val myCommonSettings: CommonCodeStyleSe
 
     if (type2 == SEMI) return simpleSpacing(myCommonSettings.SPACE_BEFORE_SEMICOLON)
 
-    if ((PowerShellTokenTypeSets.KEYWORDS.contains(type1) /*|| HANDLER_PARAMETER_LABEL === type1*/) && NLS !== type2) {
+    if ((PowerShellTokenTypeSets.KEYWORDS.contains(type1) && !isIdentifier(node1.treeParent)/*|| HANDLER_PARAMETER_LABEL === type1*/) && NLS !== type2) {
       return Spacing.createSpacing(1, 1, 0, true, 0)
     }
 

@@ -68,6 +68,12 @@ class PowerShellFormatterTest : FormatterTestCase() {
     settings.WRAP_FIRST_METHOD_IN_CALL_CHAIN = true
     doTest("wrap_chained_call", "wrap_chained_call_if_long_first_wrap_res")
   }
+  
+  fun testNoSpacingForCompoundIdentifiers() {
+    val settings = getCommonSettings()
+    settings.SPACE_AROUND_MULTIPLICATIVE_OPERATORS = true
+    doTest("compound_identifiers", "compound_identifiers_res")
+  }
 
   fun testChainedCallWrapAlignment() {
     val settings = getCommonSettings()

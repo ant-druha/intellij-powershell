@@ -9,6 +9,8 @@ import com.intellij.psi.tree.IElementType
 
 internal fun canAddSpaceBefore(node: ASTNode): Boolean = !isLabelContext(node) && !isTargetVariableContext(node) && !isPathExpressionContext(node) && !isFunctionDeclarationContext(node)
 
+internal fun isIdentifier(node: ASTNode) = (node.elementType != PowerShellTypes.REFERENCE_IDENTIFIER || node.elementType != PowerShellTypes.IDENTIFIER)
+
 internal fun isFinallyClauseContext(node: ASTNode): Boolean {
   return node.treeParent?.elementType === PowerShellTypes.FINALLY_CLAUSE
 }
