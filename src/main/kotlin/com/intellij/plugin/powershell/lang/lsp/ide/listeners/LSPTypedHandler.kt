@@ -12,7 +12,6 @@ import com.intellij.psi.PsiFile
 class LSPTypedHandler : TypedHandlerDelegate() {
 
   override fun charTyped(c: Char, project: Project, editor: Editor, file: PsiFile): Result {
-    EditorEventManager.forEditor(editor)?.characterTyped(c, project, editor, file)
     return Result.CONTINUE
   }
 }

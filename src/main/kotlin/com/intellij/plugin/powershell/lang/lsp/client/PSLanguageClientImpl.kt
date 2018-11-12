@@ -8,16 +8,19 @@ import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
+import com.intellij.plugin.powershell.lang.lsp.ide.EditorEventManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.plugin.powershell.lang.lsp.languagehost.LanguageServerEndpoint
 import com.intellij.ui.GuiUtils
+import com.intellij.plugin.powershell.lang.lsp.util.getTextEditor
 import org.eclipse.lsp4j.*
 import org.eclipse.lsp4j.jsonrpc.CompletableFutures
 import org.eclipse.lsp4j.jsonrpc.Endpoint
 import org.eclipse.lsp4j.services.LanguageClient
 import org.eclipse.lsp4j.services.LanguageServer
 import java.io.File
+import java.net.URI
 import java.util.concurrent.CompletableFuture
 
 class PSLanguageClientImpl(private val project: Project) : LanguageClient, Endpoint {
@@ -97,6 +100,15 @@ class PSLanguageClientImpl(private val project: Project) : LanguageClient, Endpo
    * signal results of validation runs.
    */
   override fun publishDiagnostics(diagnostics: PublishDiagnosticsParams) {
+    val uri = diagnostics.uri
+    updateDiagnostics(uri, diagnostics.diagnostics)
+  }
+
+  private fun updateDiagnostics(uri: String, diagnostics: List<Diagnostic>) {
+    val file = VfsUtil.findFileByIoFile(File(URI(uri)), false) ?: return
+    val editor = getTextEditor(file, project) ?: return
+    val manager = EditorEventManager.forEditor(editor) ?: return
+    manager.updateDiagnostics(diagnostics)
   }
 
   /**

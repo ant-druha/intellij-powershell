@@ -3,6 +3,8 @@
  */
 package com.intellij.plugin.powershell.lang.lsp.ide
 
+import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.event.DocumentEvent
@@ -18,7 +20,7 @@ import com.intellij.plugin.powershell.lang.lsp.languagehost.ServerOptions
 import com.intellij.plugin.powershell.lang.lsp.util.DocumentUtils.offsetToLSPPos
 import com.intellij.plugin.powershell.lang.lsp.util.editorToURI
 import com.intellij.plugin.powershell.lang.lsp.util.editorToURIString
-import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiDocumentManager
 import org.eclipse.lsp4j.*
 import java.net.URI
 import java.util.*
@@ -42,6 +44,8 @@ class EditorEventManager(private val project: Project, private val editor: Edito
     serverOptions.signatureHelpProvider.triggerCharacters.toSet()
   else emptySet<String>()
 
+  private var diagnosticsInfo: List<Diagnostic> = listOf()
+
   init {
     changesParams.textDocument.uri = identifier.uri
     editorToManager[editor] = this
@@ -50,6 +54,8 @@ class EditorEventManager(private val project: Project, private val editor: Edito
   fun getEditor(): Editor {
     return editor
   }
+
+  fun getDiagnostics(): List<Diagnostic> = diagnosticsInfo
 
   companion object {
     private val uriToManager = mutableMapOf<URI, EditorEventManager>()
@@ -162,14 +168,29 @@ class EditorEventManager(private val project: Project, private val editor: Edito
     }
   }
 
-  fun characterTyped(c: Char, project: Project, editor: Editor, file: PsiFile) {
-//    if (signatureTriggers.contains(c.toString())) {
-//      signatureHelp()
-//    }
-//    else if (onTypeFormattingTriggers.contains(c.toString())) {
-//      onTypeFormatting(c.toString)
-//    }
+  fun updateDiagnostics(diagnostics: List<Diagnostic>) {
+    saveDiagnostics(diagnostics)
+    val restartAnalyzerRunnable = Runnable {
+      val psiFile = PsiDocumentManager.getInstance(project).getPsiFile(editor.document)
+      if (psiFile != null) DaemonCodeAnalyzer.getInstance(project).restart(psiFile)
+    }
+    if (ApplicationManager.getApplication().isDispatchThread) {
+      restartAnalyzerRunnable.run()
+    } else {
+      ApplicationManager.getApplication().runReadAction {
+        restartAnalyzerRunnable.run()
+      }
+    }
   }
+
+  /**
+   *
+   * Saves diagnostics which will then be used by IDE code analyzer and shown in Editor on inspection run
+   */
+  fun saveDiagnostics(diagnostics: List<Diagnostic>) {
+    diagnosticsInfo = diagnostics
+  }
+
 }
 
 val DEFAULT_DID_CHANGE_CONFIGURATION_PARAMS = DidChangeConfigurationParams(PowerShellLanguageServerSettingsWrapper(LanguageServerSettings()))

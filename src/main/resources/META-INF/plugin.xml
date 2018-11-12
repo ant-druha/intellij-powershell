@@ -146,6 +146,10 @@
     <!--LSP-->
     <typedHandler implementation="com.intellij.plugin.powershell.lang.lsp.ide.listeners.LSPTypedHandler" id="LSPTypedHandler"/>
 
+    <localInspection language="PowerShell" shortName="PSScriptAnalyzer" bundle="messages.MessagesBundle" key="editor.services.inspection"
+                     groupKey="settings.powershell" enabledByDefault="true" level="SERVER PROBLEM" hasStaticDescription="true" suppressId="PSScriptAnalyzer"
+                     implementationClass="com.intellij.plugin.powershell.lang.lsp.ide.inspection.PSESInspection"/>
+
     <applicationConfigurable id="Settings.PowerShell"
                              groupId="language"
                              instance="com.intellij.plugin.powershell.lang.lsp.ide.settings.PowerShellConfigurable"
