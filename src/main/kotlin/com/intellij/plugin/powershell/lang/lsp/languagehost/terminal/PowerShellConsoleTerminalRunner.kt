@@ -1,6 +1,5 @@
 package com.intellij.plugin.powershell.lang.lsp.languagehost.terminal
 
-import com.google.common.base.Predicate
 import com.intellij.execution.ExecutionManager
 import com.intellij.execution.Executor
 import com.intellij.execution.TaskExecutor
@@ -14,7 +13,6 @@ import com.intellij.execution.ui.actions.CloseAction
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.DefaultActionGroup
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.diagnostic.Logger
@@ -27,6 +25,7 @@ import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.plugin.powershell.lang.lsp.languagehost.EditorServicesLanguageHostStarter
 import com.intellij.plugin.powershell.lang.lsp.languagehost.LanguageHostConnectionManager
 import com.intellij.plugin.powershell.lang.lsp.languagehost.LanguageServerEndpoint
+import com.intellij.terminal.JBTerminalWidget
 import com.intellij.ui.GuiUtils
 import com.intellij.util.EnvironmentUtil
 import com.intellij.util.concurrency.AppExecutorUtil
@@ -34,10 +33,8 @@ import com.jediterm.pty.PtyMain
 import com.jediterm.terminal.TtyConnector
 import com.jediterm.terminal.ui.TerminalWidget
 import com.pty4j.PtyProcess
-import org.jetbrains.plugins.terminal.JBTabbedTerminalWidget
 import org.jetbrains.plugins.terminal.JBTerminalSystemSettingsProvider
 import org.jetbrains.plugins.terminal.TerminalProjectOptionsProvider
-import org.jetbrains.plugins.terminal.TerminalView
 import java.awt.BorderLayout
 import java.awt.Component
 import java.io.File
@@ -133,11 +130,7 @@ class PowerShellConsoleTerminalRunner(project: Project) : EditorServicesLanguage
     toolbarActions.add(createCloseAction(runExecutor, contentDescriptor))
 
     val provider = JBTerminalSystemSettingsProvider()
-    val widget = JBTabbedTerminalWidget(myProject, provider, Predicate<com.intellij.openapi.util.Pair<TerminalWidget, String>> { input ->
-      if (input == null) return@Predicate false
-      openSessionInDirectory(input.getFirst(), input.getSecond())
-      true
-    }, contentDescriptor)
+    val widget = JBTerminalWidget(myProject, provider, contentDescriptor)
 
     createAndStartSession(widget, createTtyConnector(process))
 
@@ -149,36 +142,8 @@ class PowerShellConsoleTerminalRunner(project: Project) : EditorServicesLanguage
   }
 
 
-  private fun openSessionInDirectory(terminalWidget: TerminalWidget, directory: String?) {
-    val modalityState = ModalityState.stateForComponent(terminalWidget.component)
-
-    ApplicationManager.getApplication().executeOnPooledThread {
-      try {
-        // Create Server process
-        val process = createProcess(myProject, buildCommandLine(), directory)
-
-        ApplicationManager.getApplication().invokeLater({
-                                                          try {
-                                                            createAndStartSession(terminalWidget, createTtyConnector(process))
-                                                            terminalWidget.component.revalidate()
-                                                          } catch (e: RuntimeException) {
-                                                            showCannotOpenTerminalDialog(e)
-                                                          }
-                                                        }, modalityState)
-      } catch (e: Exception) {
-        ApplicationManager.getApplication().invokeLater({ showCannotOpenTerminalDialog(e) }, modalityState)
-      }
-    }
-  }
-
-  private fun showCannotOpenTerminalDialog(e: Throwable) {
-    Messages.showErrorDialog(e.message, "Can not open PowerShell Console")
-  }
-
   private fun createAndStartSession(terminal: TerminalWidget, ttyConnector: TtyConnector) {
     val session = terminal.createTerminalSession(ttyConnector)
-
-    TerminalView.recordUsage(ttyConnector)
 
     session.start()
   }

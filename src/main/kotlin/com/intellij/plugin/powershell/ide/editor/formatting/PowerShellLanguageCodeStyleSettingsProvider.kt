@@ -324,7 +324,7 @@ class PowerShellLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsPro
     }
   }
 
-  override fun getDefaultCommonSettings(): CommonCodeStyleSettings? {
+  override fun getDefaultCommonSettings(): CommonCodeStyleSettings {
     val defaultSettings = CommonCodeStyleSettings(language)
     defaultSettings.KEEP_SIMPLE_LAMBDAS_IN_ONE_LINE = true
     defaultSettings.RIGHT_MARGIN = 115

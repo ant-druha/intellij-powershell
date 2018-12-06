@@ -99,11 +99,10 @@ open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractCompo
   override fun getCanonicalText(): String {
     val varName = getShortName()
     val ns = getScopeName() ?: "Variable"
-    return ns + ":" + varName
+    return "$ns:$varName"
   }
 
-  override fun handleElementRename(newElementName: String?): PsiElement =
-      if (newElementName != null) setName(newElementName) else this
+  override fun handleElementRename(newElementName: String): PsiElement = setName(newElementName)
 
   override fun setName(name: String): PsiElement {
     val identifier = getNameElement()
@@ -121,7 +120,7 @@ open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractCompo
 
   override fun isSoft(): Boolean = false
 
-  override fun isReferenceTo(element: PsiElement?): Boolean = element != null && element == resolve()
+  override fun isReferenceTo(element: PsiElement): Boolean = element == resolve()
 //    return isReferenceToTarget(element)
 
   //if we resolve several definitions to closes target
@@ -179,7 +178,7 @@ open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractCompo
     } else this
   }
 
-  fun isLhsAssignmentTarget(): Boolean = context?.firstChild == this && context is PowerShellAssignmentExpression
+  private fun isLhsAssignmentTarget(): Boolean = context?.firstChild == this && context is PowerShellAssignmentExpression
 
 }
 

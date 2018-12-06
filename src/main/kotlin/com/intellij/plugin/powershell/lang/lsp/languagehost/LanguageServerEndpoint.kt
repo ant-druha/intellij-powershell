@@ -75,7 +75,7 @@ class LanguageServerEndpoint(private val languageHostConnectionManager: Language
 
   private fun addShutdownHook() {
     ProjectManager.getInstance().addProjectManagerListener(project, object : ProjectManagerListener {
-      override fun projectClosing(project: Project?) {
+      override fun projectClosing(project: Project) {
         stop()
       }
     })
@@ -104,7 +104,7 @@ class LanguageServerEndpoint(private val languageHostConnectionManager: Language
 
   fun connectEditor(editor: Editor?) {
     if (editor == null) {
-      LOG.warn("Editor is null for " + languageServer)
+      LOG.warn("Editor is null for $languageServer")
       return
     }
     val file = FileDocumentManager.getInstance().getFile(editor.document) ?: return
@@ -145,10 +145,10 @@ class LanguageServerEndpoint(private val languageHostConnectionManager: Language
             }
           }
         } else {
-          LOG.warn("Capabilities are null for " + languageServer)
+          LOG.warn("Capabilities are null for $languageServer")
         }
       } else {
-        LOG.warn("InitializeFuture is null for " + languageServer)
+        LOG.warn("InitializeFuture is null for $languageServer")
       }
     }
   }

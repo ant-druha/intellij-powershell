@@ -65,9 +65,8 @@ abstract class PowerShellReferencePsiElementImpl(node: ASTNode) : PowerShellPsiE
 
   override fun getCanonicalText(): String = node.text
 
-  override fun handleElementRename(newElementName: String?): PsiElement {
-    val nameElement = getNameElement()
-    if (newElementName == null || nameElement == null) return this
+  override fun handleElementRename(newElementName: String): PsiElement {
+    val nameElement = getNameElement() ?: return this
 
     val identifierNew = PowerShellPsiElementFactory.createIdentifierFromText(project, newElementName, true)
     if (identifierNew != null) nameElement.replace(identifierNew)
@@ -79,5 +78,5 @@ abstract class PowerShellReferencePsiElementImpl(node: ASTNode) : PowerShellPsiE
 
   override fun isSoft(): Boolean = false
 
-  override fun isReferenceTo(element: PsiElement?): Boolean = element != null && resolve() == element
+  override fun isReferenceTo(element: PsiElement): Boolean = resolve() == element
 }

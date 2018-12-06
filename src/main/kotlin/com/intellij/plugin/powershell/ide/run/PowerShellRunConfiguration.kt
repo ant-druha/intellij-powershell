@@ -15,7 +15,7 @@ import com.intellij.openapi.util.text.StringUtil
 import org.jdom.Element
 
 class PowerShellRunConfiguration(project: Project, configurationFactory: ConfigurationFactory, name: String) :
-    LocatableConfigurationBase(project, configurationFactory, name) {
+    LocatableConfigurationBase<Element>(project, configurationFactory, name) {
 
   private val SCRIPT_PATH_URL = "scriptUrl"
   private val WORKING_DIRECTORY = "workingDirectory"
