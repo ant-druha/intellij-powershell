@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.intellij.plugin.adernov.powershell</id>
   <name>PowerShell</name>
-  <version>1.1.1</version>
+  <version>2.0.0</version>
   <vendor email="andrey.dernov@gmail.com" url="https://github.com/ant-druha/PowerShell/issues">Andrey</vendor>
 
   <description><![CDATA[
@@ -13,6 +13,14 @@
   <change-notes><![CDATA[
   <html>
         <dl>
+          <dt>2.0.0 Adds support for PowerShell ScriptAnalyzer code checker in IDE Editor<br></dt>
+          <dd>&#183; <a href="https://github.com/ant-druha/PowerShell/issues/9">8</a> - PowerShell ScriptAnalyzer support in IDE Editor;</dd>
+          <dd>&#183; <a href="https://github.com/ant-druha/PowerShell/issues/6">6</a> - Update PowerShell Language server version;</dd>
+          <dd>&#183; <a href="https://github.com/ant-druha/PowerShell/issues/5">5</a> - Reformat code Error;</dd>
+          <dd>&#183; <a href="https://github.com/ant-druha/PowerShell/issues/3">3</a> - Run/Debug configuration: ability to set working directory;</dd>
+          <dd>&#183; <a href="https://github.com/ant-druha/PowerShell/issues/2">2</a> - NullPointerException during normal IDE operation;</dd>
+          <dd>&#183; <a href="https://github.com/ant-druha/PowerShell/issues/1">1</a> - Exception on PyCharm launch.</dd>
+          
           <dt>1.1.1 Adds integrated PowerShell console<br></dt>
           <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/22">22</a> - Integrated PowerShell Console;</dd>
           <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/18">18</a> - Remote files editing with 'psedit' command in PowerShell console.</dd>
