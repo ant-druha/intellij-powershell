@@ -1,0 +1,2122 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<helpItems schema="maml" xmlns="http://msh">
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>ConvertFrom-ScriptExtent</command:name>
+      <command:verb>ConvertFrom</command:verb>
+      <command:noun>ScriptExtent</command:noun>
+      <maml:description>
+        <maml:para>Converts IScriptExtent objects to some common EditorServices types.</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>The ConvertFrom-ScriptExtent function converts ScriptExtent objects to types used in methods found in the $psEditor API.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>ConvertFrom-ScriptExtent</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="none">
+          <maml:name>Extent</maml:name>
+          <maml:Description>
+            <maml:para>Specifies the extent to be converted.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">IScriptExtent[]</command:parameterValue>
+          <dev:type>
+            <maml:name>IScriptExtent[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>BufferRange</maml:name>
+          <maml:Description>
+            <maml:para>If specified will convert extents to BufferRange objects.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem>
+        <maml:name>ConvertFrom-ScriptExtent</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="none">
+          <maml:name>Extent</maml:name>
+          <maml:Description>
+            <maml:para>Specifies the extent to be converted.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">IScriptExtent[]</command:parameterValue>
+          <dev:type>
+            <maml:name>IScriptExtent[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>BufferPosition</maml:name>
+          <maml:Description>
+            <maml:para>If specified will convert extents to BufferPosition objects.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Start</maml:name>
+          <maml:Description>
+            <maml:para>Specifies to use the start of the extent when converting to types with no range. This is the default.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>End</maml:name>
+          <maml:Description>
+            <maml:para>Specifies to use the end of the extent when converting to types with no range.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="none">
+        <maml:name>Extent</maml:name>
+        <maml:Description>
+          <maml:para>Specifies the extent to be converted.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">IScriptExtent[]</command:parameterValue>
+        <dev:type>
+          <maml:name>IScriptExtent[]</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>BufferRange</maml:name>
+        <maml:Description>
+          <maml:para>If specified will convert extents to BufferRange objects.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>BufferPosition</maml:name>
+        <maml:Description>
+          <maml:para>If specified will convert extents to BufferPosition objects.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>Start</maml:name>
+        <maml:Description>
+          <maml:para>Specifies to use the start of the extent when converting to types with no range. This is the default.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>End</maml:name>
+        <maml:Description>
+          <maml:para>Specifies to use the end of the extent when converting to types with no range.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.Management.Automation.Language.IScriptExtent</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para>You can pass ScriptExtent objects to this function.  You can also pass objects with a property named "Extent" such as ASTs from Find-Ast or tokens from Get-Token.</maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>Microsoft.PowerShell.EditorServices.BufferRange</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>Microsoft.PowerShell.EditorServices.BufferPosition</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para>This function will return the converted object of one of the above types depending on parameter switch choices.</maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para></maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>$range = Find-Ast -First { [System.Management.Automation.Language.CommandAst] } |
+    ConvertFrom-ScriptExtent -BufferRange
+
+$psEditor.GetEditorContext().SetSelection($range)</dev:code>
+        <dev:remarks>
+          <maml:para>Convert the extent of the first CommandAst to a BufferRange and use that to select it with the $psEditor API.</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>Online Version:</maml:linkText>
+        <maml:uri>https://github.com/PowerShell/PowerShellEditorServices/tree/master/module/docs/ConvertFrom-ScriptExtent.md</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>ConvertTo-ScriptExtent</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Test-ScriptExtent</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Set-ScriptExtent</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Join-ScriptExtent</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>ConvertTo-ScriptExtent</command:name>
+      <command:verb>ConvertTo</command:verb>
+      <command:noun>ScriptExtent</command:noun>
+      <maml:description>
+        <maml:para>Converts position and range objects from PowerShellEditorServices to ScriptExtent objects.</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>The ConvertTo-ScriptExtent function can be used to convert any object with position related properties to a ScriptExtent object.  You can also specify the parameters directly to manually create ScriptExtent objects.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>ConvertTo-ScriptExtent</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="named" aliases="none">
+          <maml:name>Extent</maml:name>
+          <maml:Description>
+            <maml:para>Specifies a ScriptExtent object to use as a base to create a new editor context aware ScriptExtent object.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">IScriptExtent</command:parameterValue>
+          <dev:type>
+            <maml:name>IScriptExtent</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem>
+        <maml:name>ConvertTo-ScriptExtent</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="StartLine, Line">
+          <maml:name>StartLineNumber</maml:name>
+          <maml:Description>
+            <maml:para>Specifies the starting line number.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+          <dev:type>
+            <maml:name>Int32</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>0</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="StartColumn, Column">
+          <maml:name>StartColumnNumber</maml:name>
+          <maml:Description>
+            <maml:para>Specifies the starting column number.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+          <dev:type>
+            <maml:name>Int32</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>0</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="EndLine">
+          <maml:name>EndLineNumber</maml:name>
+          <maml:Description>
+            <maml:para>Specifies the ending line number.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+          <dev:type>
+            <maml:name>Int32</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>0</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="EndColumn">
+          <maml:name>EndColumnNumber</maml:name>
+          <maml:Description>
+            <maml:para>Specifies the ending column number.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+          <dev:type>
+            <maml:name>Int32</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>0</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="File, FileName">
+          <maml:name>FilePath</maml:name>
+          <maml:Description>
+            <maml:para>Specifies the path of the source script file.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem>
+        <maml:name>ConvertTo-ScriptExtent</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="StartOffset, Offset">
+          <maml:name>StartOffsetNumber</maml:name>
+          <maml:Description>
+            <maml:para>Specifies the starting offset number.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+          <dev:type>
+            <maml:name>Int32</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>0</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="EndOffset">
+          <maml:name>EndOffsetNumber</maml:name>
+          <maml:Description>
+            <maml:para>Specifies the ending offset number.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+          <dev:type>
+            <maml:name>Int32</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>0</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="File, FileName">
+          <maml:name>FilePath</maml:name>
+          <maml:Description>
+            <maml:para>Specifies the path of the source script file.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem>
+        <maml:name>ConvertTo-ScriptExtent</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="File, FileName">
+          <maml:name>FilePath</maml:name>
+          <maml:Description>
+            <maml:para>Specifies the path of the source script file.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="Start">
+          <maml:name>StartBuffer</maml:name>
+          <maml:Description>
+            <maml:para>Specifies the starting buffer position.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">BufferPosition</command:parameterValue>
+          <dev:type>
+            <maml:name>BufferPosition</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="End">
+          <maml:name>EndBuffer</maml:name>
+          <maml:Description>
+            <maml:para>Specifies the ending buffer position.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">BufferPosition</command:parameterValue>
+          <dev:type>
+            <maml:name>BufferPosition</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="named" aliases="none">
+        <maml:name>Extent</maml:name>
+        <maml:Description>
+          <maml:para>Specifies a ScriptExtent object to use as a base to create a new editor context aware ScriptExtent object.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">IScriptExtent</command:parameterValue>
+        <dev:type>
+          <maml:name>IScriptExtent</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="StartLine, Line">
+        <maml:name>StartLineNumber</maml:name>
+        <maml:Description>
+          <maml:para>Specifies the starting line number.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+        <dev:type>
+          <maml:name>Int32</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>0</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="StartColumn, Column">
+        <maml:name>StartColumnNumber</maml:name>
+        <maml:Description>
+          <maml:para>Specifies the starting column number.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+        <dev:type>
+          <maml:name>Int32</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>0</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="EndLine">
+        <maml:name>EndLineNumber</maml:name>
+        <maml:Description>
+          <maml:para>Specifies the ending line number.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+        <dev:type>
+          <maml:name>Int32</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>0</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="EndColumn">
+        <maml:name>EndColumnNumber</maml:name>
+        <maml:Description>
+          <maml:para>Specifies the ending column number.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+        <dev:type>
+          <maml:name>Int32</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>0</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="StartOffset, Offset">
+        <maml:name>StartOffsetNumber</maml:name>
+        <maml:Description>
+          <maml:para>Specifies the starting offset number.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+        <dev:type>
+          <maml:name>Int32</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>0</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="EndOffset">
+        <maml:name>EndOffsetNumber</maml:name>
+        <maml:Description>
+          <maml:para>Specifies the ending offset number.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+        <dev:type>
+          <maml:name>Int32</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>0</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="File, FileName">
+        <maml:name>FilePath</maml:name>
+        <maml:Description>
+          <maml:para>Specifies the path of the source script file.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="Start">
+        <maml:name>StartBuffer</maml:name>
+        <maml:Description>
+          <maml:para>Specifies the starting buffer position.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">BufferPosition</command:parameterValue>
+        <dev:type>
+          <maml:name>BufferPosition</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="End">
+        <maml:name>EndBuffer</maml:name>
+        <maml:Description>
+          <maml:para>Specifies the ending buffer position.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">BufferPosition</command:parameterValue>
+        <dev:type>
+          <maml:name>BufferPosition</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.Object</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para>You can pass any object with properties that have position related names.  Below is a list of all the property names that can be bound as parameters through the pipeline.</maml:para>
+          <maml:para>StartLineNumber, StartLine, Line, EndLineNumber, EndLine, StartColumnNumber, StartColumn, Column, EndColumnNumber, EndColumn, StartOffsetNumber, StartOffset, Offset, EndOffsetNumber, EndOffset, StartBuffer, Start, EndBuffer, End</maml:para>
+          <maml:para>You can also pass IScriptExtent objects to be converted to context aware versions.</maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>Microsoft.PowerShell.EditorServices.FullScriptExtent</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para>The converted ScriptExtent object will be returned to the pipeline.</maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para></maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>$psEditor.GetEditorContext().SelectedRange | ConvertTo-ScriptExtent</dev:code>
+        <dev:remarks>
+          <maml:para>Returns a ScriptExtent object of the currently selected range.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <dev:code>ConvertTo-ScriptExtent -StartOffset 10 -EndOffset 100</dev:code>
+        <dev:remarks>
+          <maml:para>Returns a ScriptExtent object from a start and end offset.</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>Online Version:</maml:linkText>
+        <maml:uri>https://github.com/PowerShell/PowerShellEditorServices/tree/master/module/docs/ConvertTo-ScriptExtent.md</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>ConvertFrom-ScriptExtent</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Test-ScriptExtent</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Set-ScriptExtent</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Join-ScriptExtent</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>Find-Ast</command:name>
+      <command:verb>Find</command:verb>
+      <command:noun>Ast</command:noun>
+      <maml:description>
+        <maml:para>Find a specific element in an abstract syntax tree (AST).</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>The Find-Ast function can be used to easily find a specific AST within a script file. All ASTs following the inital starting ast will be searched, including those that are not part of the same tree.</maml:para>
+      <maml:para>The behavior of the search (such as direction and criteria) can be changed with parameters.</maml:para>
+      <maml:para>Additionally, you can find the Ast closest to the cursor with the "AtCursor" switch parameter.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Find-Ast</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+          <maml:name>FilterScript</maml:name>
+          <maml:Description>
+            <maml:para>Specifies a ScriptBlock that returns $true if an AST should be returned. Uses $PSItem and $_ like Where-Object. If not specified all ASTs will be returned.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">ScriptBlock</command:parameterValue>
+          <dev:type>
+            <maml:name>ScriptBlock</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="none">
+          <maml:name>Ast</maml:name>
+          <maml:Description>
+            <maml:para>Specifies the starting AST. The default is the AST of the current file in PowerShell Editor Services.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">Ast</command:parameterValue>
+          <dev:type>
+            <maml:name>Ast</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Before</maml:name>
+          <maml:Description>
+            <maml:para>If specified the direction of the search will be reversed.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Family</maml:name>
+          <maml:Description>
+            <maml:para>If specified only children of the starting AST will be searched. If specified with the "Before" parameter then only ancestors will be searched.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="Closest, F">
+          <maml:name>First</maml:name>
+          <maml:Description>
+            <maml:para>If specified will return only the first result. This will be the closest AST that matches.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="Furthest">
+          <maml:name>Last</maml:name>
+          <maml:Description>
+            <maml:para>If specified will return only the last result. This will be the furthest AST that matches.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="Parent">
+          <maml:name>Ancestor</maml:name>
+          <maml:Description>
+            <maml:para>If specified will only search ancestors of the starting AST.  This is a convenience parameter that acts the same as the "Family" and "Before" parameters when used together.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>IncludeStartingAst</maml:name>
+          <maml:Description>
+            <maml:para>If specified the starting AST will be included if matched.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem>
+        <maml:name>Find-Ast</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>AtCursor</maml:name>
+          <maml:Description>
+            <maml:para>If specified, this function will return the smallest AST that the cursor is within.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+        <maml:name>FilterScript</maml:name>
+        <maml:Description>
+          <maml:para>Specifies a ScriptBlock that returns $true if an AST should be returned. Uses $PSItem and $_ like Where-Object. If not specified all ASTs will be returned.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">ScriptBlock</command:parameterValue>
+        <dev:type>
+          <maml:name>ScriptBlock</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="none">
+        <maml:name>Ast</maml:name>
+        <maml:Description>
+          <maml:para>Specifies the starting AST. The default is the AST of the current file in PowerShell Editor Services.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">Ast</command:parameterValue>
+        <dev:type>
+          <maml:name>Ast</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>Before</maml:name>
+        <maml:Description>
+          <maml:para>If specified the direction of the search will be reversed.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>Family</maml:name>
+        <maml:Description>
+          <maml:para>If specified only children of the starting AST will be searched. If specified with the "Before" parameter then only ancestors will be searched.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="Closest, F">
+        <maml:name>First</maml:name>
+        <maml:Description>
+          <maml:para>If specified will return only the first result. This will be the closest AST that matches.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="Furthest">
+        <maml:name>Last</maml:name>
+        <maml:Description>
+          <maml:para>If specified will return only the last result. This will be the furthest AST that matches.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="Parent">
+        <maml:name>Ancestor</maml:name>
+        <maml:Description>
+          <maml:para>If specified will only search ancestors of the starting AST.  This is a convenience parameter that acts the same as the "Family" and "Before" parameters when used together.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>IncludeStartingAst</maml:name>
+        <maml:Description>
+          <maml:para>If specified the starting AST will be included if matched.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>AtCursor</maml:name>
+        <maml:Description>
+          <maml:para>If specified, this function will return the smallest AST that the cursor is within.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.Management.Automation.Language.Ast</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para>You can pass ASTs to search to this function.</maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Management.Automation.Language.Ast</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para>ASTs that match the criteria will be returned to the pipeline.</maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para></maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>Find-Ast</dev:code>
+        <dev:remarks>
+          <maml:para>Returns all asts in the currently open file in the editor.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <dev:code>Find-Ast -First -IncludeStartingAst</dev:code>
+        <dev:remarks>
+          <maml:para>Returns the top level ast in the currently open file in the editor.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <dev:code>Find-Ast { $PSItem -is [FunctionDefinitionAst] }</dev:code>
+        <dev:remarks>
+          <maml:para>Returns all function definition asts in the ast of file currently open in the editor.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
+        <dev:code>Find-Ast { $_.Member }</dev:code>
+        <dev:remarks>
+          <maml:para>Returns all member expressions in the file currently open in the editor.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 5 --------------------------</maml:title>
+        <dev:code>Find-Ast { $_.InvocationOperator -eq 'Dot' } | Find-Ast -Family { $_.VariablePath }</dev:code>
+        <dev:remarks>
+          <maml:para>Returns all variable expressions used in a dot source expression.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 6 --------------------------</maml:title>
+        <dev:code>Find-Ast { 'PowerShellVersion' -eq $_ } |
+    Find-Ast -First |
+    Set-ScriptExtent -Text '4.0' -AsString</dev:code>
+        <dev:remarks>
+          <maml:para>This example sets the required PowerShell version in a module manifest to 4.0.</maml:para>
+          <maml:para>First it finds the AST of the PowerShellVersion manifest field, then finds the first AST directly after it and changes the text to '4.0'. This will not work as is if the field is commented.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 7 --------------------------</maml:title>
+        <dev:code>Find-Ast { $_.ArgumentName -eq 'ParameterSetName' -and $_.Argument.Value -eq 'ByPosition' } |
+    Find-Ast -First -Ancestor { $_ -is [System.Management.Automation.Language.ParameterAst] } |
+    ForEach-Object { $_.Name.VariablePath.UserPath }</dev:code>
+        <dev:remarks>
+          <maml:para>This example gets a list of all parameters that belong to the parameter set 'ByPosition'. First it uses the ArgumentName and Argument properties of NamedAttributeArgumentAst to find the ASTs of arguments to the Parameter attribute that declare the the parameter set 'ByPosition'.  It then finds the closest parent ParameterAst and retrieves the name from it.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 8 --------------------------</maml:title>
+        <dev:code>$companyName = Find-Ast {
+    $_.Value -eq 'CompanyName' -or
+    (Find-Ast -Ast $_ -First -Before).Value -eq 'CompanyName'
+}
+
+$previousField = $companyName[0] | Find-Ast -First -Before { $_.StringConstantType -eq 'BareWord' }
+
+$companyNameComments = $companyName.Extent, $previousField.Extent |
+    Join-ScriptExtent |
+    Get-Token |
+    Where-Object Kind -eq 'Comment'
+
+$fullManifestElement = $companyNameComments.Extent, $companyName.Extent | Join-ScriptExtent</dev:code>
+        <dev:remarks>
+          <maml:para>This example shows off ways you can combine the position functions together to get very specific portions of a script file.  The result of this example is a ScriptExtent that includes a manifest field, value, and all comments above it.</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>Online Version:</maml:linkText>
+        <maml:uri>https://github.com/PowerShell/PowerShellEditorServices/tree/master/module/docs/Find-Ast.md</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-Token</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Set-ScriptExtent</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>ConvertTo-ScriptExtent</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>Get-Token</command:name>
+      <command:verb>Get</command:verb>
+      <command:noun>Token</command:noun>
+      <maml:description>
+        <maml:para>Get parser tokens from a script position.</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>The Get-Token function can retrieve tokens from the current editor context, or from a ScriptExtent object. You can then use the ScriptExtent functions to manipulate the text at it's location.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Get-Token</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
+          <maml:name>Extent</maml:name>
+          <maml:Description>
+            <maml:para>Specifies the extent that a token must be within to be returned.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">IScriptExtent</command:parameterValue>
+          <dev:type>
+            <maml:name>IScriptExtent</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
+        <maml:name>Extent</maml:name>
+        <maml:Description>
+          <maml:para>Specifies the extent that a token must be within to be returned.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">IScriptExtent</command:parameterValue>
+        <dev:type>
+          <maml:name>IScriptExtent</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.Management.Automation.Language.IScriptExtent</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para>You can pass extents to get tokens from to this function. You can also pass objects that with a property named "Extent", like Ast objects from the Find-Ast function.</maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Management.Automation.Language.Token</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para></maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>using namespace System.Management.Automation.Language
+Find-Ast { $_ -is [IfStatementAst] } -First | Get-Token</dev:code>
+        <dev:remarks>
+          <maml:para>Gets all tokens from the first IfStatementAst.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <dev:code>Get-Token | Where-Object { $_.Kind -eq 'Comment' }</dev:code>
+        <dev:remarks>
+          <maml:para>Gets all comment tokens.</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>Online Version:</maml:linkText>
+        <maml:uri>https://github.com/PowerShell/PowerShellEditorServices/tree/master/module/docs/Get-Token.md</maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>Import-EditorCommand</command:name>
+      <command:verb>Import</command:verb>
+      <command:noun>EditorCommand</command:noun>
+      <maml:description>
+        <maml:para>Imports commands with the EditorCommand attribute into PowerShell Editor Services.</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>The Import-EditorCommand function will search the specified module for functions tagged as editor commands and register them with PowerShell Editor Services. By default, if a module is specified only exported functions will be processed.</maml:para>
+      <maml:para>Alternatively, you can specify command info objects (like those from the Get-Command cmdlet) to be processed directly.</maml:para>
+      <maml:para>To tag a command as an editor command, attach the attribute 'Microsoft.PowerShell.EditorServices.Extensions.EditorCommandAttribute' to the function like you would with 'CmdletBindingAttribute'.  The attribute accepts the named parameters 'Name', 'DisplayName', and 'SuppressOutput'.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Import-EditorCommand</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Module</maml:name>
+          <maml:Description>
+            <maml:para>Specifies the module to search for exportable editor commands.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">string[]</command:parameterValue>
+          <dev:type>
+            <maml:name>string[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Force</maml:name>
+          <maml:Description>
+            <maml:para>If specified will replace existing editor commands.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>PassThru</maml:name>
+          <maml:Description>
+            <maml:para>If specified will return an EditorCommand object for each imported command.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem>
+        <maml:name>Import-EditorCommand</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
+          <maml:name>Command</maml:name>
+          <maml:Description>
+            <maml:para>Specifies the functions to register as editor commands. If the function does not have the EditorCommand attribute it will be ignored.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">string[]</command:parameterValue>
+          <dev:type>
+            <maml:name>string[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Force</maml:name>
+          <maml:Description>
+            <maml:para>If specified will replace existing editor commands.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>PassThru</maml:name>
+          <maml:Description>
+            <maml:para>If specified will return an EditorCommand object for each imported command.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>Module</maml:name>
+        <maml:Description>
+          <maml:para>Specifies the module to search for exportable editor commands.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">string[]</command:parameterValue>
+        <dev:type>
+          <maml:name>string[]</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
+        <maml:name>Command</maml:name>
+        <maml:Description>
+          <maml:para>Specifies the functions to register as editor commands. If the function does not have the EditorCommand attribute it will be ignored.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">string[]</command:parameterValue>
+        <dev:type>
+          <maml:name>string[]</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>Force</maml:name>
+        <maml:Description>
+          <maml:para>If specified will replace existing editor commands.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>PassThru</maml:name>
+        <maml:Description>
+          <maml:para>If specified will return an EditorCommand object for each imported command.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.Management.Automation.CommandInfo</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para>You can pass commands to register as editor commands.</maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>Microsoft.PowerShell.EditorServices.Extensions.EditorCommand</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para>If the "PassThru" parameter is specified editor commands that were successfully registered will be returned.  This function does not output to the pipeline otherwise.</maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para></maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>Import-EditorCommand -Module PowerShellEditorServices.Commands</dev:code>
+        <dev:remarks>
+          <maml:para>Registers all editor commands in the module PowerShellEditorServices.Commands.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <dev:code>Get-Command *Editor* | Import-EditorCommand -PassThru</dev:code>
+        <dev:remarks>
+          <maml:para>Registers all editor commands that contain "Editor" in the name and return all successful imports.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <dev:code>function Invoke-MyEditorCommand {
+    [CmdletBinding()]
+    [Microsoft.PowerShell.EditorServices.Extensions.EditorCommand(DisplayName='My Command', SuppressOutput)]
+    param()
+    end {
+        ConvertTo-ScriptExtent -Offset 0 | Set-ScriptExtent -Text 'My Command!'
+    }
+}
+
+Get-Command Invoke-MyEditorCommand | Import-EditorCommand</dev:code>
+        <dev:remarks>
+          <maml:para>This example declares the function Invoke-MyEditorCommand with the EditorCommand attribute and then imports it as an editor command.</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>Online Version:</maml:linkText>
+        <maml:uri>https://github.com/PowerShell/PowerShellEditorServices/tree/master/module/docs/Import-EditorCommand.md</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Register-EditorCommand</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Unregister-EditorCommand</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>Join-ScriptExtent</command:name>
+      <command:verb>Join</command:verb>
+      <command:noun>ScriptExtent</command:noun>
+      <maml:description>
+        <maml:para>Combine multiple ScriptExtent objects into a single ScriptExtent.</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>The Join-ScriptExtent function will combine all ScriptExtent objects piped to it into a single extent.  This can be used combine multiple ASTs, tokens, or other script elements into a single object that can then be manipulated or used for more targeted searches.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Join-ScriptExtent</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
+          <maml:name>Extent</maml:name>
+          <maml:Description>
+            <maml:para>Specifies the extents to combine. If a single extent is passed, it will be returned as is. If no extents are passed nothing will be returned. Extents passed from the pipeline are processed after pipeline input completes.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">IScriptExtent[]</command:parameterValue>
+          <dev:type>
+            <maml:name>IScriptExtent[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
+        <maml:name>Extent</maml:name>
+        <maml:Description>
+          <maml:para>Specifies the extents to combine. If a single extent is passed, it will be returned as is. If no extents are passed nothing will be returned. Extents passed from the pipeline are processed after pipeline input completes.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">IScriptExtent[]</command:parameterValue>
+        <dev:type>
+          <maml:name>IScriptExtent[]</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.Management.Automation.Language.IScriptExtent</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para>You can pass ScriptExtent objects to this function.  You can also pass objects with a property named "Extent" such as ASTs from Find-Ast or tokens from Get-Token.</maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Management.Automation.Language.IScriptExtent</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para>The combined ScriptExtent object is returned.</maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para></maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>$ast = Find-Ast { $_.Arguments.Count -gt 4 } -First
+$ast.Arguments[0..1] | Join-ScriptExtent | Set-ScriptExtent -Text ''</dev:code>
+        <dev:remarks>
+          <maml:para>Finds the first InvokeMemberExpression ast that has over 4 arguments and removes the first two.</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>Online Version:</maml:linkText>
+        <maml:uri>https://github.com/PowerShell/PowerShellEditorServices/tree/master/module/docs/Join-ScriptExtent.md</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>ConvertTo-ScriptExtent</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>ConvertFrom-ScriptExtent</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Test-ScriptExtent</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Set-ScriptExtent</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>Out-CurrentFile</command:name>
+      <command:verb>Out</command:verb>
+      <command:noun>CurrentFile</command:noun>
+      <maml:description>
+        <maml:para>Sends the output through Out-String to the current open editor file.</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>The Out-CurrentFile cmdlet sends output through Out-String to the current open editor file.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Out-CurrentFile</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="0" aliases="none">
+          <maml:name>InputObject</maml:name>
+          <maml:Description>
+            <maml:para>The input object to format, either as a parameter or from the pipeline.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
+          <dev:type>
+            <maml:name>Object</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="0" aliases="none">
+        <maml:name>InputObject</maml:name>
+        <maml:Description>
+          <maml:para>The input object to format, either as a parameter or from the pipeline.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
+        <dev:type>
+          <maml:name>Object</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.Object</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para></maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- Example 1 --------------------------</maml:title>
+        <dev:code>Get-Process | Out-CurrentFile</dev:code>
+        <dev:remarks>
+          <maml:para>Runs the `Get-Process` command and formats its output into the current editor file.</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>Online Version:</maml:linkText>
+        <maml:uri>https://github.com/PowerShell/PowerShellEditorServices/tree/master/module/docs/Out-CurrentFile.md</maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>Register-EditorCommand</command:name>
+      <command:verb>Register</command:verb>
+      <command:noun>EditorCommand</command:noun>
+      <maml:description>
+        <maml:para>Registers a command which can be executed in the host editor.</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>Registers a command which can be executed in the host editor. This command will be shown to the user either in a menu or command palette. Upon invoking this command, either a function/cmdlet or ScriptBlock will be executed depending on whether the -Function or -ScriptBlock parameter was used when the command was registered.</maml:para>
+      <maml:para>This command can be run multiple times for the same command so that its details can be updated. However, re-registration of commands should only be used for development purposes, not for dynamic behavior.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Register-EditorCommand</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Name</maml:name>
+          <maml:Description>
+            <maml:para>Specifies a unique name which can be used to identify this command. This name is not displayed to the user.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>DisplayName</maml:name>
+          <maml:Description>
+            <maml:para>Specifies a display name which is displayed to the user.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Function</maml:name>
+          <maml:Description>
+            <maml:para>Specifies a function or cmdlet name which will be executed when the user invokes this command. This function may take a parameter called $context which will be populated with an EditorContext object containing information about the host editor's state at the time the command was executed.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>SuppressOutput</maml:name>
+          <maml:Description>
+            <maml:para>If provided, causes the output of the editor command to be suppressed when it is run. Errors that occur while running this command will still be written to the host.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem>
+        <maml:name>Register-EditorCommand</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Name</maml:name>
+          <maml:Description>
+            <maml:para>Specifies a unique name which can be used to identify this command. This name is not displayed to the user.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>DisplayName</maml:name>
+          <maml:Description>
+            <maml:para>Specifies a display name which is displayed to the user.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>ScriptBlock</maml:name>
+          <maml:Description>
+            <maml:para>Specifies a ScriptBlock which will be executed when the user invokes this command. This ScriptBlock may take a parameter called $context which will be populated with an EditorContext object containing information about the host editor's state at the time the command was executed.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">ScriptBlock</command:parameterValue>
+          <dev:type>
+            <maml:name>ScriptBlock</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>SuppressOutput</maml:name>
+          <maml:Description>
+            <maml:para>If provided, causes the output of the editor command to be suppressed when it is run. Errors that occur while running this command will still be written to the host.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>Name</maml:name>
+        <maml:Description>
+          <maml:para>Specifies a unique name which can be used to identify this command. This name is not displayed to the user.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>DisplayName</maml:name>
+        <maml:Description>
+          <maml:para>Specifies a display name which is displayed to the user.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>Function</maml:name>
+        <maml:Description>
+          <maml:para>Specifies a function or cmdlet name which will be executed when the user invokes this command. This function may take a parameter called $context which will be populated with an EditorContext object containing information about the host editor's state at the time the command was executed.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>ScriptBlock</maml:name>
+        <maml:Description>
+          <maml:para>Specifies a ScriptBlock which will be executed when the user invokes this command. This ScriptBlock may take a parameter called $context which will be populated with an EditorContext object containing information about the host editor's state at the time the command was executed.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">ScriptBlock</command:parameterValue>
+        <dev:type>
+          <maml:name>ScriptBlock</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>SuppressOutput</maml:name>
+        <maml:Description>
+          <maml:para>If provided, causes the output of the editor command to be suppressed when it is run. Errors that occur while running this command will still be written to the host.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes />
+    <command:returnValues />
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para></maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>Register-EditorCommand -Name "MyModule.MyFunctionCommand" -DisplayName "My function command" -Function Invoke-MyCommand -SuppressOutput</dev:code>
+        <dev:remarks>
+          <maml:para></maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <dev:code>Register-EditorCommand -Name "MyModule.MyScriptBlockCommand" -DisplayName "My ScriptBlock command" -ScriptBlock { Write-Output "Hello from my command!" }</dev:code>
+        <dev:remarks>
+          <maml:para></maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>Online Version:</maml:linkText>
+        <maml:uri>https://github.com/PowerShell/PowerShellEditorServices/tree/master/module/docs/Register-EditorCommand.md</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Unregister-EditorCommand</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Import-EditorCommand</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>Set-ScriptExtent</command:name>
+      <command:verb>Set</command:verb>
+      <command:noun>ScriptExtent</command:noun>
+      <maml:description>
+        <maml:para>Replaces text at a specified IScriptExtent object.</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>The Set-ScriptExtent function can insert or replace text at a specified position in a file open in PowerShell Editor Services.</maml:para>
+      <maml:para>You can use the Find-Ast function to easily find the desired extent.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Set-ScriptExtent</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="Value">
+          <maml:name>Text</maml:name>
+          <maml:Description>
+            <maml:para>Specifies the text to insert in place of the extent.  Any object can be specified, but will be converted to a string before being passed to PowerShell Editor Services.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">PSObject</command:parameterValue>
+          <dev:type>
+            <maml:name>PSObject</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>AsString</maml:name>
+          <maml:Description>
+            <maml:para>Specifies to insert as a single quoted string expression.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="none">
+          <maml:name>Extent</maml:name>
+          <maml:Description>
+            <maml:para>Specifies the extent to replace within the editor.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">IScriptExtent</command:parameterValue>
+          <dev:type>
+            <maml:name>IScriptExtent</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>(Find-Ast -AtCursor).Extent</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem>
+        <maml:name>Set-ScriptExtent</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="Value">
+          <maml:name>Text</maml:name>
+          <maml:Description>
+            <maml:para>Specifies the text to insert in place of the extent.  Any object can be specified, but will be converted to a string before being passed to PowerShell Editor Services.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">PSObject</command:parameterValue>
+          <dev:type>
+            <maml:name>PSObject</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>AsArray</maml:name>
+          <maml:Description>
+            <maml:para>Specifies to insert as a single quoted string list.  The list is separated by comma and new line, and will be adjusted to a hanging indent.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="none">
+          <maml:name>Extent</maml:name>
+          <maml:Description>
+            <maml:para>Specifies the extent to replace within the editor.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">IScriptExtent</command:parameterValue>
+          <dev:type>
+            <maml:name>IScriptExtent</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>(Find-Ast -AtCursor).Extent</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="Value">
+        <maml:name>Text</maml:name>
+        <maml:Description>
+          <maml:para>Specifies the text to insert in place of the extent.  Any object can be specified, but will be converted to a string before being passed to PowerShell Editor Services.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">PSObject</command:parameterValue>
+        <dev:type>
+          <maml:name>PSObject</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>AsString</maml:name>
+        <maml:Description>
+          <maml:para>Specifies to insert as a single quoted string expression.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>AsArray</maml:name>
+        <maml:Description>
+          <maml:para>Specifies to insert as a single quoted string list.  The list is separated by comma and new line, and will be adjusted to a hanging indent.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="none">
+        <maml:name>Extent</maml:name>
+        <maml:Description>
+          <maml:para>Specifies the extent to replace within the editor.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">IScriptExtent</command:parameterValue>
+        <dev:type>
+          <maml:name>IScriptExtent</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>(Find-Ast -AtCursor).Extent</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.Management.Automation.Language.IScriptExtent</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para>You can pass ScriptExtent objects to this function.  You can also pass objects with a property named "Extent" such as ASTs from Find-Ast or tokens from Get-Token.</maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>None</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para></maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>Find-Ast { 'gci' -eq $_ } | Set-ScriptExtent -Text 'Get-ChildItem'</dev:code>
+        <dev:remarks>
+          <maml:para>Replaces all instances of 'gci' with 'Get-ChildItem'</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <dev:code>$manifestAst = Find-Ast { 'FunctionsToExport' -eq $_ } | Find-Ast -First
+$manifestAst | Set-ScriptExtent -Text (gci .\src\Public).BaseName -AsArray</dev:code>
+        <dev:remarks>
+          <maml:para>Replaces the current value of FunctionsToExport in a module manifest with a list of files in the Public folder as a string array literal expression.</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>Online Version:</maml:linkText>
+        <maml:uri>https://github.com/PowerShell/PowerShellEditorServices/tree/master/module/docs/Set-ScriptExtent.md</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Find-Ast</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>ConvertTo-ScriptExtent</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>ConvertFrom-ScriptExtent</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Test-ScriptExtent</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Join-ScriptExtent</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>Test-ScriptExtent</command:name>
+      <command:verb>Test</command:verb>
+      <command:noun>ScriptExtent</command:noun>
+      <maml:description>
+        <maml:para>Test the position of a ScriptExtent object in relation to another.</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>The Test-ScriptExtent function can be used to determine if a ScriptExtent object is before, after, or inside another ScriptExtent object.  You can also test for any combination of these with separate ScriptExtent objects to test against.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Test-ScriptExtent</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
+          <maml:name>Extent</maml:name>
+          <maml:Description>
+            <maml:para>Specifies the extent to test against.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">IScriptExtent</command:parameterValue>
+          <dev:type>
+            <maml:name>IScriptExtent</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Inside</maml:name>
+          <maml:Description>
+            <maml:para>Specifies that the reference extent must be inside this extent for the test to pass.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">IScriptExtent</command:parameterValue>
+          <dev:type>
+            <maml:name>IScriptExtent</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>After</maml:name>
+          <maml:Description>
+            <maml:para>Specifies that the reference extent must be after this extent for the test to pass.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">IScriptExtent</command:parameterValue>
+          <dev:type>
+            <maml:name>IScriptExtent</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Before</maml:name>
+          <maml:Description>
+            <maml:para>Specifies that the reference extent must be before this extent for the test to pass.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">IScriptExtent</command:parameterValue>
+          <dev:type>
+            <maml:name>IScriptExtent</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>PassThru</maml:name>
+          <maml:Description>
+            <maml:para>If specified this function will return the reference extent if the test passed instead of returning a boolean.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
+        <maml:name>Extent</maml:name>
+        <maml:Description>
+          <maml:para>Specifies the extent to test against.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">IScriptExtent</command:parameterValue>
+        <dev:type>
+          <maml:name>IScriptExtent</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>Inside</maml:name>
+        <maml:Description>
+          <maml:para>Specifies that the reference extent must be inside this extent for the test to pass.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">IScriptExtent</command:parameterValue>
+        <dev:type>
+          <maml:name>IScriptExtent</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>After</maml:name>
+        <maml:Description>
+          <maml:para>Specifies that the reference extent must be after this extent for the test to pass.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">IScriptExtent</command:parameterValue>
+        <dev:type>
+          <maml:name>IScriptExtent</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>Before</maml:name>
+        <maml:Description>
+          <maml:para>Specifies that the reference extent must be before this extent for the test to pass.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">IScriptExtent</command:parameterValue>
+        <dev:type>
+          <maml:name>IScriptExtent</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>PassThru</maml:name>
+        <maml:Description>
+          <maml:para>If specified this function will return the reference extent if the test passed instead of returning a boolean.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.Management.Automation.Language.IScriptExtent</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para>You can pass ScriptExtent objects to this function.  You can also pass objects with a property named "Extent" such as ASTs from Find-Ast or tokens from Get-Token.</maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>Boolean, System.Management.Automation.Language.IScriptExtent</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para>The result of the test will be returned to the pipeline.</maml:para>
+          <maml:para>If the "PassThru" parameter is specified and the test passed, the reference script extent will be returned instead.</maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para></maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>Test-ScriptExtent -Extent $extent1 -Inside $extent2</dev:code>
+        <dev:remarks>
+          <maml:para>Test if $extent1 is inside $extent2.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <dev:code>$extentList | Test-ScriptExtent -Before $extent1 -After $extent2 -PassThru</dev:code>
+        <dev:remarks>
+          <maml:para>Return all extents in $extentList that are before $extent1 but after $extent2.</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>Online Version:</maml:linkText>
+        <maml:uri>https://github.com/PowerShell/PowerShellEditorServices/tree/master/module/docs/Test-ScriptExtent.md</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>ConvertTo-ScriptExtent</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>ConvertFrom-ScriptExtent</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Set-ScriptExtent</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Join-ScriptExtent</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>Unregister-EditorCommand</command:name>
+      <command:verb>Unregister</command:verb>
+      <command:noun>EditorCommand</command:noun>
+      <maml:description>
+        <maml:para>Unregisters a command which has already been registered in the host editor.</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>Unregisters a command which has already been registered in the host editor. An error will be thrown if the specified Name is unknown.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Unregister-EditorCommand</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+          <maml:name>Name</maml:name>
+          <maml:Description>
+            <maml:para>Specifies a unique name which identifies a command which has already been registered.</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+        <maml:name>Name</maml:name>
+        <maml:Description>
+          <maml:para>Specifies a unique name which identifies a command which has already been registered.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes />
+    <command:returnValues />
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para></maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>Unregister-EditorCommand -Name "MyModule.MyFunctionCommand"</dev:code>
+        <dev:remarks>
+          <maml:para></maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>Online Version:</maml:linkText>
+        <maml:uri>https://github.com/PowerShell/PowerShellEditorServices/tree/master/module/docs/Unregister-EditorCommand.md</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Register-EditorCommand</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Import-EditorCommand</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+</helpItems>

@@ -87,7 +87,7 @@ compileTestKotlin {
 //    }
 //}
 prepareSandbox {
-    from("${project.rootDir}/language_host/v1.5.0") {
+    from("${project.rootDir}/language_host/v1.10") {
         into "${intellij.pluginName}/lib/"
     }
 }
