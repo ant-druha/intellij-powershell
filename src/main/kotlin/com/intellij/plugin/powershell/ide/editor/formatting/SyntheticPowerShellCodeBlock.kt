@@ -86,7 +86,7 @@ class SyntheticPowerShellCodeBlock(private val mySubBlocks: MutableList<Block>, 
   }
 
   private fun isRParenth(block: Block?): Boolean {
-    return block is LeafBlock && block.node.elementType === PowerShellTypes.RP
+    return block is LeafBlock && block.node?.elementType === PowerShellTypes.RP
   }
 
   override fun getWrap(): Wrap? = myBlockWrap
