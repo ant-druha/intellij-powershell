@@ -64,6 +64,6 @@ class PSESInspection : LocalInspectionTool() {
   override fun isEnabledByDefault() = true
 
   override fun getStaticDescription(): String {
-    return "Reports problems found by PowerShell language server."
+    return "Reports problems found by PowerShell ScriptAnalyzer tool."
   }
 }
