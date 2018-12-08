@@ -130,20 +130,20 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
     if (sessionInfo is SessionInfo.Pipes) {
       val readPipeName = sessionInfo.languageServiceReadPipeName
       val writePipeName = sessionInfo.languageServiceWritePipeName
-      if (SystemInfo.isWindows) {
+      return if (SystemInfo.isWindows) {
         val readPipe = RandomAccessFile(readPipeName, "rwd")
         val writePipe = RandomAccessFile(writePipeName, "rwd")
         val serverReadChannel = readPipe.channel
         val serverWriteChannel = writePipe.channel
         val inSf = Channels.newInputStream(serverWriteChannel)
         val outSf = BufferedOutputStream(Channels.newOutputStream(serverReadChannel))
-        return Pair(inSf, outSf)
+        Pair(inSf, outSf)
       } else {
-        val readSock = AFUNIXSocket.newInstance();
-        val writeSock = AFUNIXSocket.newInstance();
-        readSock.connect(AFUNIXSocketAddress(File(readPipeName)));
-        writeSock.connect(AFUNIXSocketAddress(File(writePipeName)));
-        return Pair(writeSock.inputStream, readSock.outputStream)
+        val readSock = AFUNIXSocket.newInstance()
+        val writeSock = AFUNIXSocket.newInstance()
+        readSock.connect(AFUNIXSocketAddress(File(readPipeName)))
+        writeSock.connect(AFUNIXSocketAddress(File(writePipeName)))
+        Pair(writeSock.inputStream, readSock.outputStream)
       }
     } else {
       val port = (sessionInfo as? SessionInfo.Tcp)?.languageServicePort ?: return Pair(null, null)
@@ -182,7 +182,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
     return GeneralCommandLine(command).createProcess()
   }
 
-  internal fun buildCommandLine(): List<String> {
+  private fun buildCommandLine(): List<String> {
     val psExtensionPath = getPowerShellEditorServicesHome()
     val startupScript = getStartupScriptPath(psExtensionPath)
     if (StringUtil.isEmpty(startupScript)) {
@@ -315,13 +315,13 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
   }
 
   private fun readSessionFile(sessionFile: File): SessionInfo? {
-    try {
+    return try {
       val line = Files.readFirstLine(sessionFile, Charset.forName("utf8"))
       val jsonResult = JsonParser().parse(line).asJsonObject
-      return readPipesInfo(jsonResult) ?: readTcpInfo(jsonResult)
+      readPipesInfo(jsonResult) ?: readTcpInfo(jsonResult)
     } catch (e: Exception) {
       LOG.warn("Error reading/parsing session details file $sessionFile: $e")
-      return null
+      null
     }
   }
 

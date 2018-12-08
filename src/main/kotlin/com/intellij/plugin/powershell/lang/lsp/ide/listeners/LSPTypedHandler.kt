@@ -6,7 +6,6 @@ package com.intellij.plugin.powershell.lang.lsp.ide.listeners
 import com.intellij.codeInsight.editorActions.TypedHandlerDelegate
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
-import com.intellij.plugin.powershell.lang.lsp.ide.EditorEventManager
 import com.intellij.psi.PsiFile
 
 class LSPTypedHandler : TypedHandlerDelegate() {

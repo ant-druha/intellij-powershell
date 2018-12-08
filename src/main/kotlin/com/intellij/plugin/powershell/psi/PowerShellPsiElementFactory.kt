@@ -28,7 +28,7 @@ object PowerShellPsiElementFactory {
   }
 
   fun createVariableFromText(project: Project, text: String, bracedVariable: Boolean = false): PowerShellVariable? {
-    val varText = if (bracedVariable) "\${$text}" else "$" + text
+    val varText = if (bracedVariable) "\${$text}" else "$$text"
     val file = createFile(project, varText)
     return PsiTreeUtil.findChildOfAnyType(file, PowerShellTargetVariableExpression::class.java)
   }

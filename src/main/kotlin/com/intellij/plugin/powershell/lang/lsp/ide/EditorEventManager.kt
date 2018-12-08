@@ -187,7 +187,7 @@ class EditorEventManager(private val project: Project, private val editor: Edito
    *
    * Saves diagnostics which will then be used by IDE code analyzer and shown in Editor on inspection run
    */
-  fun saveDiagnostics(diagnostics: List<Diagnostic>) {
+  private fun saveDiagnostics(diagnostics: List<Diagnostic>) {
     diagnosticsInfo = diagnostics
   }
 

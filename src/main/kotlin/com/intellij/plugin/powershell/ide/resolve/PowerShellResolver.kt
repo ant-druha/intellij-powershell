@@ -38,7 +38,7 @@ class PowerShellResolver<T> : ResolveCache.AbstractResolver<T, List<PowerShellRe
 }
 
 abstract class PowerShellReferenceResolveProcessor<out R : PowerShellReferencePsiElement>(protected val myRef: R) : BaseScopeProcessor() {
-  protected var myResult: PowerShellResolveResult? = null //todo should navigate to closest declaration (of function or variable)
+  private var myResult: PowerShellResolveResult? = null //todo should navigate to closest declaration (of function or variable)
 
   fun getResult(): PowerShellResolveResult? {
     return myResult

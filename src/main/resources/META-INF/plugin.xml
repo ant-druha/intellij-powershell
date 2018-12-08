@@ -11,7 +11,7 @@
     ]]></description>
 
   <change-notes><![CDATA[
-  <html>
+  <html lang="en">
         <dl>
           <dt>2.0.0 Adds support for PowerShell ScriptAnalyzer code checker in IDE Editor<br></dt>
           <dd>&#183; <a href="https://github.com/ant-druha/PowerShell/issues/9">8</a> - PowerShell ScriptAnalyzer support in IDE Editor;</dd>

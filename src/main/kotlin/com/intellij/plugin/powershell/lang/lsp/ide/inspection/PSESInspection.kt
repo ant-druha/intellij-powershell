@@ -1,6 +1,5 @@
 package com.intellij.plugin.powershell.lang.lsp.ide.inspection
 
-import com.intellij.codeHighlighting.HighlightDisplayLevel
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalInspectionTool
 import com.intellij.codeInspection.ProblemDescriptor
@@ -64,6 +63,6 @@ class PSESInspection : LocalInspectionTool() {
   override fun isEnabledByDefault() = true
 
   override fun getStaticDescription(): String {
-    return "Reports problems found by PowerShell ScriptAnalyzer tool."
+    return "<html lang=\"en\">Reports problems found by <a href='https://github.com/PowerShell/PSScriptAnalyzer'>PSScriptAnalyzer</a> code checker.</html>"
   }
 }

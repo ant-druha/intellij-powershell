@@ -34,19 +34,19 @@ class PowerShellColorSettingsPage : ColorSettingsPage {
   )
 
   init {
-    additionalTags.put("keyword", PowerShellSyntaxHighlighter.KEYWORD)
-    additionalTags.put("comment", PowerShellSyntaxHighlighter.COMMENT)
-    additionalTags.put("number", PowerShellSyntaxHighlighter.NUMBER)
-    additionalTags.put("string", PowerShellSyntaxHighlighter.STRING)
-    additionalTags.put("command name", PowerShellSyntaxHighlighter.COMMAND_NAME)
-    additionalTags.put("command parameter", PowerShellSyntaxHighlighter.COMMAND_PARAMETER)
-    additionalTags.put("type name", PowerShellSyntaxHighlighter.TYPE_NAME)
-    additionalTags.put("type ref", PowerShellSyntaxHighlighter.TYPE_REFERENCE)
-    additionalTags.put("var name", PowerShellSyntaxHighlighter.VARIABLE_NAME)
-    additionalTags.put("property access", PowerShellSyntaxHighlighter.PROPERTY_REFERENCE)
-    additionalTags.put("method call", PowerShellSyntaxHighlighter.METHOD_CALL)
-    additionalTags.put("method declaration", PowerShellSyntaxHighlighter.METHOD_DECLARATION)
-    additionalTags.put("label", PowerShellSyntaxHighlighter.LABEL)
+    additionalTags["keyword"] = PowerShellSyntaxHighlighter.KEYWORD
+    additionalTags["comment"] = PowerShellSyntaxHighlighter.COMMENT
+    additionalTags["number"] = PowerShellSyntaxHighlighter.NUMBER
+    additionalTags["string"] = PowerShellSyntaxHighlighter.STRING
+    additionalTags["command name"] = PowerShellSyntaxHighlighter.COMMAND_NAME
+    additionalTags["command parameter"] = PowerShellSyntaxHighlighter.COMMAND_PARAMETER
+    additionalTags["type name"] = PowerShellSyntaxHighlighter.TYPE_NAME
+    additionalTags["type ref"] = PowerShellSyntaxHighlighter.TYPE_REFERENCE
+    additionalTags["var name"] = PowerShellSyntaxHighlighter.VARIABLE_NAME
+    additionalTags["property access"] = PowerShellSyntaxHighlighter.PROPERTY_REFERENCE
+    additionalTags["method call"] = PowerShellSyntaxHighlighter.METHOD_CALL
+    additionalTags["method declaration"] = PowerShellSyntaxHighlighter.METHOD_DECLARATION
+    additionalTags["label"] = PowerShellSyntaxHighlighter.LABEL
   }
 
   override fun getHighlighter(): SyntaxHighlighter {

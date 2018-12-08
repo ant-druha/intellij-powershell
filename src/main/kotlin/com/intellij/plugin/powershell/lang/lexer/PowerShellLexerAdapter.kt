@@ -6,5 +6,4 @@ import com.intellij.plugin.powershell.lang._PowerShellLexer
 /**
  * Andrey 17/07/17.
  */
-class PowerShellLexerAdapter : FlexAdapter(_PowerShellLexer()) {
-}
+class PowerShellLexerAdapter : FlexAdapter(_PowerShellLexer()) 

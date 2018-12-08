@@ -20,11 +20,6 @@ import com.intellij.util.Processor
 
 object PowerShellResolveUtil {
 
-  fun toCandidateInfoArray(elements: List<PsiElement>?): Array<ResolveResult> {
-    if (elements == null) return ResolveResult.EMPTY_ARRAY
-    return Array(elements.size) { PsiElementResolveResult(elements[it]) }
-  }
-
   fun toCandidateInfoArray2(elements: List<PowerShellResolveResult>?): Array<PowerShellResolveResult> {
     if (elements == null) return PowerShellResolveResult.EMPTY_ARRAY
     return Array(elements.size) { elements[it] }

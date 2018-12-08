@@ -6,5 +6,4 @@ import com.intellij.psi.tree.IElementType
 /**
  * Andrey 26/06/17.
  */
-class PowerShellTokenType(debugName: String) : IElementType(debugName, PowerShellLanguage.INSTANCE) {
-}
+class PowerShellTokenType(debugName: String) : IElementType(debugName, PowerShellLanguage.INSTANCE) 

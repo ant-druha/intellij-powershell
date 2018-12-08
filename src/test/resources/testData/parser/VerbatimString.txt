@@ -25,5 +25,5 @@ FILE(0,204)
   PsiElement(@)('@')(190,191)
   PsiElement(VERBATIM_STRING)('' wrong\nss\n'')(191,203)
   PsiElement(@)('@')(203,204)
-  PsiErrorElement:';', <comment>, LF or NLS expected, unexpected end of file(204,204)
+  PsiErrorElement:';', <comment>, LF or NLS expected(204,204)
     <empty list>

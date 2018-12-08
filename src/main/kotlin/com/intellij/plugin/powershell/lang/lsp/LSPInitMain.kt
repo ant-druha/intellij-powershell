@@ -21,7 +21,7 @@ import com.intellij.plugin.powershell.lang.lsp.util.isRemotePath
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 
-@State(name = "PowerShellSettings", storages = arrayOf(Storage(file = "powerShellSettings.xml", roamingType = RoamingType.DISABLED)))
+@State(name = "PowerShellSettings", storages = [Storage(file = "powerShellSettings.xml", roamingType = RoamingType.DISABLED)])
 class LSPInitMain : ApplicationComponent, PersistentStateComponent<LSPInitMain.PowerShellExtensionInfo> {
 
   data class PowerShellExtensionInfo(var editorServicesStartupScript: String = "",

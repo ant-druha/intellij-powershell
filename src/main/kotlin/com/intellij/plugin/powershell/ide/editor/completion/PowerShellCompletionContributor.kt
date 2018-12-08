@@ -93,7 +93,7 @@ class PowerShellCompletionContributor : CompletionContributor() {
     return result.withPrefixMatcher(CamelHumpMatcher(prefix, false))
   }
 
-  val CMD_NAME_CONDITION = object : PatternCondition<PsiElement>("Command Name Condition") {
+  private val CMD_NAME_CONDITION = object : PatternCondition<PsiElement>("Command Name Condition") {
     override fun accepts(element: PsiElement, context: ProcessingContext?): Boolean {
       return PsiTreeUtil.getParentOfType(element, PowerShellCommandName::class.java, true, PowerShellBlockBody::class.java) != null
     }

@@ -20,9 +20,9 @@ class PowerShellComponentScopeProcessor : BaseScopeProcessor() {
       val name = element.getQualifiedName()
       val oldVar = myCollectedVariables[name]
       if (oldVar == null || oldVar.textOffset > element.textOffset) {
-        myCollectedVariables.put(name, element)
+        myCollectedVariables[name] = element
       } else if (element.containingFile !== oldVar.containingFile) {
-        myCollectedVariables.put(name, element)//should not happen if the file is the same
+        myCollectedVariables[name] = element//should not happen if the file is the same
         // if there already variable with the same name defined it should be located in the same local context
         throw AssertionError("Elements are defined in different files")
       }

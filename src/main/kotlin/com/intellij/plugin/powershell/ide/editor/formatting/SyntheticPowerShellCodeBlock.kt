@@ -43,7 +43,7 @@ class SyntheticPowerShellCodeBlock(private val mySubBlocks: MutableList<Block>, 
     } else {
       var alignment: Alignment? = null
       if (mySubBlocks.size > newChildIndex) {
-        val block = mySubBlocks.get(newChildIndex)
+        val block = mySubBlocks[newChildIndex]
         alignment = block.alignment
       } else if (mySubBlocks.size == newChildIndex) {
         if (isRParenth(getRightMostBlock())) {

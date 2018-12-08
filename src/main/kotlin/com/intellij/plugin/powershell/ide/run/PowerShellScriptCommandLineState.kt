@@ -10,7 +10,6 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PowerShellNotInstalled
-import com.intellij.util.EnvironmentUtil
 import java.util.*
 import java.util.regex.Pattern
 
@@ -36,7 +35,7 @@ class PowerShellScriptCommandLineState(private val runConfiguration: PowerShellR
     val commandString = java.util.ArrayList<String>()
     commandString.add(findPsExecutable())
     if (!StringUtil.isEmpty(commandOptions)) {
-      val options = commandOptions.split(" ".toRegex()).dropLastWhile({ it.isEmpty() }).toTypedArray()
+      val options = commandOptions.split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
       if (options.isNotEmpty()) commandString.addAll(Arrays.asList(*options))
     }
     commandString.add("-File")

@@ -79,7 +79,7 @@ open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractCompo
 
   private fun getExplicitName(): String? {
     var ns = getScopeName()
-    ns = if (StringUtil.isNotEmpty(ns)) ns + ":" else ""
+    ns = if (StringUtil.isNotEmpty(ns)) "$ns:" else ""
     return ns + getShortName()
   }
 
@@ -162,7 +162,7 @@ open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractCompo
 
   override fun getPrefix(): String = getPrefixNode().text
 
-  private fun getPrefixNode(): ASTNode = node.findChildByType(TokenSet.create(DS, AT, BRACED_VAR_START)) ?: error("null for" + text)
+  private fun getPrefixNode(): ASTNode = node.findChildByType(TokenSet.create(DS, AT, BRACED_VAR_START)) ?: error("null for$text")
 
   override fun getSuffix(): String? = getSuffixNode()?.text
 

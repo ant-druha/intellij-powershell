@@ -210,7 +210,7 @@ class PowerShellCodeInsightTest : LightPlatformCodeInsightFixtureTestCase() {
       override fun run(result: Result<Any>) {
         string.updateText(newInjectedText)
         val newString = PsiTreeUtil.findChildOfType(myFixture.file, PowerShellStringLiteralExpression::class.java) ?: error("file text='${myFixture.file}'")
-        assert(newString.getStringContent() == expectedStringContent, { "expected=\t'$expectedStringContent'\nactual=\t\t'${newString.getStringContent()}'" })
+        assert(newString.getStringContent() == expectedStringContent) { "expected=\t'$expectedStringContent'\nactual=\t\t'${newString.getStringContent()}'" }
       }
     }.execute()
   }
@@ -222,7 +222,7 @@ class PowerShellCodeInsightTest : LightPlatformCodeInsightFixtureTestCase() {
     val sb = StringBuilder()
     val result = escaper.decode(string.getContentRange(), sb)
     assert(result)
-    assert(expectedOutText == sb.toString(), { "expected=\t'$expectedOutText'\nactual=\t\t'$sb'" })
+    assert(expectedOutText == sb.toString()) { "expected=\t'$expectedOutText'\nactual=\t\t'$sb'" }
   }
 
   private fun createStringExpression(isHere: Boolean, isExpandable: Boolean, stringContent: String): PowerShellStringLiteralExpression {

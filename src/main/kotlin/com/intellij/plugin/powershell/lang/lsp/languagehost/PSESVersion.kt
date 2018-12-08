@@ -17,8 +17,8 @@ class PSESVersion(private val major: Int, private val minor: Int, private val bu
     return 0
   }
 
-  public fun isGreaterOrEqual(other: PSESVersion): Boolean = compareTo(other) >= 0
-  public fun isLessOrEqual(other: PSESVersion): Boolean = compareTo(other) <= 0
+  fun isGreaterOrEqual(other: PSESVersion): Boolean = compareTo(other) >= 0
+  fun isLessOrEqual(other: PSESVersion): Boolean = compareTo(other) <= 0
 
   override fun toString(): String {
     return "$major.$minor.$bugFix"

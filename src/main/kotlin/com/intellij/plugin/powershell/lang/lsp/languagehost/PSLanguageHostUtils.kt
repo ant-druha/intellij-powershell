@@ -13,12 +13,11 @@ object PSLanguageHostUtils {
 
   fun getLanguageHostLogsDir(): String {
     val extDir: String
-    try {
+    return try {
       extDir = findPSExtensionsDir()
-      return if (!checkExists(extDir)) join(PathManager.getLogPath(), "PowerShell")
-      else join(extDir, "logs")
+      if (!checkExists(extDir)) join(PathManager.getLogPath(), "PowerShell") else join(extDir, "logs")
     } catch (e: PowerShellExtensionNotFound) {
-      return join(PathManager.getLogPath(), "PowerShell")
+      join(PathManager.getLogPath(), "PowerShell")
     }
   }
 
