@@ -11,6 +11,7 @@ Install the plugin [from IDE](https://www.jetbrains.com/help/idea/managing-plugi
 - Syntax highlighting;
 - Reference and keyword completion;
 - [PowerShell ScriptAnalyzer](https://github.com/PowerShell/PSScriptAnalyzer) code checker inspections in Editor;
+- [Language Injections](https://www.jetbrains.com/help/idea/using-language-injections.html) in strings;
 - [Colors and Fonts customization](https://www.jetbrains.com/help/idea/configuring-colors-and-fonts.html);
 - [Code style and reformat](https://www.jetbrains.com/help/idea/using-code-editor.html#reformat_rearrange_code);
 - [Live templates](https://www.jetbrains.com/help/idea/using-live-templates.html) (code snippets)
