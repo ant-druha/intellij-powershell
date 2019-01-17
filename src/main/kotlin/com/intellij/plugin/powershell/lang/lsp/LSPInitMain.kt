@@ -9,6 +9,8 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.ProjectManager
+import com.intellij.openapi.project.ProjectManagerListener
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.plugin.powershell.PowerShellFileType
@@ -20,6 +22,7 @@ import com.intellij.plugin.powershell.lang.lsp.languagehost.terminal.PowerShellC
 import com.intellij.plugin.powershell.lang.lsp.util.isRemotePath
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
+import java.util.concurrent.ConcurrentHashMap
 
 @State(name = "PowerShellSettings", storages = [Storage(file = "powerShellSettings.xml", roamingType = RoamingType.DISABLED)])
 class LSPInitMain : ApplicationComponent, PersistentStateComponent<LSPInitMain.PowerShellExtensionInfo> {
@@ -52,29 +55,15 @@ class LSPInitMain : ApplicationComponent, PersistentStateComponent<LSPInitMain.P
 
   companion object {
     private val LOG: Logger = Logger.getInstance(LSPInitMain::class.java)
-    private val psEditorLanguageServer = mutableMapOf<Project, LanguageServerEndpoint>()
-    private var psConsoleLanguageServer = mutableMapOf<Project, LanguageServerEndpoint>()
+    private val psEditorLanguageServer = ConcurrentHashMap<Project, LanguageServerEndpoint>()
+    private val psConsoleLanguageServer = ConcurrentHashMap<Project, LanguageServerEndpoint>()
 
     fun getServerWithConsoleProcess(project: Project): LanguageServerEndpoint {
-      synchronized(psConsoleLanguageServer) {
-        var server = psConsoleLanguageServer[project]
-        if (server == null) {
-          server = LanguageServerEndpoint(PowerShellConsoleTerminalRunner(project), project)
-          psConsoleLanguageServer[project] = server
-        }
-        return server
-      }
+      return psConsoleLanguageServer.computeIfAbsent(project) { LanguageServerEndpoint(PowerShellConsoleTerminalRunner(it), it) }
     }
 
     private fun getEditorLanguageServer(project: Project): LanguageServerEndpoint {
-      synchronized(psEditorLanguageServer) {
-        var server = psEditorLanguageServer[project]
-        if (server == null) {
-          server = LanguageServerEndpoint(EditorServicesLanguageHostStarter(project), project)
-          psEditorLanguageServer[project] = server
-        }
-        return server
-      }
+      return psEditorLanguageServer.computeIfAbsent(project) { LanguageServerEndpoint(EditorServicesLanguageHostStarter(it), it) }
     }
 
     fun editorOpened(editor: Editor) {
@@ -109,20 +98,28 @@ class LSPInitMain : ApplicationComponent, PersistentStateComponent<LSPInitMain.P
     }
 
     private fun findServerForRemoteFile(file: PsiFile, project: Project): LanguageServerEndpoint? {
-      val consoleServer = psConsoleLanguageServer[project]
-      return if (consoleServer?.getStatus() == ServerStatus.STARTED && isRemotePath(file.virtualFile.canonicalPath)) consoleServer else null
+      val consoleServer = psConsoleLanguageServer[project] ?: return null
+      return if (consoleServer.getStatus() == ServerStatus.STARTED && isRemotePath(file.virtualFile.canonicalPath)) consoleServer else null
     }
 
   }
 
   override fun initComponent() {
     EditorFactory.getInstance().addEditorFactoryListener(EditorLSPListener(), myDisposable)
+    ApplicationManager.getApplication().messageBus.connect(myDisposable).subscribe<ProjectManagerListener>(ProjectManager.TOPIC, object : ProjectManagerListener {
+      override fun projectClosed(project: Project) {
+        psEditorLanguageServer.remove(project)
+        psConsoleLanguageServer.remove(project)
+      }
+    })
+
     LOG.debug("PluginMain init finished")
   }
 
   override fun disposeComponent() {
     super.disposeComponent()
     psEditorLanguageServer.clear()
+    psConsoleLanguageServer.clear()
     Disposer.dispose(myDisposable)
   }
 }
