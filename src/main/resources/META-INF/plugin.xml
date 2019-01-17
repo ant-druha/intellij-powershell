@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.intellij.plugin.adernov.powershell</id>
   <name>PowerShell</name>
-  <version>2.0.0</version>
+  <version>2.0.1</version>
   <vendor email="andrey.dernov@gmail.com" url="https://github.com/ant-druha/PowerShell/issues">Andrey</vendor>
 
   <description><![CDATA[
@@ -13,8 +13,12 @@
   <change-notes><![CDATA[
   <html lang="en">
         <dl>
+          <dt>2.0.1 Bug fix update<br></dt>
+          <dd>&#183; <a href="https://github.com/ant-druha/PowerShell/issues/10">10</a> - Script Arguments not working as expected;</dd>
+          <dd>&#183; <a href="https://github.com/ant-druha/PowerShell/issues/12">12</a> - Memory (project) leak in plugin.</dd>
+          
           <dt>2.0.0 Adds support for PowerShell ScriptAnalyzer code checker in IDE Editor<br></dt>
-          <dd>&#183; <a href="https://github.com/ant-druha/PowerShell/issues/9">8</a> - PowerShell ScriptAnalyzer support in IDE Editor;</dd>
+          <dd>&#183; <a href="https://github.com/ant-druha/PowerShell/issues/9">9</a> - PowerShell ScriptAnalyzer support in IDE Editor;</dd>
           <dd>&#183; <a href="https://github.com/ant-druha/PowerShell/issues/6">6</a> - Update PowerShell Language server version;</dd>
           <dd>&#183; <a href="https://github.com/ant-druha/PowerShell/issues/5">5</a> - Reformat code Error;</dd>
           <dd>&#183; <a href="https://github.com/ant-druha/PowerShell/issues/3">3</a> - Run/Debug configuration: ability to set working directory;</dd>
