@@ -41,7 +41,7 @@ class PowerShellScriptCommandLineState(private val runConfiguration: PowerShellR
     commandString.add("-File")
     commandString.add(scriptPath)
     if (!StringUtil.isEmpty(scriptParameters)) {
-      val regex = Pattern.compile("\"([^\"]*)\"|(\\w+)")
+      val regex = Pattern.compile("\"([^\"]*)\"|([^ ]+)")
       val matchedParams = ArrayList<String>()
       val matcher = regex.matcher(scriptParameters)
       while (matcher.find()) {
