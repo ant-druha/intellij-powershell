@@ -27,15 +27,12 @@ object PSLanguageHostUtils {
   }
 
   fun getEditorServicesStartupScript(psExtensionDir: String): String {
-    return if (isExtensionDirectoryFormat(psExtensionDir)) join(psExtensionDir, "scripts/Start-EditorServices.ps1")
-    else join(BUNDLED_PSES_PATH, "scripts/Start-EditorServices.ps1")
+    return if (isExtensionDirectoryFormat(psExtensionDir)) join(psExtensionDir, "modules/PowerShellEditorServices/Start-EditorServices.ps1")
+    else join(BUNDLED_PSES_PATH, "modules/PowerShellEditorServices/Start-EditorServices.ps1")
   }
 
-  /**
-   * if this path is a 'ms-vscode.PowerShell-XXX' extension directory
-   */
   private fun isExtensionDirectoryFormat(psExtensionDir: String): Boolean {
-    return checkExists("$psExtensionDir/scripts") && checkExists("$psExtensionDir/modules")
+    return checkExists("$psExtensionDir/modules")
   }
 
   @Throws(PowerShellExtensionNotFound::class)
