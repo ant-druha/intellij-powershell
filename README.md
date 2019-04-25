@@ -1,4 +1,4 @@
-# PowerShell
+# intellij-powershell
 Adds PowerShell language support to [IntelliJ-based](https://www.jetbrains.com/products.html?type=ide) IDEs.
 
 ### Usage:
