@@ -21,7 +21,7 @@ apply plugin: 'java'
 
 intellij {
     type 'IU'
-    version '2018.3'// https://www.jetbrains.com/intellij-repository/[releases|snapshots]
+    version '2019.1'// https://www.jetbrains.com/intellij-repository/[releases|snapshots]
     plugins 'IntelliLang', 'terminal'
     pluginName 'PowerShell'
     updateSinceUntilBuild = false
