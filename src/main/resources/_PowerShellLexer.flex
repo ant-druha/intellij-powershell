@@ -374,8 +374,6 @@ BRACED_VAR_START={DS}{LCURLY}
   "workflow"/{WHITE_SPACE}                                     { pushState(FUNCTION_ID); return WORKFLOW; }
   "«"                                                          { return RAW_LBR; }
   "»"                                                          { return RAW_RBR; }
-  "(*"                                                         { return MULTI_LINE_COMMENT_START; }
-  "*)"                                                         { return MULTI_LINE_COMMENT_END; }
   ","                                                          { return COMMA; }
   ":"                                                          { return COLON; }
   "@"                                                          { return AT; }

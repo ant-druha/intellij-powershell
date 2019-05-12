@@ -34,3 +34,5 @@ cd \pip\wwe
 
 #drive name in unc path 
 $acl = Get-Acl \$(hostname)\e$\"some folder"
+
+foreach ($srv in (Get-ChildItem HKLM:\SYSTEM\CurrentControlSet\Services\ts*).Name) {}
