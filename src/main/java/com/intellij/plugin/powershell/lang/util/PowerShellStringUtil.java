@@ -1,5 +1,6 @@
 package com.intellij.plugin.powershell.lang.util;
 
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.util.text.StringUtilRt;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -209,7 +210,8 @@ public class PowerShellStringUtil {
     } else if (charsToEscape != null && charsToEscape.indexOf(ch) > -1 && (escapeBacktick || prev != '`')) {
       buffer.append("`").append(ch);
     } else if (escapeUnicode && !isPrintableUnicode(ch)) {
-      CharSequence hexCode = StringUtilRt.toUpperCase(Integer.toHexString(ch));
+//      CharSequence hexCode = StringUtilRt.toUpperCase(Integer.toHexString(ch));
+      CharSequence hexCode = StringUtil.toUpperCase(Integer.toHexString(ch));
       buffer.append("\\u");
       int paddingCount = 4 - hexCode.length();
       while (paddingCount-- > 0) {
