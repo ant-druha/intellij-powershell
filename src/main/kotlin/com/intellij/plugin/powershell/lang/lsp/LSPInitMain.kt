@@ -8,11 +8,13 @@ import com.intellij.openapi.components.*
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorFactory
+import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.project.ProjectManagerListener
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.plugin.powershell.PowerShellFileType
 import com.intellij.plugin.powershell.lang.lsp.ide.listeners.EditorLSPListener
 import com.intellij.plugin.powershell.lang.lsp.languagehost.EditorServicesLanguageHostStarter
@@ -21,7 +23,6 @@ import com.intellij.plugin.powershell.lang.lsp.languagehost.ServerStatus
 import com.intellij.plugin.powershell.lang.lsp.languagehost.terminal.PowerShellConsoleTerminalRunner
 import com.intellij.plugin.powershell.lang.lsp.util.isRemotePath
 import com.intellij.psi.PsiDocumentManager
-import com.intellij.psi.PsiFile
 import java.util.concurrent.ConcurrentHashMap
 
 @State(name = "PowerShellSettings", storages = [Storage(file = "powerShellSettings.xml", roamingType = RoamingType.DISABLED)])
@@ -74,32 +75,35 @@ class LSPInitMain : ApplicationComponent, PersistentStateComponent<LSPInitMain.P
       val file = PsiDocumentManager.getInstance(project).getPsiFile(editor.document)
       if (file == null || file.fileType !is PowerShellFileType && !isRemotePath(file.virtualFile?.path)) return
       ApplicationManager.getApplication().executeOnPooledThread {
-        val server = getServer(file, project)
+        val server = getServer(file.virtualFile, project)
         server.connectEditor(editor)
         LOG.info("Registered ${file.virtualFile.path} script for server: $server")
       }
     }
 
-    private fun getServer(file: PsiFile, project: Project): LanguageServerEndpoint {
+    private fun getServer(file: VirtualFile, project: Project): LanguageServerEndpoint {
       return findServerForRemoteFile(file, project) ?: getEditorLanguageServer(project)
     }
 
     fun editorClosed(editor: Editor) {
       val project = editor.project ?: return
-      val file = PsiDocumentManager.getInstance(project).getPsiFile(editor.document)
-      if (file?.fileType !is PowerShellFileType) return
-      val server = findServer(file, project) ?: return
-      server.disconnectEditor(VfsUtil.toUri(file.virtualFile))
-      LOG.debug("Removed ${file.name} script from server: $server")
+      val vfile = FileDocumentManager.getInstance().getFile(editor.document) ?: return
+      if (!project.isDisposed) {
+        val file = PsiDocumentManager.getInstance(project).getPsiFile(editor.document)
+        if (file?.fileType !is PowerShellFileType) return
+      }
+      val server = findServer(vfile, project) ?: return
+      server.disconnectEditor(VfsUtil.toUri(vfile))
+      LOG.debug("Removed ${vfile.name} script from server: $server")
     }
 
-    private fun findServer(file: PsiFile, project: Project): LanguageServerEndpoint? {
+    private fun findServer(file: VirtualFile, project: Project): LanguageServerEndpoint? {
       return findServerForRemoteFile(file, project) ?: psEditorLanguageServer[project]
     }
 
-    private fun findServerForRemoteFile(file: PsiFile, project: Project): LanguageServerEndpoint? {
+    private fun findServerForRemoteFile(file: VirtualFile, project: Project): LanguageServerEndpoint? {
       val consoleServer = psConsoleLanguageServer[project] ?: return null
-      return if (consoleServer.getStatus() == ServerStatus.STARTED && isRemotePath(file.virtualFile.canonicalPath)) consoleServer else null
+      return if (consoleServer.getStatus() == ServerStatus.STARTED && isRemotePath(file.canonicalPath)) consoleServer else null
     }
 
   }
