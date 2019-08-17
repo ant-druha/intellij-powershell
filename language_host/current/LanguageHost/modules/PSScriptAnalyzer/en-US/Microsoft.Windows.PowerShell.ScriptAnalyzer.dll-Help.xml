@@ -294,7 +294,16 @@ PS C:\&gt; Invoke-ScriptAnalyzerRule -Path $Path -IncludeRule $DSCError -Recurse
       </command:parameter>
     </command:parameters>
     <command:inputTypes />
-    <command:returnValues />
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para>The formatted string result.</maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
     <maml:alertSet>
       <maml:alert />
     </maml:alertSet>
@@ -373,7 +382,7 @@ Invoke-Formatter -ScriptDefinition $scriptDefinition -Settings $settings</dev:co
           <maml:Description>
             <maml:para>Specifies the path to the scripts or module to be analyzed. Wildcard characters are supported.</maml:para>
             <maml:para>Enter the path to a script (.ps1) or module file (.psm1) or to a directory that contains scripts or modules. If the directory contains other types of files, they are ignored.</maml:para>
-            <maml:para>To analyze files that are not in the root directory of the specified path, use a wildcard character (C:\Modules\MyModule\*) or the Recurse parameter.</maml:para>
+            <maml:para>To analyze files that are not in the root directory of the specified path, use a wildcard character (C:\Modules\MyModule*) or the Recurse parameter.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -758,7 +767,7 @@ Invoke-Formatter -ScriptDefinition $scriptDefinition -Settings $settings</dev:co
         <maml:Description>
           <maml:para>Specifies the path to the scripts or module to be analyzed. Wildcard characters are supported.</maml:para>
           <maml:para>Enter the path to a script (.ps1) or module file (.psm1) or to a directory that contains scripts or modules. If the directory contains other types of files, they are ignored.</maml:para>
-          <maml:para>To analyze files that are not in the root directory of the specified path, use a wildcard character (C:\Modules\MyModule\*) or the Recurse parameter.</maml:para>
+          <maml:para>To analyze files that are not in the root directory of the specified path, use a wildcard character (C:\Modules\MyModule*) or the Recurse parameter.</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
