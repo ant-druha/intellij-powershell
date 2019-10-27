@@ -1,14 +1,15 @@
 package com.intellij.plugin.powershell.lang
 
+import com.intellij.application.options.CodeStyle
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.CommandProcessor
 import com.intellij.openapi.util.TextRange
 import com.intellij.plugin.powershell.ide.editor.formatting.PowerShellCodeStyleSettings
 import com.intellij.psi.PsiDocumentManager
+import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.codeStyle.CodeStyleManager
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import com.intellij.psi.formatter.FormatterTestCase
-import com.intellij.testFramework.LightPlatformTestCase
 import com.intellij.util.IncorrectOperationException
 import junit.framework.TestCase
 
@@ -172,20 +173,20 @@ class PowerShellFormatterTest : FormatterTestCase() {
   }
 
   private fun doTextTest(text: String, textAfter: String, reformatAsText: Boolean = true, textRange: TextRange? = null) {
-    val file = LightPlatformTestCase.createFile("foo.ps1", text)
-    val manager = PsiDocumentManager.getInstance(getProject())
+    val file = createFileFromText(text)
+    val manager = PsiDocumentManager.getInstance(project)
     val document = manager.getDocument(file)
-    CommandProcessor.getInstance().executeCommand(LightPlatformTestCase.getProject(), {
+    CommandProcessor.getInstance().executeCommand(project, {
       ApplicationManager.getApplication().runWriteAction {
         try {
           if (textRange != null) {
-            CodeStyleManager.getInstance(LightPlatformTestCase.getProject()).reformatText(file, textRange.startOffset, textRange.endOffset)
+            CodeStyleManager.getInstance(project).reformatText(file, textRange.startOffset, textRange.endOffset)
           }
           if (reformatAsText) {
             val formatRange = file.textRange
-            CodeStyleManager.getInstance(LightPlatformTestCase.getProject()).reformatText(file, formatRange.startOffset, formatRange.endOffset)
+            CodeStyleManager.getInstance(project).reformatText(file, formatRange.startOffset, formatRange.endOffset)
           } else {
-            CodeStyleManager.getInstance(LightPlatformTestCase.getProject()).reformat(file)
+            CodeStyleManager.getInstance(project).reformat(file)
           }
         } catch (e: IncorrectOperationException) {
           TestCase.assertTrue(e.localizedMessage, false)
@@ -198,7 +199,9 @@ class PowerShellFormatterTest : FormatterTestCase() {
     assertEquals(textAfter, file.text)
   }
 
+  private fun createFileFromText(text: String) = PsiFileFactory.getInstance(project).createFileFromText(PowerShellLanguage.INSTANCE, text)
+
   private fun getPowerShellSettings(): PowerShellCodeStyleSettings = settings.getCustomSettings(PowerShellCodeStyleSettings::class.java)
 
-  private fun getCommonSettings() = FormatterTestCase.getSettings(PowerShellLanguage.INSTANCE)
+  private fun getCommonSettings() =  CodeStyle.getLanguageSettings(createFileFromText(""), PowerShellLanguage.INSTANCE)
 }

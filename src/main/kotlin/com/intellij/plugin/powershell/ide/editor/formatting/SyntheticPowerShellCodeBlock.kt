@@ -5,7 +5,6 @@ import com.intellij.formatting.templateLanguages.BlockWithParent
 import com.intellij.lang.ASTNode
 import com.intellij.openapi.util.TextRange
 import com.intellij.plugin.powershell.psi.PowerShellTypes
-import com.intellij.psi.formatter.java.LeafBlock
 
 
 class SyntheticPowerShellCodeBlock(private val mySubBlocks: MutableList<Block>, private val myBlockAlignment: Alignment?,
@@ -70,8 +69,25 @@ class SyntheticPowerShellCodeBlock(private val mySubBlocks: MutableList<Block>, 
     while (!current.subBlocks.isEmpty()) {
       current = block.subBlocks[0]
     }
-    val node = if (current is LeafBlock) current.node else null
-    return node != null && node.elementType === PowerShellTypes.DOT
+    return isLeafBlock(current)
+  }
+
+  private fun isLeafBlock(current: Block): Boolean {
+    return try {
+      val leafBlock = Class.forName("com.intellij.psi.formatter.java.LeafBlock").asSubclass(current::class.java)
+      getAstNode(leafBlock)?.elementType === PowerShellTypes.DOT
+    } catch (e: Exception) {
+      false
+    }
+  }
+
+  private fun getAstNode(leafBlock: Class<out Block>): ASTNode? {
+    return try {
+      val nodeFieldClass = leafBlock.getDeclaredField("node")
+      nodeFieldClass.get(leafBlock) as? ASTNode
+    } catch (e: Exception) {
+      null
+    }
   }
 
   private fun getRightMostBlock(): Block? {
@@ -86,7 +102,7 @@ class SyntheticPowerShellCodeBlock(private val mySubBlocks: MutableList<Block>, 
   }
 
   private fun isRParenth(block: Block?): Boolean {
-    return block is LeafBlock && block.node?.elementType === PowerShellTypes.RP
+    return block != null && getAstNode(block::class.java)?.elementType === PowerShellTypes.RP
   }
 
   override fun getWrap(): Wrap? = myBlockWrap
