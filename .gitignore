@@ -49,3 +49,15 @@ gradle-app.setting
 
 # Cache of project
 .gradletasknamecache
+/distibutives/
+/patches/
+/dumps/
+/.idea/vcs.xml
+/.idea/compiler.xml
+/Default.xml
+/.idea/deployment.xml
+/.idea/caches
+/.idea/.name
+/.idea/jarRepositories.xml
+/.idea/kotlinc.xml
+/.idea/misc.xml
