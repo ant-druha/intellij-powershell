@@ -27,12 +27,19 @@ object PSLanguageHostUtils {
   }
 
   fun getEditorServicesStartupScript(psExtensionDir: String): String {
-    return if (isExtensionDirectoryFormat(psExtensionDir)) join(psExtensionDir, "modules/PowerShellEditorServices/Start-EditorServices.ps1")
-    else join(BUNDLED_PSES_PATH, "modules/PowerShellEditorServices/Start-EditorServices.ps1")
+    return when {
+      isExtensionDirectoryFormat(psExtensionDir) -> join(psExtensionDir, "modules/PowerShellEditorServices/Start-EditorServices.ps1")
+      isStandAloneDirectoryFormat(psExtensionDir) -> "$psExtensionDir/PowerShellEditorServices/Start-EditorServices.ps1"
+      else -> join(BUNDLED_PSES_PATH, "modules/PowerShellEditorServices/Start-EditorServices.ps1")
+    }
   }
 
   private fun isExtensionDirectoryFormat(psExtensionDir: String): Boolean {
     return checkExists("$psExtensionDir/modules")
+  }
+
+  private fun isStandAloneDirectoryFormat(psExtensionDir: String): Boolean {
+    return checkExists("$psExtensionDir/PowerShellEditorServices/Start-EditorServices.ps1")
   }
 
   @Throws(PowerShellExtensionNotFound::class)
