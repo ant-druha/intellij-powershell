@@ -97,7 +97,8 @@
 
   <extensions defaultExtensionNs="com.intellij">
 
-    <fileTypeFactory implementation="com.intellij.plugin.powershell.PowerShellFileTypeFactory"/>
+    <fileType name="PowerShell" language="PowerShell" extensions="ps1;psm1;psd1" 
+              implementationClass="com.intellij.plugin.powershell.PowerShellFileType" />
 
     <lang.parserDefinition language="PowerShell"
                            implementationClass="com.intellij.plugin.powershell.lang.parser.PowerShellParserDefinition"/>
@@ -136,7 +137,7 @@
 
     <configurationType implementation="com.intellij.plugin.powershell.ide.run.PowerShellConfigurationType"/>
     <runConfigurationProducer
-        implementation="com.intellij.plugin.powershell.ide.run.PowerShellConfigurationProducer"/>
+        implementation="com.intellij.plugin.powershell.ide.run.PowerShellConfigurationProducer" order="first"/>
 
     <targetElementEvaluator language="PowerShell"
                             implementationClass="com.intellij.plugin.powershell.ide.search.PowerShellTargetElementEvaluator"/>

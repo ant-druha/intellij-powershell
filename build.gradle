@@ -21,7 +21,7 @@ apply plugin: 'java'
 
 intellij {
     type 'IU'
-    version '192.4205-EAP-CANDIDATE-SNAPSHOT'// https://www.jetbrains.com/intellij-repository/[releases|snapshots]
+    version '193.4778.7-EAP-SNAPSHOT'// https://www.jetbrains.com/intellij-repository/[releases|snapshots]
     plugins 'IntelliLang', 'terminal'
     pluginName 'PowerShell'
     updateSinceUntilBuild = false

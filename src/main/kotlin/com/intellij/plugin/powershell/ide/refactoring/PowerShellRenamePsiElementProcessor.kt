@@ -8,6 +8,7 @@ import com.intellij.plugin.powershell.ide.refactoring.PowerShellNameUtils.nameHa
 import com.intellij.plugin.powershell.psi.PowerShellComponent
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
+import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.search.LocalSearchScope
 import com.intellij.refactoring.rename.RenameDialog
 import com.intellij.refactoring.rename.RenamePsiElementProcessor
@@ -16,12 +17,12 @@ class PowerShellRenamePsiElementProcessor : RenamePsiElementProcessor() {
   override fun canProcessElement(element: PsiElement): Boolean = element is PowerShellComponent
   override fun findReferences(element: PsiElement, searchInCommentsAndStrings: Boolean): MutableCollection<PsiReference> {
     if (element is PowerShellComponent && nameHasSubExpression(element)) {//todo it's workaround to resort to findUsage handler because default index does not contain needed tokens
-      val findManager = FindManager.getInstance(element.getProject()) as? FindManagerImpl ?: return super.findReferences(element, searchInCommentsAndStrings)
+      val findManager = FindManager.getInstance(element.getProject()) as? FindManagerImpl ?: return super.findReferences(element, GlobalSearchScope.projectScope(element.getProject()), searchInCommentsAndStrings)
       val findUsagesManager = findManager.findUsagesManager
-      val findUsagesHandler = findUsagesManager.getFindUsagesHandler(element, true) ?: return super.findReferences(element, searchInCommentsAndStrings)
+      val findUsagesHandler = findUsagesManager.getFindUsagesHandler(element, true) ?: return super.findReferences(element, GlobalSearchScope.projectScope(element.getProject()), searchInCommentsAndStrings)
       val scope = LocalSearchScope(element.containingFile)
       return findUsagesHandler.findReferencesToHighlight(element, scope)
-    } else return super.findReferences(element, searchInCommentsAndStrings)
+    } else return super.findReferences(element, GlobalSearchScope.projectScope(element.project), searchInCommentsAndStrings)
   }
 
   override fun createRenameDialog(project: Project, element: PsiElement, nameSuggestionContext: PsiElement?, editor: Editor?): RenameDialog {

@@ -3,8 +3,12 @@
  */
 package com.intellij.plugin.powershell.lang.lsp
 
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.components.*
+import com.intellij.openapi.components.PersistentStateComponent
+import com.intellij.openapi.components.RoamingType
+import com.intellij.openapi.components.State
+import com.intellij.openapi.components.Storage
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorFactory
@@ -23,10 +27,25 @@ import com.intellij.plugin.powershell.lang.lsp.languagehost.ServerStatus
 import com.intellij.plugin.powershell.lang.lsp.languagehost.terminal.PowerShellConsoleTerminalRunner
 import com.intellij.plugin.powershell.lang.lsp.util.isRemotePath
 import com.intellij.psi.PsiDocumentManager
+import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
 @State(name = "PowerShellSettings", storages = [Storage(file = "powerShellSettings.xml", roamingType = RoamingType.DISABLED)])
-class LSPInitMain : ApplicationComponent, PersistentStateComponent<LSPInitMain.PowerShellExtensionInfo> {
+class LSPInitMain : PersistentStateComponent<LSPInitMain.PowerShellExtensionInfo>, Disposable {
+
+  override fun initializeComponent() {
+    EditorFactory.getInstance().addEditorFactoryListener(EditorLSPListener(), this)
+    ApplicationManager.getApplication().messageBus.connect(this).subscribe<ProjectManagerListener>(ProjectManager.TOPIC, object : ProjectManagerListener {
+      override fun projectClosed(project: Project) {
+        psEditorLanguageServer.remove(project)
+        psConsoleLanguageServer.remove(project)
+      }
+    })
+
+    Disposer.register(ApplicationManager.getApplication(), this)
+
+    LOG.debug("PluginMain init finished")
+  }
 
   data class PowerShellExtensionInfo(var editorServicesStartupScript: String = "",
                                      var powerShellExtensionPath: String? = null,
@@ -36,7 +55,6 @@ class LSPInitMain : ApplicationComponent, PersistentStateComponent<LSPInitMain.P
   }
 
   private var myPowerShellExtensionInfo: PowerShellExtensionInfo = PowerShellExtensionInfo()
-  private val myDisposable = Disposer.newDisposable()
 
   override fun loadState(powerShellExtensionInfo: PowerShellExtensionInfo) {
     myPowerShellExtensionInfo = powerShellExtensionInfo
@@ -93,7 +111,7 @@ class LSPInitMain : ApplicationComponent, PersistentStateComponent<LSPInitMain.P
         if (file?.fileType !is PowerShellFileType) return
       }
       val server = findServer(vfile, project) ?: return
-      server.disconnectEditor(VfsUtil.toUri(vfile))
+      server.disconnectEditor(VfsUtil.toUri(File(vfile.path)))
       LOG.debug("Removed ${vfile.name} script from server: $server")
     }
 
@@ -108,22 +126,8 @@ class LSPInitMain : ApplicationComponent, PersistentStateComponent<LSPInitMain.P
 
   }
 
-  override fun initComponent() {
-    EditorFactory.getInstance().addEditorFactoryListener(EditorLSPListener(), myDisposable)
-    ApplicationManager.getApplication().messageBus.connect(myDisposable).subscribe<ProjectManagerListener>(ProjectManager.TOPIC, object : ProjectManagerListener {
-      override fun projectClosed(project: Project) {
-        psEditorLanguageServer.remove(project)
-        psConsoleLanguageServer.remove(project)
-      }
-    })
-
-    LOG.debug("PluginMain init finished")
-  }
-
-  override fun disposeComponent() {
-    super.disposeComponent()
+  override fun dispose() {
     psEditorLanguageServer.clear()
     psConsoleLanguageServer.clear()
-    Disposer.dispose(myDisposable)
   }
 }

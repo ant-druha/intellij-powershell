@@ -37,6 +37,7 @@ import org.eclipse.lsp4j.*
 import org.eclipse.lsp4j.jsonrpc.messages.Either
 import org.eclipse.lsp4j.launch.LSPLauncher
 import org.eclipse.lsp4j.services.LanguageServer
+import java.io.File
 import java.net.URI
 import java.nio.file.Paths
 import java.util.*
@@ -108,7 +109,7 @@ class LanguageServerEndpoint(private val languageHostConnectionManager: Language
       return
     }
     val file = FileDocumentManager.getInstance().getFile(editor.document) ?: return
-    val uri = VfsUtil.toUri(file)
+    val uri = VfsUtil.toUri(File(file.path))
     if (!connectedEditors.contains(uri)) {
       checkStarted(editor.document.toString())
       if (initializeFuture != null) {

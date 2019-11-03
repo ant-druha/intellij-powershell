@@ -29,7 +29,7 @@ enum class PowerShellComponentType(icon: Icon) {
   VARIABLE(PlatformIcons.VARIABLE_ICON),
   FILE(PowerShellIcons.FILE),
   GENERIC_FILE(PlatformIcons.CUSTOM_FILE_ICON),
-  DSC_CONFIGURATION(AllIcons.General.ExternalToolsSmall);
+  DSC_CONFIGURATION(AllIcons.General.ExternalTools);
 
   companion object {
     fun typeOf(element: PsiElement): PowerShellComponentType? {

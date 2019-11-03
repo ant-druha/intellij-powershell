@@ -1,16 +1,16 @@
 package com.intellij.plugin.powershell.ide.editor.formatting
 
+import com.intellij.application.options.CodeStyle
 import com.intellij.formatting.Alignment
 import com.intellij.formatting.Block
 import com.intellij.formatting.Indent
 import com.intellij.formatting.Wrap
 import com.intellij.lang.ASTNode
-import com.intellij.plugin.powershell.PowerShellFileType
+import com.intellij.plugin.powershell.lang.PowerShellLanguage
 import com.intellij.plugin.powershell.psi.PowerShellTypes
 import com.intellij.plugin.powershell.psi.PowerShellTypes.COLON2
 import com.intellij.plugin.powershell.psi.PowerShellTypes.DOT
 import com.intellij.psi.PsiComment
-import com.intellij.psi.codeStyle.CodeStyleSettingsManager
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import com.intellij.psi.formatter.WrappingUtil
 import java.util.*
@@ -74,7 +74,8 @@ class ChainMethodCallBlockBuilder(private val myAlignment: Alignment?, private v
   }
 
   private fun newPowerShellBlock(node: ASTNode, commonSettings: CommonCodeStyleSettings, psSettings: PowerShellCodeStyleSettings, indent: Indent?, wrap: Wrap?, alignment: Alignment?): PowerShellCodeBlock {
-    val indentSize = CodeStyleSettingsManager.getInstance(node.psi.project).currentSettings.getIndentSize(PowerShellFileType.INSTANCE)
+    val languageCodeStyle = CodeStyle.getLanguageSettings(node.psi.containingFile, PowerShellLanguage.INSTANCE)
+    val indentSize = languageCodeStyle.indentOptions?.INDENT_SIZE ?: languageCodeStyle.initIndentOptions().INDENT_SIZE
     return PowerShellBlockImpl(node, wrap, alignment, indent, indentSize, commonSettings, psSettings)
   }
 

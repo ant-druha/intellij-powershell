@@ -1,13 +1,12 @@
 package com.intellij.plugin.powershell.lang
 
-import com.intellij.openapi.application.Result
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.plugin.powershell.psi.PowerShellStringLiteralExpression
 import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase
+import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import java.lang.StringBuilder
 
-class PowerShellCodeInsightTest : LightPlatformCodeInsightFixtureTestCase() {
+class PowerShellCodeInsightTest : BasePlatformTestCase() {
 
   fun testDecodeExpandableString() {
     //quotes
@@ -206,13 +205,11 @@ class PowerShellCodeInsightTest : LightPlatformCodeInsightFixtureTestCase() {
   //external editor -> PowerShell string
   private fun checkInjectedText(newInjectedText: String, expectedStringContent: String, isExpandable: Boolean = true, isHere: Boolean = false, defaultText: String = "var foo = 1") {
     val string = createStringExpression(isHere, isExpandable, defaultText)
-    object : WriteCommandAction<Any>(project, "Test checkInjectedText. New Text='$newInjectedText'", myFixture.file) {
-      override fun run(result: Result<Any>) {
-        string.updateText(newInjectedText)
-        val newString = PsiTreeUtil.findChildOfType(myFixture.file, PowerShellStringLiteralExpression::class.java) ?: error("file text='${myFixture.file}'")
-        assert(newString.getStringContent() == expectedStringContent) { "expected=\t'$expectedStringContent'\nactual=\t\t'${newString.getStringContent()}'" }
-      }
-    }.execute()
+    WriteCommandAction.writeCommandAction(project, myFixture.file).withName("Test checkInjectedText. New Text='$newInjectedText'").run<Throwable> {
+      string.updateText(newInjectedText)
+      val newString = PsiTreeUtil.findChildOfType(myFixture.file, PowerShellStringLiteralExpression::class.java) ?: error("file text='${myFixture.file}'")
+      assert(newString.getStringContent() == expectedStringContent) { "expected=\t'$expectedStringContent'\nactual=\t\t'${newString.getStringContent()}'" }
+    }
   }
 
   //PowerShell string -> external editor

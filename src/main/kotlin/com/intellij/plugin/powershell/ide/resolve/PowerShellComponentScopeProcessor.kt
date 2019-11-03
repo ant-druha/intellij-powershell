@@ -4,14 +4,14 @@ import com.intellij.plugin.powershell.psi.PowerShellComponent
 import com.intellij.plugin.powershell.psi.PowerShellTargetVariableExpression
 import com.intellij.psi.PsiElement
 import com.intellij.psi.ResolveState
-import com.intellij.psi.scope.BaseScopeProcessor
+import com.intellij.psi.scope.PsiScopeProcessor
 import java.util.HashMap
 import kotlin.collections.ArrayList
 
 /**
  * Andrey 18/08/17.
  */
-class PowerShellComponentScopeProcessor : BaseScopeProcessor() {
+class PowerShellComponentScopeProcessor : PsiScopeProcessor {
   private val myResult: ArrayList<PowerShellComponent> = ArrayList()
   private val myCollectedVariables = HashMap<String, PowerShellTargetVariableExpression>()
 

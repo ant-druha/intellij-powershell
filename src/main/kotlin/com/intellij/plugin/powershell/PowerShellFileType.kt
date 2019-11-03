@@ -19,7 +19,7 @@ class PowerShellFileType : LanguageFileType(PowerShellLanguage.INSTANCE) {
   }
 
   override fun getName(): String {
-    return "PowerShell file"
+    return "PowerShell"
   }
 
   override fun getDefaultExtension(): String {
@@ -28,9 +28,5 @@ class PowerShellFileType : LanguageFileType(PowerShellLanguage.INSTANCE) {
 
   override fun getDescription(): String {
     return "PowerShell file"
-  }
-
-  fun getExtensions(): Array<String> {
-    return arrayOf(defaultExtension, "psm1", "psd1")
   }
 }

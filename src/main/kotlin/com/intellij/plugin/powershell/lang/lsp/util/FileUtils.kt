@@ -8,17 +8,18 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.plugin.powershell.ide.run.join
+import java.io.File
 import java.net.URI
 
 
 fun editorToURIString(editor: Editor): String? {
   val file = FileDocumentManager.getInstance().getFile(editor.document)?: return null
-  return VfsUtil.toUri(file).toString()
+  return VfsUtil.toUri(File(file.path)).toString()
 }
 
 fun editorToURI(editor: Editor): URI? {
   val file = FileDocumentManager.getInstance().getFile(editor.document)?: return null
-  return VfsUtil.toUri(file)
+  return VfsUtil.toUri(File(file.path))
 }
 
 fun getTextEditor(file: VirtualFile, project: Project): Editor? {

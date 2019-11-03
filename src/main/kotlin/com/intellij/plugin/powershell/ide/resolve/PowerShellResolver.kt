@@ -4,7 +4,7 @@ import com.intellij.plugin.powershell.psi.*
 import com.intellij.psi.PsiElement
 import com.intellij.psi.ResolveState
 import com.intellij.psi.impl.source.resolve.ResolveCache
-import com.intellij.psi.scope.BaseScopeProcessor
+import com.intellij.psi.scope.PsiScopeProcessor
 import com.intellij.psi.util.PsiTreeUtil
 import java.util.*
 
@@ -37,7 +37,7 @@ class PowerShellResolver<T> : ResolveCache.AbstractResolver<T, List<PowerShellRe
   }
 }
 
-abstract class PowerShellReferenceResolveProcessor<out R : PowerShellReferencePsiElement>(protected val myRef: R) : BaseScopeProcessor() {
+abstract class PowerShellReferenceResolveProcessor<out R : PowerShellReferencePsiElement>(protected val myRef: R) : PsiScopeProcessor {
   private var myResult: PowerShellResolveResult? = null //todo should navigate to closest declaration (of function or variable)
 
   fun getResult(): PowerShellResolveResult? {
