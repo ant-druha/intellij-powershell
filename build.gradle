@@ -69,6 +69,8 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
         jvmTarget = '1.8'
     }
 }
+sourceCompatibility = 1.8
+
 compileKotlin {
     kotlinOptions {
         jvmTarget = "1.8"
