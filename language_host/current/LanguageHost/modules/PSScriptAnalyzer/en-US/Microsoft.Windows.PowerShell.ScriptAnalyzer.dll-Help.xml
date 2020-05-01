@@ -294,7 +294,16 @@ PS C:\&gt; Invoke-ScriptAnalyzerRule -Path $Path -IncludeRule $DSCError -Recurse
       </command:parameter>
     </command:parameters>
     <command:inputTypes />
-    <command:returnValues />
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para>The formatted string result.</maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
     <maml:alertSet>
       <maml:alert />
     </maml:alertSet>
@@ -373,7 +382,7 @@ Invoke-Formatter -ScriptDefinition $scriptDefinition -Settings $settings</dev:co
           <maml:Description>
             <maml:para>Specifies the path to the scripts or module to be analyzed. Wildcard characters are supported.</maml:para>
             <maml:para>Enter the path to a script (.ps1) or module file (.psm1) or to a directory that contains scripts or modules. If the directory contains other types of files, they are ignored.</maml:para>
-            <maml:para>To analyze files that are not in the root directory of the specified path, use a wildcard character (C:\Modules\MyModule\*) or the Recurse parameter.</maml:para>
+            <maml:para>To analyze files that are not in the root directory of the specified path, use a wildcard character (C:\Modules\MyModule*) or the Recurse parameter.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -530,12 +539,14 @@ Invoke-Formatter -ScriptDefinition $scriptDefinition -Settings $settings</dev:co
             <maml:para>File path that contains user profile or hash table for ScriptAnalyzer</maml:para>
             <maml:para>Runs Invoke-ScriptAnalyzer with the parameters and values specified in a Script Analyzer profile file or hash table</maml:para>
             <maml:para>If the path, the file's or hashtable's content are invalid, it is ignored. The parameters and values in the profile take precedence over the same parameter and values specified at the command line.</maml:para>
-            <maml:para>A Script Analyzer profile file is a text file that contains a hash table with one or more of the following keys: -- Severity</maml:para>
-            <maml:para>-- IncludeRules</maml:para>
-            <maml:para>-- ExcludeRules</maml:para>
-            <maml:para>-- Rules</maml:para>
+            <maml:para>A Script Analyzer profile file is a text file that contains a hash table with one or more of the following keys:</maml:para>
             <maml:para>-- CustomRulePath</maml:para>
+            <maml:para>-- ExcludeRules</maml:para>
             <maml:para>-- IncludeDefaultRules</maml:para>
+            <maml:para>-- IncludeRules</maml:para>
+            <maml:para>-- RecurseCustomRulePath</maml:para>
+            <maml:para>-- Rules</maml:para>
+            <maml:para>-- Severity</maml:para>
             <maml:para></maml:para>
             <maml:para>The keys and values in the profile are interpreted as if they were standard parameters and parameter values of Invoke-ScriptAnalyzer.</maml:para>
             <maml:para>To specify a single value, enclose the value in quotation marks. For example:</maml:para>
@@ -716,12 +727,14 @@ Invoke-Formatter -ScriptDefinition $scriptDefinition -Settings $settings</dev:co
             <maml:para>File path that contains user profile or hash table for ScriptAnalyzer</maml:para>
             <maml:para>Runs Invoke-ScriptAnalyzer with the parameters and values specified in a Script Analyzer profile file or hash table</maml:para>
             <maml:para>If the path, the file's or hashtable's content are invalid, it is ignored. The parameters and values in the profile take precedence over the same parameter and values specified at the command line.</maml:para>
-            <maml:para>A Script Analyzer profile file is a text file that contains a hash table with one or more of the following keys: -- Severity</maml:para>
-            <maml:para>-- IncludeRules</maml:para>
-            <maml:para>-- ExcludeRules</maml:para>
-            <maml:para>-- Rules</maml:para>
+            <maml:para>A Script Analyzer profile file is a text file that contains a hash table with one or more of the following keys:</maml:para>
             <maml:para>-- CustomRulePath</maml:para>
+            <maml:para>-- ExcludeRules</maml:para>
             <maml:para>-- IncludeDefaultRules</maml:para>
+            <maml:para>-- IncludeRules</maml:para>
+            <maml:para>-- RecurseCustomRulePath</maml:para>
+            <maml:para>-- Rules</maml:para>
+            <maml:para>-- Severity</maml:para>
             <maml:para></maml:para>
             <maml:para>The keys and values in the profile are interpreted as if they were standard parameters and parameter values of Invoke-ScriptAnalyzer.</maml:para>
             <maml:para>To specify a single value, enclose the value in quotation marks. For example:</maml:para>
@@ -758,7 +771,7 @@ Invoke-Formatter -ScriptDefinition $scriptDefinition -Settings $settings</dev:co
         <maml:Description>
           <maml:para>Specifies the path to the scripts or module to be analyzed. Wildcard characters are supported.</maml:para>
           <maml:para>Enter the path to a script (.ps1) or module file (.psm1) or to a directory that contains scripts or modules. If the directory contains other types of files, they are ignored.</maml:para>
-          <maml:para>To analyze files that are not in the root directory of the specified path, use a wildcard character (C:\Modules\MyModule\*) or the Recurse parameter.</maml:para>
+          <maml:para>To analyze files that are not in the root directory of the specified path, use a wildcard character (C:\Modules\MyModule*) or the Recurse parameter.</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -922,12 +935,14 @@ Invoke-Formatter -ScriptDefinition $scriptDefinition -Settings $settings</dev:co
           <maml:para>File path that contains user profile or hash table for ScriptAnalyzer</maml:para>
           <maml:para>Runs Invoke-ScriptAnalyzer with the parameters and values specified in a Script Analyzer profile file or hash table</maml:para>
           <maml:para>If the path, the file's or hashtable's content are invalid, it is ignored. The parameters and values in the profile take precedence over the same parameter and values specified at the command line.</maml:para>
-          <maml:para>A Script Analyzer profile file is a text file that contains a hash table with one or more of the following keys: -- Severity</maml:para>
-          <maml:para>-- IncludeRules</maml:para>
-          <maml:para>-- ExcludeRules</maml:para>
-          <maml:para>-- Rules</maml:para>
+          <maml:para>A Script Analyzer profile file is a text file that contains a hash table with one or more of the following keys:</maml:para>
           <maml:para>-- CustomRulePath</maml:para>
+          <maml:para>-- ExcludeRules</maml:para>
           <maml:para>-- IncludeDefaultRules</maml:para>
+          <maml:para>-- IncludeRules</maml:para>
+          <maml:para>-- RecurseCustomRulePath</maml:para>
+          <maml:para>-- Rules</maml:para>
+          <maml:para>-- Severity</maml:para>
           <maml:para></maml:para>
           <maml:para>The keys and values in the profile are interpreted as if they were standard parameters and parameter values of Invoke-ScriptAnalyzer.</maml:para>
           <maml:para>To specify a single value, enclose the value in quotation marks. For example:</maml:para>
