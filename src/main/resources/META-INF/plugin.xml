@@ -141,6 +141,9 @@
     <lang.braceMatcher language="PowerShell"
                        implementationClass="com.intellij.plugin.powershell.ide.editor.highlighting.PowerShellPairedBraceMatcher"/>
 
+    <lang.foldingBuilder language="PowerShell"
+                         implementationClass="com.intellij.plugin.powershell.ide.editor.PowerShellFoldingBuilder"/>
+
     <configurationType implementation="com.intellij.plugin.powershell.ide.run.PowerShellConfigurationType"/>
     <runConfigurationProducer
         implementation="com.intellij.plugin.powershell.ide.run.PowerShellConfigurationProducer" order="first"/>
