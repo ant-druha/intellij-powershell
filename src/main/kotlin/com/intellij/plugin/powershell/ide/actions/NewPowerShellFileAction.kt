@@ -12,7 +12,7 @@ class NewPowerShellFileAction : CreateFileFromTemplateAction("PowerShell script"
                                                              PowerShellIcons.FILE), DumbAware {
   override fun getActionName(directory: PsiDirectory?, newName: String, templateName: String?): String = "New PowerShell script$newName"
 
-  override fun buildDialog(project: Project?, directory: PsiDirectory?, builder: CreateFileFromTemplateDialog.Builder?) {
-    builder?.setTitle("New PowerShell file")?.addKind("PowerShell file", PowerShellIcons.FILE, "PowerShell File.ps1")
+  override fun buildDialog(project: Project, directory: PsiDirectory, builder: CreateFileFromTemplateDialog.Builder) {
+    builder.setTitle("New PowerShell file")?.addKind("PowerShell file", PowerShellIcons.FILE, "PowerShell File.ps1")
   }
 }

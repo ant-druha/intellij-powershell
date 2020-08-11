@@ -12,8 +12,7 @@ class PowerShellTargetElementEvaluator : TargetElementEvaluatorEx {
 
   override fun includeSelfInGotoImplementation(element: PsiElement): Boolean = true
 
-  override fun isIdentifierPart(file: PsiFile?, text: CharSequence?, offset: Int): Boolean {
-    if (text == null || file == null) return false
+  override fun isIdentifierPart(file: PsiFile, text: CharSequence, offset: Int): Boolean {
     val elementAt = file.findElementAt(offset)
     return PowerShellTokenTypeSets.IDENTIFIERS.contains(elementAt?.node?.elementType)
   }

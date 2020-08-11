@@ -9,6 +9,7 @@ import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessWaitFor
 import com.intellij.execution.ui.RunContentDescriptor
+import com.intellij.execution.ui.RunContentManager
 import com.intellij.execution.ui.actions.CloseAction
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnAction
@@ -154,7 +155,7 @@ class PowerShellConsoleTerminalRunner(project: Project) : EditorServicesLanguage
 
   private fun showConsole(defaultExecutor: Executor, myDescriptor: RunContentDescriptor, toFocus: Component) {
     // Show in run toolwindow
-    ExecutionManager.getInstance(myProject).contentManager.showRunContent(defaultExecutor, myDescriptor)
+    RunContentManager.getInstance(myProject).showRunContent(defaultExecutor, myDescriptor)
 
     // Request focus
     val toolWindow = ToolWindowManager.getInstance(myProject).getToolWindow(defaultExecutor.id)
