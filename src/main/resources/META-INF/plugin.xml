@@ -13,6 +13,9 @@
   <change-notes><![CDATA[
   <html lang="en">
         <dl>
+          <dt>2.0.5 update<br></dt>
+          <dd>&#183; <a href="https://github.com/ant-druha/intellij-powershell/pull/48">48</a> - Adds simplest code folding: for code blocks, arrays.</dd>
+
           <dt>2.0.4 Bug fix update<br></dt>
           <dd>&#183; <a href="https://github.com/ant-druha/intellij-powershell/issues/38">38</a> - UnsupportedClassVersionError running 2019.3 under 1.8 JDK.</dd>
           
@@ -89,7 +92,7 @@
   </change-notes>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-  <idea-version since-build="193"/>
+  <idea-version since-build="200"/>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
        on how to target different products -->
