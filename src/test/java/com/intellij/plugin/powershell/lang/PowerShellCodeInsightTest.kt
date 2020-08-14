@@ -4,9 +4,15 @@ import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.plugin.powershell.psi.PowerShellStringLiteralExpression
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import java.io.File
 import java.lang.StringBuilder
 
 class PowerShellCodeInsightTest : BasePlatformTestCase() {
+
+  private val TEST_DATA_PATH = "src" + File.separatorChar + "test" + File.separatorChar + "resources" + File.separatorChar +
+      "testData"
+
+  override fun getTestDataPath() = TEST_DATA_PATH
 
   fun testDecodeExpandableString() {
     //quotes
@@ -196,6 +202,10 @@ class PowerShellCodeInsightTest : BasePlatformTestCase() {
                              "test escape `\$foo chars")
     updateVerbatimHereString("test escape \$foo chars",
                              "test escape \$foo chars")
+  }
+
+  fun testFolding() {
+    myFixture.testFolding("$testDataPath/codeinsight/folding.ps1")
   }
 
   private fun updateExpandableHereString(newInjectedText: String, expectedStringContent: String) = checkInjectedText(newInjectedText, expectedStringContent, true, true)
