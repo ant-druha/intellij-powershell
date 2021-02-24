@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.io.File;
 
 public class PowerShellRunSettingsEditor extends SettingsEditor<PowerShellRunConfiguration> {
 
@@ -33,6 +34,7 @@ public class PowerShellRunSettingsEditor extends SettingsEditor<PowerShellRunCon
 
   @Override
   protected void resetEditorFrom(@NotNull PowerShellRunConfiguration configuration) {
+    String configName = configuration.getName();
     String scriptPath = configuration.getScriptPath();
     String workingDir = configuration.getWorkingDirectory();
     if (workingDir.equals(PSExecutionUtilKt.getDefaultWorkingDirectory())) {
@@ -45,7 +47,11 @@ public class PowerShellRunSettingsEditor extends SettingsEditor<PowerShellRunCon
     if (!StringUtil.isEmpty(scriptPath)) {
       scriptTextField.setText(scriptPath);
       String[] parts = scriptPath.split("/");
-      if (parts.length > 0) {
+
+      if (!StringUtil.isEmpty(configName)){
+        runConfiguration.setName(configName);
+      }
+      else if (parts.length > 0) {
         runConfiguration.setName(parts[parts.length - 1]);
       }
     }
