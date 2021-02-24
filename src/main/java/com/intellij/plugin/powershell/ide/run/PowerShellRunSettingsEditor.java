@@ -46,7 +46,7 @@ public class PowerShellRunSettingsEditor extends SettingsEditor<PowerShellRunCon
     String commandOptions = configuration.getCommandOptions();
     if (!StringUtil.isEmpty(scriptPath)) {
       scriptTextField.setText(scriptPath);
-      String[] parts = scriptPath.split("/");
+      String[] parts = scriptPath.split(File.separatorChar == '/' ? "/" : "[\\\\/]");
 
       if (!StringUtil.isEmpty(configName)){
         runConfiguration.setName(configName);
