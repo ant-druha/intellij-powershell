@@ -1,5 +1,6 @@
 package com.intellij.plugin.powershell.ide.run;
 
+import com.intellij.execution.configuration.EnvironmentVariablesTextFieldWithBrowseButton;
 import com.intellij.ide.util.BrowseFilesListener;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.fileChooser.FileChooserFactory;
@@ -24,6 +25,7 @@ public class PowerShellRunSettingsEditor extends SettingsEditor<PowerShellRunCon
   private JTextField commandOptionsTextField;
   private JBTextField workingDirectoryTextField;
   private TextFieldWithBrowseButton workingDirectoryTextFieldWithBrowseBtn;
+  private EnvironmentVariablesTextFieldWithBrowseButton environmentVariablesTextFieldWithBrowseButton;
 
   public PowerShellRunSettingsEditor(Project project, PowerShellRunConfiguration runConfiguration) {
     this.runConfiguration = runConfiguration;
