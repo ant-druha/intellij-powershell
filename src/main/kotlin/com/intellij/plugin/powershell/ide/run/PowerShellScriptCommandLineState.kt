@@ -1,6 +1,5 @@
 package com.intellij.plugin.powershell.ide.run
 
-import com.esotericsoftware.minlog.Log
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.configurations.CommandLineState
 import com.intellij.execution.configurations.GeneralCommandLine
