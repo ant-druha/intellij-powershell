@@ -1,5 +1,6 @@
 package com.intellij.plugin.powershell.ide.run
 
+import com.esotericsoftware.minlog.Log
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.configurations.CommandLineState
 import com.intellij.execution.configurations.GeneralCommandLine
@@ -22,8 +23,10 @@ class PowerShellScriptCommandLineState(private val runConfiguration: PowerShellR
       val command = buildCommand(runConfiguration.scriptPath, runConfiguration.getCommandOptions(), runConfiguration.scriptParameters)
       val commandLine = GeneralCommandLine(command)
       commandLine.setWorkDirectory(runConfiguration.workingDirectory)
-      LOG.debug("Command line: " + command.toString())
-      LOG.debug("Environment: " + commandLine.parentEnvironment.toString())
+      runConfiguration.environmentVariables.configureCommandLine(commandLine, true)
+      LOG.debug("Command line: $command")
+      LOG.debug("Environment: " + commandLine.environment.toString())
+      LOG.debug("Effective Environment: " + commandLine.effectiveEnvironment.toString())
       return PowerShellProcessHandler(commandLine)
     } catch (e: PowerShellNotInstalled) {
       LOG.warn("Can not start PowerShell: ${e.message}")

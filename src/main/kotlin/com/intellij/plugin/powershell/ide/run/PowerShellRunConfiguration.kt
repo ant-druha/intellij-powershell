@@ -2,6 +2,7 @@ package com.intellij.plugin.powershell.ide.run
 
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.Executor
+import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.execution.configurations.LocatableConfigurationBase
 import com.intellij.execution.configurations.RunConfiguration
@@ -27,6 +28,7 @@ class PowerShellRunConfiguration(project: Project, configurationFactory: Configu
     get() = if (StringUtil.isEmptyOrSpaces(field)) getDefaultWorkingDirectory() else field
   var scriptParameters: String = ""
   private var commandOptions: String? = null
+  var environmentVariables: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
 
   override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = PowerShellRunSettingsEditor(project, this)
 
@@ -53,6 +55,7 @@ class PowerShellRunConfiguration(project: Project, configurationFactory: Configu
     if (!StringUtil.isEmpty(workingDirectory)) {
       this.workingDirectory = workingDirectory
     }
+    environmentVariables = EnvironmentVariablesData.readExternal(element)
   }
 
   @Throws(WriteExternalException::class)
@@ -70,6 +73,7 @@ class PowerShellRunConfiguration(project: Project, configurationFactory: Configu
     if (!StringUtil.isEmpty(workingDirectory)) {
       element.setAttribute(WORKING_DIRECTORY, workingDirectory)
     }
+    environmentVariables.writeExternal(element)
   }
 
    fun getCommandOptions(): String = StringUtil.notNullize(commandOptions)
