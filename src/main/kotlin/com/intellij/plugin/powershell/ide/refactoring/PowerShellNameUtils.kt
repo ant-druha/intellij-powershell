@@ -1,6 +1,7 @@
 package com.intellij.plugin.powershell.ide.refactoring
 
 import com.intellij.ide.DataManager
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.plugin.powershell.lang._PowerShellLexer
@@ -39,7 +40,7 @@ object PowerShellNameUtils {
   }
 
   private fun isValidIdentifier(name: String, project: Project?): Boolean {
-    if (project != null) {
+    if (project != null && ApplicationManager.getApplication().isDispatchThread) {
       val elementToRename = getElementToRename(project)
       if (elementToRename != null) return isValidName(name, elementToRename)
     }
