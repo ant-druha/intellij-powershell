@@ -20,6 +20,7 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.plugin.powershell.PowerShellFileType
+import com.intellij.plugin.powershell.ide.run.findPsExecutable
 import com.intellij.plugin.powershell.lang.lsp.ide.listeners.EditorLSPListener
 import com.intellij.plugin.powershell.lang.lsp.languagehost.EditorServicesLanguageHostStarter
 import com.intellij.plugin.powershell.lang.lsp.languagehost.LanguageServerEndpoint
@@ -31,45 +32,44 @@ import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
 @State(name = "PowerShellSettings", storages = [Storage(file = "powerShellSettings.xml", roamingType = RoamingType.DISABLED)])
-class LSPInitMain : PersistentStateComponent<LSPInitMain.PowerShellExtensionInfo>, Disposable {
+class LSPInitMain : PersistentStateComponent<LSPInitMain.PowerShellInfo>, Disposable {
 
   override fun initializeComponent() {
     EditorFactory.getInstance().addEditorFactoryListener(EditorLSPListener(), this)
-    ApplicationManager.getApplication().messageBus.connect(this).subscribe<ProjectManagerListener>(ProjectManager.TOPIC, object : ProjectManagerListener {
-      override fun projectClosed(project: Project) {
-        psEditorLanguageServer.remove(project)
-        psConsoleLanguageServer.remove(project)
-      }
-    })
+    ApplicationManager.getApplication().messageBus.connect(this)
+      .subscribe<ProjectManagerListener>(ProjectManager.TOPIC, object : ProjectManagerListener {
+        override fun projectClosed(project: Project) {
+          psEditorLanguageServer.remove(project)
+          psConsoleLanguageServer.remove(project)
+        }
+      })
 
     Disposer.register(ApplicationManager.getApplication(), this)
 
     LOG.debug("PluginMain init finished")
   }
 
-  data class PowerShellExtensionInfo(var editorServicesStartupScript: String = "",
-                                     var powerShellExtensionPath: String? = null,
-                                     var editorServicesModuleVersion: String? = null,
-                                     var isUseLanguageServer: Boolean = true) {
-    constructor(isUseLanguageServer: Boolean) : this("", null, null, isUseLanguageServer)
+  data class PowerShellInfo(
+    var editorServicesStartupScript: String = "",
+    var powerShellExePath: String = findPsExecutable(),
+    var powerShellVersion: String? = null,
+    var powerShellExtensionPath: String? = null,
+    var editorServicesModuleVersion: String? = null,
+    var isUseLanguageServer: Boolean = true
+  ) {
+    constructor(isUseLanguageServer: Boolean, powerShellExePath: String?) :
+      this("", powerShellExePath ?: findPsExecutable(), null, null, null, isUseLanguageServer)
+
   }
 
-  private var myPowerShellExtensionInfo: PowerShellExtensionInfo = PowerShellExtensionInfo()
+  private var myPowerShellInfo: PowerShellInfo = PowerShellInfo()
 
-  override fun loadState(powerShellExtensionInfo: PowerShellExtensionInfo) {
-    myPowerShellExtensionInfo = powerShellExtensionInfo
+  override fun loadState(powerShellInfo: PowerShellInfo) {
+    myPowerShellInfo = powerShellInfo
   }
 
-  override fun getState(): LSPInitMain.PowerShellExtensionInfo {
-    return myPowerShellExtensionInfo
-  }
-
-  fun getPowerShellInfo(): LSPInitMain.PowerShellExtensionInfo {
-    return myPowerShellExtensionInfo
-  }
-
-  fun setPSExtensionInfo(info: PowerShellExtensionInfo?) {
-    myPowerShellExtensionInfo = info ?: PowerShellExtensionInfo()
+  override fun getState(): PowerShellInfo {
+    return myPowerShellInfo
   }
 
   companion object {
@@ -87,7 +87,7 @@ class LSPInitMain : PersistentStateComponent<LSPInitMain.PowerShellExtensionInfo
 
     fun editorOpened(editor: Editor) {
       val lspMain = ApplicationManager.getApplication().getComponent(LSPInitMain::class.java)
-      if (!lspMain.myPowerShellExtensionInfo.isUseLanguageServer) return
+      if (!lspMain.myPowerShellInfo.isUseLanguageServer) return
 
       val project = editor.project ?: return
       val file = PsiDocumentManager.getInstance(project).getPsiFile(editor.document)
