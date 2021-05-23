@@ -24,8 +24,10 @@ class PowerShellScriptCommandLineState(private val runConfiguration: PowerShellR
       val command = buildCommand(runConfiguration.scriptPath, runConfiguration.getCommandOptions(), runConfiguration.scriptParameters)
       val commandLine = GeneralCommandLine(command)
       commandLine.setWorkDirectory(runConfiguration.workingDirectory)
+      runConfiguration.environmentVariables.configureCommandLine(commandLine, true)
       LOG.debug("Command line: $command")
-      LOG.debug("Environment: " + commandLine.parentEnvironment.toString())
+      LOG.debug("Environment: " + commandLine.environment.toString())
+      LOG.debug("Effective Environment: " + commandLine.effectiveEnvironment.toString())
       return PowerShellProcessHandler(commandLine)
     } catch (e: PowerShellNotInstalled) {
       LOG.warn("Can not start PowerShell: ${e.message}")

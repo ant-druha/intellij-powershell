@@ -1,5 +1,7 @@
 package com.intellij.plugin.powershell.ide.run;
 
+import com.intellij.execution.configuration.EnvironmentVariablesData;
+import com.intellij.execution.configuration.EnvironmentVariablesTextFieldWithBrowseButton;
 import com.intellij.ide.util.BrowseFilesListener;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.fileChooser.FileChooserFactory;
@@ -24,6 +26,7 @@ public class PowerShellRunSettingsEditor extends SettingsEditor<PowerShellRunCon
   private JTextField commandOptionsTextField;
   private JBTextField workingDirectoryTextField;
   private TextFieldWithBrowseButton workingDirectoryTextFieldWithBrowseBtn;
+  private EnvironmentVariablesTextFieldWithBrowseButton environmentVariablesTextFieldWithBrowseButton;
 
   public PowerShellRunSettingsEditor(Project project, PowerShellRunConfiguration runConfiguration) {
     this.runConfiguration = runConfiguration;
@@ -37,6 +40,8 @@ public class PowerShellRunSettingsEditor extends SettingsEditor<PowerShellRunCon
     String configName = configuration.getName();
     String scriptPath = configuration.getScriptPath();
     String workingDir = configuration.getWorkingDirectory();
+    EnvironmentVariablesData envVars = configuration.getEnvironmentVariables();
+
     if (workingDir.equals(PSExecutionUtilKt.getDefaultWorkingDirectory())) {
       workingDirectoryTextField.getEmptyText().setText(workingDir);
     } else {
@@ -61,6 +66,8 @@ public class PowerShellRunSettingsEditor extends SettingsEditor<PowerShellRunCon
     if (!StringUtil.isEmpty(commandOptions)) {
       commandOptionsTextField.setText(commandOptions);
     }
+
+    environmentVariablesTextFieldWithBrowseButton.setData(envVars);
   }
 
   @Override
@@ -69,6 +76,7 @@ public class PowerShellRunSettingsEditor extends SettingsEditor<PowerShellRunCon
     configuration.setWorkingDirectory(workingDirectoryTextFieldWithBrowseBtn.getText().trim());
     configuration.setScriptParameters(parametersTextField.getText().trim());
     configuration.setCommandOptions(commandOptionsTextField.getText().trim());
+    configuration.setEnvironmentVariables(environmentVariablesTextFieldWithBrowseButton.getData());
   }
 
   @NotNull
