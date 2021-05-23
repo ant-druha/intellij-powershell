@@ -75,35 +75,16 @@
           <font style="2"/>
         </properties>
       </component>
-      <component id="966d0" class="javax.swing.JLabel">
-        <constraints>
-          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="Path to PowerShell executable:"/>
-        </properties>
-      </component>
-      <component id="ee851" class="com.intellij.openapi.ui.TextFieldWithBrowseButton" binding="myPowerShellExePathTextField" custom-create="true">
-        <constraints>
-          <grid row="4" column="2" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="153" height="30"/>
-          </grid>
-        </constraints>
-        <properties/>
-      </component>
-      <component id="7c73c" class="javax.swing.JLabel" binding="myPowerShellVersionLabel">
-        <constraints>
-          <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="Version:"/>
-        </properties>
-      </component>
       <vspacer id="d0c86">
         <constraints>
           <grid row="6" column="3" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
         </constraints>
       </vspacer>
+      <nested-form id="cf7cb" form-file="com/intellij/plugin/powershell/lang/lsp/ide/settings/PowerShellExecutableChooserPanel.form" binding="psExecutableChooserPanel" custom-create="true">
+        <constraints>
+          <grid row="4" column="0" row-span="1" col-span="4" vsize-policy="3" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </nested-form>
     </children>
   </grid>
 </form>

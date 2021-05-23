@@ -7,12 +7,9 @@ import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.process.KillableColoredProcessHandler
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.text.StringUtil
-import com.intellij.plugin.powershell.lang.lsp.LSPInitMain
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PowerShellNotInstalled
-import java.util.*
 import java.util.regex.Pattern
 
 class PowerShellScriptCommandLineState(private val runConfiguration: PowerShellRunConfiguration, environment: ExecutionEnvironment) :
@@ -21,7 +18,12 @@ class PowerShellScriptCommandLineState(private val runConfiguration: PowerShellR
 
   override fun startProcess(): ProcessHandler {
     try {
-      val command = buildCommand(runConfiguration.scriptPath, runConfiguration.getCommandOptions(), runConfiguration.scriptParameters)
+      val command = buildCommand(
+        runConfiguration.executablePath,
+        runConfiguration.scriptPath,
+        runConfiguration.getCommandOptions(),
+        runConfiguration.scriptParameters
+      )
       val commandLine = GeneralCommandLine(command)
       commandLine.setWorkDirectory(runConfiguration.workingDirectory)
       runConfiguration.environmentVariables.configureCommandLine(commandLine, true)
@@ -35,10 +37,9 @@ class PowerShellScriptCommandLineState(private val runConfiguration: PowerShellR
     }
   }
 
-  private fun buildCommand(scriptPath: String, commandOptions: String, scriptParameters: String): ArrayList<String> {
+  private fun buildCommand(executablePath: String, scriptPath: String, commandOptions: String, scriptParameters: String): ArrayList<String> {
     val commandString = ArrayList<String>()
-    val lspInitMain = ApplicationManager.getApplication().getComponent(LSPInitMain::class.java)
-    commandString.add(lspInitMain.state.powerShellExePath)
+    commandString.add(executablePath)
     if (!StringUtil.isEmpty(commandOptions)) {
       val options = commandOptions.split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
       if (options.isNotEmpty()) commandString.addAll(mutableListOf(*options))

@@ -1,12 +1,9 @@
 package com.intellij.plugin.powershell.lang.lsp.ide.settings;
 
 import com.intellij.ide.BrowserUtil;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
-import com.intellij.openapi.fileChooser.FileChooserFactory;
 import com.intellij.openapi.options.ConfigurationException;
-import com.intellij.openapi.ui.TextComponentAccessor;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -22,7 +19,6 @@ import com.intellij.util.ui.UIUtil;
 import com.intellij.xml.util.XmlStringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.concurrency.CancellablePromise;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
@@ -41,8 +37,6 @@ public class PowerShellJPanelComponent {
   private JCheckBox myIsUseLanguageServerCheckBox;
   private JLabel myPathToPSExtensionLabel;
   private JTextPane myExplanationTextPane;
-  private TextFieldWithBrowseButton myPowerShellExePathTextField;
-  private JLabel myPowerShellVersionLabel;
   private JBTextField myPathToPSExtDirjTextField;
 
   JPanel getMyPanel() {
@@ -79,16 +73,7 @@ public class PowerShellJPanelComponent {
     myDetectedESVersionLabel.setEnabled(notEmpty);
   }
 
-  public @Nullable String getPowerShellVersionValue() {
-    String version = StringUtil.substringAfterLast(
-            myPowerShellVersionLabel.getText(),
-            MessagesBundle.INSTANCE.message("ps.editor.services.detected.version.label"));
-    return StringUtil.trim(version);
-  }
-
-  public void setPowerShellVersionLabelValue(@Nullable String version) {
-    myPowerShellVersionLabel.setText(getLabeledText(version));
-  }
+  private PowerShellExecutableChooserPanel psExecutableChooserPanel;
 
   @NotNull
   private String getLabeledText(@Nullable String version) {
@@ -99,34 +84,16 @@ public class PowerShellJPanelComponent {
     return myPSExtensionPathTextField.getText().trim();
   }
 
-  String getPowerShellExePath() {
-    return myPowerShellExePathTextField.getText().trim();
+  public @Nullable String getPowerShellVersionValue() {
+    return psExecutableChooserPanel.getVersionValue();
   }
 
   private void setVersionLabelVisible(boolean aFlag) {
     myDetectedESVersionLabel.setVisible(aFlag);
   }
 
-  private void setPowerShellExePath(@Nullable String path) {
-    if (path == null) {
-      try {
-        myPowerShellExePathTextField.setText(findPsExecutable());
-      } catch (PowerShellNotInstalled e) {
-        LOG.warn("Can not find PowerShell executable in PATH: ", e);
-      }
-    } else {
-      myPowerShellExePathTextField.setText(path);
-    }
-  }
-
-  private TextFieldWithBrowseButton createTextFieldWithBrowseButton(@NotNull String description, JBTextField field, FileChooserDescriptor fileChooserDescriptor) {
-    TextFieldWithBrowseButton textFieldWithBrowseButton = new TextFieldWithBrowseButton(field);
-    fileChooserDescriptor.withShowHiddenFiles(true);
-    JTextField textField = textFieldWithBrowseButton.getChildComponent();
-    textField.setDisabledTextColor(UIUtil.getLabelDisabledForeground());
-    textFieldWithBrowseButton.addBrowseFolderListener(description, null, null, fileChooserDescriptor, TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT);
-    FileChooserFactory.getInstance().installFileCompletion(textField, fileChooserDescriptor, true, null);
-    return textFieldWithBrowseButton;
+  String getPowerShellExePath() {
+    return psExecutableChooserPanel.getExecutablePath();
   }
 
   boolean getIsUseLanguageServer() {
@@ -162,13 +129,25 @@ public class PowerShellJPanelComponent {
     }
   }
 
+  private void setPowerShellExePath(@Nullable String path) {
+    if (path == null) {
+      try {
+        psExecutableChooserPanel.updateExecutablePath(findPsExecutable());
+      } catch (PowerShellNotInstalled e) {
+        LOG.warn("Can not find PowerShell executable in PATH: ", e);
+      }
+    } else {
+      psExecutableChooserPanel.updateExecutablePath(path);
+    }
+  }
+
   private void createUIComponents() {
     //noinspection DialogTitleCapitalization
     myIsUseLanguageServerCheckBox = new JBCheckBox(MessagesBundle.INSTANCE.message("settings.powershell.lsp.is.enabled.box.text"));
     //noinspection DialogTitleCapitalization
     myPathToPSExtensionLabel = new JBLabel(MessagesBundle.INSTANCE.message("powershell.extension.path.form.label"));
     myPathToPSExtDirjTextField = new JBTextField(0);
-    myPSExtensionPathTextField = createTextFieldWithBrowseButton(
+    myPSExtensionPathTextField = FormUIUtil.createTextFieldWithBrowseButton(
             MessagesBundle.INSTANCE.message("powershell.editor.services.path.dialog.text"),
             myPathToPSExtDirjTextField,
             new FileChooserDescriptor(false, true, false, false, false, false) {
@@ -186,41 +165,8 @@ public class PowerShellJPanelComponent {
                 setEditorServicesVersionLabelValue(psLanguageServerVersion);
               }
             });
-    myPowerShellExePathTextField = createTextFieldWithBrowseButton(
-            MessagesBundle.INSTANCE.message("powershell.editor.services.path.dialog.text"),
-            new JBTextField(0),
-            new FileChooserDescriptor(true, false, false, false, false, false) {
-              @Override
-              public void validateSelectedFiles(VirtualFile @NotNull [] files) throws Exception {
-                if (files.length <= 0) return;
-                String powerShellExePath = files[0].getCanonicalPath();
-                FormUIUtil.validatePowerShellExecutablePath(powerShellExePath);
-                CancellablePromise<String> versionPromise = PSLanguageHostUtils.INSTANCE.getPowerShellVersion(powerShellExePath);
-                versionPromise.onError(throwable -> {
-                  LOG.warn("Exception when getting PowerShell version: ", throwable);
-                  setPowerShellVersionLabelValue(null);
-                }).onSuccess(version -> setPowerShellVersionLabelValue(version)
-                );
-              }
-            });
+    psExecutableChooserPanel = new PowerShellExecutableChooserPanel(null);
     myIsUseLanguageServerCheckBox.addChangeListener(e -> allControlsSetEnabled(myIsUseLanguageServerCheckBox.isSelected()));
-
-    String powerShellExePath = ApplicationManager.getApplication().getComponent(LSPInitMain.class).getState().getPowerShellExePath();
-    CancellablePromise<String> versionPromise = PSLanguageHostUtils.INSTANCE.getPowerShellVersion(powerShellExePath);
-    versionPromise.onError(throwable -> {
-      LOG.warn("Exception when getting PowerShell version: ", throwable);
-      setPowerShellVersionLabelValue(null);
-    }).onSuccess(this::setPowerShellVersionLabelValue);
-  }
-
-  void fillPowerShellInfo(@NotNull LSPInitMain.PowerShellInfo powerShellInfo) {
-    setEditorServicesVersionLabelValue(powerShellInfo.getEditorServicesModuleVersion());//todo make consistent with 'setPowerShellExtensionPath'
-    setPowerShellExtensionPath(powerShellInfo.getPowerShellExtensionPath());
-    setPowerShellExePath(powerShellInfo.getPowerShellExePath());
-    setPowerShellVersionLabelValue(powerShellInfo.getPowerShellVersion());
-    powerShellPathTextFieldSetEnabled(powerShellInfo.isUseLanguageServer());
-    isUseLanguageServerSetSelected(powerShellInfo.isUseLanguageServer());
-
   }
 
   private void setBundledPowerShellExtensionPath() throws ConfigurationException {
@@ -230,4 +176,15 @@ public class PowerShellJPanelComponent {
     myDetectedESVersionLabel.setEnabled(false);
     Companion.setUseBundledPowerShellExtension(true);
   }
+
+  void fillPowerShellInfo(@NotNull LSPInitMain.PowerShellInfo powerShellInfo) {
+    setEditorServicesVersionLabelValue(powerShellInfo.getEditorServicesModuleVersion());//todo make consistent with 'setPowerShellExtensionPath'
+    setPowerShellExtensionPath(powerShellInfo.getPowerShellExtensionPath());
+    setPowerShellExePath(powerShellInfo.getPowerShellExePath());
+    psExecutableChooserPanel.setPowerShellVersionLabelValue(powerShellInfo.getPowerShellVersion());
+    powerShellPathTextFieldSetEnabled(powerShellInfo.isUseLanguageServer());
+    isUseLanguageServerSetSelected(powerShellInfo.isUseLanguageServer());
+
+  }
+
 }
