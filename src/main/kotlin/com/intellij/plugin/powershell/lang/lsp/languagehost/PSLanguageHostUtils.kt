@@ -8,6 +8,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.plugin.powershell.ide.run.checkExists
 import com.intellij.plugin.powershell.ide.run.getModuleVersion
 import com.intellij.plugin.powershell.ide.run.join
@@ -117,8 +118,10 @@ fun readPowerShellVersion(exePath: String, indicator: ProgressIndicator? = null)
     var br: BufferedReader? = null
     var er: BufferedReader? = null
     var process: Process? = null
+    val qInner = if (SystemInfo.isWindows) '\'' else '"'
+    val commandString = "-join(${qInner}PowerShell $qInner, \$PSVersionTable.PSVersion,$qInner $qInner, \$PSVersionTable.PSEdition)"
     try {
-      process = GeneralCommandLine(arrayListOf(exePath, "--version")).createProcess()
+      process = GeneralCommandLine(arrayListOf(exePath, "-command", commandString)).createProcess()
       for (i in 1..6) {
         process.waitFor(500L, TimeUnit.MILLISECONDS)
         indicator?.checkCanceled()
