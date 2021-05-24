@@ -9,6 +9,7 @@ import com.intellij.plugin.powershell.PowerShellIcons
 class PowerShellConfigurationType : ConfigurationTypeBase("PowerShellRunType", "PowerShell", "Run Configuration for PowerShell", PowerShellIcons.FILE) {
   init {
     addFactory(object : ConfigurationFactory(this) {
+      override fun getId() = "PowerShell"
       override fun isConfigurationSingletonByDefault(): Boolean = true
       override fun canConfigurationBeSingleton(): Boolean = false
       override fun createTemplateConfiguration(project: Project): RunConfiguration = PowerShellRunConfiguration(project, this, "Template config")
