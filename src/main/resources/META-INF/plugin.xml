@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.intellij.plugin.adernov.powershell</id>
   <name>PowerShell</name>
-  <version>2.0.6</version>
+  <version>2.0.7</version>
   <vendor email="andrey.dernov@gmail.com" url="https://github.com/ant-druha/PowerShell/issues">Andrey</vendor>
 
   <description><![CDATA[
@@ -13,6 +13,11 @@
   <change-notes><![CDATA[
   <html lang="en">
         <dl>
+          <dt>2.0.7 update<br></dt>
+          <dd>&#183; Ability to set PowerShell version globally and for Run Configuration;</dd>
+          <dd>&#183; Run Configuration: ability to specify environment variables;</dd>
+          <dd>&#183; macOS ARM support;</dd>
+
           <dt>2.0.6 update<br></dt>
           <dd>&#183; <a href="https://github.com/ant-druha/intellij-powershell/issues/40">40</a> - Run configuration keeps getting renamed when opening or editing.</dd>
           <dd>&#183; 2021.1 version compatibility</dd>
