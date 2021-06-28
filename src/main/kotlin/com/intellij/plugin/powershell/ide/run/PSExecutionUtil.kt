@@ -10,7 +10,8 @@ import com.intellij.util.EnvironmentUtil
 @Throws(PowerShellNotInstalled::class)
 fun findPsExecutable(): String {
   val osPath = EnvironmentUtil.getValue("PATH") ?: throw PowerShellNotInstalled("Can not get OS PATH")
-  val paths = osPath.split(if (SystemInfo.isWindows) ";" else ":")
+  var paths = osPath.split(if (SystemInfo.isWindows) ";" else ":")
+  if (SystemInfo.isMac) paths = paths.plusElement("/usr/local/bin")
   val suf = if (SystemInfo.isWindows) ".exe" else ""
   val exec = arrayListOf("powershell$suf", "pwsh$suf")
   paths.forEach { p ->

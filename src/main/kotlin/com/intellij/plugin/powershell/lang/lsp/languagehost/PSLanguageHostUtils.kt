@@ -123,7 +123,7 @@ fun readPowerShellVersion(exePath: String, indicator: ProgressIndicator? = null)
     try {
       process = GeneralCommandLine(arrayListOf(exePath, "-command", commandString)).createProcess()
       for (i in 1..6) {
-        process.waitFor(500L, TimeUnit.MILLISECONDS)
+        process.waitFor(2000L, TimeUnit.MILLISECONDS)
         indicator?.checkCanceled()
       }
       if (process.isAlive) {
