@@ -5,13 +5,14 @@ buildscript {
         maven {
             url "https://oss.sonatype.org/content/repositories/snapshots/"
         }
+        gradlePluginPortal()
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 plugins {
-    id "org.jetbrains.intellij" version "0.7.2"
+    id "org.jetbrains.intellij" version "1.2.0"
     id "org.jetbrains.kotlin.jvm" version "1.4.21"
 }
 
@@ -20,10 +21,10 @@ apply plugin: 'kotlin'
 apply plugin: 'java'
 
 intellij {
-    type 'IU'
-    version '2021.1.1'// https://www.jetbrains.com/intellij-repository/[releases|snapshots]
-    plugins 'IntelliLang', 'terminal'
-    pluginName 'PowerShell'
+    type = 'IU'
+    version = '213.4293.20-EAP-SNAPSHOT'// https://www.jetbrains.com/intellij-repository/[releases|snapshots]
+    plugins = ['IntelliLang', 'terminal']
+    pluginName = 'PowerShell'
     updateSinceUntilBuild = false
 }
 
