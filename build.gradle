@@ -22,7 +22,7 @@ apply plugin: 'java'
 
 intellij {
     type = 'IU'
-    version = '213.4293.20-EAP-SNAPSHOT'// https://www.jetbrains.com/intellij-repository/[releases|snapshots]
+    version = '213.5744-EAP-CANDIDATE-SNAPSHOT'// https://www.jetbrains.com/intellij-repository/[releases|snapshots]
     plugins = ['IntelliLang', 'terminal']
     pluginName = 'PowerShell'
     updateSinceUntilBuild = false
@@ -41,7 +41,7 @@ sourceSets {
 }
 
 group 'com.intellij.plugin'
-version '2.0.7'
+version '2.0.8'
 
 repositories {
     flatDir {

@@ -1,8 +1,8 @@
 <idea-plugin>
   <id>com.intellij.plugin.adernov.powershell</id>
   <name>PowerShell</name>
-  <version>2.0.7</version>
-  <vendor email="andrey.dernov@gmail.com" url="https://github.com/ant-druha/PowerShell/issues">Andrey</vendor>
+  <version>2.0.8</version>
+  <vendor email="andrey.dernov@gmail.com" url="https://github.com/ant-druha/PowerShell/issues">andrey.dernov@gmail.com</vendor>
 
   <description><![CDATA[
     Provides <a href="https://docs.microsoft.com/en-us/powershell/scripting/powershell-scripting">PowerShell</a> intellisense and script execution support for IntelliJ IDEs.<br>
@@ -13,6 +13,10 @@
   <change-notes><![CDATA[
   <html lang="en">
         <dl>
+          <dt>2.0.8 update<br></dt>
+          <dd>&#183; 2021.3 compatibility fixes;</dd>
+          <dd>&#183; Run Configuration: Path Macros for Working Directory paths.</dd>
+
           <dt>2.0.7 update<br></dt>
           <dd>&#183; Ability to set PowerShell version globally and for Run Configuration;</dd>
           <dd>&#183; Run Configuration: ability to specify environment variables;</dd>
