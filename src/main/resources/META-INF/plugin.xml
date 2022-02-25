@@ -13,6 +13,9 @@
   <change-notes><![CDATA[
   <html lang="en">
         <dl>
+          <dt>2.0.10 update<br></dt>
+          <dd>&#183; Fixing <a href="https://github.com/ant-druha/intellij-powershell/issues/76">76 Exception thrown when plugin is enabled but no powershell is found in the path</a> ;</dd>
+
           <dt>2.0.9 update<br></dt>
           <dd>&#183; 2021.3 compatibility fixes;</dd>
           
