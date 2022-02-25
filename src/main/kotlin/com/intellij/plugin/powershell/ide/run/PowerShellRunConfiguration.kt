@@ -31,7 +31,7 @@ class PowerShellRunConfiguration(project: Project, configurationFactory: Configu
   var scriptParameters: String = ""
   private var commandOptions: String? = null
   var environmentVariables: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
-  var executablePath: String = FormUIUtil.getGlobalSettingsExecutablePath()
+  var executablePath: String? = FormUIUtil.getGlobalSettingsExecutablePath()
 
   override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = PowerShellRunSettingsEditor(project, this)
 
@@ -80,7 +80,10 @@ class PowerShellRunConfiguration(project: Project, configurationFactory: Configu
     }
     environmentVariables.writeExternal(element)
 
-    element.setAttribute(EXE_PATH, executablePath)
+    val psExePath = executablePath
+    if (!StringUtil.isEmpty(psExePath)) {
+      element.setAttribute(EXE_PATH, psExePath)
+    }
   }
 
    fun getCommandOptions(): String = StringUtil.notNullize(commandOptions)

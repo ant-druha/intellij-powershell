@@ -57,6 +57,7 @@ public class FormUIUtil {
         return textFieldWithBrowseButton;
     }
 
+    @Nullable
     public static String getGlobalSettingsExecutablePath() {
         return ApplicationManager.getApplication().getComponent(LSPInitMain.class).getState().getPowerShellExePath();
     }

@@ -48,7 +48,7 @@ public class PowerShellExecutableChooserPanel extends JComponent {
                 });
     }
 
-    private void updatePowerShellVersionLabel(String powerShellExePath) {
+    private void updatePowerShellVersionLabel(@NotNull String powerShellExePath) {
         CancellablePromise<String> versionPromise = PSLanguageHostUtils.INSTANCE.getPowerShellVersion(powerShellExePath);
         versionPromise.onError(throwable -> {
             LOG.warn("Exception when getting PowerShell version: ", throwable);
@@ -60,8 +60,8 @@ public class PowerShellExecutableChooserPanel extends JComponent {
         return psExecutablePathTextFieldChooser.getText().trim();
     }
 
-    public void updateExecutablePath(@NotNull String path) {
-        if (path.equals(getExecutablePath())) return;
+    public void updateExecutablePath(@Nullable String path) {
+        if (StringUtil.isEmpty(path) || path.equals(getExecutablePath())) return;
         updatePowerShellVersionLabel(path);
         psExecutablePathTextFieldChooser.setText(path);
     }

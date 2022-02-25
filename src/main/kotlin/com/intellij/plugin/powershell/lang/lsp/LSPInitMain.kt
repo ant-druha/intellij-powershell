@@ -51,15 +51,20 @@ class LSPInitMain : PersistentStateComponent<LSPInitMain.PowerShellInfo>, Dispos
 
   data class PowerShellInfo(
     var editorServicesStartupScript: String = "",
-    var powerShellExePath: String = findPsExecutable(),
+    var powerShellExePath: String? = null,
     var powerShellVersion: String? = null,
     var powerShellExtensionPath: String? = null,
     var editorServicesModuleVersion: String? = null,
     var isUseLanguageServer: Boolean = true
   ) {
     constructor(isUseLanguageServer: Boolean, powerShellExePath: String?) :
-      this("", powerShellExePath ?: findPsExecutable(), null, null, null, isUseLanguageServer)
+      this("", powerShellExePath, null, null, null, isUseLanguageServer)
+  }
 
+  fun getPowerShellExecutable(): String {
+    val psExecutable = myPowerShellInfo.powerShellExePath ?: findPsExecutable()
+    myPowerShellInfo.powerShellExePath = psExecutable
+    return psExecutable;
   }
 
   private var myPowerShellInfo: PowerShellInfo = PowerShellInfo()

@@ -8,10 +8,12 @@ import com.intellij.execution.process.KillableColoredProcessHandler
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.util.ProgramParametersUtil
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.plugin.powershell.lang.lsp.LSPInitMain
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PowerShellNotInstalled
 import java.io.File
 import java.util.regex.Pattern
@@ -23,7 +25,7 @@ class PowerShellScriptCommandLineState(private val runConfiguration: PowerShellR
   override fun startProcess(): ProcessHandler {
     try {
       val command = buildCommand(
-        runConfiguration.executablePath,
+        runConfiguration.executablePath ?: ApplicationManager.getApplication().getComponent(LSPInitMain::class.java).getPowerShellExecutable(),
         runConfiguration.scriptPath,
         runConfiguration.getCommandOptions(),
         runConfiguration.scriptParameters

@@ -220,7 +220,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
     FileUtil.createParentDirs(File(logPath))
     val command = mutableListOf<String>()
     val lspInitMain = ApplicationManager.getApplication().getComponent(LSPInitMain::class.java)
-    command.add(lspInitMain.state.powerShellExePath)
+    command.add(lspInitMain.getPowerShellExecutable())
     command.add("-NoProfile")
     command.add("-NonInteractive")
     command.add(scriptFile.canonicalPath)
