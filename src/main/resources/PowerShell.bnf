@@ -125,7 +125,7 @@
     BRACED_VAR_START='${'
 
     EQ='='
-    PIPE='|'
+    PIPE='regexp:(\|\||\||&&)'
     AMP='&'
     PP='++'
     MM='--'
