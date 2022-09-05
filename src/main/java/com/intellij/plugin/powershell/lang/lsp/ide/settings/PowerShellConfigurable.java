@@ -68,7 +68,6 @@ public class PowerShellConfigurable implements SearchableConfigurable {
     boolean isEnabled = getPSJpanel().getIsUseLanguageServer();
     LSPInitMain lspInitMain = ApplicationManager.getApplication().getComponent(LSPInitMain.class);
     LSPInitMain.PowerShellInfo powerShellInfo = lspInitMain.getState();
-    FormUIUtil.validatePowerShellExecutablePath(powerShellExePath);
     String powerShellVersion = getPSJpanel().getPowerShellVersionValue();
     if (StringUtil.isEmpty(powerShellVersion)) throw new ConfigurationException("Can not detect PowerShell version");
     String editorServicesVersion;
