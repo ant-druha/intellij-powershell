@@ -5,7 +5,6 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.plugin.powershell.ide.MessagesBundle;
 import com.intellij.plugin.powershell.lang.lsp.LSPInitMain;
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils;
@@ -49,14 +48,7 @@ public class PowerShellExecutableChooserPanel extends JComponent {
             public void changedUpdate(DocumentEvent e) {
             }
         });
-        FileChooserDescriptor fileChooserDescriptor = new FileChooserDescriptor(true, false, false, false, false, false) {
-            @Override
-            public void validateSelectedFiles(VirtualFile @NotNull [] files) throws Exception {
-                if (files.length <= 0) return;
-                String powerShellExePath = files[0].getCanonicalPath();
-                FormUIUtil.validatePowerShellExecutablePath(powerShellExePath);
-            }
-        };
+        FileChooserDescriptor fileChooserDescriptor = new FileChooserDescriptor(true, false, false, false, false, false);
         psExecutablePathTextFieldChooser = FormUIUtil.createTextFieldWithBrowseButton(
                 MessagesBundle.INSTANCE.message("powershell.executable.path.dialog.text"),
                 textField, fileChooserDescriptor);
