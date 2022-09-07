@@ -2,7 +2,7 @@ package com.intellij.plugin.powershell.ide.run
 
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.configurations.CommandLineState
-import com.intellij.execution.configurations.GeneralCommandLine
+import com.intellij.execution.configurations.PtyCommandLine
 import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.process.KillableColoredProcessHandler
 import com.intellij.execution.process.ProcessHandler
@@ -30,7 +30,7 @@ class PowerShellScriptCommandLineState(private val runConfiguration: PowerShellR
         runConfiguration.getCommandOptions(),
         runConfiguration.scriptParameters
       )
-      val commandLine = GeneralCommandLine(command)
+      val commandLine = PtyCommandLine(command)
       val project = runConfiguration.project
       val module = LocalFileSystem.getInstance().findFileByIoFile(File(runConfiguration.scriptPath))?.let {
         ProjectRootManager.getInstance(project).fileIndex.getModuleForFile(it)
@@ -78,4 +78,4 @@ class PowerShellScriptCommandLineState(private val runConfiguration: PowerShellR
   }
 }
 
-class PowerShellProcessHandler(commandLine: GeneralCommandLine) : KillableColoredProcessHandler(commandLine)
+class PowerShellProcessHandler(commandLine: PtyCommandLine) : KillableColoredProcessHandler(commandLine)
