@@ -64,7 +64,6 @@ dependencies {
     }
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit"
     testImplementation 'junit:junit:4.11'
-    testImplementation name: 'PsiViewer'
 }
 
 tasks.withType(JavaCompile) {
