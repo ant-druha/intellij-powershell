@@ -14,7 +14,8 @@
   <html lang="en">
         <dl>
           <dt>Unreleased<br></dt>
-          <dd>&#45: Upgrade PSScriptAnalyzer from 1.17.1 to 1.19.0.</dd>
+          <dd><a href="https://github.com/ant-druha/intellij-powershell/pull/45">&#45</a>: Upgrade PSScriptAnalyzer from 1.17.1 to 1.19.0;</dd>
+          <dd><a href="https://github.com/ant-druha/intellij-powershell/pull/75">&#75</a>: Add indents for array elements when formatting.</dd>
 
           <dt>2.0.10 update<br></dt>
           <dd>&#183; Fixing <a href="https://github.com/ant-druha/intellij-powershell/issues/76">76 Exception thrown when plugin is enabled but no powershell is found in the path</a> ;</dd>
