@@ -2,6 +2,7 @@ package com.intellij.plugin.powershell.ide.run
 
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.Executor
+import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.execution.configurations.LocatableConfigurationBase
 import com.intellij.execution.configurations.RunConfiguration
@@ -12,6 +13,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.InvalidDataException
 import com.intellij.openapi.util.WriteExternalException
 import com.intellij.openapi.util.text.StringUtil
+import com.intellij.plugin.powershell.lang.lsp.ide.settings.FormUIUtil
 import org.jdom.Element
 
 class PowerShellRunConfiguration(project: Project, configurationFactory: ConfigurationFactory, name: String) :
@@ -21,12 +23,15 @@ class PowerShellRunConfiguration(project: Project, configurationFactory: Configu
   private val WORKING_DIRECTORY = "workingDirectory"
   private val SCRIPT_PARAMETERS = "scriptParameters"
   private val COMMAND_OPTIONS = "commandOptions"
+  private val EXE_PATH = "executablePath"
 
   var scriptPath: String = ""
   var workingDirectory: String = getDefaultWorkingDirectory()
     get() = if (StringUtil.isEmptyOrSpaces(field)) getDefaultWorkingDirectory() else field
   var scriptParameters: String = ""
   private var commandOptions: String? = null
+  var environmentVariables: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
+  var executablePath: String? = FormUIUtil.getGlobalSettingsExecutablePath()
 
   override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = PowerShellRunSettingsEditor(project, this)
 
@@ -41,6 +46,7 @@ class PowerShellRunConfiguration(project: Project, configurationFactory: Configu
     val scriptParams = element.getAttributeValue(SCRIPT_PARAMETERS)
     val commandOptions = element.getAttributeValue(COMMAND_OPTIONS)
     val workingDirectory = element.getAttributeValue(WORKING_DIRECTORY)
+    val exePath = element.getAttributeValue(EXE_PATH)
     if (!StringUtil.isEmpty(scriptUrl)) {
       scriptPath = scriptUrl
     }
@@ -53,6 +59,8 @@ class PowerShellRunConfiguration(project: Project, configurationFactory: Configu
     if (!StringUtil.isEmpty(workingDirectory)) {
       this.workingDirectory = workingDirectory
     }
+    environmentVariables = EnvironmentVariablesData.readExternal(element)
+    executablePath = if (StringUtil.isEmpty(exePath)) FormUIUtil.getGlobalSettingsExecutablePath() else exePath
   }
 
   @Throws(WriteExternalException::class)
@@ -69,6 +77,12 @@ class PowerShellRunConfiguration(project: Project, configurationFactory: Configu
     }
     if (!StringUtil.isEmpty(workingDirectory)) {
       element.setAttribute(WORKING_DIRECTORY, workingDirectory)
+    }
+    environmentVariables.writeExternal(element)
+
+    val psExePath = executablePath
+    if (!StringUtil.isEmpty(psExePath)) {
+      element.setAttribute(EXE_PATH, psExePath)
     }
   }
 

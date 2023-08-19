@@ -1,8 +1,8 @@
 <idea-plugin>
   <id>com.intellij.plugin.adernov.powershell</id>
   <name>PowerShell</name>
-  <version>2.0.6</version>
-  <vendor email="andrey.dernov@gmail.com" url="https://github.com/ant-druha/PowerShell/issues">Andrey</vendor>
+  <version>2.0.9</version>
+  <vendor email="andrey.dernov@gmail.com" url="https://github.com/ant-druha/PowerShell/issues">andrey.dernov@gmail.com</vendor>
 
   <description><![CDATA[
     Provides <a href="https://docs.microsoft.com/en-us/powershell/scripting/powershell-scripting">PowerShell</a> intellisense and script execution support for IntelliJ IDEs.<br>
@@ -13,6 +13,24 @@
   <change-notes><![CDATA[
   <html lang="en">
         <dl>
+          <dt>Unreleased<br></dt>
+          <dd>&#45: Upgrade PSScriptAnalyzer from 1.17.1 to 1.19.0.</dd>
+
+          <dt>2.0.10 update<br></dt>
+          <dd>&#183; Fixing <a href="https://github.com/ant-druha/intellij-powershell/issues/76">76 Exception thrown when plugin is enabled but no powershell is found in the path</a> ;</dd>
+
+          <dt>2.0.9 update<br></dt>
+          <dd>&#183; 2021.3 compatibility fixes;</dd>
+          
+          <dt>2.0.8 update<br></dt>
+          <dd>&#183; 2021.3 compatibility fixes;</dd>
+          <dd>&#183; Run Configuration: Path Macros for Working Directory paths.</dd>
+
+          <dt>2.0.7 update<br></dt>
+          <dd>&#183; Ability to set PowerShell version globally and for Run Configuration;</dd>
+          <dd>&#183; Run Configuration: ability to specify environment variables;</dd>
+          <dd>&#183; macOS ARM support;</dd>
+
           <dt>2.0.6 update<br></dt>
           <dd>&#183; <a href="https://github.com/ant-druha/intellij-powershell/issues/40">40</a> - Run configuration keeps getting renamed when opening or editing.</dd>
           <dd>&#183; 2021.1 version compatibility</dd>
@@ -96,7 +114,7 @@
   </change-notes>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-  <idea-version since-build="203.3645.34"/>
+  <idea-version since-build="213.5744"/>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
        on how to target different products -->
@@ -154,6 +172,8 @@
     <configurationType implementation="com.intellij.plugin.powershell.ide.run.PowerShellConfigurationType"/>
     <runConfigurationProducer
         implementation="com.intellij.plugin.powershell.ide.run.PowerShellConfigurationProducer" order="first"/>
+
+    <runConfigurationTemplateProvider implementation="com.intellij.plugin.powershell.ide.run.MyRunConfigurationTemplateProvider"/>
 
     <targetElementEvaluator language="PowerShell"
                             implementationClass="com.intellij.plugin.powershell.ide.search.PowerShellTargetElementEvaluator"/>

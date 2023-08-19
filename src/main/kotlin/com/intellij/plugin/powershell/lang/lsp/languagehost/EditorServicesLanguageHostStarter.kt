@@ -20,7 +20,6 @@ import com.intellij.plugin.powershell.PowerShellIcons
 import com.intellij.plugin.powershell.ide.MessagesBundle
 import com.intellij.plugin.powershell.ide.run.checkExists
 import com.intellij.plugin.powershell.ide.run.escapePath
-import com.intellij.plugin.powershell.ide.run.findPsExecutable
 import com.intellij.plugin.powershell.lang.lsp.LSPInitMain
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.BUNDLED_PSES_PATH
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.getEditorServicesModuleVersion
@@ -109,7 +108,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
       if (StringUtil.isNotEmpty(result)) return result!!
 
       val lspMain = ApplicationManager.getApplication().getComponent(LSPInitMain::class.java)
-      result = lspMain.getPowerShellInfo().powerShellExtensionPath?.trim()
+      result = lspMain.state.powerShellExtensionPath?.trim()
       if (StringUtil.isEmpty(result)) {
         result = BUNDLED_PSES_PATH
         isUseBundledPowerShellExtensionPath = true
@@ -220,7 +219,8 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
 
     FileUtil.createParentDirs(File(logPath))
     val command = mutableListOf<String>()
-    command.add(findPsExecutable())
+    val lspInitMain = ApplicationManager.getApplication().getComponent(LSPInitMain::class.java)
+    command.add(lspInitMain.getPowerShellExecutable())
     command.add("-NoProfile")
     command.add("-NonInteractive")
     command.add(scriptFile.canonicalPath)

@@ -1,6 +1,5 @@
 package com.intellij.plugin.powershell.lang.lsp.languagehost.terminal
 
-import com.intellij.execution.ExecutionManager
 import com.intellij.execution.Executor
 import com.intellij.execution.TaskExecutor
 import com.intellij.execution.executors.DefaultRunExecutor
@@ -30,7 +29,7 @@ import com.intellij.terminal.JBTerminalWidget
 import com.intellij.ui.GuiUtils
 import com.intellij.util.EnvironmentUtil
 import com.intellij.util.concurrency.AppExecutorUtil
-import com.jediterm.pty.PtyMain
+import com.jediterm.pty.PtyProcessTtyConnector
 import com.jediterm.terminal.TtyConnector
 import com.jediterm.terminal.ui.TerminalWidget
 import com.pty4j.PtyProcess
@@ -41,8 +40,6 @@ import java.awt.Component
 import java.io.File
 import java.io.IOException
 import java.io.OutputStream
-import java.nio.charset.Charset
-import java.util.*
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.Future
 import javax.swing.JPanel
@@ -61,7 +58,7 @@ class PowerShellConsoleTerminalRunner(project: Project) : EditorServicesLanguage
   }
 
   private fun createTtyConnector(process: PtyProcess): TtyConnector {
-    return PSPtyProcessTtyConnector(process, myDefaultCharset)
+    return PtyProcessTtyConnector(process, myDefaultCharset)
   }
 
   companion object {
@@ -203,5 +200,3 @@ class PSPtyProcessHandler(private val myPowerShellConsoleRunner: PowerShellConso
     return AppExecutorUtil.getAppExecutorService().submit(task)
   }
 }
-
-private class PSPtyProcessTtyConnector(process: PtyProcess, charset: Charset) : PtyMain.LoggingPtyProcessTtyConnector(process, charset) 

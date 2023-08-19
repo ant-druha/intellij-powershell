@@ -3,15 +3,14 @@ package com.intellij.plugin.powershell.lang.lsp.ide.settings;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
-import com.intellij.openapi.fileChooser.FileChooserFactory;
 import com.intellij.openapi.options.ConfigurationException;
-import com.intellij.openapi.ui.TextComponentAccessor;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.plugin.powershell.ide.MessagesBundle;
 import com.intellij.plugin.powershell.lang.lsp.LSPInitMain;
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils;
+import com.intellij.plugin.powershell.lang.lsp.languagehost.PowerShellNotInstalled;
 import com.intellij.ui.HyperlinkAdapter;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
@@ -25,6 +24,7 @@ import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
 import java.awt.*;
 
+import static com.intellij.plugin.powershell.ide.run.PSExecutionUtilKt.findPsExecutable;
 import static com.intellij.plugin.powershell.lang.lsp.languagehost.EditorServicesLanguageHostStarter.Companion;
 
 public class PowerShellJPanelComponent {
@@ -32,14 +32,12 @@ public class PowerShellJPanelComponent {
   private static final String PS_ES_LINK = MessagesBundle.INSTANCE.message("powershell.editor.services.download.link");
   private JPanel myPanel;
   private TextFieldWithBrowseButton myPSExtensionPathTextField;
+  private final Logger LOG = Logger.getInstance(getClass());
   private JLabel myDetectedESVersionLabel;
   private JCheckBox myIsUseLanguageServerCheckBox;
   private JLabel myPathToPSExtensionLabel;
   private JTextPane myExplanationTextPane;
-  @Nullable
-  private LSPInitMain.PowerShellExtensionInfo myDetectedInfo;
   private JBTextField myPathToPSExtDirjTextField;
-  private Logger LOG = Logger.getInstance(getClass());
 
   JPanel getMyPanel() {
     return myPanel;
@@ -68,15 +66,17 @@ public class PowerShellJPanelComponent {
     });
   }
 
-  void setVersionLabelValue(@Nullable String version) {
-    myDetectedESVersionLabel.setText(getEditorServicesVersionText(version));
+  void setEditorServicesVersionLabelValue(@Nullable String version) {
+    myDetectedESVersionLabel.setText(getLabeledText(version));
     boolean notEmpty = StringUtil.isNotEmpty(version);
     setVersionLabelVisible(notEmpty);
     myDetectedESVersionLabel.setEnabled(notEmpty);
   }
 
+  private PowerShellExecutableChooserPanel psExecutableChooserPanel;
+
   @NotNull
-  private String getEditorServicesVersionText(@Nullable String version) {
+  private String getLabeledText(@Nullable String version) {
     return MessagesBundle.INSTANCE.message("ps.editor.services.detected.version.label") + " " + StringUtil.notNullize(version);
   }
 
@@ -84,41 +84,16 @@ public class PowerShellJPanelComponent {
     return myPSExtensionPathTextField.getText().trim();
   }
 
+  public @Nullable String getPowerShellVersionValue() {
+    return psExecutableChooserPanel.getVersionValue();
+  }
+
   private void setVersionLabelVisible(boolean aFlag) {
     myDetectedESVersionLabel.setVisible(aFlag);
   }
 
-  private TextFieldWithBrowseButton createTextFieldWithBrowseButton(@NotNull String description) {
-    myPathToPSExtDirjTextField = new JBTextField(0);
-    TextFieldWithBrowseButton textFieldWithBrowseButton = new TextFieldWithBrowseButton(myPathToPSExtDirjTextField);
-    FileChooserDescriptor fileChooserDescriptor = new FileChooserDescriptor(false, true, false, false, false, false) {
-      @Override
-      public void validateSelectedFiles(VirtualFile[] files) throws Exception {
-        if (files == null || files.length <= 0) return;
-        String path = files[0].getCanonicalPath();
-        if (path == null) {
-          setVersionLabelValue(null);
-          return;
-        }
-        if (getPowerShellExtensionPath().equals(path)) return;
-
-        myDetectedInfo = PowerShellConfigurable.createPowerShellInfo(path, myIsUseLanguageServerCheckBox.isSelected());
-        setVersionLabelValue(myDetectedInfo != null ? myDetectedInfo.getEditorServicesModuleVersion() : null);
-      }
-    };
-    fileChooserDescriptor.withShowHiddenFiles(true);
-    JTextField textField = textFieldWithBrowseButton.getChildComponent();
-    textField.setDisabledTextColor(UIUtil.getLabelDisabledForeground());
-    textFieldWithBrowseButton.addBrowseFolderListener(description, null, null, fileChooserDescriptor, TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT);
-    FileChooserFactory.getInstance().installFileCompletion(textField, fileChooserDescriptor, true, null);
-    return textFieldWithBrowseButton;
-  }
-
-  private void createUIComponents() {
-    myIsUseLanguageServerCheckBox = new JBCheckBox(MessagesBundle.INSTANCE.message("settings.powershell.lsp.is.enabled.box.text"));
-    myPathToPSExtensionLabel = new JBLabel(MessagesBundle.INSTANCE.message("powershell.extension.path.form.label"));
-    myPSExtensionPathTextField = createTextFieldWithBrowseButton(MessagesBundle.INSTANCE.message("powershell.editor.services.path.dialog.text"));
-    myIsUseLanguageServerCheckBox.addChangeListener(e -> allControlsSetEnabled(myIsUseLanguageServerCheckBox.isSelected()));
+  String getPowerShellExePath() {
+    return psExecutableChooserPanel.getExecutablePath();
   }
 
   boolean getIsUseLanguageServer() {
@@ -142,7 +117,7 @@ public class PowerShellJPanelComponent {
   }
 
   private void setPowerShellExtensionPath(@Nullable String path) {
-    if (path == null) {
+    if (StringUtil.isEmpty(path)) {
       try {
         setBundledPowerShellExtensionPath();
       } catch (ConfigurationException e) {
@@ -154,19 +129,62 @@ public class PowerShellJPanelComponent {
     }
   }
 
-  void fillPowerShellInfo(@NotNull LSPInitMain.PowerShellExtensionInfo powerShellInfo) {
-    String path = powerShellInfo.getPowerShellExtensionPath();
-    String esVersion = powerShellInfo.getEditorServicesModuleVersion();
-    setVersionLabelValue(esVersion);//todo make consistent with 'setPowerShellExtensionPath'
-    setPowerShellExtensionPath(path);
+  private void setPowerShellExePath(@Nullable String path) {
+    if (path == null) {
+      try {
+        psExecutableChooserPanel.updateExecutablePath(findPsExecutable());
+      } catch (PowerShellNotInstalled e) {
+        LOG.warn("Can not find PowerShell executable in PATH: ", e);
+      }
+    } else {
+      psExecutableChooserPanel.updateExecutablePath(path);
+    }
+  }
+
+  private void createUIComponents() {
+    //noinspection DialogTitleCapitalization
+    myIsUseLanguageServerCheckBox = new JBCheckBox(MessagesBundle.INSTANCE.message("settings.powershell.lsp.is.enabled.box.text"));
+    //noinspection DialogTitleCapitalization
+    myPathToPSExtensionLabel = new JBLabel(MessagesBundle.INSTANCE.message("powershell.extension.path.form.label"));
+    myPathToPSExtDirjTextField = new JBTextField(0);
+    myPSExtensionPathTextField = FormUIUtil.createTextFieldWithBrowseButton(
+            MessagesBundle.INSTANCE.message("powershell.editor.services.path.dialog.text"),
+            myPathToPSExtDirjTextField,
+            new FileChooserDescriptor(false, true, false, false, false, false) {
+              @Override
+              public void validateSelectedFiles(VirtualFile @NotNull [] files) throws Exception {
+                if (files.length <= 0) return;
+                String psEditorServicesPath = files[0].getCanonicalPath();
+                if (psEditorServicesPath == null) {
+                  setEditorServicesVersionLabelValue(null);//use bundled
+                  return;
+                }
+                if (getPowerShellExtensionPath().equals(psEditorServicesPath)) return;
+
+                String psLanguageServerVersion = FormUIUtil.getEditorServicesVersion(psEditorServicesPath);
+                setEditorServicesVersionLabelValue(psLanguageServerVersion);
+              }
+            });
+    psExecutableChooserPanel = new PowerShellExecutableChooserPanel(null);
+    myIsUseLanguageServerCheckBox.addChangeListener(e -> allControlsSetEnabled(myIsUseLanguageServerCheckBox.isSelected()));
   }
 
   private void setBundledPowerShellExtensionPath() throws ConfigurationException {
-    LSPInitMain.PowerShellExtensionInfo psInfo = PowerShellConfigurable.createPowerShellInfo(PSLanguageHostUtils.INSTANCE.getBUNDLED_PSES_PATH(), myIsUseLanguageServerCheckBox.isSelected());
-    String version = psInfo != null ? psInfo.getEditorServicesModuleVersion() : null;
+    String version = FormUIUtil.getEditorServicesVersion(PSLanguageHostUtils.INSTANCE.getBUNDLED_PSES_PATH());
     myPathToPSExtDirjTextField.getEmptyText().setText("Bundled");
-    setVersionLabelValue(version);
+    setEditorServicesVersionLabelValue(version);
     myDetectedESVersionLabel.setEnabled(false);
     Companion.setUseBundledPowerShellExtension(true);
   }
+
+  void fillPowerShellInfo(@NotNull LSPInitMain.PowerShellInfo powerShellInfo) {
+    setEditorServicesVersionLabelValue(powerShellInfo.getEditorServicesModuleVersion());//todo make consistent with 'setPowerShellExtensionPath'
+    setPowerShellExtensionPath(powerShellInfo.getPowerShellExtensionPath());
+    setPowerShellExePath(powerShellInfo.getPowerShellExePath());
+    psExecutableChooserPanel.setPowerShellVersionLabelValue(powerShellInfo.getPowerShellVersion());
+    powerShellPathTextFieldSetEnabled(powerShellInfo.isUseLanguageServer());
+    isUseLanguageServerSetSelected(powerShellInfo.isUseLanguageServer());
+
+  }
+
 }

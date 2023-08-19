@@ -7,10 +7,15 @@ import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.process.KillableColoredProcessHandler
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
+import com.intellij.execution.util.ProgramParametersUtil
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.text.StringUtil
+import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.plugin.powershell.lang.lsp.LSPInitMain
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PowerShellNotInstalled
-import java.util.*
+import java.io.File
 import java.util.regex.Pattern
 
 class PowerShellScriptCommandLineState(private val runConfiguration: PowerShellRunConfiguration, environment: ExecutionEnvironment) :
@@ -19,11 +24,23 @@ class PowerShellScriptCommandLineState(private val runConfiguration: PowerShellR
 
   override fun startProcess(): ProcessHandler {
     try {
-      val command = buildCommand(runConfiguration.scriptPath, runConfiguration.getCommandOptions(), runConfiguration.scriptParameters)
+      val command = buildCommand(
+        runConfiguration.executablePath ?: ApplicationManager.getApplication().getComponent(LSPInitMain::class.java).getPowerShellExecutable(),
+        runConfiguration.scriptPath,
+        runConfiguration.getCommandOptions(),
+        runConfiguration.scriptParameters
+      )
       val commandLine = GeneralCommandLine(command)
-      commandLine.setWorkDirectory(runConfiguration.workingDirectory)
-      LOG.debug("Command line: " + command.toString())
-      LOG.debug("Environment: " + commandLine.parentEnvironment.toString())
+      val project = runConfiguration.project
+      val module = LocalFileSystem.getInstance().findFileByIoFile(File(runConfiguration.scriptPath))?.let {
+        ProjectRootManager.getInstance(project).fileIndex.getModuleForFile(it)
+      }
+      val workingDirectory = ProgramParametersUtil.expandPathAndMacros(runConfiguration.workingDirectory, module, project)
+      commandLine.setWorkDirectory(workingDirectory)
+      runConfiguration.environmentVariables.configureCommandLine(commandLine, true)
+      LOG.debug("Command line: $command")
+      LOG.debug("Environment: " + commandLine.environment.toString())
+      LOG.debug("Effective Environment: " + commandLine.effectiveEnvironment.toString())
       return PowerShellProcessHandler(commandLine)
     } catch (e: PowerShellNotInstalled) {
       LOG.warn("Can not start PowerShell: ${e.message}")
@@ -31,12 +48,12 @@ class PowerShellScriptCommandLineState(private val runConfiguration: PowerShellR
     }
   }
 
-  private fun buildCommand(scriptPath: String, commandOptions: String, scriptParameters: String): ArrayList<String> {
-    val commandString = java.util.ArrayList<String>()
-    commandString.add(findPsExecutable())
+  private fun buildCommand(executablePath: String, scriptPath: String, commandOptions: String, scriptParameters: String): ArrayList<String> {
+    val commandString = ArrayList<String>()
+    commandString.add(executablePath)
     if (!StringUtil.isEmpty(commandOptions)) {
       val options = commandOptions.split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-      if (options.isNotEmpty()) commandString.addAll(Arrays.asList(*options))
+      if (options.isNotEmpty()) commandString.addAll(mutableListOf(*options))
     }
     commandString.add("-File")
     commandString.add(scriptPath)
