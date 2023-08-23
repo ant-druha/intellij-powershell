@@ -9,7 +9,7 @@ import com.intellij.plugin.powershell.lang.lsp.ide.settings.FormUIUtil
 class MyRunConfigurationTemplateProvider : RunConfigurationTemplateProvider {
   override fun getRunConfigurationTemplate(factory: ConfigurationFactory, runManager: RunManagerImpl): RunnerAndConfigurationSettingsImpl? {
     val templateConfiguration = factory.createTemplateConfiguration(runManager.project, runManager) as? PowerShellRunConfiguration ?: return null
-    templateConfiguration.executablePath = FormUIUtil.getGlobalSettingsExecutablePath()
+    templateConfiguration.executablePath = FormUIUtil.globalSettingsExecutablePath
     return RunnerAndConfigurationSettingsImpl(runManager, templateConfiguration, true)
   }
 }

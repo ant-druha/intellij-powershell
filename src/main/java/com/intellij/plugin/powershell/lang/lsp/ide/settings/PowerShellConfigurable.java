@@ -79,10 +79,6 @@ public class PowerShellConfigurable implements SearchableConfigurable {
         getPSJpanel().setEditorServicesVersionLabelValue(null);
         throw e;
       }
-      if (editorServicesVersion == null) {
-        getPSJpanel().setEditorServicesVersionLabelValue(null);
-        throw new ConfigurationException("Can not validate PowerShell extension");
-      }
     } else {
       editorServicesVersion = null;
     }
