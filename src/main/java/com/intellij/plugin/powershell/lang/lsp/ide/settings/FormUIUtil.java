@@ -12,6 +12,7 @@ import com.intellij.plugin.powershell.lang.lsp.LSPInitMain;
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PowerShellExtensionError;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.UIUtil;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,6 +39,12 @@ public class FormUIUtil {
         if (StringUtil.isEmpty(startupScript))
             throw new ConfigurationException("Can not find Editor Services startup script");
         return editorServicesVersion;
+    }
+
+    @Contract("null -> fail")
+    public static void validatePowerShellExecutablePath(@Nullable String powerShellExePath) throws ConfigurationException {
+        if (!FileUtil.exists(powerShellExePath))
+            throw new ConfigurationException("Path to PowerShell executable does not exist: '" + powerShellExePath + "'.");
     }
 
     public static TextFieldWithBrowseButton createTextFieldWithBrowseButton(@NotNull String description, JBTextField field, FileChooserDescriptor fileChooserDescriptor) {
