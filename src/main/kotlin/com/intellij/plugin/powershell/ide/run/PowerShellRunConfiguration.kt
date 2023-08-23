@@ -36,7 +36,7 @@ class PowerShellRunConfiguration(project: Project, configurationFactory: Configu
   override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = PowerShellRunSettingsEditor(project, this)
 
   @Throws(ExecutionException::class)
-  override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState? =
+  override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState =
       PowerShellScriptCommandLineState(this, environment)
 
   @Throws(InvalidDataException::class)
