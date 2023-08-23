@@ -1,5 +1,6 @@
 package com.intellij.plugin.powershell.lang.lsp.ide.settings
 
+import com.intellij.execution.configurations.PathEnvironmentVariableUtil
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.fileChooser.FileChooserFactory
@@ -8,6 +9,7 @@ import com.intellij.openapi.ui.TextComponentAccessor
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
+import com.intellij.plugin.powershell.ide.MessagesBundle
 import com.intellij.plugin.powershell.lang.lsp.LSPInitMain
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.getEditorServicesModuleVersion
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.getEditorServicesStartupScript
@@ -43,10 +45,17 @@ object FormUIUtil {
 
     @Contract("null -> fail")
     @JvmStatic
-    fun validatePowerShellExecutablePath(powerShellExePath: String?) {
-        if (!FileUtil.exists(powerShellExePath)) throw ConfigurationException(
-            "Path to PowerShell executable does not exist: '$powerShellExePath'."
-        )
+    fun validatePowerShellExecutablePath(powerShellExePath: String) {
+        val exists = if (FileUtil.isAbsolute(powerShellExePath)) {
+            FileUtil.exists(powerShellExePath)
+        } else {
+            PathEnvironmentVariableUtil.findExecutableInPathOnAnyOS(powerShellExePath) != null
+        }
+        if (!exists) {
+            throw ConfigurationException(
+                MessagesBundle.message("settings.errors.executable-not-found", powerShellExePath)
+            )
+        }
     }
 
     @JvmStatic
