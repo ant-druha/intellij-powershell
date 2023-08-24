@@ -5,7 +5,6 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.plugin.powershell.ide.MessagesBundle;
 import com.intellij.plugin.powershell.lang.lsp.LSPInitMain;
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils;
@@ -15,6 +14,8 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.concurrency.CancellablePromise;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 public class PowerShellExecutableChooserPanel extends JComponent {
     private final Logger LOG = Logger.getInstance(getClass());
@@ -29,34 +30,45 @@ public class PowerShellExecutableChooserPanel extends JComponent {
     }
 
     private void createUIComponents() {
+        JBTextField textField = new JBTextField(0);
+        textField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                String powerShellExePath = textField.getText();
+                updatePowerShellVersionLabel(powerShellExePath);
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                String powerShellExePath = textField.getText();
+                updatePowerShellVersionLabel(powerShellExePath);
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+            }
+        });
+        FileChooserDescriptor fileChooserDescriptor = new FileChooserDescriptor(true, false, false, false, false, false);
         psExecutablePathTextFieldChooser = FormUIUtil.createTextFieldWithBrowseButton(
                 MessagesBundle.INSTANCE.message("powershell.executable.path.dialog.text"),
-                new JBTextField(0),
-                new FileChooserDescriptor(true, false, false, false, false, false) {
-                    @Override
-                    public void validateSelectedFiles(VirtualFile @NotNull [] files) throws Exception {
-                        if (files.length <= 0) return;
-                        String powerShellExePath = files[0].getCanonicalPath();
-                        FormUIUtil.validatePowerShellExecutablePath(powerShellExePath);
-                        CancellablePromise<String> versionPromise = PSLanguageHostUtils.INSTANCE.getPowerShellVersion(powerShellExePath);
-                        versionPromise.onError(throwable -> {
-                            LOG.warn("Exception when getting PowerShell version: ", throwable);
-                            setPowerShellVersionLabelValue(null);
-                        }).onSuccess(version -> setPowerShellVersionLabelValue(version)
-                        );
-                    }
-                });
+                textField, fileChooserDescriptor);
     }
 
     private void updatePowerShellVersionLabel(@NotNull String powerShellExePath) {
         CancellablePromise<String> versionPromise = PSLanguageHostUtils.INSTANCE.getPowerShellVersion(powerShellExePath);
         versionPromise.onError(throwable -> {
-            LOG.warn("Exception when getting PowerShell version: ", throwable);
-            setPowerShellVersionLabelValue(null);
-        }).onSuccess(this::setPowerShellVersionLabelValue);
+            LOG.debug("Exception when getting PowerShell version: ", throwable);
+            if (getExecutablePath().equals(powerShellExePath)) {
+                setPowerShellVersionLabelValue(null);
+            }
+        }).onSuccess(version -> {
+            if (getExecutablePath().equals(powerShellExePath)) {
+                setPowerShellVersionLabelValue(version);
+            }
+        });
     }
 
-    public String getExecutablePath() {
+    public @NotNull String getExecutablePath() {
         return psExecutablePathTextFieldChooser.getText().trim();
     }
 

@@ -31,12 +31,12 @@ class PowerShellRunConfiguration(project: Project, configurationFactory: Configu
   var scriptParameters: String = ""
   private var commandOptions: String? = null
   var environmentVariables: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
-  var executablePath: String? = FormUIUtil.getGlobalSettingsExecutablePath()
+  var executablePath: String? = FormUIUtil.globalSettingsExecutablePath
 
   override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = PowerShellRunSettingsEditor(project, this)
 
   @Throws(ExecutionException::class)
-  override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState? =
+  override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState =
       PowerShellScriptCommandLineState(this, environment)
 
   @Throws(InvalidDataException::class)
@@ -60,7 +60,7 @@ class PowerShellRunConfiguration(project: Project, configurationFactory: Configu
       this.workingDirectory = workingDirectory
     }
     environmentVariables = EnvironmentVariablesData.readExternal(element)
-    executablePath = if (StringUtil.isEmpty(exePath)) FormUIUtil.getGlobalSettingsExecutablePath() else exePath
+    executablePath = if (StringUtil.isEmpty(exePath)) FormUIUtil.globalSettingsExecutablePath else exePath
   }
 
   @Throws(WriteExternalException::class)
