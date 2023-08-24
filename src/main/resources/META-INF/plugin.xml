@@ -16,6 +16,7 @@
           <dt>Unreleased<br></dt>
           <dd>&#183; <a href="https://github.com/ant-druha/intellij-powershell/pull/45">#45</a>: Upgrade PSScriptAnalyzer from 1.17.1 to 1.19.0;</dd>
           <dd>&#183; <a href="https://github.com/ant-druha/intellij-powershell/pull/75">#75</a>: Add indents for array elements when formatting;</dd>
+          <dd>&#183; <a href="https://github.com/ant-druha/intellij-powershell/pull/90">#90</a>: Allow for more user interaction with the run configuration in terminal (use PTY when available);</dd>
           <dd>&#183; <a href="https://github.com/ant-druha/intellij-powershell/pull/89">#89</a>: Allow entering the executables from <code>PATH</code> in the plugin settings.</dd>
 
           <dt>2.0.10 update<br></dt>
