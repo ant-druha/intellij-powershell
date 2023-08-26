@@ -1,16 +1,15 @@
 plugins {
     id("java")
-    id("org.jetbrains.intellij") version "1.3.0"
-    id("org.jetbrains.kotlin.jvm") version "1.5.10"
+    id("org.jetbrains.intellij") version "1.15.0"
+    id("org.jetbrains.kotlin.jvm") version "1.9.0"
 }
 
 intellij {
     type.set("IC")
     // https://www.jetbrains.com/intellij-repository/releases
-    version.set("213.5744.223")
-    plugins.set(listOf("IntelliLang", "terminal"))
+    version.set("2023.2")
+    plugins.set(listOf("org.intellij.intelliLang", "terminal"))
     pluginName.set("PowerShell")
-    updateSinceUntilBuild.set(false)
 }
 
 sourceSets {
@@ -46,15 +45,15 @@ dependencies {
 }
 
 tasks {
+    wrapper {
+        gradleVersion = "8.3"
+    }
+
     withType<JavaCompile> {
         options.encoding = "UTF-8"
     }
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-        kotlinOptions {
-            apiVersion = "1.4"
-            languageVersion = "1.4"
-            jvmTarget = "1.8"
-        }
+        kotlinOptions.jvmTarget = "17"
     }
 
     prepareSandbox {

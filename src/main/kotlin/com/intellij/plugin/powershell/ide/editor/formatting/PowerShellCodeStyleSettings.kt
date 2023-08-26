@@ -4,7 +4,7 @@ import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import com.intellij.psi.codeStyle.CustomCodeStyleSettings
 
-class PowerShellCodeStyleSettings(settings: CodeStyleSettings?) : CustomCodeStyleSettings("PowerShellCodeStyleSettings", settings) {
+class PowerShellCodeStyleSettings(settings: CodeStyleSettings) : CustomCodeStyleSettings("PowerShellCodeStyleSettings", settings) {
 
   @JvmField
   var CATCH_TYPE_LIST_WRAP = CommonCodeStyleSettings.DO_NOT_WRAP

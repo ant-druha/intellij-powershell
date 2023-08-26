@@ -107,6 +107,7 @@ class EditorEventManager(private val project: Project, private val editor: Edito
       if (event.document == editor.document) {
         changesParams.textDocument.version = incVersion()
         when (syncKind) {
+          null,
           TextDocumentSyncKind.None,
           TextDocumentSyncKind.Incremental -> {
             val changeEvent = changesParams.contentChanges[0]

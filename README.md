@@ -29,5 +29,12 @@ Install the plugin [from IDE](https://www.jetbrains.com/help/idea/managing-plugi
 - Remote files editing with 'psedit' command in PowerShell console (see [psedit support](https://bitbucket.org/adernov/powershell/issues/18/psedit-support#comment-46351640)):
 ![Remote file editing](https://bitbucket.org/adernov/powershell/issues/attachments/18/adernov/powershell/1529580003.05/18/remote_files_editing.gif)
 
+Documentation
+-------------
+- [License (Apache 2)][docs.license]
+- [Contributor Guide][docs.contributing]
+
 [badge-plugins]: https://img.shields.io/jetbrains/plugin/v/10249?label=powershell
 [plugin-repository]: https://plugins.jetbrains.com/plugin/10249-powershell
+[docs.license]: ./LICENSE
+[docs.contributing]: ./CONTRIBUTING.md

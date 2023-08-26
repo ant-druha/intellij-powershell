@@ -9,8 +9,8 @@ import com.intellij.psi.codeStyle.CodeStyleSettings
 /**
  * Andrey 09/08/17.
  */
-class PowerShellCodeStyleConfigurable(settings: CodeStyleSettings, cloneSettings: CodeStyleSettings?) : CodeStyleAbstractConfigurable(settings, cloneSettings, "Power Shell") {
-  override fun createPanel(settings: CodeStyleSettings?): CodeStyleAbstractPanel {
+class PowerShellCodeStyleConfigurable(settings: CodeStyleSettings, cloneSettings: CodeStyleSettings) : CodeStyleAbstractConfigurable(settings, cloneSettings, "Power Shell") {
+  override fun createPanel(settings: CodeStyleSettings): CodeStyleAbstractPanel {
     return PowerShellCodeStyleMainPanel(currentSettings, settings)
   }
 
@@ -19,5 +19,5 @@ class PowerShellCodeStyleConfigurable(settings: CodeStyleSettings, cloneSettings
   }
 }
 
-class PowerShellCodeStyleMainPanel(currentSettings: CodeStyleSettings?, settings: CodeStyleSettings?) :
+class PowerShellCodeStyleMainPanel(currentSettings: CodeStyleSettings?, settings: CodeStyleSettings) :
     TabbedLanguageCodeStylePanel(PowerShellLanguage.INSTANCE, currentSettings, settings)
