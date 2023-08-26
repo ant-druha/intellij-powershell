@@ -35,6 +35,6 @@ Documentation
 - [Contributor Guide][docs.contributing]
 
 [badge-plugins]: https://img.shields.io/jetbrains/plugin/v/10249?label=powershell
-[plugin-repository]: https://plugins.jetbrains.com/plugin/10249-powershell
-[docs.license]: ./LICENSE
 [docs.contributing]: ./CONTRIBUTING.md
+[docs.license]: ./LICENSE
+[plugin-repository]: https://plugins.jetbrains.com/plugin/10249-powershell
