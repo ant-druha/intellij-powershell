@@ -31,10 +31,12 @@ Install the plugin [from IDE](https://www.jetbrains.com/help/idea/managing-plugi
 
 Documentation
 -------------
-- [License (Apache 2)][docs.license]
+- [Changelog][docs.changelog]
 - [Contributor Guide][docs.contributing]
+- [License (Apache 2)][docs.license]
 
 [badge-plugins]: https://img.shields.io/jetbrains/plugin/v/10249?label=powershell
+[docs.changelog]: ./CHANGELOG.md
 [docs.contributing]: ./CONTRIBUTING.md
 [docs.license]: ./LICENSE
 [plugin-repository]: https://plugins.jetbrains.com/plugin/10249-powershell
