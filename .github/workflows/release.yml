@@ -1,0 +1,31 @@
+name: Release
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron: '0 0 * * 0' # Every Sunday
+
+jobs:
+  publish:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Read the changelog
+        uses: ForNeVeR/ChangelogAutomation.action@v1
+        with:
+          input: ./CHANGELOG.md
+          output: ./changelog-section.md
+
+      - name: Upload the changelog
+        uses: actions/upload-artifact@v2
+        with:
+          name: changelog-section.md
+          path: ./changelog-section.md
