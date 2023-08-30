@@ -106,7 +106,7 @@ Same as **2.0.0**, but compatible with IntelliJ 2018.2+.
 - [#11 (BitBucket)](https://bitbucket.org/adernov/powershell/issues/11): `using` keyword not being recognized
 
 ### Added
-- More pre-defined [Live Template](<a href="https://www.jetbrains.com/help/idea/live-templates.html) snippets
+- More pre-defined [Live Template](https://www.jetbrains.com/help/idea/live-templates.html) snippets
 
 ### Changed
 - Use `-File` parameter to specify the script file to run
