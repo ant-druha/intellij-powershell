@@ -40,7 +40,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Fixed
 - [#40](https://github.com/ant-druha/intellij-powershell/issues/40): Run configuration keeps getting renamed when opening or editing, thanks to @Dimi1010
 
-## [2.0.5] - 2020-04-14
+## [2.0.5] - 2020-08-14
 ### Added
 - [#48](https://github.com/ant-druha/intellij-powershell/pull/48) Adds simplest code folding: for code blocks, arrays, thanks to @VladRassokhin
 

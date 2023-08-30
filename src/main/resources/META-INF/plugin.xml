@@ -1,7 +1,6 @@
 <idea-plugin>
   <id>com.intellij.plugin.adernov.powershell</id>
   <name>PowerShell</name>
-  <version>2.0.9</version>
   <vendor email="andrey.dernov@gmail.com" url="https://github.com/ant-druha/PowerShell/issues">andrey.dernov@gmail.com</vendor>
 
   <description><![CDATA[
@@ -10,121 +9,6 @@
     <b>Plugin page:</b> <a href="https://plugins.jetbrains.com/plugin/10249">https://plugins.jetbrains.com/plugin/10249</a>
     ]]></description>
 
-  <change-notes><![CDATA[
-  <html lang="en">
-        <dl>
-          <dt>Unreleased<br></dt>
-          <dd>&#183; Minimal supported IntelliJ version is now 2023.2;</dd>
-          <dd>&#183; <a href="https://github.com/ant-druha/intellij-powershell/pull/45">#45</a>: Upgrade PSScriptAnalyzer from 1.17.1 to 1.19.0;</dd>
-          <dd>&#183; <a href="https://github.com/ant-druha/intellij-powershell/pull/75">#75</a>: Add indents for array elements when formatting;</dd>
-          <dd>&#183; <a href="https://github.com/ant-druha/intellij-powershell/pull/90">#90</a>: Allow for more user interaction with the run configuration in terminal (use PTY when available);</dd>
-          <dd>&#183; <a href="https://github.com/ant-druha/intellij-powershell/pull/89">#89</a>: Allow entering the executables from <code>PATH</code> in the plugin settings.</dd>
-
-          <dt>2.0.10 update<br></dt>
-          <dd>&#183; Fixing <a href="https://github.com/ant-druha/intellij-powershell/issues/76">76 Exception thrown when plugin is enabled but no powershell is found in the path</a> ;</dd>
-
-          <dt>2.0.9 update<br></dt>
-          <dd>&#183; 2021.3 compatibility fixes;</dd>
-          
-          <dt>2.0.8 update<br></dt>
-          <dd>&#183; 2021.3 compatibility fixes;</dd>
-          <dd>&#183; Run Configuration: Path Macros for Working Directory paths.</dd>
-
-          <dt>2.0.7 update<br></dt>
-          <dd>&#183; Ability to set PowerShell version globally and for Run Configuration;</dd>
-          <dd>&#183; Run Configuration: ability to specify environment variables;</dd>
-          <dd>&#183; macOS ARM support;</dd>
-
-          <dt>2.0.6 update<br></dt>
-          <dd>&#183; <a href="https://github.com/ant-druha/intellij-powershell/issues/40">40</a> - Run configuration keeps getting renamed when opening or editing.</dd>
-          <dd>&#183; 2021.1 version compatibility</dd>
-          
-          <dt>2.0.5 update<br></dt>
-          <dd>&#183; <a href="https://github.com/ant-druha/intellij-powershell/pull/48">48</a> - Adds simplest code folding: for code blocks, arrays.</dd>
-
-          <dt>2.0.4 Bug fix update<br></dt>
-          <dd>&#183; <a href="https://github.com/ant-druha/intellij-powershell/issues/38">38</a> - UnsupportedClassVersionError running 2019.3 under 1.8 JDK.</dd>
-          
-          <dt>2.0.3 Bug fix update<br></dt>
-          <dd>&#183; <a href="https://github.com/ant-druha/intellij-powershell/issues/33">33</a> - Get rid of implicit dependency on Java plugin;</dd>
-          <dd>&#183; Bug fixes and Platform API maintenance update.</dd>
-
-          <dd>&#183; IntelliJ 2019.2 compatibility;</dd>
-          <dd>&#183; <a href="https://github.com/ant-druha/intellij-powershell/issues/24">24</a> - Parenthesized expression parsing error;</dd>
-
-          <dt>2.0.1 Bug fix update<br></dt>
-          <dd>&#183; <a href="https://github.com/ant-druha/PowerShell/issues/10">10</a> - Script Arguments not working as expected;</dd>
-          <dd>&#183; <a href="https://github.com/ant-druha/PowerShell/issues/12">12</a> - Memory (project) leak in plugin.</dd>
-          
-          <dt>2.0.0 Adds support for PowerShell ScriptAnalyzer code checker in IDE Editor<br></dt>
-          <dd>&#183; <a href="https://github.com/ant-druha/PowerShell/issues/9">9</a> - PowerShell ScriptAnalyzer support in IDE Editor;</dd>
-          <dd>&#183; <a href="https://github.com/ant-druha/PowerShell/issues/6">6</a> - Update PowerShell Language server version;</dd>
-          <dd>&#183; <a href="https://github.com/ant-druha/PowerShell/issues/5">5</a> - Reformat code Error;</dd>
-          <dd>&#183; <a href="https://github.com/ant-druha/PowerShell/issues/3">3</a> - Run/Debug configuration: ability to set working directory;</dd>
-          <dd>&#183; <a href="https://github.com/ant-druha/PowerShell/issues/2">2</a> - NullPointerException during normal IDE operation;</dd>
-          <dd>&#183; <a href="https://github.com/ant-druha/PowerShell/issues/1">1</a> - Exception on PyCharm launch.</dd>
-          
-          <dt>1.1.1 Adds integrated PowerShell console<br></dt>
-          <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/22">22</a> - Integrated PowerShell Console;</dd>
-          <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/18">18</a> - Remote files editing with 'psedit' command in PowerShell console.</dd>
-
-          <dt>1.1.0<br></dt>
-          <dd>&#183; Language injections in interpolated strings;</dd>
-          <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/19">19</a> - Source formatting does not omit "@ at the beginning of line;</dd>
-          <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/20">20</a> - Handle drive letters in unc path;</dd>
-          <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/21">21</a> - NCDFE if IntelliLang plugin is not installed.</dd>
-
-          
-          <dt>1.0.2 Update<br></dt>
-          <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/11">11</a> - "using" keyword not picked up in;</dd>
-          <dd>&#183; More pre-defined <a href="https://www.jetbrains.com/help/idea/live-templates.html">Live Templates</a> snippets;</dd>
-          <dd>&#183; Use '-File' parameter to specify the script file to run.</dd>
-
-          <dt>1.0.1 Bug fix update<br></dt>
-          <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/8">8</a> - Exception shown on LSP communication failure</dd>
-          <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/9">9</a> - Language server fails to start if path to startup script contains spaces.</dd>
-
-            <dt>1.0.0 Language Server Protocol support<br></dt>
-            <dd>&#183; Plugin now bundles <a href="https://github.com/PowerShell/PowerShellEditorServices">PowerShellEditorServices module</a> (same as VSCode) to provide Editor assistance;</dd>
-            <dd>&#183;Supported requests:<br>
-                - <i>textDocument/didOpen</i> (File opened in editor)<br>
-                - <i>textDocument/didClose</i> (File closed in editor)<br>
-                - <i>textDocument/didChange</i> (Editor document text changes)<br>
-                - <i>textDocument/completion</i> (Editor Auto completion).
-            </dd>
-
-            <dt>0.0.3 Bug fix update<br></dt>
-            <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/3">3</a> - Support PowerShell Scopes like Global or Local for functions</dd>
-            <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/5">5</a> - Support more PowerShell file extensions.</dd>
-            <dd>&#183; <a href="https://bitbucket.org/adernov/powershell/issues/7">7</a> - StackOverflowError on resolving variable that has not definition</dd>
-
-            <dt>0.0.2 Enhanced completion<br></dt>
-            <dd>&#183; Resolve and completion of declared in script type members (methods, properties, constructors);</dd>
-            <dd>&#183; Completion for different contexts (references, types, properties).</dd>
-
-            <dt>0.0.1 Initial editor intellisense support:<br></dt>
-            <dd>&#183; Syntax highlighting;</dd>
-            <dd>&#183; Variables and declared types reference resolve and find usages;</dd>
-            <dd>&#183; Reference and keyword completion;</dd>
-            <dd>&#183; Rename refactoring;</dd>
-            <dd>&#183; Structure view;</dd>
-            <dd>&#183; Colors and Fonts;</dd>
-            <dd>&#183; Code style;</dd>
-            <dd>&#183; Live templates;</dd>
-            <dd>&#183; Run Configuration.</dd>
-        </dl>
-  </html>
-    ]]>
-  </change-notes>
-
-  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-  <idea-version since-build="213.5744"/>
-
-  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
-       on how to target different products -->
-  <!-- uncomment to enable plugin in all products
-  <depends>com.intellij.modules.lang</depends>
-  -->
   <depends>com.intellij.modules.platform</depends>
   <depends>com.intellij.modules.lang</depends>
   <depends optional="true" config-file="injection.xml">org.intellij.intelliLang</depends>
@@ -132,7 +16,7 @@
 
   <extensions defaultExtensionNs="com.intellij">
 
-    <fileType name="PowerShell" language="PowerShell" extensions="ps1;psm1;psd1" 
+    <fileType name="PowerShell" language="PowerShell" extensions="ps1;psm1;psd1"
               implementationClass="com.intellij.plugin.powershell.PowerShellFileType" />
 
     <lang.parserDefinition language="PowerShell"

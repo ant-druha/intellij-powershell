@@ -1,12 +1,12 @@
 plugins {
     id("java")
+    id("org.jetbrains.changelog") version "2.2.0"
     id("org.jetbrains.intellij") version "1.15.0"
     id("org.jetbrains.kotlin.jvm") version "1.9.0"
 }
 
 intellij {
     type.set("IC")
-    // https://www.jetbrains.com/intellij-repository/releases
     version.set("2023.2")
     plugins.set(listOf("org.intellij.intelliLang", "terminal"))
     pluginName.set("PowerShell")
@@ -61,4 +61,19 @@ tasks {
             into("${intellij.pluginName.get()}/lib/")
         }
     }
+
+    patchPluginXml {
+        untilBuild.set(provider { null })
+
+        changeNotes.set(provider {
+            changelog.renderItem(
+                changelog
+                    .getLatest()
+                    .withHeader(false)
+                    .withEmptySections(false),
+                org.jetbrains.changelog.Changelog.OutputType.HTML
+            )
+        })
+    }
+
 }
