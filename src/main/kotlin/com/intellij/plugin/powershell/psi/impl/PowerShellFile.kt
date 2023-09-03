@@ -3,7 +3,6 @@ package com.intellij.plugin.powershell.psi.impl
 import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.navigation.ItemPresentation
 import com.intellij.openapi.fileTypes.FileType
-import com.intellij.plugin.powershell.PowerShellFileType
 import com.intellij.plugin.powershell.PowerShellIcons
 import com.intellij.plugin.powershell.ide.resolve.PowerShellResolveUtil
 import com.intellij.plugin.powershell.lang.PowerShellLanguage
@@ -20,7 +19,7 @@ import javax.swing.Icon
  */
 class PowerShellFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, PowerShellLanguage.INSTANCE), PowerShellPsiElement {
   override fun getFileType(): FileType {
-    return PowerShellFileType()
+    return viewProvider.fileType
   }
 
   override fun getPresentation(): ItemPresentation {
