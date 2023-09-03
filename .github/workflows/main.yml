@@ -36,6 +36,13 @@ jobs:
       - name: Build
         run: ./gradlew build
 
+      - name: 'Upload test results'
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ runner.os }}.test-results
+          path: build/reports/tests
+        if: ${{ always() }}
+
       - name: 'Upload test logs'
         uses: actions/upload-artifact@v3
         with:
