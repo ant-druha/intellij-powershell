@@ -20,6 +20,7 @@ public class PowerShellConstructorDeclarationStatementImplGen extends PowerShell
     visitor.visitConstructorDeclarationStatement(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof PowerShellVisitor) accept((PowerShellVisitor)visitor);
     else super.accept(visitor);

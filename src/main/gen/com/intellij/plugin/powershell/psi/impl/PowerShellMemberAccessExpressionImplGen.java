@@ -20,6 +20,7 @@ public class PowerShellMemberAccessExpressionImplGen extends PowerShellMemberAcc
     visitor.visitMemberAccessExpression(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof PowerShellVisitor) accept((PowerShellVisitor)visitor);
     else super.accept(visitor);
@@ -49,8 +50,8 @@ public class PowerShellMemberAccessExpressionImplGen extends PowerShellMemberAcc
     return findChildByType(DASH);
   }
 
-  @Nullable
-  public PsiElement getIdentifier() {
+  @Override
+  public @Nullable PsiElement getIdentifier() {
     return PowerShellPsiImplUtil.getIdentifier(this);
   }
 

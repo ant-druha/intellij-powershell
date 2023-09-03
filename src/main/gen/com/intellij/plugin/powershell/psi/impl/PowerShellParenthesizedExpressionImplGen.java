@@ -17,10 +17,12 @@ public class PowerShellParenthesizedExpressionImplGen extends PowerShellExpressi
     super(node);
   }
 
+  @Override
   public void accept(@NotNull PowerShellVisitor visitor) {
     visitor.visitParenthesizedExpression(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof PowerShellVisitor) accept((PowerShellVisitor)visitor);
     else super.accept(visitor);
@@ -32,8 +34,8 @@ public class PowerShellParenthesizedExpressionImplGen extends PowerShellExpressi
     return PsiTreeUtil.getChildrenOfTypeAsList(this, PowerShellComment.class);
   }
 
-  @NotNull
-  public PowerShellType getType() {
+  @Override
+  public @NotNull PowerShellType getType() {
     return PowerShellPsiImplUtil.getType(this);
   }
 

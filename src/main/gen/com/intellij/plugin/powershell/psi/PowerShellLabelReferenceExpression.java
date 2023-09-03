@@ -14,7 +14,6 @@ public interface PowerShellLabelReferenceExpression extends PowerShellExpression
   @Nullable
   PowerShellIdentifier getIdentifier();
 
-  @NotNull
-  PowerShellType getType();
+  @NotNull PowerShellType getType();
 
 }

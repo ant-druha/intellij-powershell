@@ -20,6 +20,7 @@ public class PowerShellElseClauseImplGen extends PowerShellPsiElementImpl implem
     visitor.visitElseClause(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof PowerShellVisitor) accept((PowerShellVisitor)visitor);
     else super.accept(visitor);

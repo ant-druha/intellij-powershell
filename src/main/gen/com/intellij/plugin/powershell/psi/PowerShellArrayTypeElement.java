@@ -14,7 +14,6 @@ public interface PowerShellArrayTypeElement extends PowerShellTypeElement {
   @NotNull
   PowerShellReferenceTypeElement getReferenceTypeElement();
 
-  @NotNull
-  PowerShellType getType();
+  @NotNull PowerShellType getType();
 
 }

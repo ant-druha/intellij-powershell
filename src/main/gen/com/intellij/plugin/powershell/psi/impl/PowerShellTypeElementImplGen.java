@@ -21,6 +21,7 @@ public abstract class PowerShellTypeElementImplGen extends PowerShellTypedElemen
     visitor.visitTypeElement(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof PowerShellVisitor) accept((PowerShellVisitor)visitor);
     else super.accept(visitor);

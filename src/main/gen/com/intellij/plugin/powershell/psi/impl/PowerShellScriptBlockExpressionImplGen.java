@@ -16,10 +16,12 @@ public class PowerShellScriptBlockExpressionImplGen extends PowerShellExpression
     super(node);
   }
 
+  @Override
   public void accept(@NotNull PowerShellVisitor visitor) {
     visitor.visitScriptBlockExpression(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof PowerShellVisitor) accept((PowerShellVisitor)visitor);
     else super.accept(visitor);

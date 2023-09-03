@@ -16,10 +16,12 @@ public class PowerShellRangeExpressionImplGen extends PowerShellExpressionImplGe
     super(node);
   }
 
+  @Override
   public void accept(@NotNull PowerShellVisitor visitor) {
     visitor.visitRangeExpression(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof PowerShellVisitor) accept((PowerShellVisitor)visitor);
     else super.accept(visitor);

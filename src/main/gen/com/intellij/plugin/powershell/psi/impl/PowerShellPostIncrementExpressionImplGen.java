@@ -16,10 +16,12 @@ public class PowerShellPostIncrementExpressionImplGen extends PowerShellExpressi
     super(node);
   }
 
+  @Override
   public void accept(@NotNull PowerShellVisitor visitor) {
     visitor.visitPostIncrementExpression(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof PowerShellVisitor) accept((PowerShellVisitor)visitor);
     else super.accept(visitor);
