@@ -98,6 +98,8 @@
                              key="settings.powershell"/>
 
     <applicationService serviceImplementation="com.intellij.plugin.powershell.lang.lsp.LSPInitMain"/>
+
+    <editorFactoryListener implementation="com.intellij.plugin.powershell.lang.lsp.ide.listeners.EditorLSPListener"/>
   </extensions>
 
   <actions>
