@@ -15,6 +15,8 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.project.ProjectManagerListener
+import com.intellij.openapi.util.Key
+import com.intellij.openapi.util.removeUserData
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFileEvent
 import com.intellij.openapi.vfs.VirtualFileListener
@@ -83,8 +85,7 @@ class LanguageServerEndpoint(private val languageHostConnectionManager: Language
   }
 
   companion object {
-    private val uriToLanguageServerConnection = mutableMapOf<URI, LanguageServerEndpoint>()
-    private val editorToLanguageServerConnection = mutableMapOf<Editor, LanguageServerEndpoint>()
+    val LANGUAGE_SERVER_ENDPOINT_KEY: Key<LanguageServerEndpoint> = Key.create("Powershell.LanguageServerEndpoint")
     private var installExtensionNotificationShown = false
     private var installPSNotificationShown = false
   }
@@ -135,8 +136,7 @@ class LanguageServerEndpoint(private val languageHostConnectionManager: Language
                   selectionListener.setManager(manager)
                   manager.registerListeners()
                   connectedEditors[uri] = manager
-                  editorToLanguageServerConnection[editor] = this
-                  uriToLanguageServerConnection[uri] = this
+                  editor.putUserData(LANGUAGE_SERVER_ENDPOINT_KEY, this)
                   manager.documentOpened()
                   LOG.debug("Created manager for $uri")
                 }
@@ -200,9 +200,8 @@ class LanguageServerEndpoint(private val languageHostConnectionManager: Language
 
   fun disconnectEditor(uri: URI) {
     val e = connectedEditors.remove(uri)
-    uriToLanguageServerConnection.remove(uri)
     if (e != null) {
-      editorToLanguageServerConnection.remove(e.getEditor())
+      e.getEditor().removeUserData(LANGUAGE_SERVER_ENDPOINT_KEY)
       e.removeListeners()
       e.documentClosed()
     }

@@ -9,6 +9,8 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Key
+import com.intellij.openapi.util.removeUserData
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.plugin.powershell.lang.PowerShellLanguage
 import com.intellij.plugin.powershell.lang.lsp.ide.listeners.DocumentListenerImpl
@@ -18,11 +20,9 @@ import com.intellij.plugin.powershell.lang.lsp.ide.listeners.SelectionListenerIm
 import com.intellij.plugin.powershell.lang.lsp.languagehost.LanguageServerEndpoint
 import com.intellij.plugin.powershell.lang.lsp.languagehost.ServerOptions
 import com.intellij.plugin.powershell.lang.lsp.util.DocumentUtils.offsetToLSPPos
-import com.intellij.plugin.powershell.lang.lsp.util.editorToURI
 import com.intellij.plugin.powershell.lang.lsp.util.editorToURIString
 import com.intellij.psi.PsiDocumentManager
 import org.eclipse.lsp4j.*
-import java.net.URI
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -48,7 +48,7 @@ class EditorEventManager(private val project: Project, private val editor: Edito
 
   init {
     changesParams.textDocument.uri = identifier.uri
-    editorToManager[editor] = this
+    editor.putUserData(EDITOR_EVENT_MANAGER_KEY, this)
   }
 
   fun getEditor(): Editor {
@@ -58,10 +58,9 @@ class EditorEventManager(private val project: Project, private val editor: Edito
   fun getDiagnostics(): List<Diagnostic> = diagnosticsInfo
 
   companion object {
-    private val uriToManager = mutableMapOf<URI, EditorEventManager>()
-    private val editorToManager = mutableMapOf<Editor, EditorEventManager>()
+    private val EDITOR_EVENT_MANAGER_KEY: Key<EditorEventManager> = Key("Powershell.EditorEventManager")
     fun forEditor(editor: Editor): EditorEventManager? {
-      return editorToManager[editor]
+      return editor.getUserData(EDITOR_EVENT_MANAGER_KEY)
     }
   }
 
@@ -95,8 +94,7 @@ class EditorEventManager(private val project: Project, private val editor: Edito
     if (isOpen) {
       requestManager.didClose(DidCloseTextDocumentParams(identifier))
       isOpen = false
-      editorToManager.remove(editor)
-      uriToManager.remove(editorToURI(editor))
+      editor.removeUserData(EDITOR_EVENT_MANAGER_KEY)
     } else {
       LOG.warn("Editor ${identifier.uri} + was already closed")
     }

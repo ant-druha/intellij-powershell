@@ -29,6 +29,8 @@ import java.util.concurrent.ConcurrentHashMap
 
 @State(name = "PowerShellSettings", storages = [Storage(value = "powerShellSettings.xml", roamingType = RoamingType.DISABLED)])
 class LSPInitMain : PersistentStateComponent<LSPInitMain.PowerShellInfo>, Disposable {
+  private val psEditorLanguageServer = ConcurrentHashMap<Project, LanguageServerEndpoint>()
+  private val psConsoleLanguageServer = ConcurrentHashMap<Project, LanguageServerEndpoint>()
 
   override fun initializeComponent() {
     ApplicationManager.getApplication().messageBus.connect(this)
@@ -72,8 +74,6 @@ class LSPInitMain : PersistentStateComponent<LSPInitMain.PowerShellInfo>, Dispos
 
   companion object {
     private val LOG: Logger = Logger.getInstance(LSPInitMain::class.java)
-    private val psEditorLanguageServer = ConcurrentHashMap<Project, LanguageServerEndpoint>()
-    private val psConsoleLanguageServer = ConcurrentHashMap<Project, LanguageServerEndpoint>()
 
     @JvmStatic
     fun getInstance(): LSPInitMain {
@@ -81,11 +81,11 @@ class LSPInitMain : PersistentStateComponent<LSPInitMain.PowerShellInfo>, Dispos
     }
 
     fun getServerWithConsoleProcess(project: Project): LanguageServerEndpoint {
-      return psConsoleLanguageServer.computeIfAbsent(project) { LanguageServerEndpoint(PowerShellConsoleTerminalRunner(it), it) }
+      return getInstance().psConsoleLanguageServer.computeIfAbsent(project) { LanguageServerEndpoint(PowerShellConsoleTerminalRunner(it), it) }
     }
 
     private fun getEditorLanguageServer(project: Project): LanguageServerEndpoint {
-      return psEditorLanguageServer.computeIfAbsent(project) { LanguageServerEndpoint(EditorServicesLanguageHostStarter(it), it) }
+      return getInstance().psEditorLanguageServer.computeIfAbsent(project) { LanguageServerEndpoint(EditorServicesLanguageHostStarter(it), it) }
     }
 
     fun editorOpened(editor: Editor) {
@@ -116,11 +116,11 @@ class LSPInitMain : PersistentStateComponent<LSPInitMain.PowerShellInfo>, Dispos
     }
 
     private fun findServer(file: VirtualFile, project: Project): LanguageServerEndpoint? {
-      return findServerForRemoteFile(file, project) ?: psEditorLanguageServer[project]
+      return findServerForRemoteFile(file, project) ?: getInstance().psEditorLanguageServer[project]
     }
 
     private fun findServerForRemoteFile(file: VirtualFile, project: Project): LanguageServerEndpoint? {
-      val consoleServer = psConsoleLanguageServer[project] ?: return null
+      val consoleServer = getInstance().psConsoleLanguageServer[project] ?: return null
       return if (consoleServer.getStatus() == ServerStatus.STARTED && isRemotePath(file.canonicalPath)) consoleServer else null
     }
 
