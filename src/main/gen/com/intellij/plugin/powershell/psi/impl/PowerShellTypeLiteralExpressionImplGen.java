@@ -17,10 +17,12 @@ public class PowerShellTypeLiteralExpressionImplGen extends PowerShellExpression
     super(node);
   }
 
+  @Override
   public void accept(@NotNull PowerShellVisitor visitor) {
     visitor.visitTypeLiteralExpression(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof PowerShellVisitor) accept((PowerShellVisitor)visitor);
     else super.accept(visitor);
@@ -32,8 +34,8 @@ public class PowerShellTypeLiteralExpressionImplGen extends PowerShellExpression
     return findNotNullChildByClass(PowerShellTypeElement.class);
   }
 
-  @NotNull
-  public PowerShellType getType() {
+  @Override
+  public @NotNull PowerShellType getType() {
     return PowerShellPsiImplUtil.getType(this);
   }
 

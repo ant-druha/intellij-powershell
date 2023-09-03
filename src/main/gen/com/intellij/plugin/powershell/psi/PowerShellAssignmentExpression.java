@@ -84,7 +84,6 @@ public interface PowerShellAssignmentExpression extends PowerShellExpression {
 
   List<PowerShellTargetVariableExpression> getTargetVariables();
 
-  @Nullable
-  PowerShellPsiElement getRHSElement();
+  @Nullable PowerShellPsiElement getRHSElement();
 
 }

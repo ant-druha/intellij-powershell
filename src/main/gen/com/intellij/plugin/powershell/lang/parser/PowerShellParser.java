@@ -24,226 +24,15 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
     boolean r;
     b = adapt_builder_(t, b, this, EXTENDS_SETS_);
     Marker m = enter_section_(b, 0, _COLLAPSE_, null);
-    if (t == ARRAY_EXPRESSION) {
-      r = array_expression(b, 0);
-    }
-    else if (t == ARRAY_TYPE_ELEMENT) {
-      r = array_type_element(b, 0);
-    }
-    else if (t == ATTRIBUTE) {
-      r = attribute(b, 0);
-    }
-    else if (t == ATTRIBUTE_ARGUMENT) {
-      r = attribute_argument(b, 0);
-    }
-    else if (t == BLOCK_BODY) {
-      r = block_body(b, 0);
-    }
-    else if (t == BLOCK_PARAMETER_CLAUSE) {
-      r = block_parameter_clause(b, 0);
-    }
-    else if (t == CAST_EXPRESSION) {
-      r = cast_expression(b, 0);
-    }
-    else if (t == CATCH_CLAUSE) {
-      r = catch_clause(b, 0);
-    }
-    else if (t == CLASS_DECLARATION_STATEMENT) {
-      r = class_declaration_statement(b, 0);
-    }
-    else if (t == COMMAND_ARGUMENT) {
-      r = command_argument(b, 0);
-    }
-    else if (t == COMMAND_CALL_EXPRESSION) {
-      r = command_call_expression(b, 0);
-    }
-    else if (t == COMMAND_NAME) {
-      r = command_name(b, 0);
-    }
-    else if (t == COMMAND_PARAMETER) {
-      r = command_parameter(b, 0);
-    }
-    else if (t == COMMENT) {
-      r = comment(b, 0);
-    }
-    else if (t == CONFIGURATION_BLOCK) {
-      r = configuration_block(b, 0);
-    }
-    else if (t == CONSTRUCTOR_DECLARATION_STATEMENT) {
-      r = constructor_declaration_statement(b, 0);
-    }
-    else if (t == DATA_STATEMENT) {
-      r = data_statement(b, 0);
-    }
-    else if (t == DO_STATEMENT) {
-      r = do_statement(b, 0);
-    }
-    else if (t == ELEMENT_ACCESS_EXPRESSION) {
-      r = element_access_expression(b, 0);
-    }
-    else if (t == ELSE_CLAUSE) {
-      r = else_clause(b, 0);
-    }
-    else if (t == ELSEIF_CLAUSE) {
-      r = elseif_clause(b, 0);
-    }
-    else if (t == ENUM_DECLARATION_STATEMENT) {
-      r = enum_declaration_statement(b, 0);
-    }
-    else if (t == ENUM_LABEL_DECLARATION) {
-      r = enum_label_declaration(b, 0);
-    }
-    else if (t == EXPRESSION) {
-      r = expression(b, 0, -1);
-    }
-    else if (t == FINALLY_CLAUSE) {
-      r = finally_clause(b, 0);
-    }
-    else if (t == FLOW_CONTROL_STATEMENT) {
-      r = flow_control_statement(b, 0);
-    }
-    else if (t == FOR_CLAUSE) {
-      r = for_clause(b, 0);
-    }
-    else if (t == FOR_STATEMENT) {
-      r = for_statement(b, 0);
-    }
-    else if (t == FOREACH_STATEMENT) {
-      r = foreach_statement(b, 0);
-    }
-    else if (t == FUNCTION_STATEMENT) {
-      r = function_statement(b, 0);
-    }
-    else if (t == GENERIC_TYPE_ELEMENT) {
-      r = generic_type_element(b, 0);
-    }
-    else if (t == HASH_LITERAL_EXPRESSION) {
-      r = hash_literal_expression(b, 0);
-    }
-    else if (t == IDENTIFIER) {
-      r = identifier(b, 0);
-    }
-    else if (t == IF_STATEMENT) {
-      r = if_statement(b, 0);
-    }
-    else if (t == INCOMPLETE_DECLARATION) {
-      r = incomplete_declaration(b, 0);
-    }
-    else if (t == INLINESCRIPT_STATEMENT) {
-      r = inlinescript_statement(b, 0);
-    }
-    else if (t == INTEGER_LITERAL_EXPRESSION) {
-      r = integer_literal_expression(b, 0);
-    }
-    else if (t == INVOCATION_EXPRESSION) {
-      r = invocation_expression(b, 0);
-    }
-    else if (t == KEY_EXPRESSION) {
-      r = key_expression(b, 0);
-    }
-    else if (t == LABEL) {
-      r = label(b, 0);
-    }
-    else if (t == LABEL_REFERENCE_EXPRESSION) {
-      r = label_reference_expression(b, 0);
-    }
-    else if (t == MEMBER_ACCESS_EXPRESSION) {
-      r = member_access_expression(b, 0);
-    }
-    else if (t == METHOD_DECLARATION_STATEMENT) {
-      r = method_declaration_statement(b, 0);
-    }
-    else if (t == NODE_BLOCK) {
-      r = node_block(b, 0);
-    }
-    else if (t == PARALLEL_STATEMENT) {
-      r = parallel_statement(b, 0);
-    }
-    else if (t == PARAMETER_CLAUSE) {
-      r = parameter_clause(b, 0);
-    }
-    else if (t == PARENTHESIZED_ARGUMENT_LIST) {
-      r = parenthesized_argument_list(b, 0);
-    }
-    else if (t == PARENTHESIZED_EXPRESSION) {
-      r = parenthesized_expression(b, 0);
-    }
-    else if (t == PATH_EXPRESSION) {
-      r = path_expression(b, 0);
-    }
-    else if (t == PATH_ITEM) {
-      r = path_item(b, 0);
-    }
-    else if (t == POST_DECREMENT_EXPRESSION) {
-      r = post_decrement_expression(b, 0);
-    }
-    else if (t == POST_INCREMENT_EXPRESSION) {
-      r = post_increment_expression(b, 0);
-    }
-    else if (t == PROPERTY_DECLARATION_STATEMENT) {
-      r = property_declaration_statement(b, 0);
-    }
-    else if (t == REAL_LITERAL_EXPRESSION) {
-      r = real_literal_expression(b, 0);
-    }
-    else if (t == REDIRECTION) {
-      r = redirection(b, 0);
-    }
-    else if (t == REFERENCE_TYPE_ELEMENT) {
-      r = reference_type_element(b, 0);
-    }
-    else if (t == RESOURCE_BLOCK) {
-      r = resource_block(b, 0);
-    }
-    else if (t == SCRIPT_BLOCK_EXPRESSION) {
-      r = script_block_expression(b, 0);
-    }
-    else if (t == SEQUENCE_STATEMENT) {
-      r = sequence_statement(b, 0);
-    }
-    else if (t == STRING_LITERAL_EXPRESSION) {
-      r = string_literal_expression(b, 0);
-    }
-    else if (t == SUB_EXPRESSION) {
-      r = sub_expression(b, 0);
-    }
-    else if (t == SWITCH_CLAUSE_BLOCK) {
-      r = switch_clause_block(b, 0);
-    }
-    else if (t == SWITCH_STATEMENT) {
-      r = switch_statement(b, 0);
-    }
-    else if (t == TARGET_VARIABLE_EXPRESSION) {
-      r = target_variable_expression(b, 0);
-    }
-    else if (t == TRAP_STATEMENT) {
-      r = trap_statement(b, 0);
-    }
-    else if (t == TRY_STATEMENT) {
-      r = try_statement(b, 0);
-    }
-    else if (t == TYPE_ELEMENT) {
-      r = type_element(b, 0);
-    }
-    else if (t == TYPE_LITERAL_EXPRESSION) {
-      r = type_literal_expression(b, 0);
-    }
-    else if (t == USING_STATEMENT) {
-      r = using_statement(b, 0);
-    }
-    else if (t == VERBATIM_COMMAND_ARGUMENT) {
-      r = verbatim_command_argument(b, 0);
-    }
-    else if (t == WHILE_STATEMENT) {
-      r = while_statement(b, 0);
-    }
-    else {
-      r = parse_root_(t, b, 0);
-    }
+    r = parse_root_(t, b);
     exit_section_(b, 0, m, t, r, true, TRUE_CONDITION);
   }
 
-  protected boolean parse_root_(IElementType t, PsiBuilder b, int l) {
+  protected boolean parse_root_(IElementType t, PsiBuilder b) {
+    return parse_root_(t, b, 0);
+  }
+
+  static boolean parse_root_(IElementType t, PsiBuilder b, int l) {
     return top_level_element(b, l + 1);
   }
 
@@ -265,7 +54,6 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
   static boolean allowed_identifier_keywords(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "allowed_identifier_keywords")) return false;
     boolean r;
-    Marker m = enter_section_(b);
     r = consumeToken(b, PARAM);
     if (!r) r = consumeToken(b, UNTIL);
     if (!r) r = consumeToken(b, WORKFLOW);
@@ -287,14 +75,13 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, FOREACH);
     if (!r) r = consumeToken(b, STATIC);
     if (!r) r = consumeToken(b, DATA);
-    exit_section_(b, m, null, r);
     return r;
   }
 
   /* ********************************************************** */
   // <<parse_argument_list expression_list_rule>>
   static boolean argument_expression_list(PsiBuilder b, int l) {
-    return parse_argument_list(b, l + 1, expression_list_rule_parser_);
+    return parse_argument_list(b, l + 1, PowerShellParser::expression_list_rule);
   }
 
   /* ********************************************************** */
@@ -549,7 +336,7 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
   /* ********************************************************** */
   // <<parse_argument_list attribute_arguments_rule>>
   static boolean attribute_arguments(PsiBuilder b, int l) {
-    return parse_argument_list(b, l + 1, attribute_arguments_rule_parser_);
+    return parse_argument_list(b, l + 1, PowerShellParser::attribute_arguments_rule);
   }
 
   /* ********************************************************** */
@@ -741,7 +528,7 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b, l, _COLLAPSE_, BLOCK_BODY, "<block body>");
     r = block_body_0(b, l + 1);
     if (!r) r = nls(b, l + 1);
-    exit_section_(b, l, m, r, false, block_body_recover_parser_);
+    exit_section_(b, l, m, r, false, PowerShellParser::block_body_recover);
     return r;
   }
 
@@ -783,7 +570,7 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
       if (!block_body_content_0(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "block_body_content", c)) break;
     }
-    exit_section_(b, l, m, r, false, statement_block_recover_parser_);
+    exit_section_(b, l, m, r, false, PowerShellParser::statement_block_recover);
     return r;
   }
 
@@ -826,12 +613,10 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
   static boolean block_name(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "block_name")) return false;
     boolean r;
-    Marker m = enter_section_(b);
     r = consumeToken(b, DYNAMICPARAM);
     if (!r) r = consumeToken(b, BEGIN);
     if (!r) r = consumeToken(b, PROCESS);
     if (!r) r = consumeToken(b, END);
-    exit_section_(b, m, null, r);
     return r;
   }
 
@@ -947,10 +732,8 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
   private static boolean break_continue_statement_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "break_continue_statement_0")) return false;
     boolean r;
-    Marker m = enter_section_(b);
     r = consumeToken(b, BREAK);
     if (!r) r = consumeToken(b, CONTINUE);
-    exit_section_(b, m, null, r);
     return r;
   }
 
@@ -1174,7 +957,7 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b, l, _NONE_, BLOCK_BODY, "<class block body>");
     r = class_block_body_0(b, l + 1);
     if (!r) r = nls(b, l + 1);
-    exit_section_(b, l, m, r, false, block_body_recover_parser_);
+    exit_section_(b, l, m, r, false, PowerShellParser::block_body_recover);
     return r;
   }
 
@@ -1332,7 +1115,7 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b, l, _NONE_);
     r = class_member_declaration(b, l + 1);
     r = r && class_member_declaration_list_1(b, l + 1);
-    exit_section_(b, l, m, r, false, top_level_recover_parser_);
+    exit_section_(b, l, m, r, false, PowerShellParser::top_level_recover);
     return r;
   }
 
@@ -1547,10 +1330,8 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "command_invocation_operator")) return false;
     if (!nextTokenIs(b, "", AMP, DOT)) return false;
     boolean r;
-    Marker m = enter_section_(b);
     r = consumeToken(b, AMP);
     if (!r) r = consumeToken(b, DOT);
-    exit_section_(b, m, null, r);
     return r;
   }
 
@@ -1723,7 +1504,7 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
     r = p && report_error_(b, configuration_name(b, l + 1)) && r;
     r = p && report_error_(b, configuration_block_4(b, l + 1)) && r;
     r = p && configuration_block_block(b, l + 1) && r;
-    exit_section_(b, l, m, r, p, configuration_block_recover_parser_);
+    exit_section_(b, l, m, r, p, PowerShellParser::configuration_block_recover);
     return r || p;
   }
 
@@ -1777,7 +1558,7 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
     boolean r;
     Marker m = enter_section_(b, l, _COLLAPSE_, BLOCK_BODY, "<configuration block body>");
     r = top_script_block(b, l + 1);
-    exit_section_(b, l, m, r, false, configuration_block_body_recover_parser_);
+    exit_section_(b, l, m, r, false, PowerShellParser::configuration_block_body_recover);
     return r;
   }
 
@@ -2108,10 +1889,8 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "declaration_modifier_attribute")) return false;
     if (!nextTokenIs(b, "", HIDDEN, STATIC)) return false;
     boolean r;
-    Marker m = enter_section_(b);
     r = consumeToken(b, HIDDEN);
     if (!r) r = consumeToken(b, STATIC);
-    exit_section_(b, m, null, r);
     return r;
   }
 
@@ -2120,7 +1899,6 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
   static boolean declaration_scope(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "declaration_scope")) return false;
     boolean r;
-    Marker m = enter_section_(b);
     r = consumeToken(b, "global:");
     if (!r) r = consumeToken(b, "local:");
     if (!r) r = consumeToken(b, "private:");
@@ -2128,7 +1906,6 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, "using:");
     if (!r) r = consumeToken(b, "workflow:");
     if (!r) r = variable_namespace(b, l + 1);
-    exit_section_(b, m, null, r);
     return r;
   }
 
@@ -2190,10 +1967,8 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
   private static boolean do_statement_4(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "do_statement_4")) return false;
     boolean r;
-    Marker m = enter_section_(b);
     r = consumeToken(b, WHILE);
     if (!r) r = consumeToken(b, UNTIL);
-    exit_section_(b, m, null, r);
     return r;
   }
 
@@ -2361,7 +2136,7 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b, l, _NONE_, BLOCK_BODY, "<enum block body>");
     r = enum_block_body_0(b, l + 1);
     if (!r) r = nls(b, l + 1);
-    exit_section_(b, l, m, r, false, block_body_recover_parser_);
+    exit_section_(b, l, m, r, false, PowerShellParser::block_body_recover);
     return r;
   }
 
@@ -3063,7 +2838,7 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b, l, _COLLAPSE_, BLOCK_BODY, "<function block body>");
     r = function_block_body_0(b, l + 1);
     if (!r) r = top_script_block(b, l + 1);
-    exit_section_(b, l, m, r, false, block_body_recover_parser_);
+    exit_section_(b, l, m, r, false, PowerShellParser::block_body_recover);
     return r;
   }
 
@@ -3141,10 +2916,8 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
   private static boolean function_statement_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "function_statement_0")) return false;
     boolean r;
-    Marker m = enter_section_(b);
     r = consumeToken(b, FUNCTION);
     if (!r) r = consumeToken(b, FILTER);
-    exit_section_(b, m, null, r);
     return r;
   }
 
@@ -3532,7 +3305,7 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
   /* ********************************************************** */
   // <<allow_any_expression hash_literal_body>>
   static boolean hash_literal_body_rule(PsiBuilder b, int l) {
-    return allow_any_expression(b, l + 1, hash_literal_body_parser_);
+    return allow_any_expression(b, l + 1, PowerShellParser::hash_literal_body);
   }
 
   /* ********************************************************** */
@@ -3884,7 +3657,7 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b, l, _NONE_);
     r = enum_label_declaration(b, l + 1);
     r = r && label_list_1(b, l + 1);
-    exit_section_(b, l, m, r, false, top_level_recover_parser_);
+    exit_section_(b, l, m, r, false, PowerShellParser::top_level_recover);
     return r;
   }
 
@@ -4290,12 +4063,10 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
   static boolean op_join_text(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "op_join_text")) return false;
     boolean r;
-    Marker m = enter_section_(b);
     r = consumeToken(b, "-join");
     if (!r) r = consumeToken(b, "–join");
     if (!r) r = consumeToken(b, "—join");
     if (!r) r = consumeToken(b, "―join");
-    exit_section_(b, m, null, r);
     return r;
   }
 
@@ -4304,12 +4075,10 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
   static boolean op_split_text(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "op_split_text")) return false;
     boolean r;
-    Marker m = enter_section_(b);
     r = consumeToken(b, "-split");
     if (!r) r = consumeToken(b, "–split");
     if (!r) r = consumeToken(b, "—split");
     if (!r) r = consumeToken(b, "―split");
-    exit_section_(b, m, null, r);
     return r;
   }
 
@@ -4415,7 +4184,7 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b);
     r = consumeTokenFast(b, LP);
     r = r && parenthesized_expression_1(b, l + 1);
-    r = r && allow_any_expression(b, l + 1, pipeline_parser_);
+    r = r && allow_any_expression(b, l + 1, PowerShellParser::pipeline);
     r = r && parenthesized_expression_3(b, l + 1);
     r = r && consumeToken(b, RP);
     exit_section_(b, m, PARENTHESIZED_EXPRESSION, r);
@@ -4439,7 +4208,7 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
   /* ********************************************************** */
   // <<parseCommandArgumentInner generic_chars_or_path_expression>>
   static boolean parse_command_argument(PsiBuilder b, int l) {
-    return parseCommandArgumentInner(b, l + 1, generic_chars_or_path_expression_parser_);
+    return parseCommandArgumentInner(b, l + 1, PowerShellParser::generic_chars_or_path_expression);
   }
 
   /* ********************************************************** */
@@ -5302,7 +5071,6 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
   static boolean reserved_statement_keywords(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "reserved_statement_keywords")) return false;
     boolean r;
-    Marker m = enter_section_(b);
     r = consumeToken(b, CLASS);
     if (!r) r = consumeToken(b, DATA);
     if (!r) r = consumeToken(b, DO);
@@ -5324,7 +5092,6 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, WHILE);
     if (!r) r = consumeToken(b, CONFIGURATION);
     if (!r) r = consumeToken(b, ENUM);
-    exit_section_(b, m, null, r);
     return r;
   }
 
@@ -5512,7 +5279,7 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
   /* ********************************************************** */
   // <<allow_any_expression script_block>>
   static boolean script_block_rule(PsiBuilder b, int l) {
-    return allow_any_expression(b, l + 1, script_block_parser_);
+    return allow_any_expression(b, l + 1, PowerShellParser::script_block);
   }
 
   /* ********************************************************** */
@@ -5582,7 +5349,7 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
   /* ********************************************************** */
   // <<parse_argument_list script_parameter_list_rule>>
   static boolean script_parameter_list(PsiBuilder b, int l) {
-    return parse_argument_list(b, l + 1, script_parameter_list_rule_parser_);
+    return parse_argument_list(b, l + 1, PowerShellParser::script_parameter_list_rule);
   }
 
   /* ********************************************************** */
@@ -5776,7 +5543,7 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
     if (!r) r = parse_resource_block(b, l + 1);
     if (!r) r = parse_node_block(b, l + 1);
     if (!r) r = pipeline(b, l + 1);
-    exit_section_(b, l, m, r, false, statement_recover_parser_);
+    exit_section_(b, l, m, r, false, PowerShellParser::statement_recover);
     return r;
   }
 
@@ -5871,7 +5638,7 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
     r = statement(b, l + 1);
     p = r; // pin = 1
     r = r && statement_list_1(b, l + 1);
-    exit_section_(b, l, m, r, p, top_level_recover_parser_);
+    exit_section_(b, l, m, r, p, PowerShellParser::top_level_recover);
     return r || p;
   }
 
@@ -5900,7 +5667,7 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
   /* ********************************************************** */
   // <<allow_any_expression statement_list>>
   static boolean statement_list_rule(PsiBuilder b, int l) {
-    return allow_any_expression(b, l + 1, statement_list_parser_);
+    return allow_any_expression(b, l + 1, PowerShellParser::statement_list);
   }
 
   /* ********************************************************** */
@@ -6213,13 +5980,11 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
   static boolean switch_parameter(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "switch_parameter")) return false;
     boolean r;
-    Marker m = enter_section_(b);
     r = consumeToken(b, "-regex");
     if (!r) r = consumeToken(b, "-wildcard");
     if (!r) r = consumeToken(b, "-exact");
     if (!r) r = consumeToken(b, "-casesensitive");
     if (!r) r = consumeToken(b, "-parallel");
-    exit_section_(b, m, null, r);
     return r;
   }
 
@@ -6298,11 +6063,9 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
   private static boolean throw_return_exit_statement_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "throw_return_exit_statement_0")) return false;
     boolean r;
-    Marker m = enter_section_(b);
     r = consumeToken(b, THROW);
     if (!r) r = consumeToken(b, RETURN);
     if (!r) r = consumeToken(b, EXIT);
-    exit_section_(b, m, null, r);
     return r;
   }
 
@@ -6321,7 +6084,7 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b, l, _NONE_);
     r = top_level_element_0(b, l + 1);
     r = r && top_level_element_1(b, l + 1);
-    exit_section_(b, l, m, r, false, top_level_recover_parser_);
+    exit_section_(b, l, m, r, false, PowerShellParser::top_level_recover);
     return r;
   }
 
@@ -6789,7 +6552,7 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
     r = p && report_error_(b, consumeToken(b, RP)) && r;
     r = p && report_error_(b, while_statement_7(b, l + 1)) && r;
     r = p && statement_block(b, l + 1) && r;
-    exit_section_(b, l, m, r, p, statement_recover_parser_);
+    exit_section_(b, l, m, r, p, PowerShellParser::statement_recover);
     return r || p;
   }
 
@@ -7173,74 +6936,4 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  final static Parser attribute_arguments_rule_parser_ = new Parser() {
-    public boolean parse(PsiBuilder b, int l) {
-      return attribute_arguments_rule(b, l + 1);
-    }
-  };
-  final static Parser block_body_recover_parser_ = new Parser() {
-    public boolean parse(PsiBuilder b, int l) {
-      return block_body_recover(b, l + 1);
-    }
-  };
-  final static Parser configuration_block_body_recover_parser_ = new Parser() {
-    public boolean parse(PsiBuilder b, int l) {
-      return configuration_block_body_recover(b, l + 1);
-    }
-  };
-  final static Parser configuration_block_recover_parser_ = new Parser() {
-    public boolean parse(PsiBuilder b, int l) {
-      return configuration_block_recover(b, l + 1);
-    }
-  };
-  final static Parser expression_list_rule_parser_ = new Parser() {
-    public boolean parse(PsiBuilder b, int l) {
-      return expression_list_rule(b, l + 1);
-    }
-  };
-  final static Parser generic_chars_or_path_expression_parser_ = new Parser() {
-    public boolean parse(PsiBuilder b, int l) {
-      return generic_chars_or_path_expression(b, l + 1);
-    }
-  };
-  final static Parser hash_literal_body_parser_ = new Parser() {
-    public boolean parse(PsiBuilder b, int l) {
-      return hash_literal_body(b, l + 1);
-    }
-  };
-  final static Parser pipeline_parser_ = new Parser() {
-    public boolean parse(PsiBuilder b, int l) {
-      return pipeline(b, l + 1);
-    }
-  };
-  final static Parser script_block_parser_ = new Parser() {
-    public boolean parse(PsiBuilder b, int l) {
-      return script_block(b, l + 1);
-    }
-  };
-  final static Parser script_parameter_list_rule_parser_ = new Parser() {
-    public boolean parse(PsiBuilder b, int l) {
-      return script_parameter_list_rule(b, l + 1);
-    }
-  };
-  final static Parser statement_block_recover_parser_ = new Parser() {
-    public boolean parse(PsiBuilder b, int l) {
-      return statement_block_recover(b, l + 1);
-    }
-  };
-  final static Parser statement_list_parser_ = new Parser() {
-    public boolean parse(PsiBuilder b, int l) {
-      return statement_list(b, l + 1);
-    }
-  };
-  final static Parser statement_recover_parser_ = new Parser() {
-    public boolean parse(PsiBuilder b, int l) {
-      return statement_recover(b, l + 1);
-    }
-  };
-  final static Parser top_level_recover_parser_ = new Parser() {
-    public boolean parse(PsiBuilder b, int l) {
-      return top_level_recover(b, l + 1);
-    }
-  };
 }

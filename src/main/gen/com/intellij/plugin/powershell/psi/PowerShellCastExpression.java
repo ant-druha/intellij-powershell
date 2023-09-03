@@ -11,10 +11,8 @@ public interface PowerShellCastExpression extends PowerShellExpression {
   @NotNull
   List<PowerShellExpression> getExpressionList();
 
-  @NotNull
-  PowerShellType getCastType();
+  @NotNull PowerShellType getCastType();
 
-  @NotNull
-  PowerShellType getType();
+  @NotNull PowerShellType getType();
 
 }

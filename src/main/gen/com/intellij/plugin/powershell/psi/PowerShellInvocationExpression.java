@@ -22,7 +22,6 @@ public interface PowerShellInvocationExpression extends PowerShellExpression, Po
   @Nullable
   PsiElement getDash();
 
-  @Nullable
-  PsiElement getIdentifier();
+  @Nullable PsiElement getIdentifier();
 
 }

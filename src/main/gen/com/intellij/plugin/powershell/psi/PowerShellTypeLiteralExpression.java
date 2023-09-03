@@ -11,7 +11,6 @@ public interface PowerShellTypeLiteralExpression extends PowerShellExpression {
   @NotNull
   PowerShellTypeElement getTypeElement();
 
-  @NotNull
-  PowerShellType getType();
+  @NotNull PowerShellType getType();
 
 }

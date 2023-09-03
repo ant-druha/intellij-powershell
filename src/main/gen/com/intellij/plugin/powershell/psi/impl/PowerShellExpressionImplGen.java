@@ -20,6 +20,7 @@ public abstract class PowerShellExpressionImplGen extends PowerShellExpressionIm
     visitor.visitExpression(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof PowerShellVisitor) accept((PowerShellVisitor)visitor);
     else super.accept(visitor);

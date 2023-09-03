@@ -20,6 +20,7 @@ public class PowerShellInvocationExpressionImplGen extends PowerShellInvocationE
     visitor.visitInvocationExpression(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof PowerShellVisitor) accept((PowerShellVisitor)visitor);
     else super.accept(visitor);
@@ -55,8 +56,8 @@ public class PowerShellInvocationExpressionImplGen extends PowerShellInvocationE
     return findChildByType(DASH);
   }
 
-  @Nullable
-  public PsiElement getIdentifier() {
+  @Override
+  public @Nullable PsiElement getIdentifier() {
     return PowerShellPsiImplUtil.getIdentifier(this);
   }
 

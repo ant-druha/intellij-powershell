@@ -20,6 +20,7 @@ public class PowerShellStringLiteralExpressionImplGen extends PowerShellAbstract
     visitor.visitStringLiteralExpression(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof PowerShellVisitor) accept((PowerShellVisitor)visitor);
     else super.accept(visitor);

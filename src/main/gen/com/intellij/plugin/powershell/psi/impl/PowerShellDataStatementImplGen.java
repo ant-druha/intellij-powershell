@@ -20,6 +20,7 @@ public class PowerShellDataStatementImplGen extends PowerShellPsiElementImpl imp
     visitor.visitDataStatement(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof PowerShellVisitor) accept((PowerShellVisitor)visitor);
     else super.accept(visitor);

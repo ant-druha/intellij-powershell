@@ -17,10 +17,12 @@ public class PowerShellCastExpressionImplGen extends PowerShellExpressionImplGen
     super(node);
   }
 
+  @Override
   public void accept(@NotNull PowerShellVisitor visitor) {
     visitor.visitCastExpression(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof PowerShellVisitor) accept((PowerShellVisitor)visitor);
     else super.accept(visitor);
@@ -32,13 +34,13 @@ public class PowerShellCastExpressionImplGen extends PowerShellExpressionImplGen
     return PsiTreeUtil.getChildrenOfTypeAsList(this, PowerShellExpression.class);
   }
 
-  @NotNull
-  public PowerShellType getCastType() {
+  @Override
+  public @NotNull PowerShellType getCastType() {
     return PowerShellPsiImplUtil.getCastType(this);
   }
 
-  @NotNull
-  public PowerShellType getType() {
+  @Override
+  public @NotNull PowerShellType getType() {
     return PowerShellPsiImplUtil.getType(this);
   }
 

@@ -20,6 +20,7 @@ public class PowerShellNodeBlockImplGen extends PowerShellPsiElementImpl impleme
     visitor.visitNodeBlock(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof PowerShellVisitor) accept((PowerShellVisitor)visitor);
     else super.accept(visitor);

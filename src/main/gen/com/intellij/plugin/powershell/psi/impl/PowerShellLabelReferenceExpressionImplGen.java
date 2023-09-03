@@ -21,6 +21,7 @@ public class PowerShellLabelReferenceExpressionImplGen extends PowerShellReferen
     visitor.visitLabelReferenceExpression(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof PowerShellVisitor) accept((PowerShellVisitor)visitor);
     else super.accept(visitor);
@@ -38,8 +39,8 @@ public class PowerShellLabelReferenceExpressionImplGen extends PowerShellReferen
     return findChildByClass(PowerShellIdentifier.class);
   }
 
-  @NotNull
-  public PowerShellType getType() {
+  @Override
+  public @NotNull PowerShellType getType() {
     return PowerShellPsiImplUtil.getType(this);
   }
 

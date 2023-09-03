@@ -11,7 +11,6 @@ public interface PowerShellParenthesizedExpression extends PowerShellExpression 
   @NotNull
   List<PowerShellComment> getCommentList();
 
-  @NotNull
-  PowerShellType getType();
+  @NotNull PowerShellType getType();
 
 }

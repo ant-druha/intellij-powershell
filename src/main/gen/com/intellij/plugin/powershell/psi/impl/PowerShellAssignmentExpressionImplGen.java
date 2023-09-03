@@ -16,10 +16,12 @@ public class PowerShellAssignmentExpressionImplGen extends PowerShellExpressionI
     super(node);
   }
 
+  @Override
   public void accept(@NotNull PowerShellVisitor visitor) {
     visitor.visitAssignmentExpression(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof PowerShellVisitor) accept((PowerShellVisitor)visitor);
     else super.accept(visitor);
@@ -175,12 +177,13 @@ public class PowerShellAssignmentExpressionImplGen extends PowerShellExpressionI
     return findChildByClass(PowerShellWhileStatement.class);
   }
 
+  @Override
   public List<PowerShellTargetVariableExpression> getTargetVariables() {
     return PowerShellPsiImplUtil.getTargetVariables(this);
   }
 
-  @Nullable
-  public PowerShellPsiElement getRHSElement() {
+  @Override
+  public @Nullable PowerShellPsiElement getRHSElement() {
     return PowerShellPsiImplUtil.getRHSElement(this);
   }
 
