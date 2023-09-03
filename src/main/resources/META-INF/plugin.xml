@@ -77,7 +77,7 @@
     <liveTemplateContext implementation="com.intellij.plugin.powershell.ide.editor.generate.PowerShellDeclarationContext"/>
     <liveTemplateContext implementation="com.intellij.plugin.powershell.ide.editor.generate.PowerShellStatementContext"/>
 
-    <defaultLiveTemplatesProvider implementation="com.intellij.plugin.powershell.ide.editor.generate.PowerShellLiveTemplatesProvider"/>
+    <defaultLiveTemplates file="liveTemplates/PowerShellLiveTemplates.xml"/>
 
     <completion.contributor language="PowerShell"
                             implementationClass="com.intellij.plugin.powershell.ide.editor.completion.PowerShellCompletionContributor"/>
