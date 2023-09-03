@@ -94,12 +94,12 @@ class LSPInitMain : PersistentStateComponent<LSPInitMain.PowerShellInfo>, Dispos
       if (!lspMain.myPowerShellInfo.isUseLanguageServer) return
 
       val project = editor.project ?: return
-      val file = PsiDocumentManager.getInstance(project).getPsiFile(editor.document)
-      if (file == null || file.fileType !is PowerShellFileType && !isRemotePath(file.virtualFile?.path)) return
+      val file = FileDocumentManager.getInstance().getFile(editor.document)
+      if (file == null || file.fileType !is PowerShellFileType && !isRemotePath(file.path)) return
       ApplicationManager.getApplication().executeOnPooledThread {
-        val server = getServer(file.virtualFile, project)
+        val server = getServer(file, project)
         server.connectEditor(editor)
-        LOG.info("Registered ${file.virtualFile.path} script for server: $server")
+        LOG.info("Registered ${file.path} script for server: $server")
       }
     }
 
