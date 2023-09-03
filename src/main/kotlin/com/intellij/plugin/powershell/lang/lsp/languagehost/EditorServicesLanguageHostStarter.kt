@@ -9,7 +9,6 @@ import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
 import com.intellij.openapi.application.ApplicationInfo
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
@@ -107,7 +106,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
       var result = cachedPowerShellExtensionDir
       if (StringUtil.isNotEmpty(result)) return result!!
 
-      val lspMain = ApplicationManager.getApplication().getComponent(LSPInitMain::class.java)
+      val lspMain = LSPInitMain.getInstance()
       result = lspMain.state.powerShellExtensionPath?.trim()
       if (StringUtil.isEmpty(result)) {
         result = BUNDLED_PSES_PATH
@@ -219,7 +218,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
 
     FileUtil.createParentDirs(File(logPath))
     val command = mutableListOf<String>()
-    val lspInitMain = ApplicationManager.getApplication().getComponent(LSPInitMain::class.java)
+    val lspInitMain = LSPInitMain.getInstance()
     command.add(lspInitMain.getPowerShellExecutable())
     command.add("-NoProfile")
     command.add("-NonInteractive")

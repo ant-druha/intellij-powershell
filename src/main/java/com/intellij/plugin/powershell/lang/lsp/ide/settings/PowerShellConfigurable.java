@@ -1,6 +1,5 @@
 package com.intellij.plugin.powershell.lang.lsp.ide.settings;
 
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SearchableConfigurable;
@@ -50,7 +49,7 @@ public class PowerShellConfigurable implements SearchableConfigurable {
 
   @Override
   public void reset() {
-    LSPInitMain lspInitMain = ApplicationManager.getApplication().getComponent(LSPInitMain.class);
+    LSPInitMain lspInitMain = LSPInitMain.getInstance();
     LSPInitMain.PowerShellInfo powerShellInfo = lspInitMain.getState();
     String psEsPathFromSettings = powerShellInfo.getPowerShellExtensionPath();
     String exePathFromSettings = powerShellInfo.getPowerShellExePath();
@@ -66,7 +65,7 @@ public class PowerShellConfigurable implements SearchableConfigurable {
     String psExtensionPath = getPSExtensionPathFromForm();
     String powerShellExePath = getPowerShellExePathFromForm();
     boolean isEnabled = getPSJpanel().getIsUseLanguageServer();
-    LSPInitMain lspInitMain = ApplicationManager.getApplication().getComponent(LSPInitMain.class);
+    LSPInitMain lspInitMain = LSPInitMain.getInstance();
     LSPInitMain.PowerShellInfo powerShellInfo = lspInitMain.getState();
     FormUIUtil.validatePowerShellExecutablePath(powerShellExePath);
     String powerShellVersion = getPSJpanel().getPowerShellVersionValue();

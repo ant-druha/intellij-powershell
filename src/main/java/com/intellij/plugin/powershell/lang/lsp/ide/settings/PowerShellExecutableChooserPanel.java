@@ -1,6 +1,5 @@
 package com.intellij.plugin.powershell.lang.lsp.ide.settings;
 
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
@@ -25,7 +24,7 @@ public class PowerShellExecutableChooserPanel extends JComponent {
     private JPanel myJpanel;
 
     public PowerShellExecutableChooserPanel(@Nullable String executablePath) {
-        String globalSettingsPath = ApplicationManager.getApplication().getComponent(LSPInitMain.class).getState().getPowerShellExePath();
+        String globalSettingsPath = LSPInitMain.getInstance().getState().getPowerShellExePath();
         updateExecutablePath(StringUtil.isEmpty(executablePath) ? globalSettingsPath : executablePath);
     }
 

@@ -1,7 +1,6 @@
 package com.intellij.plugin.powershell.lang.lsp.ide.settings
 
 import com.intellij.execution.configurations.PathEnvironmentVariableUtil
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.fileChooser.FileChooserFactory
 import com.intellij.openapi.options.ConfigurationException
@@ -80,5 +79,5 @@ object FormUIUtil {
     }
 
     val globalSettingsExecutablePath: String?
-        get() = ApplicationManager.getApplication().getComponent(LSPInitMain::class.java).state.powerShellExePath
+        get() = LSPInitMain.getInstance().state.powerShellExePath
 }

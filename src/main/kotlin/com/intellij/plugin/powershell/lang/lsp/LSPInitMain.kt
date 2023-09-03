@@ -16,7 +16,6 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.project.ProjectManagerListener
-import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.plugin.powershell.PowerShellFileType
@@ -31,7 +30,7 @@ import com.intellij.psi.PsiDocumentManager
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
-@State(name = "PowerShellSettings", storages = [Storage(file = "powerShellSettings.xml", roamingType = RoamingType.DISABLED)])
+@State(name = "PowerShellSettings", storages = [Storage(value = "powerShellSettings.xml", roamingType = RoamingType.DISABLED)])
 class LSPInitMain : PersistentStateComponent<LSPInitMain.PowerShellInfo>, Disposable {
 
   override fun initializeComponent() {
@@ -43,8 +42,6 @@ class LSPInitMain : PersistentStateComponent<LSPInitMain.PowerShellInfo>, Dispos
           psConsoleLanguageServer.remove(project)
         }
       })
-
-    Disposer.register(ApplicationManager.getApplication(), this)
 
     LOG.debug("PluginMain init finished")
   }
@@ -82,6 +79,11 @@ class LSPInitMain : PersistentStateComponent<LSPInitMain.PowerShellInfo>, Dispos
     private val psEditorLanguageServer = ConcurrentHashMap<Project, LanguageServerEndpoint>()
     private val psConsoleLanguageServer = ConcurrentHashMap<Project, LanguageServerEndpoint>()
 
+    @JvmStatic
+    fun getInstance(): LSPInitMain {
+      return ApplicationManager.getApplication().getService(LSPInitMain::class.java)
+    }
+
     fun getServerWithConsoleProcess(project: Project): LanguageServerEndpoint {
       return psConsoleLanguageServer.computeIfAbsent(project) { LanguageServerEndpoint(PowerShellConsoleTerminalRunner(it), it) }
     }
@@ -91,7 +93,7 @@ class LSPInitMain : PersistentStateComponent<LSPInitMain.PowerShellInfo>, Dispos
     }
 
     fun editorOpened(editor: Editor) {
-      val lspMain = ApplicationManager.getApplication().getComponent(LSPInitMain::class.java)
+      val lspMain = getInstance()
       if (!lspMain.myPowerShellInfo.isUseLanguageServer) return
 
       val project = editor.project ?: return

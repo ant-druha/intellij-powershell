@@ -97,6 +97,7 @@
                              bundle="messages.MessagesBundle"
                              key="settings.powershell"/>
 
+    <applicationService serviceImplementation="com.intellij.plugin.powershell.lang.lsp.LSPInitMain"/>
   </extensions>
 
   <actions>
@@ -104,12 +105,4 @@
       <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFromTemplate"/>
     </action>
   </actions>
-
-
-  <application-components>
-    <component>
-      <implementation-class>com.intellij.plugin.powershell.lang.lsp.LSPInitMain</implementation-class>
-    </component>
-  </application-components>
-
 </idea-plugin>
