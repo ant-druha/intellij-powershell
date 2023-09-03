@@ -12,11 +12,13 @@ import com.intellij.util.ProcessingContext
 
 class PowerShellElementRenameInputValidator : RenameInputValidator {
   override fun isInputValid(newName: String, element: PsiElement, context: ProcessingContext): Boolean =
-      PowerShellNameUtils.isValidName(newName, element)
+    PowerShellNameUtils.isValidName(newName, element)
 
   override fun getPattern(): ElementPattern<out PsiElement> =
-      or(psiElement(PowerShellTargetVariableExpression::class.java),
-         psiElement(PowerShellFunctionStatement::class.java),
-         psiElement(PowerShellMemberDeclaration::class.java))
+    or(
+      psiElement(PowerShellTargetVariableExpression::class.java),
+      psiElement(PowerShellFunctionStatement::class.java),
+      psiElement(PowerShellMemberDeclaration::class.java)
+    )
 
 }
