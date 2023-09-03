@@ -35,3 +35,10 @@ jobs:
 
       - name: Build
         run: ./gradlew build
+
+      - name: 'Upload test logs'
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ runner.os }}.test-logs
+          path: build/idea-sandbox/system-test/log
+        if: ${{ always() }}
