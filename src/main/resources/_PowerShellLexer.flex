@@ -36,8 +36,6 @@ import static com.intellij.plugin.powershell.psi.PowerShellTypes.*;
       private int commentStart;
       private int commentDepth;
 
-      private int yycolumn = 0;
-
       private void pushState(int state) {
           states.push(new State(yystate(), lParenCount));
           lParenCount = 0;
