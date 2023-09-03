@@ -12,6 +12,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - [#90](https://github.com/ant-druha/intellij-powershell/pull/90): Allow for more user interaction with the run configuration in terminal (use PTY when available), thanks to @ZhengKeli
 - [#89](https://github.com/ant-druha/intellij-powershell/pull/89): Allow entering the executables from `PATH` in the plugin settings, thanks to @ZhengKeli
 
+### Fixed
+- [$124](https://github.com/ant-druha/intellij-powershell/pull/124): Support placing function name on next line in function definition, thanks to @VladRassokhin
+
 ## [2.0.10] - 2022-02-25
 ### Fixed
 - [#76](https://github.com/ant-druha/intellij-powershell/issues/76): Exception thrown when plugin is enabled but no PowerShell is found
