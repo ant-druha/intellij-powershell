@@ -1,4 +1,4 @@
-<idea-plugin>
+<idea-plugin require-restart="true">
   <id>com.intellij.plugin.adernov.powershell</id>
   <name>PowerShell</name>
   <vendor email="andrey.dernov@gmail.com" url="https://github.com/ant-druha/PowerShell/issues">andrey.dernov@gmail.com</vendor>

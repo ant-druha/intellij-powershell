@@ -11,7 +11,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - [#75](https://github.com/ant-druha/intellij-powershell/pull/75): Add indents for array elements when formatting, thanks to @VladRassokhin
 - [#90](https://github.com/ant-druha/intellij-powershell/pull/90): Allow for more user interaction with the run configuration in terminal (use PTY when available), thanks to @ZhengKeli
 - [#89](https://github.com/ant-druha/intellij-powershell/pull/89): Allow entering the executables from `PATH` in the plugin settings, thanks to @ZhengKeli
-- [#117](https://github.com/ant-druha/intellij-powershell/pull/117): make the plugin dynamically-loadable, thanks to @VladRassokhin
 
 ## [2.0.10] - 2022-02-25
 ### Fixed
