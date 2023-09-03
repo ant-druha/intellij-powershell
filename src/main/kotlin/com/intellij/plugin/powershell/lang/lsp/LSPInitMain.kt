@@ -11,7 +11,6 @@ import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
@@ -20,7 +19,6 @@ import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.plugin.powershell.PowerShellFileType
 import com.intellij.plugin.powershell.ide.run.findPsExecutable
-import com.intellij.plugin.powershell.lang.lsp.ide.listeners.EditorLSPListener
 import com.intellij.plugin.powershell.lang.lsp.languagehost.EditorServicesLanguageHostStarter
 import com.intellij.plugin.powershell.lang.lsp.languagehost.LanguageServerEndpoint
 import com.intellij.plugin.powershell.lang.lsp.languagehost.ServerStatus
@@ -34,7 +32,6 @@ import java.util.concurrent.ConcurrentHashMap
 class LSPInitMain : PersistentStateComponent<LSPInitMain.PowerShellInfo>, Disposable {
 
   override fun initializeComponent() {
-    EditorFactory.getInstance().addEditorFactoryListener(EditorLSPListener(), this)
     ApplicationManager.getApplication().messageBus.connect(this)
       .subscribe<ProjectManagerListener>(ProjectManager.TOPIC, object : ProjectManagerListener {
         override fun projectClosed(project: Project) {
