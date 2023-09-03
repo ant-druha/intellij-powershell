@@ -282,4 +282,34 @@ public class PowerShellLexerTest extends LexerTestCase {
         "WHITE_SPACE (' ')\n" +
         "DEC_INTEGER ('1')");
   }
+
+  public void testFunctionMultilineDefinition() {
+    doTest("""
+            function Single-Line-Definition
+            {
+            }
+            """, """
+            function ('function')
+            WHITE_SPACE (' ')
+            GENERIC_ID_PART ('Single-Line-Definition')
+            NLS ('\\n')
+            { ('{')
+            NLS ('\\n')
+            } ('}')
+            NLS ('\\n')""");
+    doTest("""
+            function
+            Multi-Line-Definition
+            {
+            }
+            """, """
+            function ('function')
+            NLS ('\\n')
+            GENERIC_ID_PART ('Multi-Line-Definition')
+            NLS ('\\n')
+            { ('{')
+            NLS ('\\n')
+            } ('}')
+            NLS ('\\n')""");
+  }
 }

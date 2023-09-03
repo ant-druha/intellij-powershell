@@ -160,6 +160,7 @@ EXCL_MARK="!"
 
 NL=(\r|\n|\r\n)
 NLS={WHITE_SPACE}*{NL}({NL}|{WHITE_SPACE}*)*
+WS_OR_NL={WHITE_SPACE}|{NL}
 CH_DQ=(\"|“|”|„)
 CH_SQ=(\'|‘|’|‚|‛)
 //BRACED_VAR="${"{VAR_SCOPE}?{WHITE_SPACE}?{BRACED_ID}"}"
@@ -306,6 +307,7 @@ BRACED_VAR_START={DS}{LCURLY}
 <FUNCTION_ID> {
   {SIMPLE_ID}                                                  { popState(); return SIMPLE_ID; }
   {WHITE_SPACE}                                                { return WHITE_SPACE; }
+  {NLS}                                                        { return NLS; }
   {GENERIC_ID_PART_TOKENS}                                     { popState(); return GENERIC_ID_PART; }
   [^]                                                          { popState(); yypushback(yylength()); }
 }
@@ -347,13 +349,13 @@ BRACED_VAR_START={DS}{LCURLY}
   "elseif"                                                     { return ELSEIF; }
   "end"                                                        { return END; }
   "exit"                                                       { return EXIT; }
-  "filter"/{WHITE_SPACE}                                       { pushState(FUNCTION_ID); return FILTER; }
+  "filter"/{WS_OR_NL}                                          { pushState(FUNCTION_ID); return FILTER; }
   "finally"                                                    { return FINALLY; }
   "for"                                                        { return FOR; }
   "foreach"                                                    { return FOREACH; }
   "from"                                                       { return FROM; }
-  "function"/{WHITE_SPACE}                                     { pushState(FUNCTION_ID); return FUNCTION; }
-  "configuration"/{WHITE_SPACE}                                { pushState(FUNCTION_ID); return CONFIGURATION; }
+  "function"/{WS_OR_NL}                                        { pushState(FUNCTION_ID); return FUNCTION; }
+  "configuration"/{WS_OR_NL}                                   { pushState(FUNCTION_ID); return CONFIGURATION; }
   "if"                                                         { return IF; }
   "in"                                                         { return IN; }
   "inlinescript"                                               { return INLINESCRIPT; }
@@ -369,7 +371,7 @@ BRACED_VAR_START={DS}{LCURLY}
   "using"                                                      { return USING; }
   "var"                                                        { return VAR; }
   "while"                                                      { return WHILE; }
-  "workflow"/{WHITE_SPACE}                                     { pushState(FUNCTION_ID); return WORKFLOW; }
+  "workflow"/{WS_OR_NL}                                        { pushState(FUNCTION_ID); return WORKFLOW; }
   "«"                                                          { return RAW_LBR; }
   "»"                                                          { return RAW_RBR; }
   ","                                                          { return COMMA; }
