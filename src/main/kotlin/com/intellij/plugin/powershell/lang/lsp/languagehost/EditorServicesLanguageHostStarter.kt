@@ -34,6 +34,7 @@ import java.net.Socket
 import java.nio.channels.Channels
 import java.nio.charset.Charset
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 
 
 open class EditorServicesLanguageHostStarter(protected val myProject: Project) : LanguageHostConnectionManager {
@@ -47,8 +48,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
   private var sessionInfo: SessionInfo? = null
 
   companion object {
-    @Volatile
-    private var sessionCount = 0
+    private var sessionCount = AtomicInteger()
     private val myHostDetails = HostDetails(ApplicationNamesInfo.getInstance().fullProductName, "com.intellij.plugin.PowerShell", getHostVersion())
     private var cachedEditorServicesModuleVersion: String? = null
     private var cachedPowerShellExtensionDir: String? = null
@@ -164,7 +164,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
   }
 
   private fun getSessionCount(): Int {
-    return ++sessionCount - 1
+    return sessionCount.getAndIncrement()
   }
 
   private fun getSessionDetailsFile(): File {
