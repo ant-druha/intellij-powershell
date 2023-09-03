@@ -100,6 +100,8 @@
     <applicationService serviceImplementation="com.intellij.plugin.powershell.lang.lsp.LSPInitMain"/>
 
     <editorFactoryListener implementation="com.intellij.plugin.powershell.lang.lsp.ide.listeners.EditorLSPListener"/>
+
+    <errorHandler implementation="com.intellij.plugin.powershell.ide.ErrorReportSubmitter"/>
   </extensions>
 
   <actions>
