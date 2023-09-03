@@ -67,7 +67,7 @@ class PowerShellCompletionContributor : CompletionContributor() {
       val serverPos = offsetToLSPPos(editor, offset)
       val toAdd2 = manager.completion(serverPos)
       val psiFile = position.containingFile
-          ?: editor.project?.let { PsiDocumentManager.getInstance(it).getPsiFile(editor.document) }
+          ?: PsiDocumentManager.getInstance(position.project).getPsiFile(editor.document)
       if (toAdd2.items.isNotEmpty()) {
         val newResult = adjustPrefixMatcher(result)
         for (item in toAdd2.items) {
