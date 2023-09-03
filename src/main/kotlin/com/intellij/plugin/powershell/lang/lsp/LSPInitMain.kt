@@ -24,7 +24,6 @@ import com.intellij.plugin.powershell.lang.lsp.languagehost.LanguageServerEndpoi
 import com.intellij.plugin.powershell.lang.lsp.languagehost.ServerStatus
 import com.intellij.plugin.powershell.lang.lsp.languagehost.terminal.PowerShellConsoleTerminalRunner
 import com.intellij.plugin.powershell.lang.lsp.util.isRemotePath
-import com.intellij.psi.PsiDocumentManager
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
@@ -110,10 +109,7 @@ class LSPInitMain : PersistentStateComponent<LSPInitMain.PowerShellInfo>, Dispos
     fun editorClosed(editor: Editor) {
       val project = editor.project ?: return
       val vfile = FileDocumentManager.getInstance().getFile(editor.document) ?: return
-      if (!project.isDisposed) {
-        val file = PsiDocumentManager.getInstance(project).getPsiFile(editor.document)
-        if (file?.fileType !is PowerShellFileType) return
-      }
+      if (vfile.fileType !is PowerShellFileType) return
       val server = findServer(vfile, project) ?: return
       server.disconnectEditor(VfsUtil.toUri(File(vfile.path)))
       LOG.debug("Removed ${vfile.name} script from server: $server")
