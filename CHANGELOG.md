@@ -142,7 +142,7 @@ Enhanced completion:
 - completion for different contexts (references, types, properties).
 
 ## [0.0.1] - 2017-12-06
-Initial editor intellisense support:
+Initial editor and code completion support:
 - syntax highlighting;
 - variables and declared types reference resolve and find usages;
 - reference and keyword completion;
