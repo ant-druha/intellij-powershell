@@ -40,10 +40,10 @@ import org.eclipse.lsp4j.services.LanguageServer
 import java.io.File
 import java.net.URI
 import java.nio.file.Paths
-import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicReference
 
 class LanguageServerEndpoint(private val languageHostConnectionManager: LanguageHostConnectionManager, private val project: Project) {
   private val LOG: Logger = Logger.getInstance(javaClass)
@@ -56,7 +56,7 @@ class LanguageServerEndpoint(private val languageHostConnectionManager: Language
   private val rootPath = project.basePath
   private var capabilitiesAlreadyRequested: Boolean = false
   @Volatile
-  private var myStatus: ServerStatus = ServerStatus.STOPPED
+  private var myStatus: AtomicReference<ServerStatus> = AtomicReference(ServerStatus.STOPPED)
   private var crashCount: Int = 0
   private var myFailedStarts = 0
   private val MAX_FAILED_STARTS = 2
@@ -396,7 +396,7 @@ class LanguageServerEndpoint(private val languageHostConnectionManager: Language
   }
 
   private fun setStatus(status: ServerStatus) {
-    myStatus = status
+    myStatus.set(status)
   }
 
 //  fun getConnectedFiles(): Iterable<URI> {
@@ -404,7 +404,7 @@ class LanguageServerEndpoint(private val languageHostConnectionManager: Language
 //  }
 
   fun getStatus(): ServerStatus {
-    return myStatus
+    return myStatus.get()
   }
 
 

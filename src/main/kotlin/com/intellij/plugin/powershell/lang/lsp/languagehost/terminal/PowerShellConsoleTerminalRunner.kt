@@ -42,6 +42,7 @@ import java.io.IOException
 import java.io.OutputStream
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.Future
+import java.util.concurrent.atomic.AtomicInteger
 import javax.swing.JPanel
 
 class PowerShellConsoleTerminalRunner(project: Project) : EditorServicesLanguageHostStarter(project), LanguageHostConnectionManager {
@@ -62,8 +63,7 @@ class PowerShellConsoleTerminalRunner(project: Project) : EditorServicesLanguage
   }
 
   companion object {
-    @Volatile
-    private var sessionCount = 0
+    private val sessionCount = AtomicInteger()
 
     private fun createPtyProcess(project: Project, command: Array<out String>, directory: String?): PtyProcess {
       val envs = HashMap(EnvironmentUtil.getEnvironmentMap())
@@ -86,7 +86,7 @@ class PowerShellConsoleTerminalRunner(project: Project) : EditorServicesLanguage
   }
 
   private fun getSessionCount(): Int {
-    return ++sessionCount - 1
+    return sessionCount.getAndIncrement()
   }
 
   override fun getLogFileName(): String = "EditorServices-IJ-Console-${getSessionCount()}"
