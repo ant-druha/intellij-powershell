@@ -2,6 +2,7 @@ package com.intellij.plugin.powershell.lang
 
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
+import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.plugin.powershell.ide.editor.highlighting.PowerShellSyntaxHighlighter
 import com.intellij.plugin.powershell.psi.*
@@ -34,7 +35,7 @@ class PowerShellAnnotator : Annotator {
   }
 
   private fun createErrorAnnotation(holder: AnnotationHolder, e: PsiElement, msg: String) {
-    holder.createErrorAnnotation(e, msg)
+    holder.newAnnotation(HighlightSeverity.ERROR, msg).range(e).create()
   }
 
   private fun shouldAnnotateAsParameter(element: PsiElement): Boolean {
@@ -67,7 +68,7 @@ class PowerShellAnnotator : Annotator {
 
   private fun createInfoAnnotation(holder: AnnotationHolder, element: PsiElement?, attributeKey: TextAttributesKey) {
     if (element != null) {
-      holder.createInfoAnnotation(element, null).textAttributes = attributeKey
+      holder.newSilentAnnotation(HighlightSeverity.INFORMATION).range(element).textAttributes(attributeKey).create()
     }
   }
 }
