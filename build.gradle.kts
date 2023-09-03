@@ -62,6 +62,11 @@ tasks {
     }
   }
 
+  runIde {
+    jvmArgs("-Dide.plugins.snapshot.on.unload.fail=true", "-XX:+UnlockDiagnosticVMOptions")
+    autoReloadPlugins.set(true)
+  }
+
   patchPluginXml {
     untilBuild.set(provider { null })
 
