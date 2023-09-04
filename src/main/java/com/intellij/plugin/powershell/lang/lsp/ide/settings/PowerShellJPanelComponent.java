@@ -15,6 +15,7 @@ import com.intellij.ui.HyperlinkAdapter;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBTextField;
+import com.intellij.util.ui.HTMLEditorKitBuilder;
 import com.intellij.util.ui.UIUtil;
 import com.intellij.xml.util.XmlStringUtil;
 import org.jetbrains.annotations.NotNull;
@@ -46,7 +47,7 @@ public class PowerShellJPanelComponent {
   PowerShellJPanelComponent() {
     setVersionLabelVisible(false);
     String pathDescription = MessagesBundle.INSTANCE.message("powershell.extension.path.form.description", PS_ES_LINK);
-    myExplanationTextPane.setEditorKit(UIUtil.getHTMLEditorKit());
+    myExplanationTextPane.setEditorKit(HTMLEditorKitBuilder.simple());
     myExplanationTextPane.setEditable(false);
     myExplanationTextPane.setBackground(UIUtil.getWindowColor());
     Font defFont = myExplanationTextPane.getFont();
