@@ -33,6 +33,7 @@ import com.jediterm.pty.PtyProcessTtyConnector
 import com.jediterm.terminal.TtyConnector
 import com.jediterm.terminal.ui.TerminalWidget
 import com.pty4j.PtyProcess
+import com.pty4j.PtyProcessBuilder
 import org.jetbrains.plugins.terminal.JBTerminalSystemSettingsProvider
 import org.jetbrains.plugins.terminal.TerminalProjectOptionsProvider
 import java.awt.BorderLayout
@@ -76,9 +77,13 @@ class PowerShellConsoleTerminalRunner(project: Project) : EditorServicesLanguage
       try {
         val logFile = File(PathManager.getLogPath(), "pty-ps.log")
         logFile.createNewFile()
-        return PtyProcess.exec(command, envs,
-                               directory ?: TerminalProjectOptionsProvider.getInstance(project).startingDirectory,
-                               false, false, logFile)
+        return PtyProcessBuilder(command)
+            .setEnvironment(envs)
+            .setDirectory(directory ?: TerminalProjectOptionsProvider.getInstance(project).startingDirectory)
+            .setConsole(false)
+            .setCygwin(false)
+            .setLogFile(logFile)
+            .start()
       } catch (e: IOException) {
         throw ExecutionException(e)
       }
