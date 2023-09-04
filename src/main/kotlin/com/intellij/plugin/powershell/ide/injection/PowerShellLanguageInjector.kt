@@ -5,14 +5,13 @@ import com.intellij.lang.injection.InjectedLanguageManager
 import com.intellij.lang.injection.MultiHostInjector
 import com.intellij.lang.injection.MultiHostRegistrar
 import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.util.Trinity
 import com.intellij.plugin.powershell.psi.PowerShellStringLiteralExpression
 import com.intellij.plugin.powershell.psi.PowerShellTypes
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiLanguageInjectionHost
 import com.intellij.psi.tree.TokenSet
 import org.intellij.plugins.intelliLang.inject.InjectedLanguage
 import org.intellij.plugins.intelliLang.inject.InjectorUtils
+import org.intellij.plugins.intelliLang.inject.InjectorUtils.InjectionInfo
 import org.intellij.plugins.intelliLang.inject.TemporaryPlacesRegistry
 import org.intellij.plugins.intelliLang.inject.config.BaseInjection
 
@@ -43,7 +42,7 @@ class PowerShellLanguageInjector : MultiHostInjector {
     if (context.hasSubstitutions()) {
       val parts = splitLiteralToInjectionParts(baseInjection, context)
       val language = InjectorUtils.getLanguageByString(baseInjection.injectedLanguageId) ?: return
-      InjectorUtils.registerInjection(language, parts.ranges, file, registrar)
+      InjectorUtils.registerInjection(language, file, parts.ranges, registrar)
       InjectorUtils.registerSupport(support, false, context, language)
       InjectorUtils.putInjectedFileUserData(context, language, InjectedLanguageManager.FRANKENSTEIN_INJECTION,
                                             if (parts.isUnparsable) java.lang.Boolean.TRUE else null)
@@ -53,7 +52,7 @@ class PowerShellLanguageInjector : MultiHostInjector {
   }
 
   private fun splitLiteralToInjectionParts(baseInjection: BaseInjection, context: PowerShellStringLiteralExpression): PowerShellInjectionParts {
-    val ranges = mutableListOf<Trinity<PsiLanguageInjectionHost, InjectedLanguage, TextRange>>()
+    val ranges = mutableListOf<InjectionInfo>()
     if (!context.isExpandable()) {
       ranges.add(createInjectionRange(context, baseInjection, context.textRange, baseInjection.prefix, baseInjection.suffix))
       return PowerShellInjectionParts(ranges, false)
@@ -99,13 +98,13 @@ class PowerShellLanguageInjector : MultiHostInjector {
   }
 
 
-  private fun createInjectionRange(literal: PowerShellStringLiteralExpression, injection: BaseInjection, range: TextRange, prefix: String, suffix: String): Trinity<PsiLanguageInjectionHost, InjectedLanguage, TextRange> {
+  private fun createInjectionRange(literal: PowerShellStringLiteralExpression, injection: BaseInjection, range: TextRange, prefix: String, suffix: String): InjectionInfo {
     TextRange.assertProperRange(range, injection)
     val injectedLanguage = InjectedLanguage.create(injection.injectedLanguageId, prefix, suffix, true)!!
-    return Trinity.create(literal, injectedLanguage, range)
+    return InjectionInfo(literal, injectedLanguage, range)
   }
 
-  class PowerShellInjectionParts(val ranges: MutableList<Trinity<PsiLanguageInjectionHost, InjectedLanguage, TextRange>>, val isUnparsable: Boolean = false)
+  class PowerShellInjectionParts(val ranges: MutableList<InjectionInfo>, val isUnparsable: Boolean = false)
 }
 
 private const val MISSING_VALUE = "missingValue"
