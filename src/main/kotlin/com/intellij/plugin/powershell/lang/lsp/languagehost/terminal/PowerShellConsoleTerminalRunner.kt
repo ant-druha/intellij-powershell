@@ -26,10 +26,10 @@ import com.intellij.plugin.powershell.lang.lsp.languagehost.EditorServicesLangua
 import com.intellij.plugin.powershell.lang.lsp.languagehost.LanguageHostConnectionManager
 import com.intellij.plugin.powershell.lang.lsp.languagehost.LanguageServerEndpoint
 import com.intellij.terminal.JBTerminalWidget
+import com.intellij.terminal.pty.PtyProcessTtyConnector
 import com.intellij.ui.GuiUtils
 import com.intellij.util.EnvironmentUtil
 import com.intellij.util.concurrency.AppExecutorUtil
-import com.jediterm.pty.PtyProcessTtyConnector
 import com.jediterm.terminal.TtyConnector
 import com.jediterm.terminal.ui.TerminalWidget
 import com.pty4j.PtyProcess
