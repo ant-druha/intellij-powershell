@@ -27,8 +27,8 @@ import com.intellij.plugin.powershell.lang.lsp.languagehost.LanguageHostConnecti
 import com.intellij.plugin.powershell.lang.lsp.languagehost.LanguageServerEndpoint
 import com.intellij.terminal.JBTerminalWidget
 import com.intellij.terminal.pty.PtyProcessTtyConnector
-import com.intellij.ui.GuiUtils
 import com.intellij.util.EnvironmentUtil
+import com.intellij.util.ModalityUiUtil
 import com.intellij.util.concurrency.AppExecutorUtil
 import com.jediterm.terminal.TtyConnector
 import com.jediterm.terminal.ui.TerminalWidget
@@ -102,15 +102,14 @@ class PowerShellConsoleTerminalRunner(project: Project) : EditorServicesLanguage
     try {
       initConsoleUI(process)
     } catch (e: Exception) {
-      GuiUtils.invokeLaterIfNeeded({ Messages.showErrorDialog(this@PowerShellConsoleTerminalRunner.myProject, e.message, "Launching PowerShell terminal console") },
-                                   ModalityState.NON_MODAL)
+      ModalityUiUtil.invokeLaterIfNeeded(ModalityState.nonModal()) { Messages.showErrorDialog(this@PowerShellConsoleTerminalRunner.myProject, e.message, "Launching PowerShell terminal console") }
     }
     return process
   }
 
   private fun initConsoleUI(process: PtyProcess) {
     try {
-      GuiUtils.invokeLaterIfNeeded({ doInitConsoleUI(process) }, ModalityState.NON_MODAL)
+      ModalityUiUtil.invokeLaterIfNeeded(ModalityState.nonModal()) { doInitConsoleUI(process) }
     } catch (e: Exception) {
       throw RuntimeException(e.message, e)
     }

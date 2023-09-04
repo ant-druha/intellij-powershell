@@ -8,12 +8,12 @@ import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
-import com.intellij.plugin.powershell.lang.lsp.ide.EditorEventManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.plugin.powershell.lang.lsp.ide.EditorEventManager
 import com.intellij.plugin.powershell.lang.lsp.languagehost.LanguageServerEndpoint
-import com.intellij.ui.GuiUtils
 import com.intellij.plugin.powershell.lang.lsp.util.getTextEditor
+import com.intellij.util.ModalityUiUtil
 import org.eclipse.lsp4j.*
 import org.eclipse.lsp4j.jsonrpc.CompletableFutures
 import org.eclipse.lsp4j.jsonrpc.Endpoint
@@ -53,7 +53,7 @@ class PSLanguageClientImpl(private val project: Project) : LanguageClient, Endpo
         return@computeAsync unsupported
       }
       val descriptor = OpenFileDescriptor(project, vFile, 0)
-      GuiUtils.invokeLaterIfNeeded({ FileEditorManager.getInstance(project).openTextEditor(descriptor, true) }, ModalityState.NON_MODAL)
+      ModalityUiUtil.invokeLaterIfNeeded(ModalityState.nonModal()) { FileEditorManager.getInstance(project).openTextEditor(descriptor, true) }
       return@computeAsync ok
     }
   }
