@@ -19,7 +19,6 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.SystemInfo
-import com.intellij.openapi.vfs.CharsetToolkit
 import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.plugin.powershell.lang.lsp.languagehost.EditorServicesLanguageHostStarter
@@ -47,7 +46,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import javax.swing.JPanel
 
 class PowerShellConsoleTerminalRunner(project: Project) : EditorServicesLanguageHostStarter(project), LanguageHostConnectionManager {
-  private val myDefaultCharset = CharsetToolkit.UTF8_CHARSET
+  private val myDefaultCharset = Charsets.UTF_8
   private val LOG = Logger.getInstance(javaClass)
 
   private var myServer: LanguageServerEndpoint? = null
