@@ -13,7 +13,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - [#89](https://github.com/ant-druha/intellij-powershell/pull/89): Allow entering the executables from `PATH` in the plugin settings, thanks to @ZhengKeli
 
 ### Fixed
-- [$124](https://github.com/ant-druha/intellij-powershell/pull/124): Support placing function name on next line in function definition, thanks to @VladRassokhin
+- [#124](https://github.com/ant-druha/intellij-powershell/pull/124): Support placing function name on next line in function definition, thanks to @VladRassokhin
+
+### Added
+- [#128](https://github.com/ant-druha/intellij-powershell/pull/128): The optional error reports are now sent to the Marketplace in newer IDE versions after the user approval
 
 ## [2.0.10] - 2022-02-25
 ### Fixed
