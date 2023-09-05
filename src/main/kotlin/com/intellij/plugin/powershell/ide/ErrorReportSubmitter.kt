@@ -1,17 +1,20 @@
 package com.intellij.plugin.powershell.ide
 
-import com.intellij.diagnostic.ITNReporter
 import com.intellij.openapi.diagnostic.ErrorReportSubmitter
 import com.intellij.openapi.diagnostic.IdeaLoggingEvent
+import com.intellij.openapi.extensions.ExtensionNotApplicableException
 
 class ErrorReportSubmitter : ErrorReportSubmitter() {
-    private val delegate: ErrorReportSubmitter = try {
-        // Added in 233.2912
-        Class.forName("com.intellij.diagnostic.JetBrainsMarketplaceErrorReportSubmitter")
-                .declaredConstructors.first().newInstance() as ErrorReportSubmitter
-    } catch (e: Throwable) {
-        ITNReporter()
+
+  private val delegate: ErrorReportSubmitter
+  init {
+    try {
+      delegate = Class.forName("com.intellij.diagnostic.JetBrainsMarketplaceErrorReportSubmitter")
+        .declaredConstructors.first().newInstance() as ErrorReportSubmitter
+    } catch (e: ClassNotFoundException) {
+      throw ExtensionNotApplicableException.create()
     }
+  }
 
     override fun changeReporterAccount(parentComponent: java.awt.Component): Unit = delegate.changeReporterAccount(parentComponent)
 
