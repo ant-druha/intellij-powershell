@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## [Unreleased] (2.1.0)
 ### Changed
 - The minimal supported IntelliJ version is now 2023.2
-- [#45](https://github.com/ant-druha/intellij-powershell/pull/45): Upgrade PSScriptAnalyzer from 1.17.1 to 1.19.0, thanks to @bergmeister
+- [#45](https://github.com/ant-druha/intellij-powershell/pull/45): Upgrade PSScriptAnalyzer from 1.17.1 to 1.21.0, thanks to @bergmeister
 - [#75](https://github.com/ant-druha/intellij-powershell/pull/75): Add indents for array elements when formatting, thanks to @VladRassokhin
 - [#90](https://github.com/ant-druha/intellij-powershell/pull/90): Allow for more user interaction with the run configuration in terminal (use PTY when available), thanks to @ZhengKeli
 - [#89](https://github.com/ant-druha/intellij-powershell/pull/89): Allow entering the executables from `PATH` in the plugin settings, thanks to @ZhengKeli
