@@ -56,7 +56,7 @@ jobs:
       - name: Upload the artifact
         uses: actions/upload-artifact@v2
         with:
-          name: PowerShell-${{ steps.version.outputs.version }}.zip
+          name: PowerShell-${{ steps.version.outputs.version }}
           path: build/distributions/unpacked
 
       - name: Create a release
