@@ -4,9 +4,14 @@
   <vendor email="andrey.dernov@gmail.com" url="https://github.com/ant-druha/PowerShell/issues">andrey.dernov@gmail.com</vendor>
 
   <description><![CDATA[
-    Provides <a href="https://docs.microsoft.com/en-us/powershell/scripting/powershell-scripting">PowerShell</a> code completion and script execution support for IntelliJ IDEs.<br>
-    <br>
-    <b>Plugin page:</b> <a href="https://plugins.jetbrains.com/plugin/10249">https://plugins.jetbrains.com/plugin/10249</a>
+    <p>Provides <a href="https://docs.microsoft.com/en-us/powershell/scripting/powershell-scripting">PowerShell</a> code completion and script execution support for IntelliJ IDEs.</p>
+    <p><b>Plugin page:</b> <a href="https://plugins.jetbrains.com/plugin/10249">https://plugins.jetbrains.com/plugin/10249</a></p>
+    <p>This plugin bundles the following third-party software:</p>
+    <ul>
+      <li><a href="https://github.com/PowerShellOrg/Plaster">Plaster</a>,</li>
+      <li><a href="https://github.com/PowerShell/PowerShellEditorServices">PowerShell Editor Services</a>,</li>
+      <li><a href="https://github.com/PowerShell/PSScriptAnalyzer">PSScriptAnalyzer</a>.</li>
+    </ul>
     ]]></description>
 
   <depends>com.intellij.modules.platform</depends>
