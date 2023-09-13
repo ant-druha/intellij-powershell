@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased] (2.1.0)
+## [2.1.0] - 2023-09-13
 ### Changed
 - The minimal supported IntelliJ version is now 2023.2
 - [#45](https://github.com/ant-druha/intellij-powershell/pull/45): Upgrade PSScriptAnalyzer from 1.17.1 to 1.21.0, thanks to @bergmeister
@@ -176,4 +176,5 @@ Initial editor and code completion support:
 [2.0.8]: https://github.com/ant-druha/intellij-powershell/compare/v2.0.7...v2.0.8
 [2.0.9]: https://github.com/ant-druha/intellij-powershell/compare/v2.0.8...v2.0.9
 [2.0.10]: https://github.com/ant-druha/intellij-powershell/compare/v2.0.9...v2.0.10
-[Unreleased]: https://github.com/ant-druha/intellij-powershell/compare/v2.0.10...HEAD
+[2.1.0]: https://github.com/ant-druha/intellij-powershell/compare/v2.0.10...v2.1.0
+[Unreleased]: https://github.com/ant-druha/intellij-powershell/compare/v2.1.0...HEAD

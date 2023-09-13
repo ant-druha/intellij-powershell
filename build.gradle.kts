@@ -23,7 +23,7 @@ sourceSets {
 }
 
 group = "com.intellij.plugin"
-version = "2.0.10"
+version = "2.1.0"
 
 repositories {
   mavenCentral()
