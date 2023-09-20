@@ -1,6 +1,6 @@
 package com.intellij.plugin.powershell.ide.editor.formatting
 
-import com.intellij.openapi.options.Configurable
+import com.intellij.psi.codeStyle.CodeStyleConfigurable
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.codeStyle.CodeStyleSettingsProvider
 import com.intellij.psi.codeStyle.CustomCodeStyleSettings
@@ -14,8 +14,8 @@ class PowerShellCodeStyleSettingsProvider : CodeStyleSettingsProvider() {
     return "PowerShell"
   }
 
-  override fun createSettingsPage(settings: CodeStyleSettings, originalSettings: CodeStyleSettings): Configurable {
-    return PowerShellCodeStyleConfigurable(settings, originalSettings)
+  override fun createConfigurable(settings: CodeStyleSettings, modelSettings: CodeStyleSettings): CodeStyleConfigurable {
+    return PowerShellCodeStyleConfigurable(settings, modelSettings)
   }
 
   override fun createCustomSettings(settings: CodeStyleSettings): CustomCodeStyleSettings {
