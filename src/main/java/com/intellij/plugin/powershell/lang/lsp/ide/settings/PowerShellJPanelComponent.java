@@ -29,8 +29,8 @@ import static com.intellij.plugin.powershell.ide.run.PSExecutionUtilKt.findPsExe
 import static com.intellij.plugin.powershell.lang.lsp.languagehost.EditorServicesLanguageHostStarter.Companion;
 
 public class PowerShellJPanelComponent {
-  private static final String PS_VSCODE_LINK = MessagesBundle.INSTANCE.message("powershell.vs.code.extension.install.link");
-  private static final String PS_ES_LINK = MessagesBundle.INSTANCE.message("powershell.editor.services.download.link");
+  private static final String PS_VSCODE_LINK = MessagesBundle.message("powershell.vs.code.extension.install.link");
+  private static final String PS_ES_LINK = MessagesBundle.message("powershell.editor.services.download.link");
   private JPanel myPanel;
   private TextFieldWithBrowseButton myPSExtensionPathTextField;
   private final Logger LOG = Logger.getInstance(getClass());
@@ -46,7 +46,7 @@ public class PowerShellJPanelComponent {
 
   PowerShellJPanelComponent() {
     setVersionLabelVisible(false);
-    String pathDescription = MessagesBundle.INSTANCE.message("powershell.extension.path.form.description", PS_ES_LINK);
+    String pathDescription = MessagesBundle.message("powershell.extension.path.form.description", PS_ES_LINK);
     myExplanationTextPane.setEditorKit(HTMLEditorKitBuilder.simple());
     myExplanationTextPane.setEditable(false);
     myExplanationTextPane.setBackground(UIUtil.getWindowColor());
@@ -78,7 +78,7 @@ public class PowerShellJPanelComponent {
 
   @NotNull
   private String getLabeledText(@Nullable String version) {
-    return MessagesBundle.INSTANCE.message("ps.editor.services.detected.version.label") + " " + StringUtil.notNullize(version);
+    return MessagesBundle.message("ps.editor.services.detected.version.label") + " " + StringUtil.notNullize(version);
   }
 
   String getPowerShellExtensionPath() {
@@ -144,12 +144,12 @@ public class PowerShellJPanelComponent {
 
   private void createUIComponents() {
     //noinspection DialogTitleCapitalization
-    myIsUseLanguageServerCheckBox = new JBCheckBox(MessagesBundle.INSTANCE.message("settings.powershell.lsp.is.enabled.box.text"));
+    myIsUseLanguageServerCheckBox = new JBCheckBox(MessagesBundle.message("settings.powershell.lsp.is.enabled.box.text"));
     //noinspection DialogTitleCapitalization
-    myPathToPSExtensionLabel = new JBLabel(MessagesBundle.INSTANCE.message("powershell.extension.path.form.label"));
+    myPathToPSExtensionLabel = new JBLabel(MessagesBundle.message("powershell.extension.path.form.label"));
     myPathToPSExtDirjTextField = new JBTextField(0);
     myPSExtensionPathTextField = FormUIUtil.createTextFieldWithBrowseButton(
-            MessagesBundle.INSTANCE.message("powershell.editor.services.path.dialog.text"),
+            MessagesBundle.message("powershell.editor.services.path.dialog.text"),
             myPathToPSExtDirjTextField,
             new FileChooserDescriptor(false, true, false, false, false, false) {
               @Override

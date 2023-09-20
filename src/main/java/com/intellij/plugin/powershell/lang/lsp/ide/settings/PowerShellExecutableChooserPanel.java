@@ -49,7 +49,7 @@ public class PowerShellExecutableChooserPanel extends JComponent {
     });
     FileChooserDescriptor fileChooserDescriptor = new FileChooserDescriptor(true, false, false, false, false, false);
     psExecutablePathTextFieldChooser = FormUIUtil.createTextFieldWithBrowseButton(
-      MessagesBundle.INSTANCE.message("powershell.executable.path.dialog.text"),
+      MessagesBundle.message("powershell.executable.path.dialog.text"),
       textField, fileChooserDescriptor);
   }
 
@@ -80,7 +80,7 @@ public class PowerShellExecutableChooserPanel extends JComponent {
   public @Nullable String getVersionValue() {
     String version = StringUtil.substringAfterLast(
       psDetectedVersion.getText(),
-      MessagesBundle.INSTANCE.message("ps.editor.services.detected.version.label"));
+      MessagesBundle.message("ps.editor.services.detected.version.label"));
     return StringUtil.trim(version);
   }
 
@@ -90,7 +90,7 @@ public class PowerShellExecutableChooserPanel extends JComponent {
 
   @NotNull
   private String getLabeledText(@Nullable String version) {
-    return MessagesBundle.INSTANCE.message("ps.editor.services.detected.version.label") + " " + StringUtil.notNullize(version);
+    return MessagesBundle.message("ps.editor.services.detected.version.label") + " " + StringUtil.notNullize(version);
   }
 
 }
