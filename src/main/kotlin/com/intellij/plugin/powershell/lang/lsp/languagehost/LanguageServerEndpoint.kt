@@ -5,20 +5,24 @@ package com.intellij.plugin.powershell.lang.lsp.languagehost
 
 import com.intellij.ide.actions.ShowSettingsUtilImpl
 import com.intellij.notification.*
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.project.ProjectManagerListener
+import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.removeUserData
+import com.intellij.openapi.vfs.AsyncFileListener
 import com.intellij.openapi.vfs.VfsUtil
-import com.intellij.openapi.vfs.VirtualFileEvent
-import com.intellij.openapi.vfs.VirtualFileListener
 import com.intellij.openapi.vfs.VirtualFileManager
+import com.intellij.openapi.vfs.newvfs.events.VFileContentChangeEvent
+import com.intellij.openapi.vfs.newvfs.events.VFileEvent
 import com.intellij.plugin.powershell.PowerShellIcons
 import com.intellij.plugin.powershell.ide.MessagesBundle
+import com.intellij.plugin.powershell.ide.PluginProjectDisposableRoot
 import com.intellij.plugin.powershell.lang.lsp.client.PSLanguageClientImpl
 import com.intellij.plugin.powershell.lang.lsp.ide.DEFAULT_DID_CHANGE_CONFIGURATION_PARAMS
 import com.intellij.plugin.powershell.lang.lsp.ide.EditorEventManager
@@ -42,7 +46,7 @@ import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
 
-class LanguageServerEndpoint(private val languageHostConnectionManager: LanguageHostConnectionManager, private val project: Project) {
+class LanguageServerEndpoint(private val languageHostConnectionManager: LanguageHostConnectionManager, private val project: Project) : Disposable {
   private val LOG: Logger = Logger.getInstance(javaClass)
   private var client: PSLanguageClientImpl = PSLanguageClientImpl(project)
   private var languageServer: LanguageServer? = null
@@ -57,7 +61,6 @@ class LanguageServerEndpoint(private val languageHostConnectionManager: Language
   private var crashCount: Int = 0
   private var myFailedStarts = 0
   private val MAX_FAILED_STARTS = 2
-  private var MY_REMOTE_FILES_CHANGE_LISTENER: VirtualFileListener? = null
 
   override fun toString(): String {
     val consoleString = if (isConsoleConnection()) " Console" else ""
@@ -69,6 +72,7 @@ class LanguageServerEndpoint(private val languageHostConnectionManager: Language
   init {
 //    dumpFile.parentFile.mkdirs()
     addShutdownHook()
+    Disposer.register(PluginProjectDisposableRoot.getInstance(project), this)
   }
 
   private fun addShutdownHook() {
@@ -163,13 +167,15 @@ class LanguageServerEndpoint(private val languageHostConnectionManager: Language
     else null
   }
 
+  override fun dispose() {
+    stop()
+  }
+
   private fun stop() {
     val copy = connectedEditors.toMap()
     for (e in copy) {
       disconnectEditor(e.key)
     }
-    val listener = MY_REMOTE_FILES_CHANGE_LISTENER
-    if (listener != null) VirtualFileManager.getInstance().removeVirtualFileListener(listener)
 
     initializeFuture?.cancel(true)
     initializeFuture = null
@@ -292,17 +298,24 @@ class LanguageServerEndpoint(private val languageHostConnectionManager: Language
   }
 
   private fun addRemoteFilesChangeListener(server: LanguageServer) {
-    val listener = object : VirtualFileListener {
-      override fun contentsChanged(event: VirtualFileEvent) {
-        val canonicalPath = event.file.canonicalPath?.replaceFirst("/private", "")
-        if (isRemotePath(canonicalPath)) {
-          val uri = Paths.get(canonicalPath).toUri().toASCIIString()
-          server.textDocumentService?.didSave(DidSaveTextDocumentParams(TextDocumentIdentifier(uri), null))//notify Editor Services to save remote file
+    val listener = object : AsyncFileListener {
+      override fun prepareChange(events: List<VFileEvent>): AsyncFileListener.ChangeApplier? {
+        val changed = events.filterIsInstance<VFileContentChangeEvent>()
+        if (changed.isEmpty()) return null
+        return object : AsyncFileListener.ChangeApplier {
+          override fun beforeVfsChange() {
+            changed
+                .mapNotNull { it.file.canonicalPath?.replaceFirst("/private", "") }
+                .filter { isRemotePath(it) }
+                .map { Paths.get(it).toUri().toASCIIString() }
+                .forEach { uri ->
+                  server.textDocumentService?.didSave(DidSaveTextDocumentParams(TextDocumentIdentifier(uri), null))//notify Editor Services to save remote file
+                }
+          }
         }
       }
     }
-    MY_REMOTE_FILES_CHANGE_LISTENER = listener
-    VirtualFileManager.getInstance().addVirtualFileListener(listener)
+    VirtualFileManager.getInstance().addAsyncFileListener(listener, this)
   }
 
   private fun showPowerShellNotConfiguredNotification() {
