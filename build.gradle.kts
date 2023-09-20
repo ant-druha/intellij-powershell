@@ -51,6 +51,8 @@ tasks {
 
   withType<JavaCompile> {
     options.encoding = "UTF-8"
+    sourceCompatibility = "17"
+    targetCompatibility = "17"
   }
   withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions.jvmTarget = "17"
