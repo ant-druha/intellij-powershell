@@ -15,7 +15,6 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.project.ProjectManagerListener
-import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.plugin.powershell.PowerShellFileType
@@ -82,18 +81,14 @@ class LSPInitMain : PersistentStateComponent<LSPInitMain.PowerShellInfo>, Dispos
     }
 
     fun getServerWithConsoleProcess(project: Project): LanguageServerEndpoint {
-      val lspInitMain = getInstance()
-      return lspInitMain.psConsoleLanguageServer.computeIfAbsent(project) { prj ->
+      return getInstance().psConsoleLanguageServer.computeIfAbsent(project) { prj ->
         LanguageServerEndpoint(PowerShellConsoleTerminalRunner(prj), prj)
-            .also { endpoint -> Disposer.register(lspInitMain, endpoint) }
       }
     }
 
     private fun getEditorLanguageServer(project: Project): LanguageServerEndpoint {
-      val lspInitMain = getInstance()
-      return lspInitMain.psEditorLanguageServer.computeIfAbsent(project) { prj ->
+      return getInstance().psEditorLanguageServer.computeIfAbsent(project) { prj ->
         LanguageServerEndpoint(EditorServicesLanguageHostStarter(prj), prj)
-            .also { endpoint -> Disposer.register(lspInitMain, endpoint) }
       }
     }
 

@@ -10,8 +10,6 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.project.ProjectManager
-import com.intellij.openapi.project.ProjectManagerListener
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.removeUserData
@@ -70,17 +68,7 @@ class LanguageServerEndpoint(private val languageHostConnectionManager: Language
 //  private var fileWriter: PrintWriter? = null
 
   init {
-//    dumpFile.parentFile.mkdirs()
-    addShutdownHook()
     Disposer.register(PluginProjectDisposableRoot.getInstance(project), this)
-  }
-
-  private fun addShutdownHook() {
-    ProjectManager.getInstance().addProjectManagerListener(project, object : ProjectManagerListener {
-      override fun projectClosing(project: Project) {
-        stop()
-      }
-    })
   }
 
   companion object {
