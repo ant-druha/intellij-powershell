@@ -269,9 +269,10 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
     if ("needs_install" == result) {
       val content = "Required $editorServicesVersion 'PowerShellEditorServices' module is not found. Please install PowerShell VS Code extension"
       val title = "PowerShellEditorServices $editorServicesVersion module not found."
-      val notify = Notification("PowerShell Extension Not Found", PowerShellIcons.FILE, title, null, content, NotificationType.INFORMATION, null)
+      val notify = Notification("PowerShell.MissingExtension", title, content, NotificationType.INFORMATION)
+      notify.setIcon(PowerShellIcons.FILE)
       notify.addAction(BrowseNotificationAction("Install VSCode PowerShell", MessagesBundle.message("powershell.vs.code.extension.install.link")))
-      Notifications.Bus.notify(notify)
+      Notifications.Bus.notify(notify, myProject)
       return false
     }
     if (StringUtil.isNotEmpty(result)) {

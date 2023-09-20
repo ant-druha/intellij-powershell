@@ -3,12 +3,8 @@
  */
 package com.intellij.plugin.powershell.lang.lsp.languagehost
 
-import com.intellij.ide.BrowserUtil
 import com.intellij.ide.actions.ShowSettingsUtilImpl
-import com.intellij.notification.Notification
-import com.intellij.notification.NotificationListener
-import com.intellij.notification.NotificationType
-import com.intellij.notification.Notifications
+import com.intellij.notification.*
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileEditor.FileDocumentManager
@@ -34,7 +30,6 @@ import com.intellij.plugin.powershell.lang.lsp.ide.listeners.SelectionListenerIm
 import com.intellij.plugin.powershell.lang.lsp.ide.settings.PowerShellConfigurable
 import com.intellij.plugin.powershell.lang.lsp.util.getTextEditor
 import com.intellij.plugin.powershell.lang.lsp.util.isRemotePath
-import com.intellij.xml.util.XmlStringUtil
 import org.eclipse.lsp4j.*
 import org.eclipse.lsp4j.jsonrpc.messages.Either
 import org.eclipse.lsp4j.launch.LSPLauncher
@@ -312,36 +307,29 @@ class LanguageServerEndpoint(private val languageHostConnectionManager: Language
 
   private fun showPowerShellNotConfiguredNotification() {
     if (installExtensionNotificationShown) return
-    val title = "PowerShell extension is not installed"
-    val downloadLink = "#download"
-    val configureLink = "#configure"
-    val content = MessagesBundle.message("vs.code.powershell.extension.configure.message", downloadLink, configureLink)
-    val listener = NotificationListener { _, event ->
-      if (configureLink == event.description) {
-        ShowSettingsUtilImpl.showSettingsDialog(project, PowerShellConfigurable.ID, PowerShellConfigurable.NAME)
-      } else if (downloadLink == event.description) {
-        BrowserUtil.browse(MessagesBundle.message("powershell.vs.code.extension.install.link"))
-      }
-    }
-    val installPSExt = Notification("PowerShell Extension Not Found", PowerShellIcons.FILE, title, null, XmlStringUtil.wrapInHtml(content), NotificationType.INFORMATION, listener)
+    val title = MessagesBundle.message("powershell.vs.code.extension.not.installed.title")
+    val content = MessagesBundle.message("powershell.vs.code.extension.not.installed.message")
+    val installPSExt = Notification("PowerShell.MissingExtension", title, content, NotificationType.INFORMATION)
+    installPSExt.setIcon(PowerShellIcons.FILE)
+    installPSExt.addAction(BrowseNotificationAction(MessagesBundle.message("powershell.vs.code.extension.install.action"), MessagesBundle.message("powershell.vs.code.extension.install.link")))
+    installPSExt.addAction(NotificationAction.createExpiring(MessagesBundle.message("powershell.vs.code.extension.configure.action")) { event, notification ->
+      ShowSettingsUtilImpl.showSettingsDialog(project, PowerShellConfigurable.ID, PowerShellConfigurable.NAME)
+    })
 
-    Notifications.Bus.notify(installPSExt)
+    Notifications.Bus.notify(installPSExt, project)
     installExtensionNotificationShown = true
   }
 
   private fun showPowerShellNotInstalledNotification() {
     if (installPSNotificationShown) return
-    val title = "PowerShell is not installed"
+    val title = MessagesBundle.message("powershell.not.installed.title")
     val downloadLink = MessagesBundle.message("powershell.download.link")
-    val content = MessagesBundle.message("powershell.install.message", downloadLink)
-    val listener = NotificationListener { _, event ->
-      if (downloadLink == event.description) {
-        BrowserUtil.browse(downloadLink)
-      }
-    }
-    val installPSExt = Notification("PowerShell Extension Not Found", PowerShellIcons.FILE, title, null, XmlStringUtil.wrapInHtml(content), NotificationType.INFORMATION, listener)
+    val content = MessagesBundle.message("powershell.not.installed.message")
+    val installPSExt = Notification("PowerShell.MissingExtension", title, content, NotificationType.INFORMATION)
+    installPSExt.setIcon(PowerShellIcons.FILE)
+    installPSExt.addAction(BrowseNotificationAction(MessagesBundle.message("powershell.not.installed.install.action"), downloadLink))
 
-    Notifications.Bus.notify(installPSExt)
+    Notifications.Bus.notify(installPSExt, project)
     myFailedStarts = MAX_FAILED_STARTS
     installPSNotificationShown = true
   }
