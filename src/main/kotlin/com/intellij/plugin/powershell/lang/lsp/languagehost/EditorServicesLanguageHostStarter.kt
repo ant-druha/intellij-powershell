@@ -4,6 +4,10 @@ import com.google.common.io.Files
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.intellij.execution.configurations.GeneralCommandLine
+import com.intellij.execution.process.OSProcessHandler
+import com.intellij.execution.process.ProcessAdapter
+import com.intellij.execution.process.ProcessEvent
+import com.intellij.execution.process.ProcessOutputType
 import com.intellij.notification.BrowseNotificationAction
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
@@ -12,6 +16,7 @@ import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
@@ -24,6 +29,8 @@ import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.getEditorServicesModuleVersion
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.getEditorServicesStartupScript
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.getPSExtensionModulesDir
+import com.intellij.util.execution.ParametersListUtil
+import com.intellij.util.io.BaseOutputReader
 import com.sun.jna.Pointer
 import com.sun.jna.platform.win32.Kernel32
 import com.sun.jna.platform.win32.WinNT
@@ -33,13 +40,12 @@ import java.io.*
 import java.net.Socket
 import java.nio.channels.Channels
 import java.nio.charset.Charset
-import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
 
 open class EditorServicesLanguageHostStarter(protected val myProject: Project) : LanguageHostConnectionManager {
 
-  private val LOG: Logger = Logger.getInstance(javaClass) 
+  private val LOG: Logger = Logger.getInstance(javaClass)
   private var socket: Socket? = null
   private var myReadPipe: RandomAccessFile? = null
   private var myWritePipe: RandomAccessFile? = null
@@ -235,7 +241,8 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
   private fun startServerSession(): SessionInfo? {
     cachedPowerShellExtensionDir = null
     cachedEditorServicesModuleVersion = null
-    val process = createProcess(myProject, buildCommandLine(), null)
+    val commandLine = buildCommandLine()
+    val process = createProcess(myProject, commandLine, null)
     val fileWithSessionInfo = getSessionDetailsFile()
     //todo retry starting language service process one more time
     if (!waitForSessionFile(fileWithSessionInfo)) {
@@ -249,8 +256,13 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
       return null
     }
 
-    if (!checkOutput(process, getEditorServicesVersion(getPowerShellEditorServicesHome()))) {}
     val pid: Long = getProcessID(process)
+    processOutput(
+      process,
+      pid,
+      ParametersListUtil.join(commandLine),
+      getEditorServicesVersion(getPowerShellEditorServicesHome())
+    )
     myProcess = process
 
     var msg = "PowerShell language host process started, $sessionInfo"
@@ -260,32 +272,45 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
     return sessionInfo
   }
 
-  private fun checkOutput(process: Process, editorServicesVersion: String): Boolean {
-    process.waitFor(3000L, TimeUnit.MILLISECONDS)
-    if (useConsoleRepl()) return true
-    val br = BufferedReader(InputStreamReader(process.inputStream))
-    val er = BufferedReader(InputStreamReader(process.errorStream))
-    val result = if (br.ready()) br.readLine() else ""
-    if ("needs_install" == result) {
+  private fun processOutput(process: Process, pid: Long, commandLine: String, editorServicesVersion: String) {
+    if (useConsoleRepl()) return
+
+    fun showInstallNotification() {
       val content = "Required $editorServicesVersion 'PowerShellEditorServices' module is not found. Please install PowerShell VS Code extension"
       val title = "PowerShellEditorServices $editorServicesVersion module not found."
       val notify = Notification("PowerShell.MissingExtension", title, content, NotificationType.INFORMATION)
       notify.setIcon(PowerShellIcons.FILE)
       notify.addAction(BrowseNotificationAction("Install VSCode PowerShell", MessagesBundle.message("powershell.vs.code.extension.install.link")))
       Notifications.Bus.notify(notify, myProject)
-      return false
     }
-    if (StringUtil.isNotEmpty(result)) {
-      LOG.info("Startup script output:\n$result")
+
+    val handler = object : OSProcessHandler(process, commandLine) {
+      override fun readerOptions() = BaseOutputReader.Options.forMostlySilentProcess()
     }
-    if (er.ready()) {
-      var errorOutput = ""
-      for (line in er.readLines()) {
-        errorOutput += line
+    handler.addProcessListener(object : ProcessAdapter() {
+      var isFirstLineProcessed = false
+      override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
+        val line = event.text
+        val text = "host[$pid]: ${line.trimEnd()}"
+        if (ProcessOutputType.isStderr(outputType)) {
+          LOG.warn(text)
+        } else {
+          LOG.info(text)
+          if (ProcessOutputType.isStdout(outputType) && !isFirstLineProcessed) {
+            if (line == "needs_install") {
+              showInstallNotification()
+            }
+            isFirstLineProcessed = true
+          }
+
+        }
       }
-      if (StringUtil.isNotEmpty(errorOutput)) LOG.info("Startup script error output:\n$errorOutput")
-    }
-    return true
+
+      override fun processTerminated(event: ProcessEvent) {
+        LOG.info("Language host with PID = $pid has exited with code ${event.exitCode}.")
+      }
+    })
+    handler.startNotify()
   }
 
   private fun readTcpInfo(jsonResult: JsonObject): SessionInfo? {
