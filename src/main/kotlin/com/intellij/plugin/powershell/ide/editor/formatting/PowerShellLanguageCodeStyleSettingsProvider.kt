@@ -373,8 +373,7 @@ class PowerShellLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsPro
     }
   }
 
-  override fun getDefaultCommonSettings(): CommonCodeStyleSettings {
-    val defaultSettings = CommonCodeStyleSettings(language)
+  override fun customizeDefaults(defaultSettings: CommonCodeStyleSettings, indentOptions: CommonCodeStyleSettings.IndentOptions) {
     defaultSettings.KEEP_SIMPLE_LAMBDAS_IN_ONE_LINE = true
     defaultSettings.RIGHT_MARGIN = 115
     defaultSettings.SPACE_WITHIN_BRACES = true
@@ -395,11 +394,9 @@ class PowerShellLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsPro
 
     defaultSettings.FIELD_ANNOTATION_WRAP = CommonCodeStyleSettings.DO_NOT_WRAP
 
-    val indentOptions = defaultSettings.initIndentOptions()
     indentOptions.INDENT_SIZE = 4
     indentOptions.CONTINUATION_INDENT_SIZE = 8
     indentOptions.TAB_SIZE = 4
-    return defaultSettings
   }
 
   override fun getLanguage(): Language {
