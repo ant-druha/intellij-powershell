@@ -71,7 +71,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
     private data class HostDetails(val name: String, val profileId: String, val version: String)
     private open class SessionInfo private constructor(protected val powerShellVersion: String?, protected val status: String?) {
 
-      internal class Pipes internal constructor(internal val languageServiceReadPipeName: String,
+      class Pipes internal constructor(internal val languageServiceReadPipeName: String,
                                                 internal val languageServiceWritePipeName: String,
                                                 internal val debugServiceReadPipeName: String,
                                                 internal val debugServiceWritePipeName: String,
@@ -84,7 +84,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
         }
       }
 
-      internal class Tcp internal constructor(internal val languageServicePort: Int,
+      class Tcp internal constructor(internal val languageServicePort: Int,
                                               internal val debugServicePort: Int,
                                               powerShellVersion: String?,
                                               status: String?) : SessionInfo(powerShellVersion, status) {
@@ -302,7 +302,6 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
             }
             isFirstLineProcessed = true
           }
-
         }
       }
 
