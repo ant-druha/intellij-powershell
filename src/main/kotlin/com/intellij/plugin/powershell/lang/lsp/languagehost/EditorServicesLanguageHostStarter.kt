@@ -341,7 +341,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
   private fun readSessionFile(sessionFile: File): SessionInfo? {
     return try {
       val line = Files.asCharSource(sessionFile, Charset.forName("utf8")).readFirstLine()
-      val jsonResult = JsonParser().parse(line).asJsonObject
+      val jsonResult = JsonParser.parseString(line).asJsonObject
       readPipesInfo(jsonResult) ?: readTcpInfo(jsonResult)
     } catch (e: Exception) {
       LOG.warn("Error reading/parsing session details file $sessionFile: $e")

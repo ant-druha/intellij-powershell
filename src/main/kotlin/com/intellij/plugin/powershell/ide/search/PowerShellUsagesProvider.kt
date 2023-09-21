@@ -38,13 +38,13 @@ class PowerShellUsagesProvider : FindUsagesProvider {
 
   override fun getType(element: PsiElement): String {
     val componentType = PowerShellComponentType.typeOf(element)
-    return componentType?.toString()?.toLowerCase() ?: "reference"
+    return componentType?.toString()?.lowercase() ?: "reference"
   }
 
   override fun getDescriptiveName(element: PsiElement): String {
     return when (element) {
       is PsiNamedElement ->
-        PowerShellComponentType.typeOf(element)?.toString()?.toLowerCase() + " " + StringUtil.notNullize(element.name)
+        PowerShellComponentType.typeOf(element)?.toString()?.lowercase() + " " + StringUtil.notNullize(element.name)
       is PsiReference -> element.canonicalText
       else -> element.text
     }

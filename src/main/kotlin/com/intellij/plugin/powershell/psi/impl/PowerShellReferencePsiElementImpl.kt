@@ -13,7 +13,6 @@ import com.intellij.psi.PsiPolyVariantReference
 import com.intellij.psi.PsiReference
 import com.intellij.psi.impl.source.resolve.ResolveCache
 import com.intellij.psi.tree.IElementType
-import java.util.*
 
 /**
  * Andrey 18/08/17.
@@ -41,7 +40,7 @@ abstract class PowerShellReferencePsiElementImpl(node: ASTNode) : PowerShellPsiE
   }
 
   private fun addKeyword(kw: IElementType, elements: ArrayList<LookupElement>) {
-    elements.add(LookupElementBuilder.create(kw.toString().toLowerCase()).bold())
+    elements.add(LookupElementBuilder.create(kw.toString().lowercase()).bold())
   }
 
   private fun addLookupElement(e: PsiElement, lookupElements: ArrayList<LookupElement>) {

@@ -210,7 +210,7 @@ class PowerShellCompletionContributor : CompletionContributor() {
   }
 
   private fun buildKeyword(kw: String): LookupElement {
-    return LookupElementBuilder.create(kw.toLowerCase()).bold()
+    return LookupElementBuilder.create(kw.lowercase()).bold()
   }
 
   private fun buildLookupElement(e: PsiElement, context: ProcessingContext): LookupElement {

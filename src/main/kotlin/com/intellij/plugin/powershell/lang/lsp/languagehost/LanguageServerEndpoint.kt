@@ -313,7 +313,7 @@ class LanguageServerEndpoint(private val languageHostConnectionManager: Language
     val installPSExt = Notification("PowerShell.MissingExtension", title, content, NotificationType.INFORMATION)
     installPSExt.setIcon(PowerShellIcons.FILE)
     installPSExt.addAction(BrowseNotificationAction(MessagesBundle.message("powershell.vs.code.extension.install.action"), MessagesBundle.message("powershell.vs.code.extension.install.link")))
-    installPSExt.addAction(NotificationAction.createExpiring(MessagesBundle.message("powershell.vs.code.extension.configure.action")) { event, notification ->
+    installPSExt.addAction(NotificationAction.createSimpleExpiring(MessagesBundle.message("powershell.vs.code.extension.configure.action")) {
       ShowSettingsUtilImpl.showSettingsDialog(project, PowerShellConfigurable.ID, PowerShellConfigurable.NAME)
     })
 
