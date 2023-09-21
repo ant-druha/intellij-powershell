@@ -12,6 +12,7 @@ on:
 jobs:
   main:
     runs-on: ${{ matrix.image }}
+    timeout-minutes: 15
     strategy:
       matrix:
         image: [macos-12, ubuntu-22.04, windows-2022]
