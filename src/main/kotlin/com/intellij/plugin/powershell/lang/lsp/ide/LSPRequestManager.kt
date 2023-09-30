@@ -7,6 +7,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.plugin.powershell.lang.lsp.client.PSLanguageClientImpl
 import com.intellij.plugin.powershell.lang.lsp.languagehost.LanguageServerEndpoint
 import com.intellij.plugin.powershell.lang.lsp.languagehost.ServerStatus
+import com.intellij.util.io.await
 import org.eclipse.lsp4j.*
 import org.eclipse.lsp4j.jsonrpc.messages.Either
 import org.eclipse.lsp4j.services.LanguageServer
@@ -53,9 +54,9 @@ class LSPRequestManager(private val serverEndpoint: LanguageServerEndpoint, priv
     }
   }
 
-  fun completion(params: TextDocumentPositionParams): CompletableFuture<Either<List<CompletionItem>, CompletionList>>? {
+  suspend fun completion(params: TextDocumentPositionParams): Either<List<CompletionItem>, CompletionList>? {
     if (checkStatus()) try {
-      if (capabilities.completionProvider != null) return documentService.completion(params)
+      if (capabilities.completionProvider != null) return documentService.completion(params).await()
     } catch (e: Exception) {
       crashed(e)
     }

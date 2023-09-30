@@ -6,6 +6,7 @@ package com.intellij.plugin.powershell.lang.lsp.ide
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.runAndLogException
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.project.Project
@@ -24,7 +25,6 @@ import com.intellij.plugin.powershell.lang.lsp.util.editorToURIString
 import com.intellij.psi.PsiDocumentManager
 import org.eclipse.lsp4j.*
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 class EditorEventManager(private val project: Project, private val editor: Editor, private val mouseListener: EditorMouseListenerImpl,
                          private val mouseMotionListener: EditorMouseMotionListenerImpl, private val documentListener: DocumentListenerImpl,
@@ -146,25 +146,19 @@ class EditorEventManager(private val project: Project, private val editor: Edito
     return version - 1
   }
 
-  fun completion(pos: Position): CompletionList {
-    val request = requestManager.completion(TextDocumentPositionParams(identifier, pos))
-    val result = CompletionList()
-    if (request == null) return result
-    return try {
-      val res = request.get(500, TimeUnit.MILLISECONDS)
-      if (res != null) {
-        if (res.isLeft) {
-          result.items = res.left
-        } else if (res.isRight) {
-          result.setIsIncomplete(res.right.isIncomplete)
-          result.items = res.right.items
-        }
-        result
-      } else result
-    } catch (e: Exception) {
-      LOG.warn("Error on completion request: $e")
-      result
+  suspend fun completion(pos: Position): CompletionList {
+    val completions = CompletionList()
+    LOG.runAndLogException {
+      val res = requestManager.completion(TextDocumentPositionParams(identifier, pos)) ?: return completions
+      if (res.isLeft) {
+        completions.items = res.left
+      } else if (res.isRight) {
+        completions.setIsIncomplete(res.right.isIncomplete)
+        completions.items = res.right.items
+      }
     }
+
+    return completions
   }
 
   fun updateDiagnostics(diagnostics: List<Diagnostic>) {

@@ -6,6 +6,7 @@ import com.intellij.codeInsight.completion.util.ParenthesesInsertHandler
 import com.intellij.codeInsight.lookup.AutoCompletionPolicy
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementBuilder
+import com.intellij.openapi.progress.runBlockingCancellable
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.patterns.ElementPattern
@@ -28,8 +29,11 @@ import com.intellij.psi.impl.source.resolve.ResolveCache
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.ProcessingContext
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runInterruptible
 import org.eclipse.lsp4j.CompletionItem
 import org.eclipse.lsp4j.CompletionItemKind
+import kotlin.time.Duration.Companion.milliseconds
 
 class PowerShellCompletionContributor : CompletionContributor() {
 
@@ -54,11 +58,14 @@ class PowerShellCompletionContributor : CompletionContributor() {
   }
 
   override fun fillCompletionVariants(parameters: CompletionParameters, result: CompletionResultSet) {
-    if (getCompletionFromLanguageHost(parameters, result)) return
+    @Suppress("UnstableApiUsage") val gotResultFromHost = runBlockingCancellable {
+      getCompletionFromLanguageHost(parameters, result)
+    }
+    if (gotResultFromHost) return
     super.fillCompletionVariants(parameters, result)
   }
 
-  private fun getCompletionFromLanguageHost(parameters: CompletionParameters, result: CompletionResultSet): Boolean {
+  private suspend fun getCompletionFromLanguageHost(parameters: CompletionParameters, result: CompletionResultSet): Boolean {
     val position = parameters.position
     val offset = parameters.offset
     val editor = parameters.editor
