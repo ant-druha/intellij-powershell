@@ -3,8 +3,7 @@
  */
 package com.intellij.plugin.powershell.lang.lsp.ide
 
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.plugin.powershell.lang.lsp.client.PSLanguageClientImpl
+import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.plugin.powershell.lang.lsp.languagehost.LanguageServerEndpoint
 import com.intellij.plugin.powershell.lang.lsp.languagehost.ServerStatus
 import com.intellij.util.io.await
@@ -12,15 +11,14 @@ import org.eclipse.lsp4j.*
 import org.eclipse.lsp4j.jsonrpc.messages.Either
 import org.eclipse.lsp4j.services.LanguageServer
 import org.eclipse.lsp4j.services.TextDocumentService
-import org.eclipse.lsp4j.services.WorkspaceService
-import java.util.concurrent.CompletableFuture
 
-class LSPRequestManager(private val serverEndpoint: LanguageServerEndpoint, private val languageServer: LanguageServer,
-                        private val client: PSLanguageClientImpl, private val capabilities: ServerCapabilities) {
+class LSPRequestManager(
+  private val serverEndpoint: LanguageServerEndpoint,
+  languageServer: LanguageServer,
+  private val capabilities: ServerCapabilities
+) {
 
-  private val LOG: Logger = Logger.getInstance(javaClass)
   private val documentSyncOptions: TextDocumentSyncOptions? = if (capabilities.textDocumentSync.isRight) capabilities.textDocumentSync.right else null
-  private val workspaceService: WorkspaceService = languageServer.workspaceService
   private val documentService: TextDocumentService = languageServer.textDocumentService
 
   private fun checkStatus(): Boolean = serverEndpoint.getStatus() == ServerStatus.STARTED
@@ -42,7 +40,7 @@ class LSPRequestManager(private val serverEndpoint: LanguageServerEndpoint, priv
   }
 
   private fun crashed(e: Exception) {
-    LOG.warn(e)
+    thisLogger().warn(e)
     serverEndpoint.crashed(e)
   }
 
