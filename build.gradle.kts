@@ -36,12 +36,18 @@ dependencies {
   implementation("com.kohlschutter.junixsocket:junixsocket-common:2.3.3")
   implementation("com.kohlschutter.junixsocket:junixsocket-native-common:2.3.3")
 
-  implementation("org.eclipse.lsp4j:org.eclipse.lsp4j:0.3.0") {
-    exclude("com.google.code.gson:gson")
-    exclude("com.google.guava:guava")
-  }
+  implementation("org.eclipse.lsp4j:org.eclipse.lsp4j:0.3.0")
   testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
   testImplementation("junit:junit:4.11")
+}
+
+configurations {
+  runtimeClasspath {
+    // NOTE: Newer versions of these libraries are provided by IntelliJ, so let's exclude them from the dependency set
+    // of org.eclipse.lsp4j:
+    exclude("com.google.code.gson", "gson")
+    exclude("com.google.guava", "guava")
+  }
 }
 
 tasks {
