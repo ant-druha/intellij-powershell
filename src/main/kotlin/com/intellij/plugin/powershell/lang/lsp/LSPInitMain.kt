@@ -86,7 +86,7 @@ class LSPInitMain : PersistentStateComponent<LSPInitMain.PowerShellInfo>, Dispos
       }
     }
 
-    private fun getEditorLanguageServer(project: Project): LanguageServerEndpoint {
+    fun getEditorLanguageServer(project: Project): LanguageServerEndpoint {
       return getInstance().psEditorLanguageServer.computeIfAbsent(project) { prj ->
         LanguageServerEndpoint(EditorServicesLanguageHostStarter(prj), prj)
       }
@@ -127,7 +127,6 @@ class LSPInitMain : PersistentStateComponent<LSPInitMain.PowerShellInfo>, Dispos
       val consoleServer = getInstance().psConsoleLanguageServer[project] ?: return null
       return if (consoleServer.getStatus() == ServerStatus.STARTED && isRemotePath(file.canonicalPath)) consoleServer else null
     }
-
   }
 
   override fun dispose() {

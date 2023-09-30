@@ -32,14 +32,19 @@ import com.intellij.plugin.powershell.lang.lsp.ide.listeners.SelectionListenerIm
 import com.intellij.plugin.powershell.lang.lsp.ide.settings.PowerShellConfigurable
 import com.intellij.plugin.powershell.lang.lsp.util.getTextEditor
 import com.intellij.plugin.powershell.lang.lsp.util.isRemotePath
+import com.intellij.util.io.await
+import kotlinx.coroutines.delay
 import org.eclipse.lsp4j.*
 import org.eclipse.lsp4j.jsonrpc.messages.Either
 import org.eclipse.lsp4j.launch.LSPLauncher
 import org.eclipse.lsp4j.services.LanguageServer
+import org.jetbrains.annotations.TestOnly
 import java.io.File
 import java.net.URI
+import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
@@ -51,7 +56,7 @@ class LanguageServerEndpoint(private val languageHostConnectionManager: Language
   private var initializeFuture: CompletableFuture<InitializeResult>? = null
   private var launcherFuture: Future<*>? = null
   private var initializeResult: InitializeResult? = null
-  private val connectedEditors: MutableMap<URI, EditorEventManager> = HashMap()
+  private val connectedEditors = ConcurrentHashMap<URI, EditorEventManager>()
   private val rootPath = project.basePath
   private var capabilitiesAlreadyRequested: Boolean = false
   @Volatile
@@ -426,4 +431,18 @@ class LanguageServerEndpoint(private val languageHostConnectionManager: Language
 
   private fun isConsoleConnection(): Boolean = languageHostConnectionManager.useConsoleRepl()
 
+  @TestOnly
+  suspend fun waitForInit() {
+    while (initializeFuture == null) {
+      delay(50)
+    }
+    this.initializeFuture!!.await()
+  }
+
+  @TestOnly
+  suspend fun waitForEditorConnect(filePath: Path) {
+    while (!connectedEditors.containsKey(filePath.toUri())) {
+      delay(50)
+    }
+  }
 }

@@ -1,3 +1,5 @@
+import org.jetbrains.intellij.tasks.PrepareSandboxTask
+
 plugins {
   id("java")
   id("org.jetbrains.changelog") version "2.2.0"
@@ -64,7 +66,7 @@ tasks {
     kotlinOptions.jvmTarget = "17"
   }
 
-  prepareSandbox {
+  withType<PrepareSandboxTask> {
     from("${project.rootDir}/language_host/current") {
       into("${intellij.pluginName.get()}/lib/")
     }
