@@ -29,28 +29,25 @@ import com.intellij.psi.impl.source.resolve.ResolveCache
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.ProcessingContext
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runInterruptible
 import org.eclipse.lsp4j.CompletionItem
 import org.eclipse.lsp4j.CompletionItemKind
-import kotlin.time.Duration.Companion.milliseconds
+
+private val IS_BRACED_VARIABLE_CONTEXT: Key<Boolean> = Key.create("IS_BRACED_VARIABLE_CONTEXT")
+private val IS_VARIABLE_CONTEXT: Key<Boolean> = Key.create("IS_VARIABLE_CONTEXT")
+private val PUT_VARIABLE_CONTEXT: PatternCondition<PsiElement> =
+  object : PatternCondition<PsiElement>("In variable") {
+    override fun accepts(t: PsiElement, context: ProcessingContext): Boolean {
+      context.put(IS_VARIABLE_CONTEXT, true)
+      context.put(IS_BRACED_VARIABLE_CONTEXT, t.node.elementType === PowerShellTypes.BRACED_ID)
+      return true
+    }
+  }
+private val TYPE_REFERENCE: ElementPattern<PsiElement> =
+  psiElement().withParent(PowerShellReferenceTypeElement::class.java)
+private val VARIABLE: ElementPattern<PsiElement> = psiElement().withParent(PowerShellIdentifier::class.java)
+  .withSuperParent(2, PowerShellVariable::class.java).with(PUT_VARIABLE_CONTEXT)
 
 class PowerShellCompletionContributor : CompletionContributor() {
-
-  companion object {
-    private val IS_BRACED_VARIABLE_CONTEXT: Key<Boolean> = Key.create("IS_BRACED_VARIABLE_CONTEXT")
-    private val IS_VARIABLE_CONTEXT: Key<Boolean> = Key.create("IS_VARIABLE_CONTEXT")
-    private val PUT_VARIABLE_CONTEXT: PatternCondition<PsiElement> = object : PatternCondition<PsiElement>("In variable") {
-      override fun accepts(t: PsiElement, context: ProcessingContext): Boolean {
-        context.put(IS_VARIABLE_CONTEXT, true)
-        context.put(IS_BRACED_VARIABLE_CONTEXT, t.node.elementType === PowerShellTypes.BRACED_ID)
-        return true
-      }
-    }
-    val TYPE_REFERENCE: ElementPattern<PsiElement> = psiElement().withParent(PowerShellReferenceTypeElement::class.java)
-    private val VARIABLE: ElementPattern<PsiElement> = psiElement().withParent(PowerShellIdentifier::class.java)
-        .withSuperParent(2, PowerShellVariable::class.java).with(PUT_VARIABLE_CONTEXT)
-  }
 
   override fun beforeCompletion(context: CompletionInitializationContext) {
     context.dummyIdentifier = CompletionUtilCore.DUMMY_IDENTIFIER_TRIMMED
@@ -80,9 +77,9 @@ class PowerShellCompletionContributor : CompletionContributor() {
         for (item in toAdd2.items) {
           newResult.addElement(createLookupItem(item, position, psiFile ?: position))
         }
-        if (CMD_NAME_CONDITION.accepts(position, null)) {
+        if (cmdNameCondition.accepts(position, null)) {
           PowerShellTokenTypeSets.KEYWORDS.types.forEach { keyword -> newResult.addElement(buildKeyword(keyword)) }
-        } else if (TYPE_BODY.accepts(position)) {
+        } else if (typeBody.accepts(position)) {
           addTypeBodyKeywords(newResult)
         }
         return true
@@ -100,25 +97,25 @@ class PowerShellCompletionContributor : CompletionContributor() {
     return result.withPrefixMatcher(CamelHumpMatcher(prefix, false))
   }
 
-  private val CMD_NAME_CONDITION = object : PatternCondition<PsiElement>("Command Name Condition") {
+  private val cmdNameCondition = object : PatternCondition<PsiElement>("Command Name Condition") {
     override fun accepts(element: PsiElement, context: ProcessingContext?): Boolean {
       return PsiTreeUtil.getParentOfType(element, PowerShellCommandName::class.java, true, PowerShellBlockBody::class.java) != null
     }
   }
 
-  private val COMMAND_NAME: ElementPattern<PsiElement> = psiElement().withParent(PowerShellIdentifier::class.java)
+  private val commandName: ElementPattern<PsiElement> = psiElement().withParent(PowerShellIdentifier::class.java)
       .withSuperParent(2, PowerShellCommandName::class.java)
-  private val MEMBER_ACCESS: ElementPattern<PsiElement> = psiElement().withParent(PowerShellReferenceIdentifier::class.java)
+  private val memberAccess: ElementPattern<PsiElement> = psiElement().withParent(PowerShellReferenceIdentifier::class.java)
       .withSuperParent(2, or(
           psiElement(PowerShellMemberAccessExpression::class.java),
           psiElement(PowerShellInvocationExpression::class.java)
       )
       ).with(PUT_VARIABLE_CONTEXT)
-  private val TYPE_BODY: ElementPattern<PsiElement> = psiElement().withParent(PowerShellBlockBody::class.java)
+  private val typeBody: ElementPattern<PsiElement> = psiElement().withParent(PowerShellBlockBody::class.java)
       .withSuperParent(2, PowerShellTypeDeclaration::class.java)
 
   init {
-    extend(CompletionType.BASIC, COMMAND_NAME,
+    extend(CompletionType.BASIC, commandName,
         object : CompletionProvider<CompletionParameters>() {
           override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
             val ref = PsiTreeUtil.getContextOfType(parameters.position.context, PowerShellReferencePsiElement::class.java)
@@ -149,7 +146,7 @@ class PowerShellCompletionContributor : CompletionContributor() {
           }
         })
 
-    extend(CompletionType.BASIC, MEMBER_ACCESS,
+    extend(CompletionType.BASIC, memberAccess,
         object : CompletionProvider<CompletionParameters>() {
           override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
             val expr = PsiTreeUtil.getContextOfType(parameters.position.context, PowerShellMemberAccessExpression::class.java)
@@ -178,7 +175,7 @@ class PowerShellCompletionContributor : CompletionContributor() {
           }
         })
 
-    extend(CompletionType.BASIC, TYPE_BODY,
+    extend(CompletionType.BASIC, typeBody,
         object : CompletionProvider<CompletionParameters>() {
           override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
             addTypeBodyKeywords(result)
@@ -251,7 +248,7 @@ class PowerShellCompletionContributor : CompletionContributor() {
     val label = item.label
     val presentableText = if (StringUtil.isNotEmpty(label)) label else insertText ?: ""
     val tailText = item.detail ?: ""
-    val isCompletingType = PowerShellCompletionContributor.TYPE_REFERENCE.accepts(position)
+    val isCompletingType = TYPE_REFERENCE.accepts(position)
     val lspElement = LSPWrapperPsiElementImpl(item, parent)
     if (isCompletingType) {
       lspElement.setType(PowerShellComponentType.CLASS)
