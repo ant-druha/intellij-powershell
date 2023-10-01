@@ -18,23 +18,28 @@ import com.intellij.plugin.powershell.lang.lsp.ide.listeners.DocumentListenerImp
 import com.intellij.plugin.powershell.lang.lsp.ide.listeners.EditorMouseListenerImpl
 import com.intellij.plugin.powershell.lang.lsp.ide.listeners.EditorMouseMotionListenerImpl
 import com.intellij.plugin.powershell.lang.lsp.ide.listeners.SelectionListenerImpl
-import com.intellij.plugin.powershell.lang.lsp.languagehost.LanguageServerEndpoint
 import com.intellij.plugin.powershell.lang.lsp.languagehost.ServerOptions
 import com.intellij.plugin.powershell.lang.lsp.util.DocumentUtils.offsetToLSPPos
 import com.intellij.plugin.powershell.lang.lsp.util.editorToURIString
 import com.intellij.psi.PsiDocumentManager
+import com.jetbrains.rd.util.AtomicInteger
 import org.eclipse.lsp4j.*
-import java.util.*
 
-class EditorEventManager(private val project: Project, private val editor: Editor, private val mouseListener: EditorMouseListenerImpl,
-                         private val mouseMotionListener: EditorMouseMotionListenerImpl, private val documentListener: DocumentListenerImpl,
-                         private val selectionListener: SelectionListenerImpl, private val requestManager: LSPRequestManager,
-                         private val serverOptions: ServerOptions, private val languageServerEndpoint: LanguageServerEndpoint) {
+class EditorEventManager(
+  private val project: Project,
+  private val editor: Editor,
+  private val mouseListener: EditorMouseListenerImpl,
+  private val mouseMotionListener: EditorMouseMotionListenerImpl,
+  private val documentListener: DocumentListenerImpl,
+  private val selectionListener: SelectionListenerImpl,
+  private val requestManager: LSPRequestManager,
+  serverOptions: ServerOptions
+) {
+
   private val LOG: Logger = Logger.getInstance(javaClass)
   private var isOpen: Boolean = false
   private val identifier = TextDocumentIdentifier(editorToURIString(editor))
-  private var version: Int = -1
-  private val changesParams = DidChangeTextDocumentParams(VersionedTextDocumentIdentifier(), Collections.singletonList(TextDocumentContentChangeEvent()))
+  private var version = AtomicInteger(-1)
   private val syncKind = serverOptions.syncKind
 
   private val completionTriggers = if (serverOptions.completionProvider?.triggerCharacters != null)
@@ -47,7 +52,6 @@ class EditorEventManager(private val project: Project, private val editor: Edito
   private var diagnosticsInfo: List<Diagnostic> = listOf()
 
   init {
-    changesParams.textDocument.uri = identifier.uri
     editor.putUserData(EDITOR_EVENT_MANAGER_KEY, this)
   }
 
@@ -71,7 +75,7 @@ class EditorEventManager(private val project: Project, private val editor: Edito
     editor.selectionModel.addSelectionListener(selectionListener)
   }
 
-  fun documentOpened() {
+  suspend fun documentOpened() {
     if (!editor.isDisposed) {
       if (isOpen) {
         LOG.warn("Editor $editor was already open")
@@ -90,7 +94,7 @@ class EditorEventManager(private val project: Project, private val editor: Edito
   }
 
 
-  fun documentClosed() {
+  suspend fun documentClosed() {
     if (isOpen) {
       requestManager.didClose(DidCloseTextDocumentParams(identifier))
       isOpen = false
@@ -100,51 +104,59 @@ class EditorEventManager(private val project: Project, private val editor: Edito
     }
   }
 
-  fun documentChanged(event: DocumentEvent) {
-    if (!editor.isDisposed) {
-      if (event.document == editor.document) {
-        changesParams.textDocument.version = incVersion()
-        when (syncKind) {
-          null,
-          TextDocumentSyncKind.None,
-          TextDocumentSyncKind.Incremental -> {
-            val changeEvent = changesParams.contentChanges[0]
-            val newText = event.newFragment
-            val offset = event.offset
-            val newTextLength = event.newLength
-            val lspPosition: Position = offsetToLSPPos(editor, offset)
-            val startLine = lspPosition.line
-            val startColumn = lspPosition.character
-            val oldText = event.oldFragment
+  private fun createDidChangeParams(event: DocumentEvent): DidChangeTextDocumentParams? {
+    if (editor.isDisposed) return null
+    if (event.document != editor.document) {
+      LOG.error("Wrong document for the EditorEventManager")
+      return null
+    }
 
-            //if text was deleted/replaced, calculate the end position of inserted/deleted text
-            val (endLine, endColumn) = if (oldText.isNotEmpty()) {
-              val line = startLine + StringUtil.countNewLines(oldText)
-              val oldLines = oldText.toString().split('\n')
-              val oldTextLength = if (oldLines.isEmpty()) 0 else oldLines.last().length
-              val column = if (oldLines.size == 1) startColumn + oldTextLength else oldTextLength
-              Pair(line, column)
-            } else Pair(startLine, startColumn) //if insert or no text change, the end position is the same
-            val range = Range(Position(startLine, startColumn), Position(endLine, endColumn))
-            changeEvent.range = range
-            changeEvent.rangeLength = newTextLength
-            changeEvent.text = newText.toString()
-          }
-          TextDocumentSyncKind.Full -> {
-            changesParams.contentChanges[0].text = editor.document.text
-          }
-        }
-        requestManager.didChange(changesParams)
-      } else {
-        LOG.error("Wrong document for the EditorEventManager")
+    val syncKind = syncKind ?: TextDocumentSyncKind.None
+    val change = when (syncKind) {
+      TextDocumentSyncKind.None,
+      TextDocumentSyncKind.Incremental -> {
+        val newText = event.newFragment
+        val offset = event.offset
+        val newTextLength = event.newLength
+        val lspPosition: Position = offsetToLSPPos(editor, offset)
+        val startLine = lspPosition.line
+        val startColumn = lspPosition.character
+        val oldText = event.oldFragment
+
+        //if text was deleted/replaced, calculate the end position of inserted/deleted text
+        val (endLine, endColumn) = if (oldText.isNotEmpty()) {
+          val line = startLine + StringUtil.countNewLines(oldText)
+          val oldLines = oldText.toString().split('\n')
+          val oldTextLength = if (oldLines.isEmpty()) 0 else oldLines.last().length
+          val column = if (oldLines.size == 1) startColumn + oldTextLength else oldTextLength
+          Pair(line, column)
+        } else Pair(startLine, startColumn) //if insert or no text change, the end position is the same
+        val range = Range(Position(startLine, startColumn), Position(endLine, endColumn))
+        TextDocumentContentChangeEvent(
+          range,
+          newTextLength,
+          newText.toString()
+        )
+      }
+      TextDocumentSyncKind.Full -> {
+        TextDocumentContentChangeEvent(editor.document.text)
       }
     }
+
+    return DidChangeTextDocumentParams(
+      VersionedTextDocumentIdentifier(incVersion()).apply {
+        uri = identifier.uri
+      },
+      listOf(change)
+    )
   }
 
-  private fun incVersion(): Int {
-    version++
-    return version - 1
+  suspend fun documentChanged(event: DocumentEvent) {
+    val params = createDidChangeParams(event) ?: return
+    requestManager.didChange(params)
   }
+
+  private fun incVersion(): Int = version.incrementAndGet()
 
   suspend fun completion(pos: Position): CompletionList {
     val completions = CompletionList()

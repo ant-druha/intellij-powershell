@@ -3,6 +3,7 @@
  */
 package com.intellij.plugin.powershell.lang.lsp.languagehost
 
+import com.intellij.collaboration.async.launchNow
 import com.intellij.ide.actions.ShowSettingsUtilImpl
 import com.intellij.notification.*
 import com.intellij.openapi.Disposable
@@ -33,6 +34,7 @@ import com.intellij.plugin.powershell.lang.lsp.ide.settings.PowerShellConfigurab
 import com.intellij.plugin.powershell.lang.lsp.util.getTextEditor
 import com.intellij.plugin.powershell.lang.lsp.util.isRemotePath
 import com.intellij.util.io.await
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import org.eclipse.lsp4j.*
 import org.eclipse.lsp4j.jsonrpc.messages.Either
@@ -49,10 +51,15 @@ import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
 
-class LanguageServerEndpoint(private val languageHostConnectionManager: LanguageHostConnectionManager, private val project: Project) : Disposable {
+class LanguageServerEndpoint(
+  private val coroutineScope: CoroutineScope,
+  private val languageHostConnectionManager: LanguageHostConnectionManager,
+  private val project: Project
+) : Disposable {
   private val LOG: Logger = Logger.getInstance(javaClass)
   private var client: PSLanguageClientImpl = PSLanguageClientImpl(project)
   private var languageServer: LanguageServer? = null
+  private val textDocumentServiceQueue: TextDocumentServiceQueue
   private var initializeFuture: CompletableFuture<InitializeResult>? = null
   private var launcherFuture: Future<*>? = null
   private var initializeResult: InitializeResult? = null
@@ -74,6 +81,7 @@ class LanguageServerEndpoint(private val languageHostConnectionManager: Language
 
   init {
     Disposer.register(PluginProjectDisposableRoot.getInstance(project), this)
+    textDocumentServiceQueue = TextDocumentServiceQueue { languageServer?.textDocumentService }
   }
 
   companion object {
@@ -115,13 +123,13 @@ class LanguageServerEndpoint(private val languageHostConnectionManager: Language
                 val syncKind: TextDocumentSyncKind? = if (syncOptions.isRight) syncOptions.right.change else syncOptions.left
                 val mouseListener = EditorMouseListenerImpl()
                 val mouseMotionListener = EditorMouseMotionListenerImpl()
-                val documentListener = DocumentListenerImpl()
+                val documentListener = DocumentListenerImpl(coroutineScope)
                 val selectionListener = SelectionListenerImpl()
                 val server = languageServer
                 if (server != null) {
-                  val requestManager = LSPRequestManager(this, server, client, capabilities)
+                  val requestManager = LSPRequestManager(this, capabilities, textDocumentServiceQueue)
                   val serverOptions = ServerOptions(syncKind, capabilities.completionProvider, capabilities.signatureHelpProvider, capabilities.codeLensProvider, capabilities.documentOnTypeFormattingProvider, capabilities.documentLinkProvider, capabilities.executeCommandProvider)
-                  val manager = EditorEventManager(project, editor, mouseListener, mouseMotionListener, documentListener, selectionListener, requestManager, serverOptions, this)
+                  val manager = EditorEventManager(project, editor, mouseListener, mouseMotionListener, documentListener, selectionListener, requestManager, serverOptions)
                   mouseListener.setManager(manager)
                   mouseMotionListener.setManager(manager)
                   documentListener.setManager(manager)
@@ -129,7 +137,7 @@ class LanguageServerEndpoint(private val languageHostConnectionManager: Language
                   manager.registerListeners()
                   connectedEditors[uri] = manager
                   editor.putUserData(LANGUAGE_SERVER_ENDPOINT_KEY, this)
-                  manager.documentOpened()
+                  coroutineScope.launchNow { manager.documentOpened() }
                   LOG.debug("Created manager for $uri")
                 }
               }
@@ -197,7 +205,7 @@ class LanguageServerEndpoint(private val languageHostConnectionManager: Language
     if (e != null) {
       e.getEditor().removeUserData(LANGUAGE_SERVER_ENDPOINT_KEY)
       e.removeListeners()
-      e.documentClosed()
+      coroutineScope.launchNow { e.documentClosed() }
     }
   }
 
@@ -263,7 +271,7 @@ class LanguageServerEndpoint(private val languageHostConnectionManager: Language
       sendInitializeRequest(server)
       LOG.debug("Sent initialize request to server")
 
-      if (isConsoleConnection()) addRemoteFilesChangeListener(server)//register vfs listener for saving remote files
+      if (isConsoleConnection()) addRemoteFilesChangeListener()//register vfs listener for saving remote files
 
       return true
     } catch (e: Exception) {
@@ -290,7 +298,7 @@ class LanguageServerEndpoint(private val languageHostConnectionManager: Language
 
   }
 
-  private fun addRemoteFilesChangeListener(server: LanguageServer) {
+  private fun addRemoteFilesChangeListener() {
     val listener = object : AsyncFileListener {
       override fun prepareChange(events: List<VFileEvent>): AsyncFileListener.ChangeApplier? {
         val changed = events.filterIsInstance<VFileContentChangeEvent>()
@@ -302,7 +310,9 @@ class LanguageServerEndpoint(private val languageHostConnectionManager: Language
                 .filter { isRemotePath(it) }
                 .map { Paths.get(it).toUri().toASCIIString() }
                 .forEach { uri ->
-                  server.textDocumentService?.didSave(DidSaveTextDocumentParams(TextDocumentIdentifier(uri), null))//notify Editor Services to save remote file
+                  coroutineScope.launchNow {
+                    textDocumentServiceQueue.didSave(DidSaveTextDocumentParams(TextDocumentIdentifier(uri), null))
+                  }
                 }
           }
         }
@@ -401,7 +411,7 @@ class LanguageServerEndpoint(private val languageHostConnectionManager: Language
   }
 
 
-  fun crashed(e: Exception) {
+  fun crashed(e: Throwable) {
     LOG.warn("Crashed: $e")
     crashCount += 1
     if (crashCount < 5) {

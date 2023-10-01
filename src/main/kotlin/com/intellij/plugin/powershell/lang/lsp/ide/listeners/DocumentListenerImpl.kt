@@ -3,10 +3,12 @@
  */
 package com.intellij.plugin.powershell.lang.lsp.ide.listeners
 
+import com.intellij.collaboration.async.launchNow
 import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.editor.event.DocumentListener
+import kotlinx.coroutines.CoroutineScope
 
-class DocumentListenerImpl : LSPEditorListener(), DocumentListener {
+class DocumentListenerImpl(private val coroutineScope: CoroutineScope) : LSPEditorListener(), DocumentListener {
   /**
    * Called before the text of the document is changed.
    *
@@ -21,7 +23,7 @@ class DocumentListenerImpl : LSPEditorListener(), DocumentListener {
    */
   override fun documentChanged(event: DocumentEvent) {
     if (checkManager()) {
-      editorManager?.documentChanged(event)
+      coroutineScope.launchNow { editorManager?.documentChanged(event) }
     }
   }
 }
