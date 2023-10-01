@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [2.2.0] - 2023-10-01
+### Changed
+- Cleaned up a lot of deprecated API usages and warnings (by @VladRassokhin)
+- [#148](https://github.com/ant-druha/intellij-powershell/issues/148): drop Gson and Guava dependencies from the plugin
+- [#88](https://github.com/ant-druha/intellij-powershell/issues/88): fix UI freezes caused by the plugin and migrate all the LSP communication to background threads
+
+### Added
+- [#145](https://github.com/ant-druha/intellij-powershell/pull/145): log PowerShellEditorServices output
+
 ## [2.1.0] - 2023-09-13
 ### Changed
 - The minimal supported IntelliJ version is now 2023.2
@@ -177,4 +186,5 @@ Initial editor and code completion support:
 [2.0.9]: https://github.com/ant-druha/intellij-powershell/compare/v2.0.8...v2.0.9
 [2.0.10]: https://github.com/ant-druha/intellij-powershell/compare/v2.0.9...v2.0.10
 [2.1.0]: https://github.com/ant-druha/intellij-powershell/compare/v2.0.10...v2.1.0
-[Unreleased]: https://github.com/ant-druha/intellij-powershell/compare/v2.1.0...HEAD
+[2.2.0]: https://github.com/ant-druha/intellij-powershell/compare/v2.1.0...v2.2.0
+[Unreleased]: https://github.com/ant-druha/intellij-powershell/compare/v2.2.0...HEAD
