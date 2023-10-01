@@ -11,7 +11,7 @@ import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
 import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.application.ApplicationNamesInfo
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.SystemInfo
@@ -39,10 +39,10 @@ import java.nio.channels.Channels
 import java.nio.charset.Charset
 import java.util.concurrent.atomic.AtomicInteger
 
+private val logger = logger<EditorServicesLanguageHostStarter>()
 
 open class EditorServicesLanguageHostStarter(protected val myProject: Project) : LanguageHostConnectionManager {
 
-  private val LOG: Logger = Logger.getInstance(javaClass)
   private var socket: Socket? = null
   private var myReadPipe: RandomAccessFile? = null
   private var myWritePipe: RandomAccessFile? = null
@@ -151,13 +151,13 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
       try {
         socket = Socket("127.0.0.1", port)
       } catch (e: Exception) {
-        LOG.error("Unable to open connection to language host: $e")
+        logger.error("Unable to open connection to language host: $e")
       }
       if (socket == null) {
-        LOG.error("Unable to create socket: " + toString())
+        logger.error("Unable to create socket: " + toString())
       }
       if (socket?.isConnected == true) {
-        LOG.info("Connection to language host established: ${socket?.localPort} -> ${socket?.port}")
+        logger.info("Connection to language host established: ${socket?.localPort} -> ${socket?.port}")
         val inputStream = socket?.getInputStream()
         val outputStream = socket?.getOutputStream()
         if (inputStream != null && outputStream != null) return Pair(inputStream, outputStream)
@@ -187,7 +187,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
     val psExtensionPath = getPowerShellEditorServicesHome()
     val startupScript = getStartupScriptPath(psExtensionPath)
     if (StringUtil.isEmpty(startupScript)) {
-      LOG.warn("PowerShell language host startup script not found.")
+      logger.warn("PowerShell language host startup script not found.")
       return emptyList()
     }
     val sessionDetailsPath = FileUtil.toCanonicalPath(getSessionDetailsFile().canonicalPath)
@@ -216,7 +216,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
     try {
       FileUtil.writeToFile(scriptFile, scriptText)
     } catch (e: Exception) {
-      LOG.error("Error writing $scriptFile script file: $e")
+      logger.error("Error writing $scriptFile script file: $e")
     }
 
     FileUtil.createParentDirs(File(logPath))
@@ -226,7 +226,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
     command.add("-NoProfile")
     command.add("-NonInteractive")
     command.add(scriptFile.canonicalPath)
-    LOG.info("Language server startup command: '$command',\n launch command: $scriptText")
+    logger.info("Language server startup command: '$command',\n launch command: $scriptText")
     return command
   }
 
@@ -264,7 +264,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
 
     var msg = "PowerShell language host process started, $sessionInfo"
     if (pid.compareTo(-1) != 0) msg += ", pid: $pid"
-    LOG.info("$msg.")
+    logger.info("$msg.")
     this.sessionInfo = sessionInfo
     return sessionInfo
   }
@@ -291,9 +291,9 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
         decoder.escapeText(event.text, outputType) { line, type ->
           val text = "host[$pid]: ${line.trimEnd()}"
           if (ProcessOutputType.isStderr(type)) {
-            LOG.warn(text)
+            logger.warn(text)
           } else {
-            LOG.info(text)
+            logger.info(text)
             if (ProcessOutputType.isStdout(type) && !isFirstLineProcessed) {
               if (line == "needs_install") {
                 showInstallNotification()
@@ -305,7 +305,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
       }
 
       override fun processTerminated(event: ProcessEvent) {
-        LOG.info("Language host with PID = $pid has exited with code ${event.exitCode}.")
+        logger.info("Language host with PID = $pid has exited with code ${event.exitCode}.")
       }
     })
     handler.startNotify()
@@ -317,7 +317,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
     val powerShellVersion = jsonResult.get("powerShellVersion")?.asString
     val status = jsonResult.get("status")?.asString
     if (langServicePort == null || debugServicePort == null) {
-      LOG.warn("languageServicePort or debugServicePort are null")
+      logger.warn("languageServicePort or debugServicePort are null")
       return null
     }
     return SessionInfo.Tcp(langServicePort, debugServicePort, powerShellVersion, status)
@@ -331,7 +331,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
     val powerShellVersion = jsonResult.get("powerShellVersion")?.asString
     val status = jsonResult.get("status")?.asString
     if (langServiceReadPipeName == null || langServiceWritePipeName == null || debugServiceReadPipeName == null || debugServiceWritePipeName == null) {
-      LOG.warn("languageServiceReadPipeName or debugServiceReadPipeName are null")
+      logger.warn("languageServiceReadPipeName or debugServiceReadPipeName are null")
       return null
     }
     return SessionInfo.Pipes(langServiceReadPipeName, langServiceWritePipeName, debugServiceReadPipeName, debugServiceWritePipeName, powerShellVersion, status)
@@ -343,7 +343,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
       val jsonResult = JsonParser.parseString(line).asJsonObject
       readPipesInfo(jsonResult) ?: readTcpInfo(jsonResult)
     } catch (e: Exception) {
-      LOG.warn("Error reading/parsing session details file $sessionFile: $e")
+      logger.warn("Error reading/parsing session details file $sessionFile: $e")
       null
     }
   }
@@ -355,16 +355,16 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
       while (!fileWithSessionInfo.exists() && tries > 0) {
         tries--
         Thread.sleep(waitTimeoutMillis)
-        LOG.debug("Waiting for session info file ${fileWithSessionInfo.path} ... Tries left: $tries")
+        logger.debug("Waiting for session info file ${fileWithSessionInfo.path} ... Tries left: $tries")
       }
     } catch (e: Exception) {
-      LOG.warn("Error while waiting session info file: $e")
-    } finally {
-      return if (!fileWithSessionInfo.exists()) {
-        LOG.warn("Timed out waiting for session file to appear.")
-        false
-      } else true
+      logger.warn("Error while waiting session info file: $e")
     }
+
+    return if (!fileWithSessionInfo.exists()) {
+      logger.warn("Timed out waiting for session file to appear.")
+      false
+    } else true
   }
 
   /**
@@ -375,7 +375,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
     val result = getEditorServicesStartupScript(psExtensionPath)
     if (!checkExists(result)) {
       val reason = "Guessed script path $result does not exist."
-      LOG.warn(reason)
+      logger.warn(reason)
       throw PowerShellExtensionError(reason)
     }
     return result
@@ -393,12 +393,12 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
       sessionInfoFile?.delete()
       val process = myProcess?.destroyForcibly()
       if (process?.isAlive != true) {
-        LOG.info("PowerShell language host process exited: ${process?.exitValue()}")
+        logger.info("PowerShell language host process exited: ${process?.exitValue()}")
       } else {
-        LOG.info("PowerShell language host process terminated")
+        logger.info("PowerShell language host process terminated")
       }
     } catch (e: Exception) {
-      LOG.error("Error when shutting down language server process: $e")
+      logger.error("Error when shutting down language server process: $e")
     } finally {
       sessionInfoFile = null
       myProcess = null
@@ -427,7 +427,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
         f.isAccessible = true
         result = f.getLong(p)
         f.isAccessible = false
-      }//for unix-based OS
+      } //for Unix-based OS
     } catch (ex: Exception) {
       result = -1
     }
