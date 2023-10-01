@@ -32,6 +32,6 @@ class PowerShellCompletionTests : BasePlatformTestCase() {
     myFixture.complete(CompletionType.BASIC)
     val lookupElementStrings = myFixture.lookupElementStrings
     TestCase.assertNotNull(lookupElementStrings)
-    assertContainsElements(lookupElementStrings!!, "Get-Item")
+    assertContainsElements(lookupElementStrings!!, "Get-Alias")
   }
 }
