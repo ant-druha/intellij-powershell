@@ -4,10 +4,7 @@ import com.google.common.io.Files
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.intellij.execution.configurations.GeneralCommandLine
-import com.intellij.execution.process.OSProcessHandler
-import com.intellij.execution.process.ProcessAdapter
-import com.intellij.execution.process.ProcessEvent
-import com.intellij.execution.process.ProcessOutputType
+import com.intellij.execution.process.*
 import com.intellij.notification.BrowseNotificationAction
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
@@ -288,19 +285,21 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
       override fun readerOptions() = BaseOutputReader.Options.forMostlySilentProcess()
     }
     handler.addProcessListener(object : ProcessAdapter() {
-      var isFirstLineProcessed = false
+      private var isFirstLineProcessed = false
+      private val decoder = AnsiEscapeDecoder()
       override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
-        val line = event.text
-        val text = "host[$pid]: ${line.trimEnd()}"
-        if (ProcessOutputType.isStderr(outputType)) {
-          LOG.warn(text)
-        } else {
-          LOG.info(text)
-          if (ProcessOutputType.isStdout(outputType) && !isFirstLineProcessed) {
-            if (line == "needs_install") {
-              showInstallNotification()
+        decoder.escapeText(event.text, outputType) { line, type ->
+          val text = "host[$pid]: ${line.trimEnd()}"
+          if (ProcessOutputType.isStderr(type)) {
+            LOG.warn(text)
+          } else {
+            LOG.info(text)
+            if (ProcessOutputType.isStdout(type) && !isFirstLineProcessed) {
+              if (line == "needs_install") {
+                showInstallNotification()
+              }
+              isFirstLineProcessed = true
             }
-            isFirstLineProcessed = true
           }
         }
       }
