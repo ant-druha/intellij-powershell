@@ -66,8 +66,7 @@ class LanguageServerEndpoint(
   private val connectedEditors = ConcurrentHashMap<URI, EditorEventManager>()
   private val rootPath = project.basePath
   private var capabilitiesAlreadyRequested: Boolean = false
-  @Volatile
-  private var myStatus: AtomicReference<ServerStatus> = AtomicReference(ServerStatus.STOPPED)
+  private val myStatus: AtomicReference<ServerStatus> = AtomicReference(ServerStatus.STOPPED)
   private var crashCount: Int = 0
   private var myFailedStarts = 0
   private val MAX_FAILED_STARTS = 2
