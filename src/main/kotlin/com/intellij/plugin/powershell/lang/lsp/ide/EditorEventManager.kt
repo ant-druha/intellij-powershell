@@ -5,7 +5,7 @@ package com.intellij.plugin.powershell.lang.lsp.ide
 
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.diagnostic.runAndLogException
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.event.DocumentEvent
@@ -25,6 +25,8 @@ import com.intellij.psi.PsiDocumentManager
 import com.jetbrains.rd.util.AtomicInteger
 import org.eclipse.lsp4j.*
 
+private val logger = logger<EditorEventManager>()
+
 class EditorEventManager(
   private val project: Project,
   private val editor: Editor,
@@ -36,18 +38,10 @@ class EditorEventManager(
   serverOptions: ServerOptions
 ) {
 
-  private val LOG: Logger = Logger.getInstance(javaClass)
   private var isOpen: Boolean = false
   private val identifier = TextDocumentIdentifier(editorToURIString(editor))
   private var version = AtomicInteger(-1)
   private val syncKind = serverOptions.syncKind
-
-  private val completionTriggers = if (serverOptions.completionProvider?.triggerCharacters != null)
-    serverOptions.completionProvider.triggerCharacters?.filter { c -> "." != c }
-  else emptySet<String>()
-  private val signatureTriggers = if (serverOptions.signatureHelpProvider.triggerCharacters != null)
-    serverOptions.signatureHelpProvider.triggerCharacters.toSet()
-  else emptySet<String>()
 
   private var diagnosticsInfo: List<Diagnostic> = listOf()
 
@@ -78,7 +72,7 @@ class EditorEventManager(
   suspend fun documentOpened() {
     if (!editor.isDisposed) {
       if (isOpen) {
-        LOG.warn("Editor $editor was already open")
+        logger.warn("Editor $editor was already open")
       } else {
         requestManager.didOpen(DidOpenTextDocumentParams(TextDocumentItem(identifier.uri, PowerShellLanguage.INSTANCE.id, incVersion(), editor.document.text)))
         isOpen = true
@@ -100,14 +94,14 @@ class EditorEventManager(
       isOpen = false
       editor.removeUserData(EDITOR_EVENT_MANAGER_KEY)
     } else {
-      LOG.warn("Editor ${identifier.uri} + was already closed")
+      logger.warn("Editor ${identifier.uri} + was already closed")
     }
   }
 
   private fun createDidChangeParams(event: DocumentEvent): DidChangeTextDocumentParams? {
     if (editor.isDisposed) return null
     if (event.document != editor.document) {
-      LOG.error("Wrong document for the EditorEventManager")
+      logger.error("Wrong document for the EditorEventManager")
       return null
     }
 
@@ -160,7 +154,7 @@ class EditorEventManager(
 
   suspend fun completion(pos: Position): CompletionList {
     val completions = CompletionList()
-    LOG.runAndLogException {
+    logger.runAndLogException {
       val res = requestManager.completion(TextDocumentPositionParams(identifier, pos)) ?: return completions
       if (res.isLeft) {
         completions.items = res.left
@@ -200,7 +194,11 @@ class EditorEventManager(
 
 val DEFAULT_DID_CHANGE_CONFIGURATION_PARAMS = DidChangeConfigurationParams(PowerShellLanguageServerSettingsWrapper(LanguageServerSettings()))
 
+@Suppress("PropertyName")
 data class PowerShellLanguageServerSettingsWrapper(val Powershell: LanguageServerSettings)
+@Suppress("PropertyName")
 data class LanguageServerSettings(val EnableProfileLoading: Boolean = true, val ScriptAnalysis: ScriptAnalysisSettings = ScriptAnalysisSettings(), val CodeFormatting: CodeFormattingSettings = CodeFormattingSettings())
+@Suppress("PropertyName")
 data class CodeFormattingSettings(var NewLineAfterOpenBrace: Boolean = true)
+@Suppress("PropertyName")
 data class ScriptAnalysisSettings(var Enabled: Boolean = true)
