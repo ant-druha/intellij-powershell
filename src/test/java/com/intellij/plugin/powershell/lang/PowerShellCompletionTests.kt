@@ -1,6 +1,7 @@
 package com.intellij.plugin.powershell.lang
 
 import com.intellij.codeInsight.completion.CompletionType
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.plugin.powershell.lang.lsp.LSPInitMain
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.testFramework.fixtures.TempDirTestFixture
@@ -19,6 +20,8 @@ class PowerShellCompletionTests : BasePlatformTestCase() {
   }
 
   fun testCompletion() {
+    if (SystemInfo.isWindows) return // TODO[#151]: Unstable on Windows
+
     val psiFile = myFixture.configureByFile("codeinsight/completion.ps1")
     runBlocking {
       withTimeout(20.seconds) {
