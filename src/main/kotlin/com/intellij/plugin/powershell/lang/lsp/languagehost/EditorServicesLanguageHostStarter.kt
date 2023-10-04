@@ -133,7 +133,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
       val writePipeName = sessionInfo.languageServiceWritePipeName
       return if (SystemInfo.isWindows) {
         val readPipe = RandomAccessFile(readPipeName, "rwd")
-        val writePipe = RandomAccessFile(writePipeName, "rwd")
+        val writePipe = RandomAccessFile(writePipeName, "r")
         val serverReadChannel = readPipe.channel
         val serverWriteChannel = writePipe.channel
         val inSf = Channels.newInputStream(serverWriteChannel)
