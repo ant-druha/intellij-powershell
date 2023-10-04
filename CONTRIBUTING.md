@@ -1,8 +1,19 @@
 Contributor Guide
 =================
 
-Prerequisites
+Issue Tracker
 -------------
+Looking to contribute? That's great!
+
+Take a look at the following labels in the issue tracker:
+- [good first issue][issues.good-first-issue]: gets assigned to the issues that are assumed to be appropriate for new contributors to get themselves familiar with the code;
+- [help wanted][issues.help-wanted]: this is a wider scope, gets assigned to any issues that require help from contributors.
+
+Keep an eye on the following issue labels:
+- [status:waiting-for-info][issues.waiting-for-info]: these issues are automatically closed by a bot if there's no activity for 2 weeks. The maintainers should remove this label after they've got the info they've requested from the users, to prevent the bot from closing the issue.
+
+Development Prerequisites
+-------------------------
 To develop the plugin, JDK 17 should be installed. For example, get [Amazon Corretto 17][downloads.corretto].
 
 Build and Test
@@ -13,3 +24,6 @@ $ ./gradlew build
 ```
 
 [downloads.corretto]: https://docs.aws.amazon.com/corretto/latest/corretto-17-ug/downloads-list.html
+[issues.good-first-issue]: https://github.com/ant-druha/intellij-powershell/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22
+[issues.help-wanted]: https://github.com/ant-druha/intellij-powershell/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22
+[issues.waiting-for-info]: https://github.com/ant-druha/intellij-powershell/issues?q=is%3Aissue+is%3Aopen+label%3Astatus%3Awaiting-for-info
