@@ -31,6 +31,7 @@ import com.intellij.util.io.BaseOutputReader
 import com.sun.jna.Pointer
 import com.sun.jna.platform.win32.Kernel32
 import com.sun.jna.platform.win32.WinNT
+import org.intellij.lang.annotations.Language
 import org.newsclub.net.unix.AFUNIXSocket
 import org.newsclub.net.unix.AFUNIXSocketAddress
 import java.io.*
@@ -40,6 +41,8 @@ import java.nio.charset.Charset
 import java.util.concurrent.atomic.AtomicInteger
 
 private val logger = logger<EditorServicesLanguageHostStarter>()
+
+private const val INTELLIJ_POWERSHELL_PARENT_PID = "INTELLIJ_POWERSHELL_PARENT_PID"
 
 open class EditorServicesLanguageHostStarter(protected val myProject: Project) : LanguageHostConnectionManager {
 
@@ -180,7 +183,9 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
   }
 
   override fun createProcess(project: Project, command: List<String>, directory: String?): Process {
-    return GeneralCommandLine(command).createProcess()
+    return GeneralCommandLine(command)
+      .withEnvironment(INTELLIJ_POWERSHELL_PARENT_PID, ProcessHandle.current().pid().toString())
+      .createProcess()
   }
 
   private fun buildCommandLine(): List<String> {
@@ -209,7 +214,13 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
         "-HostVersion '${myHostDetails.version}' -AdditionalModules @($additionalModules) " +
         "-BundledModulesPath '$bundledModulesPath' $useReplSwitch " +
         "-LogLevel '$logLevel' -LogPath '$logPath' -SessionDetailsPath '$sessionDetailsPath' -FeatureFlags @() $splitInOutPipesSwitch"
-    val scriptText = "${escapePath(startupScript)} $args\n"
+    @Language("PowerShell") val preamble =
+      if (SystemInfo.isWindows)
+        // TODO: Start-ThreadJob on PowerShell Core
+        "\$hostPid = \$PID\n" +
+          "Start-Job { Wait-Process -Id \$env:$INTELLIJ_POWERSHELL_PARENT_PID; Stop-Process -Id \$using:hostPid }\n"
+      else ""
+    val scriptText = "$preamble${escapePath(startupScript)} $args"
 
     val scriptFile = File.createTempFile("start-pses-host", ".ps1")
     scriptFile.deleteOnExit()
