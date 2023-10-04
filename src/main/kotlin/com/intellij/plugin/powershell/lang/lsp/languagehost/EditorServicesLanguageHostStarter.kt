@@ -240,6 +240,14 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
     cachedEditorServicesModuleVersion = null
     val commandLine = buildCommandLine()
     val process = createProcess(myProject, commandLine, null)
+    val pid: Long = getProcessID(process)
+    processOutput(
+      process,
+      pid,
+      ParametersListUtil.join(commandLine),
+      getEditorServicesVersion(getPowerShellEditorServicesHome())
+    )
+
     val fileWithSessionInfo = getSessionDetailsFile()
     //todo retry starting language service process one more time
     if (!waitForSessionFile(fileWithSessionInfo)) {
@@ -253,13 +261,6 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
       return null
     }
 
-    val pid: Long = getProcessID(process)
-    processOutput(
-      process,
-      pid,
-      ParametersListUtil.join(commandLine),
-      getEditorServicesVersion(getPowerShellEditorServicesHome())
-    )
     myProcess = process
 
     var msg = "PowerShell language host process started, $sessionInfo"
