@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+### Fixed
+- [#155](https://github.com/ant-druha/intellij-powershell/issues/155): cannot start PowerShellEditorServices under the default PowerShell 5 execution policy, `Restricted`
+
 ## [2.2.0] - 2023-10-01
 ### Changed
 - Cleaned up a lot of deprecated API usages and warnings (by @VladRassokhin)
