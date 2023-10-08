@@ -10,7 +10,6 @@ import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils;
 import com.intellij.ui.components.JBTextField;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.concurrency.CancellablePromise;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -54,7 +53,7 @@ public class PowerShellExecutableChooserPanel extends JComponent {
   }
 
   private void updatePowerShellVersionLabel(@NotNull String powerShellExePath) {
-    CancellablePromise<String> versionPromise = PSLanguageHostUtils.INSTANCE.getPowerShellVersion(powerShellExePath);
+    var versionPromise = PSLanguageHostUtils.INSTANCE.getPowerShellVersion(powerShellExePath);
     versionPromise.onError(throwable -> {
       LOG.debug("Exception when getting PowerShell version: ", throwable);
       if (getExecutablePath().equals(powerShellExePath)) {
@@ -62,7 +61,7 @@ public class PowerShellExecutableChooserPanel extends JComponent {
       }
     }).onSuccess(version -> {
       if (getExecutablePath().equals(powerShellExePath)) {
-        setPowerShellVersionLabelValue(version);
+        setPowerShellVersionLabelValue(version.toString());
       }
     });
   }

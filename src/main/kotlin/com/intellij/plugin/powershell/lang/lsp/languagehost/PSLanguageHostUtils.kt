@@ -16,23 +16,12 @@ import com.intellij.util.concurrency.AppExecutorUtil
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.CancellablePromise
 import java.io.BufferedReader
-import java.io.File
 import java.io.InputStreamReader
 import java.util.concurrent.TimeUnit
 
 object PSLanguageHostUtils {
   val LOG: Logger = Logger.getInstance(javaClass)
   val BUNDLED_PSES_PATH = join(PathManager.getPluginsPath(), "PowerShell/lib/LanguageHost")
-
-  fun getLanguageHostLogsDir(): String {
-    val extDir: String
-    return try {
-      extDir = findPSExtensionsDir()
-      if (!checkExists(extDir)) join(PathManager.getLogPath(), "PowerShell") else join(extDir, "logs")
-    } catch (e: PowerShellExtensionNotFound) {
-      join(PathManager.getLogPath(), "PowerShell")
-    }
-  }
 
   fun getPSExtensionModulesDir(psExtensionDir: String): String {
     return if (isExtensionDirectoryFormat(psExtensionDir)) join(psExtensionDir, "modules")
@@ -55,30 +44,15 @@ object PSLanguageHostUtils {
     return checkExists("$psExtensionDir/PowerShellEditorServices/Start-EditorServices.ps1")
   }
 
-  @Throws(PowerShellExtensionNotFound::class)
-  private fun findPSExtensionsDir(): String {
-    val home = System.getProperty("user.home") ?: throw PowerShellExtensionNotFound("Can not get user home directory")
-    val vsExtensions = join(home, ".vscode/extensions")
-    if (!checkExists(vsExtensions)) throw PowerShellExtensionNotFound("The '~/.vscode/extensions' directory does not exist")
-    val psExtensions = File(vsExtensions).listFiles { _, name -> name.contains("powershell", true) }
-    val result = if (psExtensions != null && psExtensions.isNotEmpty()) psExtensions.max()!! else null
-    if (result == null || !result.exists()) {
-      val msg = "Wrong path to PowerShell extension: $result"
-      LOG.warn(msg)
-      throw PowerShellExtensionNotFound(msg)
-    }
-    return result.canonicalPath
-  }
-
   @Throws(PowerShellExtensionError::class)
   fun getEditorServicesModuleVersion(moduleBase: String): String {
     return getModuleVersion(moduleBase, "PowerShellEditorServices")
   }
 
-  fun getPowerShellVersion(powerShellExePath: String): CancellablePromise<String> {
-    val cancellablePromise: CancellablePromise<String>
+  fun getPowerShellVersion(powerShellExePath: String): CancellablePromise<PSVersionInfo> {
+    val cancellablePromise: CancellablePromise<PSVersionInfo>
     if (ApplicationManager.getApplication().isDispatchThread) {
-      cancellablePromise = ReadAction.nonBlocking<String> { readPowerShellVersion(powerShellExePath, null) }
+      cancellablePromise = ReadAction.nonBlocking<PSVersionInfo> { readPowerShellVersion(powerShellExePath, null) }
         .submit(AppExecutorUtil.getAppExecutorService())
     } else {
       cancellablePromise = AsyncPromise()
@@ -113,16 +87,16 @@ object PSLanguageHostUtils {
 private const val readPSVersionCommandProcessLock = "readPSVersionCommandProcessLock"
 
 @Throws(ProcessCanceledException::class, RuntimeException::class, PowerShellControlFlowException::class)
-fun readPowerShellVersion(exePath: String, indicator: ProgressIndicator? = null): String {
+private fun readPowerShellVersion(exePath: String, indicator: ProgressIndicator? = null): PSVersionInfo {
   synchronized(readPSVersionCommandProcessLock) {
     var br: BufferedReader? = null
     var er: BufferedReader? = null
     var process: Process? = null
     val qInner = if (SystemInfo.isWindows) '\'' else '"'
-    val commandString = "-join(${qInner}PowerShell $qInner, \$PSVersionTable.PSVersion,$qInner $qInner, \$PSVersionTable.PSEdition)"
+    val commandString = "(\$PSVersionTable.PSVersion, \$PSVersionTable.PSEdition) -join $qInner $qInner"
     try {
       process = GeneralCommandLine(arrayListOf(exePath, "-command", commandString)).createProcess()
-      for (i in 1..6) {
+      (1..6).forEach {
         process.waitFor(500L, TimeUnit.MILLISECONDS)
         indicator?.checkCanceled()
       }
@@ -134,7 +108,8 @@ fun readPowerShellVersion(exePath: String, indicator: ProgressIndicator? = null)
       }
       br = BufferedReader(InputStreamReader(process.inputStream))
       er = BufferedReader(InputStreamReader(process.errorStream))
-      return if (br.ready()) br.readLine() else ""
+      val result = if (br.ready()) br.readLine() else ""
+      return PSVersionInfo.parse(result)
     } catch (e: Exception) {
       PSLanguageHostUtils.LOG.warn("Command execution failed: ${arrayListOf(exePath, "--version")} ${e.message}", e)
       throw PowerShellControlFlowException(e.message, e.cause)
