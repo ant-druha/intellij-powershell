@@ -18,7 +18,7 @@ import com.intellij.openapi.project.ProjectManagerListener
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.plugin.powershell.PowerShellFileType
-import com.intellij.plugin.powershell.ide.PluginProjectDisposableRoot
+import com.intellij.plugin.powershell.ide.PluginProjectRoot
 import com.intellij.plugin.powershell.ide.run.findPsExecutable
 import com.intellij.plugin.powershell.lang.lsp.languagehost.EditorServicesLanguageHostStarter
 import com.intellij.plugin.powershell.lang.lsp.languagehost.LanguageServerEndpoint
@@ -80,14 +80,14 @@ class LSPInitMain : PersistentStateComponent<LSPInitMain.PowerShellInfo>, Dispos
 
     fun getServerWithConsoleProcess(project: Project): LanguageServerEndpoint {
       return getInstance().psConsoleLanguageServer.computeIfAbsent(project) { prj ->
-        val scope = PluginProjectDisposableRoot.getInstance(project).coroutineScope
+        val scope = PluginProjectRoot.getInstance(project).coroutineScope
         LanguageServerEndpoint(scope, PowerShellConsoleTerminalRunner(prj), prj)
       }
     }
 
     fun getEditorLanguageServer(project: Project): LanguageServerEndpoint {
       return getInstance().psEditorLanguageServer.computeIfAbsent(project) { prj ->
-        val scope = PluginProjectDisposableRoot.getInstance(project).coroutineScope
+        val scope = PluginProjectRoot.getInstance(project).coroutineScope
         LanguageServerEndpoint(scope, EditorServicesLanguageHostStarter(prj), prj)
       }
     }

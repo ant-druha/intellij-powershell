@@ -11,11 +11,20 @@ import kotlinx.coroutines.CoroutineScope
  * so we use this project-level service for that.
  */
 @Service(Service.Level.PROJECT)
-class PluginProjectDisposableRoot(val coroutineScope: CoroutineScope) : Disposable.Default {
+class PluginProjectRoot(val coroutineScope: CoroutineScope) : Disposable.Default {
 
   companion object {
-    fun getInstance(project: Project): PluginProjectDisposableRoot {
-      return project.service<PluginProjectDisposableRoot>()
+    fun getInstance(project: Project): PluginProjectRoot {
+      return project.service<PluginProjectRoot>()
     }
+  }
+}
+
+@Service
+class PluginAppRoot(val coroutineScope: CoroutineScope) {
+
+  companion object {
+
+    fun getInstance(): PluginAppRoot = service()
   }
 }

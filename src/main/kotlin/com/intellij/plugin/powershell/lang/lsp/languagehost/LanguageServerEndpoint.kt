@@ -20,7 +20,7 @@ import com.intellij.openapi.vfs.newvfs.events.VFileContentChangeEvent
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent
 import com.intellij.plugin.powershell.PowerShellIcons
 import com.intellij.plugin.powershell.ide.MessagesBundle
-import com.intellij.plugin.powershell.ide.PluginProjectDisposableRoot
+import com.intellij.plugin.powershell.ide.PluginProjectRoot
 import com.intellij.plugin.powershell.lang.lsp.client.PSLanguageClientImpl
 import com.intellij.plugin.powershell.lang.lsp.ide.DEFAULT_DID_CHANGE_CONFIGURATION_PARAMS
 import com.intellij.plugin.powershell.lang.lsp.ide.EditorEventManager
@@ -79,7 +79,7 @@ class LanguageServerEndpoint(
 //  private var fileWriter: PrintWriter? = null
 
   init {
-    Disposer.register(PluginProjectDisposableRoot.getInstance(project), this)
+    Disposer.register(PluginProjectRoot.getInstance(project), this)
     textDocumentServiceQueue = TextDocumentServiceQueue { languageServer?.textDocumentService }
   }
 

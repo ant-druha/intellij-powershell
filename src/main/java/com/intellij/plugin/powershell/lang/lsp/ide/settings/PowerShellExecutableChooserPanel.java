@@ -53,14 +53,15 @@ public class PowerShellExecutableChooserPanel extends JComponent {
   }
 
   private void updatePowerShellVersionLabel(@NotNull String powerShellExePath) {
-    var versionPromise = PSLanguageHostUtils.INSTANCE.getPowerShellVersion(powerShellExePath);
-    versionPromise.onError(throwable -> {
+    var versionFuture = PSLanguageHostUtils.INSTANCE.getPowerShellVersion(powerShellExePath);
+    versionFuture.exceptionally(throwable -> {
       LOG.debug("Exception when getting PowerShell version: ", throwable);
       if (getExecutablePath().equals(powerShellExePath)) {
         setPowerShellVersionLabelValue(null);
       }
-    }).onSuccess(version -> {
-      if (getExecutablePath().equals(powerShellExePath)) {
+      return null;
+    }).thenAccept(version -> {
+      if (version != null && getExecutablePath().equals(powerShellExePath)) {
         setPowerShellVersionLabelValue(version.toString());
       }
     });

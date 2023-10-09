@@ -1,23 +1,23 @@
 package com.intellij.plugin.powershell.lang.lsp.languagehost
 
 import com.intellij.execution.configurations.GeneralCommandLine
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.PathManager
-import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.progress.ProcessCanceledException
-import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.util.SystemInfo
+import com.intellij.plugin.powershell.ide.PluginAppRoot
 import com.intellij.plugin.powershell.ide.run.checkExists
 import com.intellij.plugin.powershell.ide.run.getModuleVersion
 import com.intellij.plugin.powershell.ide.run.join
-import com.intellij.util.concurrency.AppExecutorUtil
-import org.jetbrains.concurrency.AsyncPromise
-import org.jetbrains.concurrency.CancellablePromise
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.util.concurrent.TimeUnit
+import com.intellij.util.io.awaitExit
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.future.asCompletableFuture
+import kotlinx.coroutines.runInterruptible
+import kotlinx.coroutines.time.withTimeout
+import java.io.InputStream
+import java.time.Duration
+import java.util.concurrent.CompletableFuture
 
 object PSLanguageHostUtils {
   val LOG: Logger = Logger.getInstance(javaClass)
@@ -49,73 +49,38 @@ object PSLanguageHostUtils {
     return getModuleVersion(moduleBase, "PowerShellEditorServices")
   }
 
-  fun getPowerShellVersion(powerShellExePath: String): CancellablePromise<PSVersionInfo> {
-    val cancellablePromise: CancellablePromise<PSVersionInfo>
-    if (ApplicationManager.getApplication().isDispatchThread) {
-      cancellablePromise = ReadAction.nonBlocking<PSVersionInfo> { readPowerShellVersion(powerShellExePath, null) }
-        .submit(AppExecutorUtil.getAppExecutorService())
-    } else {
-      cancellablePromise = AsyncPromise()
-      val indicator = ProgressManager.getInstance().progressIndicator
-      ProgressManager.getInstance().runInReadActionWithWriteActionPriority(
-        {
-          try {
-            indicator.checkCanceled()
-            val powerShellVersion = readPowerShellVersion(powerShellExePath, indicator)
-            cancellablePromise.setResult(powerShellVersion)
-          } catch (e: Exception) {
-            when (e) {
-              is ProcessCanceledException -> {
-                cancellablePromise.setError(e)
-              }
-              is RuntimeException -> {
-                cancellablePromise.setError(e)
-              }
-              else -> {
-                cancellablePromise.setError(e)
-              }
-            }
-          }
-
-        }, indicator
-      )
-    }
-    return cancellablePromise
+  fun getPowerShellVersion(powerShellExePath: String): CompletableFuture<PSVersionInfo> {
+    return PluginAppRoot.getInstance().coroutineScope.async(Dispatchers.IO) {
+      withTimeout(Duration.ofSeconds(3)) {
+        readPowerShellVersion(powerShellExePath)
+      }
+    }.asCompletableFuture()
   }
 }
 
-private const val readPSVersionCommandProcessLock = "readPSVersionCommandProcessLock"
-
-@Throws(ProcessCanceledException::class, RuntimeException::class, PowerShellControlFlowException::class)
-private fun readPowerShellVersion(exePath: String, indicator: ProgressIndicator? = null): PSVersionInfo {
-  synchronized(readPSVersionCommandProcessLock) {
-    var br: BufferedReader? = null
-    var er: BufferedReader? = null
-    var process: Process? = null
-    val qInner = if (SystemInfo.isWindows) '\'' else '"'
-    val commandString = "(\$PSVersionTable.PSVersion, \$PSVersionTable.PSEdition) -join $qInner $qInner"
+private suspend fun readPowerShellVersion(exePath: String): PSVersionInfo {
+  var process: Process? = null
+  val qInner = if (SystemInfo.isWindows) '\'' else '"'
+  val commandString = "(\$PSVersionTable.PSVersion, \$PSVersionTable.PSEdition) -join $qInner $qInner"
+  return coroutineScope {
     try {
       process = GeneralCommandLine(arrayListOf(exePath, "-command", commandString)).createProcess()
-      (1..6).forEach {
-        process.waitFor(500L, TimeUnit.MILLISECONDS)
-        indicator?.checkCanceled()
+      fun readStream(stream: InputStream) = async {
+        runInterruptible { stream.reader().use { it.readText() } }
       }
-      if (process.isAlive) {
-        throw RuntimeException("Execution timed out for : ${arrayListOf(exePath, "--version")}")
+
+      val stdOutReader = readStream(process!!.inputStream)
+      readStream(process!!.errorStream)
+      val exitCode = process!!.awaitExit()
+      if (exitCode != 0) {
+        error("Process exit code $exitCode.")
       }
-      if (process.exitValue() != 0) {
-        throw RuntimeException("Execution failed with code ${process.exitValue()}: ${arrayListOf(exePath, "--version")}")
-      }
-      br = BufferedReader(InputStreamReader(process.inputStream))
-      er = BufferedReader(InputStreamReader(process.errorStream))
-      val result = if (br.ready()) br.readLine() else ""
-      return PSVersionInfo.parse(result)
+
+      PSVersionInfo.parse(stdOutReader.await())
     } catch (e: Exception) {
       PSLanguageHostUtils.LOG.warn("Command execution failed: ${arrayListOf(exePath, "--version")} ${e.message}", e)
       throw PowerShellControlFlowException(e.message, e.cause)
     } finally {
-      br?.close()
-      er?.close()
       process?.destroy()
     }
   }
