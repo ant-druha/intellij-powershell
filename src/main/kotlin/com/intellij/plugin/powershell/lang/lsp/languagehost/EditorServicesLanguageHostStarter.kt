@@ -28,10 +28,10 @@ import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.getPSExtensionModulesDir
 import com.intellij.util.execution.ParametersListUtil
 import com.intellij.util.io.BaseOutputReader
+import com.intellij.util.io.await
 import com.sun.jna.Pointer
 import com.sun.jna.platform.win32.Kernel32
 import com.sun.jna.platform.win32.WinNT
-import org.intellij.lang.annotations.Language
 import org.newsclub.net.unix.AFUNIXSocket
 import org.newsclub.net.unix.AFUNIXSocketAddress
 import java.io.*
@@ -129,7 +129,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
    * @throws PowerShellExtensionNotFound
    * @throws PowerShellNotInstalled
    */
-  override fun establishConnection(): Pair<InputStream?, OutputStream?> {
+  override suspend fun establishConnection(): Pair<InputStream?, OutputStream?> {
     val sessionInfo = startServerSession() ?: return Pair(null, null)//long operation
     if (sessionInfo is SessionInfo.Pipes) {
       val readPipeName = sessionInfo.languageServiceReadPipeName
@@ -188,7 +188,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
       .createProcess()
   }
 
-  private fun buildCommandLine(): List<String> {
+  private suspend fun buildCommandLine(): List<String> {
     val psExtensionPath = getPowerShellEditorServicesHome()
     val startupScript = getStartupScriptPath(psExtensionPath)
     if (StringUtil.isEmpty(startupScript)) {
@@ -197,6 +197,11 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
     }
     val sessionDetailsPath = FileUtil.toCanonicalPath(getSessionDetailsFile().canonicalPath)
     val logPath = createLogPath(psExtensionPath)
+    val lspInitMain = LSPInitMain.getInstance()
+    val psExecutable = lspInitMain.getPowerShellExecutable()
+
+    val psVersion = PSLanguageHostUtils.getPowerShellVersion(psExecutable).await()
+
     var psesVersionString = getEditorServicesVersion(psExtensionPath)
     var splitInOutPipesSwitch = ""
     val psesVersion = PSESVersion.create(psesVersionString)
@@ -214,12 +219,17 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
         "-HostVersion '${myHostDetails.version}' -AdditionalModules @($additionalModules) " +
         "-BundledModulesPath '$bundledModulesPath' $useReplSwitch " +
         "-LogLevel '$logLevel' -LogPath '$logPath' -SessionDetailsPath '$sessionDetailsPath' -FeatureFlags @() $splitInOutPipesSwitch"
-    @Language("PowerShell") val preamble =
-      if (SystemInfo.isWindows)
-        // TODO: Start-ThreadJob on PowerShell Core
-        "\$hostPid = \$PID\n" +
-          "Start-Job { Wait-Process -Id \$env:$INTELLIJ_POWERSHELL_PARENT_PID; Stop-Process -Id \$using:hostPid }\n"
-      else ""
+    val preamble =
+      if (SystemInfo.isWindows) {
+        when (psVersion.edition) {
+          PowerShellEdition.Core -> "Start-ThreadJob { \n" +
+            "  Wait-Process -Id \$env:$INTELLIJ_POWERSHELL_PARENT_PID\n" +
+            "  [System.Environment]::Exit(0)\n" +
+            "}\n"
+          else -> "\$hostPid = \$PID\n" +
+            "Start-Job { Wait-Process -Id \$env:$INTELLIJ_POWERSHELL_PARENT_PID; Stop-Process -Id \$using:hostPid }\n"
+        }
+      } else ""
     val scriptText = "$preamble${escapePath(startupScript)} $args"
 
     val scriptFile = File.createTempFile("start-pses-host", ".ps1")
@@ -232,8 +242,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
 
     FileUtil.createParentDirs(File(logPath))
     val command = mutableListOf<String>()
-    val lspInitMain = LSPInitMain.getInstance()
-    command.add(lspInitMain.getPowerShellExecutable())
+    command.add(psExecutable)
     command.add("-NoProfile")
     command.add("-NonInteractive")
     command.addAll(listOf("-ExecutionPolicy", "RemoteSigned")) // to run under default Restricted policy on PowerShell 5
@@ -247,7 +256,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
    * @throws PowerShellExtensionNotFound
    * @throws PowerShellNotInstalled
    */
-  private fun startServerSession(): SessionInfo? {
+  private suspend fun startServerSession(): SessionInfo? {
     cachedPowerShellExtensionDir = null
     cachedEditorServicesModuleVersion = null
     val commandLine = buildCommandLine()

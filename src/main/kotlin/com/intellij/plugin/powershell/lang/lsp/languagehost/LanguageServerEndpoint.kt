@@ -8,12 +8,11 @@ import com.intellij.ide.actions.ShowSettingsUtilImpl
 import com.intellij.notification.*
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.runAndLogException
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
-import com.intellij.openapi.util.Key
-import com.intellij.openapi.util.removeUserData
 import com.intellij.openapi.vfs.AsyncFileListener
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFileManager
@@ -35,6 +34,8 @@ import com.intellij.plugin.powershell.lang.lsp.util.getTextEditor
 import com.intellij.plugin.powershell.lang.lsp.util.isRemotePath
 import com.intellij.util.io.await
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import org.eclipse.lsp4j.*
 import org.eclipse.lsp4j.jsonrpc.messages.Either
@@ -47,28 +48,27 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicReference
+import java.util.concurrent.atomic.AtomicInteger
 
 class LanguageServerEndpoint(
   private val coroutineScope: CoroutineScope,
   private val languageHostConnectionManager: LanguageHostConnectionManager,
   private val project: Project
 ) : Disposable {
+
   private val LOG: Logger = Logger.getInstance(javaClass)
   private var client: PSLanguageClientImpl = PSLanguageClientImpl(project)
   private var languageServer: LanguageServer? = null
   private val textDocumentServiceQueue: TextDocumentServiceQueue
-  private var initializeFuture: CompletableFuture<InitializeResult>? = null
-  private var launcherFuture: Future<*>? = null
-  private var initializeResult: InitializeResult? = null
-  private val connectedEditors = ConcurrentHashMap<URI, EditorEventManager>()
+
+  private val serverInitializationLock = Any()
+  private var serverInitialization: Deferred<InitializeResult?>? = null
+
+  private val connectedEditors = ConcurrentHashMap<URI, Deferred<EditorEventManager?>>()
   private val rootPath = project.basePath
-  private var capabilitiesAlreadyRequested: Boolean = false
-  private val myStatus: AtomicReference<ServerStatus> = AtomicReference(ServerStatus.STOPPED)
   private var crashCount: Int = 0
-  private var myFailedStarts = 0
+  private val myFailedStarts = AtomicInteger()
   private val MAX_FAILED_STARTS = 2
 
   override fun toString(): String {
@@ -84,21 +84,17 @@ class LanguageServerEndpoint(
   }
 
   companion object {
-    val LANGUAGE_SERVER_ENDPOINT_KEY: Key<LanguageServerEndpoint> = Key.create("Powershell.LanguageServerEndpoint")
     private var installExtensionNotificationShown = false
     private var installPSNotificationShown = false
   }
 
   fun start() {
-    val projectRoot = rootPath ?: project.name
-    checkStarted(projectRoot)
-    if (initializeFuture != null) {
-      val capabilities = getServerCapabilities(projectRoot)
+    coroutineScope.launchNow {
+      checkStarted()
+      val capabilities = getServerCapabilities()
       if (capabilities != null) {
-        initializeFuture?.thenRun {
-          //todo move it to LanguageHostConnectionManager (notify it when server initialized)
-          languageServer?.workspaceService?.didChangeConfiguration(DEFAULT_DID_CHANGE_CONFIGURATION_PARAMS)//notify Editor Services to start REPL loop
-        }
+        //todo move it to LanguageHostConnectionManager (notify it when server initialized)
+        languageServer?.workspaceService?.didChangeConfiguration(DEFAULT_DID_CHANGE_CONFIGURATION_PARAMS)//notify Editor Services to start REPL loop
       }
     }
   }
@@ -110,61 +106,50 @@ class LanguageServerEndpoint(
     }
     val file = FileDocumentManager.getInstance().getFile(editor.document) ?: return
     val uri = VfsUtil.toUri(File(file.path))
-    if (!connectedEditors.contains(uri)) {
-      checkStarted(editor.document.toString())
-      if (initializeFuture != null) {
-        val capabilities = getServerCapabilities(editor.document.toString())
+    connectedEditors.computeIfAbsent(uri) {
+      coroutineScope.async {
+        checkStarted()
+        val capabilities = getServerCapabilities()
         if (capabilities != null) {
-          initializeFuture?.thenRun {
-            try {
-              if (!connectedEditors.contains(uri)) {
-                val syncOptions: Either<TextDocumentSyncKind, TextDocumentSyncOptions> = capabilities.textDocumentSync
-                val syncKind: TextDocumentSyncKind? = if (syncOptions.isRight) syncOptions.right.change else syncOptions.left
-                val mouseListener = EditorMouseListenerImpl()
-                val mouseMotionListener = EditorMouseMotionListenerImpl()
-                val documentListener = DocumentListenerImpl(coroutineScope)
-                val selectionListener = SelectionListenerImpl()
-                val server = languageServer
-                if (server != null) {
-                  val requestManager = LSPRequestManager(this, capabilities, textDocumentServiceQueue)
-                  val serverOptions = ServerOptions(syncKind, capabilities.completionProvider, capabilities.signatureHelpProvider, capabilities.codeLensProvider, capabilities.documentOnTypeFormattingProvider, capabilities.documentLinkProvider, capabilities.executeCommandProvider)
-                  val manager = EditorEventManager(project, editor, mouseListener, mouseMotionListener, documentListener, selectionListener, requestManager, serverOptions)
-                  mouseListener.setManager(manager)
-                  mouseMotionListener.setManager(manager)
-                  documentListener.setManager(manager)
-                  selectionListener.setManager(manager)
-                  manager.registerListeners()
-                  connectedEditors[uri] = manager
-                  editor.putUserData(LANGUAGE_SERVER_ENDPOINT_KEY, this)
-                  coroutineScope.launchNow { manager.documentOpened() }
-                  LOG.debug("Created manager for $uri")
-                }
-              }
-            } catch (e: Exception) {
-              LOG.error("Error when trying to initialize server capabilities: $e")
+          LOG.runAndLogException {
+            val syncOptions: Either<TextDocumentSyncKind, TextDocumentSyncOptions> = capabilities.textDocumentSync
+            val syncKind: TextDocumentSyncKind? = if (syncOptions.isRight) syncOptions.right.change else syncOptions.left
+            val mouseListener = EditorMouseListenerImpl()
+            val mouseMotionListener = EditorMouseMotionListenerImpl()
+            val documentListener = DocumentListenerImpl(coroutineScope)
+            val selectionListener = SelectionListenerImpl()
+            val server = languageServer
+            if (server != null) {
+              val requestManager = LSPRequestManager(
+                this@LanguageServerEndpoint,
+                capabilities,
+                textDocumentServiceQueue
+              )
+              val serverOptions = ServerOptions(syncKind, capabilities.completionProvider, capabilities.signatureHelpProvider, capabilities.codeLensProvider, capabilities.documentOnTypeFormattingProvider, capabilities.documentLinkProvider, capabilities.executeCommandProvider)
+              val manager = EditorEventManager(project, editor, mouseListener, mouseMotionListener, documentListener, selectionListener, requestManager, serverOptions)
+              mouseListener.setManager(manager)
+              mouseMotionListener.setManager(manager)
+              documentListener.setManager(manager)
+              selectionListener.setManager(manager)
+              manager.registerListeners()
+              coroutineScope.launchNow { manager.documentOpened() }
+              LOG.debug("Created manager for $uri")
+              return@async manager
             }
           }
         } else {
           LOG.warn("Capabilities are null for $languageServer")
         }
-      } else {
-        LOG.warn("InitializeFuture is null for $languageServer")
+
+        return@async null
       }
     }
   }
 
-  private fun getServerCapabilities(documentPath: String): ServerCapabilities? {
-    if (initializeResult != null) return initializeResult?.capabilities
-    try {
-      checkStarted(documentPath)
-      initializeFuture?.get(if (capabilitiesAlreadyRequested) 0 else 9000 /*Timeout.INIT_TIMEOUT*/, TimeUnit.MILLISECONDS)
-    } catch (e: Exception) {
-      LOG.warn("PowerShell language host not initialized after 5s\nCheck settings", e)
-      stop()
-    }
-    capabilitiesAlreadyRequested = true
-    return if (initializeResult != null) initializeResult?.capabilities
-    else null
+  private suspend fun getServerCapabilities(): ServerCapabilities? {
+    checkStarted()
+    val initialization = synchronized(serverInitializationLock) { serverInitialization }
+    return initialization?.await()?.capabilities
   }
 
   override fun dispose() {
@@ -177,12 +162,10 @@ class LanguageServerEndpoint(
       disconnectEditor(e.key)
     }
 
-    initializeFuture?.cancel(true)
-    initializeFuture = null
-    initializeResult = null
-    capabilitiesAlreadyRequested = false
-    launcherFuture?.cancel(false)
-    launcherFuture = null
+    synchronized(serverInitializationLock) {
+      serverInitialization?.cancel()
+      serverInitialization = null
+    }
 
     try {
       val shutdown: CompletableFuture<Any>? = languageServer?.shutdown()
@@ -195,106 +178,94 @@ class LanguageServerEndpoint(
 //    fileWriter?.close()
 //    fileWriter = null
     destroyLanguageHostProcess()
-    setStatus(ServerStatus.STOPPED)
     LOG.info("Connection to PowerShell language host closed for $rootPath.")
   }
 
   fun disconnectEditor(uri: URI) {
-    val e = connectedEditors.remove(uri)
-    if (e != null) {
-      e.getEditor().removeUserData(LANGUAGE_SERVER_ENDPOINT_KEY)
-      e.removeListeners()
-      coroutineScope.launchNow { e.documentClosed() }
-    }
-  }
-
-  private val scheduleStartLock = Any()
-
-  private fun checkStarted(path: String) {
-    waitIfStarting(path)//When 'editor opened' notification comes but the server has not been started yet.
-    synchronized(scheduleStartLock) {
-      val oldStatus = getStatus()
-      if (oldStatus == ServerStatus.STOPPED || shouldRetryFailedStart()) {
-        //retry n attempts to start if failed
-        var launched = scheduleStart()
-        while (!launched && shouldRetryFailedStart()) {
-          stop()
-          launched = scheduleStart()
-        }
+    val deferred = connectedEditors.remove(uri)
+    if (deferred != null) {
+      coroutineScope.launchNow {
+        val manager = deferred.await()
+        manager?.removeListeners()
+        manager?.documentClosed()
       }
     }
   }
 
-  private fun waitIfStarting(editorDocument: String) {
-    var checkCount = 15
-    try {
-      LOG.debug("Waiting the language server for the '${project.name}' project to start to connect document: $editorDocument")
-      while (getStatus() == ServerStatus.STARTING && checkCount > 0) {
-        Thread.sleep(500)
-        checkCount--
+  private fun onStartFailure() {
+    if (shouldRetryFailedStart()) {
+      synchronized(serverInitializationLock) {
+        serverInitialization?.cancel()
+        serverInitialization = scheduleStart()
       }
-      if (checkCount <= 0) {
-        LOG.warn("Wait time elapsed for the server to start for project '${project.name}'")
-      } else if (checkCount != 15) {
-        LOG.debug("Language server started for the '${project.name}' project. Can proceed with document: $editorDocument")
-      }
-    } catch (e: Exception) {
-      LOG.warn("Error while waiting the server for the '${project.name}' project to start: $e")
     }
   }
 
-  private fun scheduleStart(): Boolean {
-    setStatus(ServerStatus.STARTING)
+  private suspend fun checkStarted() {
+    synchronized(serverInitializationLock) {
+      if (serverInitialization == null) {
+        serverInitialization = scheduleStart()
+      }
+    }
+
+    LOG.runAndLogException {
+      serverInitialization?.await()
+    }
+  }
+
+  private fun scheduleStart(): Deferred<InitializeResult?> {
     if (languageHostConnectionManager.isConnected()) destroyLanguageHostProcess()
-    try {
-      val (inStream, outStream) = languageHostConnectionManager.establishConnection() //long operation, suspends the thread
-      if (inStream == null || outStream == null) {
-        LOG.warn("Connection creation to PowerShell language host failed for $rootPath")
-        setStatus(ServerStatus.FAILED)
-        return false
+
+    return coroutineScope.async job@{
+      try {
+        val (inStream, outStream) = languageHostConnectionManager.establishConnection() //long operation, suspends the thread
+        if (inStream == null || outStream == null) {
+          LOG.warn("Connection creation to PowerShell language host failed for $rootPath")
+          onStartFailure()
+          return@job null
+        }
+
+        val launcher = LSPLauncher.createClientLauncher(client, inStream, outStream, false, null)
+        languageServer = launcher.remoteProxy
+
+        val server = languageServer
+        if (server == null) {
+          LOG.warn("Language server is null for $launcher")
+          onStartFailure()
+          return@job null
+        }
+        client.connectServer(server, this@LanguageServerEndpoint)
+
+        launcher.startListening().await()
+        languageHostConnectionManager.connectServer(this@LanguageServerEndpoint)
+        val result = async { initialize(server) }
+        LOG.debug("Sent initialize request to server")
+
+        if (isConsoleConnection()) addRemoteFilesChangeListener()//register vfs listener for saving remote files
+        return@job result.await()
+      } catch (e: Exception) {
+        when (e) {
+          is PowerShellExtensionError -> {
+            LOG.warn("PowerShell extension error: ${e.message}")
+            showPowerShellNotConfiguredNotification()
+          }
+          is PowerShellExtensionNotFound -> {
+            LOG.warn("PowerShell extension not found", e)
+            showPowerShellNotConfiguredNotification()
+          }
+          is PowerShellNotInstalled -> {
+            LOG.warn("PowerShell is not installed", e)
+            showPowerShellNotInstalledNotification()
+          }
+          else -> {
+            LOG.warn("Can not start language server: ", e)
+          }
+        }
+
+        onStartFailure()
+        return@job null
       }
-//      fileWriter = PrintWriter(dumpFile)
-      val launcher = LSPLauncher.createClientLauncher(client, inStream, outStream, false, null)
-      languageServer = launcher.remoteProxy
-
-      val server = languageServer
-      if (server == null) {
-        LOG.warn("Language server is null for $launcher")
-        setStatus(ServerStatus.FAILED)
-        return false
-      }
-      client.connectServer(server, this@LanguageServerEndpoint)
-
-      launcherFuture = launcher.startListening()
-      languageHostConnectionManager.connectServer(this)
-      sendInitializeRequest(server)
-      LOG.debug("Sent initialize request to server")
-
-      if (isConsoleConnection()) addRemoteFilesChangeListener()//register vfs listener for saving remote files
-
-      return true
-    } catch (e: Exception) {
-      when (e) {
-        is PowerShellExtensionError -> {
-          LOG.warn("PowerShell extension error: ${e.message}")
-          showPowerShellNotConfiguredNotification()
-        }
-        is PowerShellExtensionNotFound -> {
-          LOG.warn("PowerShell extension not found", e)
-          showPowerShellNotConfiguredNotification()
-        }
-        is PowerShellNotInstalled -> {
-          LOG.warn("PowerShell is not installed", e)
-          showPowerShellNotInstalledNotification()
-        }
-        else -> {
-          LOG.warn("Can not start language server: ", e)
-        }
-      }
-      setStatus(ServerStatus.FAILED)
-      return false
     }
-
   }
 
   private fun addRemoteFilesChangeListener() {
@@ -345,11 +316,11 @@ class LanguageServerEndpoint(
     installPSExt.addAction(BrowseNotificationAction(MessagesBundle.message("powershell.not.installed.install.action"), downloadLink))
 
     Notifications.Bus.notify(installPSExt, project)
-    myFailedStarts = MAX_FAILED_STARTS
+    myFailedStarts.set(MAX_FAILED_STARTS)
     installPSNotificationShown = true
   }
 
-  private fun sendInitializeRequest(server: LanguageServer) {
+  private suspend fun initialize(server: LanguageServer): InitializeResult {
     val workspaceClientCapabilities = WorkspaceClientCapabilities()
     workspaceClientCapabilities.applyEdit = true
     workspaceClientCapabilities.didChangeConfiguration = DidChangeConfigurationCapabilities()
@@ -378,37 +349,18 @@ class LanguageServerEndpoint(
     initParams.rootUri = rootPath
     initParams.capabilities = ClientCapabilities(workspaceClientCapabilities, textDocumentClientCapabilities, null)
     initParams.initializationOptions = null
-    initializeFuture = server.initialize(initParams).thenApply { res ->
-      initializeResult = res
-      LOG.info("Got server initialize result for $rootPath")
-      setStatus(ServerStatus.STARTED)
-      return@thenApply res
-    }.exceptionally {
-          LOG.warn("Server initialization completed exceptionally for $rootPath. Initialize result: $initializeResult, Cause: $it")
-          initializeResult = null
-          setStatus(ServerStatus.FAILED)
-          return@exceptionally null
-        }
+    val result = server.initialize(initParams).await()
+    LOG.info("Got server initialize result for $rootPath")
+    return result
   }
 
   private fun shouldRetryFailedStart(): Boolean {
-    val thisFailed = getStatus() == ServerStatus.FAILED
-    if (thisFailed) myFailedStarts++
-    return thisFailed && myFailedStarts <= MAX_FAILED_STARTS
+    val counter = myFailedStarts.incrementAndGet()
+    return counter <= MAX_FAILED_STARTS
   }
 
-  private fun setStatus(status: ServerStatus) {
-    myStatus.set(status)
-  }
-
-//  fun getConnectedFiles(): Iterable<URI> {
-//    return connectedEditors.keys
-//  }
-
-  fun getStatus(): ServerStatus {
-    return myStatus.get()
-  }
-
+  val isRunning: Boolean
+    get() = synchronized(serverInitializationLock) { serverInitialization } != null
 
   fun crashed(e: Throwable) {
     LOG.warn("Crashed: $e")
@@ -442,10 +394,11 @@ class LanguageServerEndpoint(
 
   @TestOnly
   suspend fun waitForInit() {
-    while (initializeFuture == null) {
+    start()
+    while (synchronized(serverInitializationLock) { serverInitialization } == null) {
       delay(50)
     }
-    this.initializeFuture!!.await()
+    this.serverInitialization!!.await()
   }
 
   @TestOnly

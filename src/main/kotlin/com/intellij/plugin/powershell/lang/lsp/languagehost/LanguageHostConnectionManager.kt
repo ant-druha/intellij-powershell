@@ -5,7 +5,7 @@ import java.io.InputStream
 import java.io.OutputStream
 
 interface LanguageHostConnectionManager {
-  fun establishConnection(): Pair<InputStream?, OutputStream?>
+  suspend fun establishConnection(): Pair<InputStream?, OutputStream?>
   fun closeConnection()
   fun isConnected(): Boolean
   fun getProcess(): Process?

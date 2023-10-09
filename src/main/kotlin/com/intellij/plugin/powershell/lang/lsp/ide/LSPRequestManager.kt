@@ -6,7 +6,6 @@ package com.intellij.plugin.powershell.lang.lsp.ide
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.plugin.powershell.lang.lsp.languagehost.LanguageServerEndpoint
-import com.intellij.plugin.powershell.lang.lsp.languagehost.ServerStatus
 import com.intellij.plugin.powershell.lang.lsp.languagehost.TextDocumentServiceQueue
 import org.eclipse.lsp4j.*
 import org.eclipse.lsp4j.jsonrpc.messages.Either
@@ -20,7 +19,7 @@ class LSPRequestManager(
 
   private val documentSyncOptions: TextDocumentSyncOptions? = if (capabilities.textDocumentSync.isRight) capabilities.textDocumentSync.right else null
 
-  private fun checkStatus(): Boolean = serverEndpoint.getStatus() == ServerStatus.STARTED
+  private fun checkStatus(): Boolean = serverEndpoint.isRunning
 
   suspend fun didClose(params: DidCloseTextDocumentParams) {
     if (checkStatus()) {

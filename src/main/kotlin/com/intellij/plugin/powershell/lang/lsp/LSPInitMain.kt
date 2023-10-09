@@ -22,7 +22,6 @@ import com.intellij.plugin.powershell.ide.PluginProjectDisposableRoot
 import com.intellij.plugin.powershell.ide.run.findPsExecutable
 import com.intellij.plugin.powershell.lang.lsp.languagehost.EditorServicesLanguageHostStarter
 import com.intellij.plugin.powershell.lang.lsp.languagehost.LanguageServerEndpoint
-import com.intellij.plugin.powershell.lang.lsp.languagehost.ServerStatus
 import com.intellij.plugin.powershell.lang.lsp.languagehost.terminal.PowerShellConsoleTerminalRunner
 import com.intellij.plugin.powershell.lang.lsp.util.isRemotePath
 import java.io.File
@@ -53,10 +52,7 @@ class LSPInitMain : PersistentStateComponent<LSPInitMain.PowerShellInfo>, Dispos
     var powerShellExtensionPath: String? = null,
     var editorServicesModuleVersion: String? = null,
     var isUseLanguageServer: Boolean = true
-  ) {
-    constructor(isUseLanguageServer: Boolean, powerShellExePath: String?) :
-      this("", powerShellExePath, null, null, null, isUseLanguageServer)
-  }
+  )
 
   fun getPowerShellExecutable(): String {
     val psExecutable = myPowerShellInfo.powerShellExePath ?: findPsExecutable()
@@ -129,7 +125,7 @@ class LSPInitMain : PersistentStateComponent<LSPInitMain.PowerShellInfo>, Dispos
 
     private fun findServerForRemoteFile(file: VirtualFile, project: Project): LanguageServerEndpoint? {
       val consoleServer = getInstance().psConsoleLanguageServer[project] ?: return null
-      return if (consoleServer.getStatus() == ServerStatus.STARTED && isRemotePath(file.canonicalPath)) consoleServer else null
+      return if (consoleServer.isRunning && isRemotePath(file.canonicalPath)) consoleServer else null
     }
   }
 
