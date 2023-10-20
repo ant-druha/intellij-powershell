@@ -90,7 +90,7 @@ class LanguageServerEndpoint(
 
   fun start() {
     coroutineScope.launchNow {
-      checkStarted()
+      ensureStarted()
       val capabilities = getServerCapabilities()
       if (capabilities != null) {
         //todo move it to LanguageHostConnectionManager (notify it when server initialized)
@@ -108,7 +108,7 @@ class LanguageServerEndpoint(
     val uri = VfsUtil.toUri(File(file.path))
     connectedEditors.computeIfAbsent(uri) {
       coroutineScope.async {
-        checkStarted()
+        ensureStarted()
         val capabilities = getServerCapabilities()
         if (capabilities != null) {
           LOG.runAndLogException {
@@ -147,7 +147,7 @@ class LanguageServerEndpoint(
   }
 
   private suspend fun getServerCapabilities(): ServerCapabilities? {
-    checkStarted()
+    ensureStarted()
     val initialization = synchronized(serverInitializationLock) { serverInitialization }
     return initialization?.await()?.capabilities
   }
@@ -201,19 +201,13 @@ class LanguageServerEndpoint(
     }
   }
 
-  private suspend fun checkStarted() {
-    synchronized(serverInitializationLock) {
-      if (serverInitialization == null) {
-        serverInitialization = scheduleStart()
+  private suspend fun ensureStarted() {
+    val initialization = synchronized(serverInitializationLock) {
+      serverInitialization ?: scheduleStart().also {
+        serverInitialization = it
       }
     }
-
-    LOG.runAndLogException {
-      val initialization = synchronized(serverInitializationLock) {
-        serverInitialization
-      }
-      initialization?.await()
-    }
+    initialization.await()
   }
 
   private fun scheduleStart(): Deferred<InitializeResult?> {
