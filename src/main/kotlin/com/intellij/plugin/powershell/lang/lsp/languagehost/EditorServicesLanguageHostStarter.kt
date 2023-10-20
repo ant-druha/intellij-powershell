@@ -32,6 +32,7 @@ import com.intellij.util.io.await
 import com.sun.jna.Pointer
 import com.sun.jna.platform.win32.Kernel32
 import com.sun.jna.platform.win32.WinNT
+import kotlinx.coroutines.delay
 import org.newsclub.net.unix.AFUNIXSocket
 import org.newsclub.net.unix.AFUNIXSocketAddress
 import java.io.*
@@ -374,13 +375,13 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
     }
   }
 
-  private fun waitForSessionFile(fileWithSessionInfo: File): Boolean {
+  private suspend fun waitForSessionFile(fileWithSessionInfo: File): Boolean {
     var tries = 25
     val waitTimeoutMillis = 500L
     try {
       while (!fileWithSessionInfo.exists() && tries > 0) {
         tries--
-        Thread.sleep(waitTimeoutMillis)
+        delay(waitTimeoutMillis)
         logger.debug("Waiting for session info file ${fileWithSessionInfo.path} ... Tries left: $tries")
       }
     } catch (e: Exception) {
