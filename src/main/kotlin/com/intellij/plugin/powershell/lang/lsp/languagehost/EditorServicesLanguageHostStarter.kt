@@ -69,14 +69,16 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
         "${ApplicationInfo.getInstance().majorVersion}.${ApplicationInfo.getInstance().minorVersion}"
 
     private data class HostDetails(val name: String, val profileId: String, val version: String)
-    private open class SessionInfo private constructor(protected val powerShellVersion: String?, protected val status: String?) {
+    private open class SessionInfo private constructor(val powerShellVersion: String?, val status: String?) {
 
-      class Pipes internal constructor(internal val languageServiceReadPipeName: String,
-                                                internal val languageServiceWritePipeName: String,
-                                                internal val debugServiceReadPipeName: String,
-                                                internal val debugServiceWritePipeName: String,
-                                                powerShellVersion: String?,
-                                                status: String?) : SessionInfo(powerShellVersion, status) {
+      class Pipes(
+        val languageServiceReadPipeName: String,
+        val languageServiceWritePipeName: String,
+        val debugServiceReadPipeName: String,
+        val debugServiceWritePipeName: String,
+        powerShellVersion: String?,
+        status: String?
+      ) : SessionInfo(powerShellVersion, status) {
         override fun toString(): String {
           return "{languageServiceReadPipeName:$languageServiceReadPipeName,languageServiceWritePipeName:$languageServiceWritePipeName," +
               "debugServiceReadPipeName:$debugServiceReadPipeName,debugServiceWritePipeName:$debugServiceWritePipeName," +
@@ -84,10 +86,12 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
         }
       }
 
-      class Tcp internal constructor(internal val languageServicePort: Int,
-                                              internal val debugServicePort: Int,
-                                              powerShellVersion: String?,
-                                              status: String?) : SessionInfo(powerShellVersion, status) {
+      class Tcp(
+        val languageServicePort: Int,
+        val debugServicePort: Int,
+        powerShellVersion: String?,
+        status: String?
+      ) : SessionInfo(powerShellVersion, status) {
         override fun toString(): String {
           return "{languageServicePort:$languageServicePort,debugServicePort:$debugServicePort,powerShellVersion:$powerShellVersion,status:$status}"
         }
@@ -222,7 +226,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
     val preamble =
       if (SystemInfo.isWindows) {
         when (psVersion.edition) {
-          PowerShellEdition.Core -> "Start-ThreadJob { \n" +
+          PowerShellEdition.Core -> "Start-ThreadJob {\n" +
             "  Wait-Process -Id \$env:$INTELLIJ_POWERSHELL_PARENT_PID\n" +
             "  [System.Environment]::Exit(0)\n" +
             "}\n"
@@ -450,7 +454,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
         result = f.getLong(p)
         f.isAccessible = false
       } //for Unix-based OS
-    } catch (ex: Exception) {
+    } catch (_: Exception) {
       result = -1
     }
 
