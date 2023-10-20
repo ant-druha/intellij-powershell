@@ -209,7 +209,10 @@ class LanguageServerEndpoint(
     }
 
     LOG.runAndLogException {
-      serverInitialization?.await()
+      val initialization = synchronized(serverInitializationLock) {
+        serverInitialization
+      }
+      initialization?.await()
     }
   }
 
@@ -218,7 +221,7 @@ class LanguageServerEndpoint(
 
     return coroutineScope.async job@{
       try {
-        val (inStream, outStream) = languageHostConnectionManager.establishConnection() //long operation, suspends the thread
+        val (inStream, outStream) = languageHostConnectionManager.establishConnection()
         if (inStream == null || outStream == null) {
           LOG.warn("Connection creation to PowerShell language host failed for $rootPath")
           onStartFailure()
@@ -236,7 +239,7 @@ class LanguageServerEndpoint(
         }
         client.connectServer(server, this@LanguageServerEndpoint)
 
-        launcher.startListening().await()
+        launcher.startListening() // NOTE: no need to await here; the future only terminates together with the server
         languageHostConnectionManager.connectServer(this@LanguageServerEndpoint)
         val result = async { initialize(server) }
         LOG.debug("Sent initialize request to server")

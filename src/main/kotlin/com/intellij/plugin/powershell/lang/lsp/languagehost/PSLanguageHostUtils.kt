@@ -14,9 +14,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.future.asCompletableFuture
 import kotlinx.coroutines.runInterruptible
-import kotlinx.coroutines.time.withTimeout
 import java.io.InputStream
-import java.time.Duration
 import java.util.concurrent.CompletableFuture
 
 object PSLanguageHostUtils {
@@ -51,9 +49,7 @@ object PSLanguageHostUtils {
 
   fun getPowerShellVersion(powerShellExePath: String): CompletableFuture<PSVersionInfo> {
     return PluginAppRoot.getInstance().coroutineScope.async(Dispatchers.IO) {
-      withTimeout(Duration.ofSeconds(3)) {
-        readPowerShellVersion(powerShellExePath)
-      }
+      readPowerShellVersion(powerShellExePath)
     }.asCompletableFuture()
   }
 }

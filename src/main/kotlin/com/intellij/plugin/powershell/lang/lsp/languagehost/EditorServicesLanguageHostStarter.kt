@@ -130,7 +130,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
    * @throws PowerShellNotInstalled
    */
   override suspend fun establishConnection(): Pair<InputStream?, OutputStream?> {
-    val sessionInfo = startServerSession() ?: return Pair(null, null)//long operation
+    val sessionInfo = startServerSession() ?: return Pair(null, null)
     if (sessionInfo is SessionInfo.Pipes) {
       val readPipeName = sessionInfo.languageServiceReadPipeName
       val writePipeName = sessionInfo.languageServiceWritePipeName
