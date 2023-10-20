@@ -72,7 +72,7 @@ private suspend fun readPowerShellVersion(exePath: String): PSVersionInfo {
         error("Process exit code $exitCode.")
       }
 
-      PSVersionInfo.parse(stdOutReader.await())
+      PSVersionInfo.parse(stdOutReader.await().trim())
     } catch (e: Exception) {
       PSLanguageHostUtils.LOG.warn("Command execution failed: ${arrayListOf(exePath, "--version")} ${e.message}", e)
       throw PowerShellControlFlowException(e.message, e.cause)

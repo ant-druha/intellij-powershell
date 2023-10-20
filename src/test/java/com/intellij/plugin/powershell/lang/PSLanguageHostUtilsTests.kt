@@ -23,8 +23,10 @@ class PSLanguageHostUtilsTests : BasePlatformTestCase() {
       if (isOnCiServer) {
         fail("powershell.exe not found on CI environment.")
         return
-      } else
+      } else {
+        // Ignore the absence of an executable in the developer environment.
         return
+      }
     }
 
 
@@ -37,8 +39,10 @@ class PSLanguageHostUtilsTests : BasePlatformTestCase() {
       if (isOnCiServer) {
         fail("PowerShell Core executable not found on CI environment.")
         return
-      } else
+      } else {
+        // Ignore the absence of an executable in the developer environment.
         return
+      }
     }
 
     doTest(executable, "[67]\\..+".toRegex(), PowerShellEdition.Core)
