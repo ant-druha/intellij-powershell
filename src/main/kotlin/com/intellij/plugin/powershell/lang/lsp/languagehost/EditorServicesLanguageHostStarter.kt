@@ -227,12 +227,14 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
     val preamble =
       if (SystemInfo.isWindows) {
         when (psVersion.edition) {
-          PowerShellEdition.Core -> "Start-ThreadJob {\n" +
+          PowerShellEdition.Core -> "\$null = Start-ThreadJob {\n" +
             "  Wait-Process -Id \$env:$INTELLIJ_POWERSHELL_PARENT_PID\n" +
             "  [System.Environment]::Exit(0)\n" +
             "}\n"
           else -> "\$hostPid = \$PID\n" +
-            "Start-Job { Wait-Process -Id \$env:$INTELLIJ_POWERSHELL_PARENT_PID; Stop-Process -Id \$using:hostPid }\n"
+            "\$null = Start-Job { " +
+            "Wait-Process -Id \$env:$INTELLIJ_POWERSHELL_PARENT_PID; Stop-Process -Id \$using:hostPid " +
+            "}\n"
         }
       } else ""
     val scriptText = "$preamble${escapePath(startupScript)} $args"
