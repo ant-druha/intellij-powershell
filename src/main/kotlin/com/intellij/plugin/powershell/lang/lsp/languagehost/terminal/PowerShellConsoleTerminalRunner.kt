@@ -21,6 +21,7 @@ import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.openapi.wm.ToolWindowManager
+import com.intellij.plugin.powershell.ide.MessagesBundle
 import com.intellij.plugin.powershell.lang.lsp.languagehost.EditorServicesLanguageHostStarter
 import com.intellij.plugin.powershell.lang.lsp.languagehost.LanguageHostConnectionManager
 import com.intellij.plugin.powershell.lang.lsp.languagehost.LanguageServerEndpoint
@@ -65,8 +66,12 @@ class PowerShellConsoleTerminalRunner(project: Project) : EditorServicesLanguage
   companion object {
     private val sessionCount = AtomicInteger()
 
-    private fun createPtyProcess(project: Project, command: Array<out String>, directory: String?): PtyProcess {
-      val envs = HashMap(EnvironmentUtil.getEnvironmentMap())
+    private fun createPtyProcess(
+      project: Project,
+      command: Array<out String>,
+      environment: Map<String, String>?
+    ): PtyProcess {
+      val envs = (EnvironmentUtil.getEnvironmentMap() + environment.orEmpty()).toMutableMap()
       if (!SystemInfo.isWindows) {
         envs["TERM"] = "xterm-256color"
       }
@@ -78,7 +83,7 @@ class PowerShellConsoleTerminalRunner(project: Project) : EditorServicesLanguage
         logFile.createNewFile()
         return PtyProcessBuilder(command)
             .setEnvironment(envs)
-            .setDirectory(directory ?: TerminalProjectOptionsProvider.getInstance(project).startingDirectory)
+            .setDirectory(TerminalProjectOptionsProvider.getInstance(project).startingDirectory)
             .setConsole(false)
             .setCygwin(false)
             .setLogFile(logFile)
@@ -95,13 +100,15 @@ class PowerShellConsoleTerminalRunner(project: Project) : EditorServicesLanguage
 
   override fun getLogFileName(): String = "EditorServices-IJ-Console-${getSessionCount()}"
 
-  override fun createProcess(project: Project, command: List<String>, directory: String?): PtyProcess {
+  override fun createProcess(project: Project, command: List<String>, environment: Map<String, String>?): PtyProcess {
     LOG.info("Language server starting... exe: '$command'")
-    val process = createPtyProcess(myProject, command.toTypedArray(), directory)
+    val process = createPtyProcess(myProject, command.toTypedArray(), environment)
     try {
       initConsoleUI(process)
     } catch (e: Exception) {
-      ModalityUiUtil.invokeLaterIfNeeded(ModalityState.nonModal()) { Messages.showErrorDialog(this@PowerShellConsoleTerminalRunner.myProject, e.message, "Launching PowerShell terminal console") }
+      ModalityUiUtil.invokeLaterIfNeeded(ModalityState.nonModal()) {
+        Messages.showErrorDialog(myProject, e.message, MessagesBundle.message("powershell-console.launching"))
+      }
     }
     return process
   }

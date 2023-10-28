@@ -9,7 +9,7 @@ interface LanguageHostConnectionManager {
   fun closeConnection()
   fun isConnected(): Boolean
   fun getProcess(): Process?
-  fun createProcess(project: Project, command: List<String>, directory: String?): Process
+  fun createProcess(project: Project, command: List<String>, environment: Map<String, String>?): Process
   fun connectServer(server: LanguageServerEndpoint) {}
   fun useConsoleRepl(): Boolean = false
 }
