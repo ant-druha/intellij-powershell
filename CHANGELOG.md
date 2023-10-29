@@ -4,9 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [2.3.0] - 2023-10-29
+### Changed
+- The PowerShellEditorServices connection code has been refactored to not cause any UI freezes: everything was moved to background and rewritten to use non-blocking IO as much as possible
+
 ### Fixed
 - [#155](https://github.com/ant-druha/intellij-powershell/issues/155): cannot start PowerShellEditorServices under the default PowerShell 5 execution policy, `Restricted`
+- [#104](https://github.com/ant-druha/intellij-powershell/issues/104) (fixed partially): use less restricting flags when opening pipe connections to PowerShellEditorServices
+
+### Added
+- [#144](https://github.com/ant-druha/intellij-powershell/issues/144): terminate the language server processes when exiting the IDE (even if the IDE was terminated abnormally)
 
 ## [2.2.0] - 2023-10-01
 ### Changed
@@ -191,4 +198,5 @@ Initial editor and code completion support:
 [2.0.10]: https://github.com/ant-druha/intellij-powershell/compare/v2.0.9...v2.0.10
 [2.1.0]: https://github.com/ant-druha/intellij-powershell/compare/v2.0.10...v2.1.0
 [2.2.0]: https://github.com/ant-druha/intellij-powershell/compare/v2.1.0...v2.2.0
-[Unreleased]: https://github.com/ant-druha/intellij-powershell/compare/v2.2.0...HEAD
+[2.3.0]: https://github.com/ant-druha/intellij-powershell/compare/v2.2.0...v2.3.0
+[Unreleased]: https://github.com/ant-druha/intellij-powershell/compare/v2.3.0...HEAD
