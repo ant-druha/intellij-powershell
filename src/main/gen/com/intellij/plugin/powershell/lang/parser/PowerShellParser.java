@@ -49,32 +49,53 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
   };
 
   /* ********************************************************** */
-  // 'param'|'until'|'workflow'|'end'|'define'|'finally'|'parallel'|'continue'|'begin'|'dynamicparam'|'in'
-  // |'process'|'break'|'else'|'inlinescript'|'catch'|'this'|'hidden'|'foreach'|'static'|'data'
+  // 'begin'
+  //  | 'break'
+  //  | 'catch'
+  //  | 'continue'
+  //  | 'data'
+  //  | 'exit'
+  //  | 'define'
+  //  | 'dynamicparam'
+  //  | 'else'
+  //  | 'end'
+  //  | 'finally'
+  //  | 'foreach'
+  //  | 'hidden'
+  //  | 'in'
+  //  | 'inlinescript'
+  //  | 'parallel'
+  //  | 'param'
+  //  | 'process'
+  //  | 'static'
+  //  | 'this'
+  //  | 'until'
+  //  | 'workflow'
   static boolean allowed_identifier_keywords(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "allowed_identifier_keywords")) return false;
     boolean r;
-    r = consumeToken(b, PARAM);
+    r = consumeToken(b, BEGIN);
+    if (!r) r = consumeToken(b, BREAK);
+    if (!r) r = consumeToken(b, CATCH);
+    if (!r) r = consumeToken(b, CONTINUE);
+    if (!r) r = consumeToken(b, DATA);
+    if (!r) r = consumeToken(b, EXIT);
+    if (!r) r = consumeToken(b, DEFINE);
+    if (!r) r = consumeToken(b, DYNAMICPARAM);
+    if (!r) r = consumeToken(b, ELSE);
+    if (!r) r = consumeToken(b, END);
+    if (!r) r = consumeToken(b, FINALLY);
+    if (!r) r = consumeToken(b, FOREACH);
+    if (!r) r = consumeToken(b, HIDDEN);
+    if (!r) r = consumeToken(b, IN);
+    if (!r) r = consumeToken(b, INLINESCRIPT);
+    if (!r) r = consumeToken(b, PARALLEL);
+    if (!r) r = consumeToken(b, PARAM);
+    if (!r) r = consumeToken(b, PROCESS);
+    if (!r) r = consumeToken(b, STATIC);
+    if (!r) r = consumeToken(b, THIS);
     if (!r) r = consumeToken(b, UNTIL);
     if (!r) r = consumeToken(b, WORKFLOW);
-    if (!r) r = consumeToken(b, END);
-    if (!r) r = consumeToken(b, DEFINE);
-    if (!r) r = consumeToken(b, FINALLY);
-    if (!r) r = consumeToken(b, PARALLEL);
-    if (!r) r = consumeToken(b, CONTINUE);
-    if (!r) r = consumeToken(b, BEGIN);
-    if (!r) r = consumeToken(b, DYNAMICPARAM);
-    if (!r) r = consumeToken(b, IN);
-    if (!r) r = consumeToken(b, PROCESS);
-    if (!r) r = consumeToken(b, BREAK);
-    if (!r) r = consumeToken(b, ELSE);
-    if (!r) r = consumeToken(b, INLINESCRIPT);
-    if (!r) r = consumeToken(b, CATCH);
-    if (!r) r = consumeToken(b, THIS);
-    if (!r) r = consumeToken(b, HIDDEN);
-    if (!r) r = consumeToken(b, FOREACH);
-    if (!r) r = consumeToken(b, STATIC);
-    if (!r) r = consumeToken(b, DATA);
     return r;
   }
 

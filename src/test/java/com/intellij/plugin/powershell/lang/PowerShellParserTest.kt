@@ -24,6 +24,7 @@ class PowerShellParserTest : ParsingTestCase("parser", "ps1", PowerShellParserDe
   fun testStdCmdlets() { doTest(true); }
 
   fun testMemberElementAccess() { doTest(true); }
+  fun testTypeMemberAccess() { doTest(true); }
 
   fun testOperators() { doTest(true); }
 

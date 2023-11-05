@@ -436,8 +436,29 @@ private data_commands_list ::= data_command ( nls? ',' nls? data_command )*
 private data_command ::= command_name_expr
 private command_name_expr ::= primary_expression | command_name_expression
 
-private allowed_identifier_keywords ::= 'param'|'until'|'workflow'|'end'|'define'|'finally'|'parallel'|'continue'|'begin'|'dynamicparam'|'in'
-|'process'|'break'|'else'|'inlinescript'|'catch'|'this'|'hidden'|'foreach'|'static'|'data'
+private allowed_identifier_keywords ::=
+ 'begin'
+ | 'break'
+ | 'catch'
+ | 'continue'
+ | 'data'
+ | 'exit'
+ | 'define'
+ | 'dynamicparam'
+ | 'else'
+ | 'end'
+ | 'finally'
+ | 'foreach'
+ | 'hidden'
+ | 'in'
+ | 'inlinescript'
+ | 'parallel'
+ | 'param'
+ | 'process'
+ | 'static'
+ | 'this'
+ | 'until'
+ | 'workflow'
 private reserved_statement_keywords ::= 'class'|'data'|'do'|'elseif'|'exit'|'filter'|'for'|'foreach'|'from'|'function'|'if'|'return'|'switch'|'throw'
 |'trap'|'try'|'using'|'var'|'while'|'configuration'|'enum'
 
