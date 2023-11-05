@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased] (2.3.1)
+### Fixed
+- [#160](https://github.com/ant-druha/intellij-powershell/issues/160): the `exit` keyword is now allowed in more positions in the parser
+
 ## [2.3.0] - 2023-10-29
 ### Changed
 - The PowerShellEditorServices connection code has been refactored to not cause any UI freezes: everything was moved to background and rewritten to use non-blocking IO as much as possible
