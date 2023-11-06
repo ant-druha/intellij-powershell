@@ -1,9 +1,16 @@
 package com.intellij.plugin.powershell.lang
 
+import com.intellij.lang.LanguageBraceMatching
+import com.intellij.plugin.powershell.ide.editor.highlighting.PowerShellPairedBraceMatcher
 import com.intellij.plugin.powershell.lang.parser.PowerShellParserDefinition
 import com.intellij.testFramework.ParsingTestCase
 
 class PowerShellParserTest : ParsingTestCase("parser", "ps1", PowerShellParserDefinition()) {
+
+  override fun setUp() {
+    super.setUp()
+    addExplicitExtension(LanguageBraceMatching.INSTANCE, PowerShellLanguage.INSTANCE, PowerShellPairedBraceMatcher())
+  }
 
   override fun getTestDataPath() =  "src/test/resources/testData"
   override fun includeRanges() = true
