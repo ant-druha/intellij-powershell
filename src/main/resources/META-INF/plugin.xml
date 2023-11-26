@@ -67,6 +67,7 @@
         implementation="com.intellij.plugin.powershell.ide.run.PowerShellConfigurationProducer" order="first"/>
 
     <runConfigurationTemplateProvider implementation="com.intellij.plugin.powershell.ide.run.MyRunConfigurationTemplateProvider"/>
+    <programRunner implementation="com.intellij.plugin.powershell.ide.run.PowerShellProgramRunner"/>
 
     <targetElementEvaluator language="PowerShell"
                             implementationClass="com.intellij.plugin.powershell.ide.search.PowerShellTargetElementEvaluator"/>
