@@ -9,7 +9,7 @@ import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.util.ProgramParametersUtil
 import com.intellij.openapi.application.readAction
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.LocalFileSystem
@@ -24,7 +24,6 @@ import kotlin.io.path.Path
 
 class PowerShellScriptCommandLineState(private val runConfiguration: PowerShellRunConfiguration, environment: ExecutionEnvironment) :
     CommandLineState(environment), RunProfileState {
-  private val LOG = Logger.getInstance("#" + javaClass.name)
 
   lateinit var workingDirectory: Path
   suspend fun prepareExecution() {
@@ -52,12 +51,12 @@ class PowerShellScriptCommandLineState(private val runConfiguration: PowerShellR
         .withWorkDirectory(workingDirectory.toString())
 
       runConfiguration.environmentVariables.configureCommandLine(commandLine, true)
-      LOG.debug("Command line: $command")
-      LOG.debug("Environment: " + commandLine.environment.toString())
-      LOG.debug("Effective Environment: " + commandLine.effectiveEnvironment.toString())
+      logger.debug("Command line: $command")
+      logger.debug("Environment: " + commandLine.environment.toString())
+      logger.debug("Effective Environment: " + commandLine.effectiveEnvironment.toString())
       return KillableColoredProcessHandler(commandLine)
     } catch (e: PowerShellNotInstalled) {
-      LOG.warn("Can not start PowerShell: ${e.message}")
+      logger.warn("Can not start PowerShell: ${e.message}")
       throw ExecutionException(e.message, e)
     }
   }
@@ -81,9 +80,10 @@ class PowerShellScriptCommandLineState(private val runConfiguration: PowerShellR
             val p = matcher.group(i)
             if (!StringUtil.isEmpty(p)) matchedParams.add(p)
           } catch (e: IllegalStateException) {
+            logger.error(e)
           } catch (e: IndexOutOfBoundsException) {
+            logger.error(e)
           }
-
         }
       }
       commandString.addAll(matchedParams)
@@ -91,3 +91,5 @@ class PowerShellScriptCommandLineState(private val runConfiguration: PowerShellR
     return commandString
   }
 }
+
+private val logger = logger<PowerShellScriptCommandLineState>()
