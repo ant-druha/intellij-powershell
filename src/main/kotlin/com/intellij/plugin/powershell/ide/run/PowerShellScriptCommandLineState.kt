@@ -1,12 +1,15 @@
 package com.intellij.plugin.powershell.ide.run
 
+import com.intellij.execution.DefaultExecutionResult
 import com.intellij.execution.ExecutionException
-import com.intellij.execution.configurations.CommandLineState
+import com.intellij.execution.ExecutionResult
+import com.intellij.execution.Executor
 import com.intellij.execution.configurations.PtyCommandLine
 import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.process.KillableColoredProcessHandler
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
+import com.intellij.execution.runners.ProgramRunner
 import com.intellij.execution.util.ProgramParametersUtil
 import com.intellij.openapi.application.readAction
 import com.intellij.openapi.diagnostic.logger
@@ -15,6 +18,7 @@ import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.plugin.powershell.lang.lsp.LSPInitMain
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PowerShellNotInstalled
+import com.intellij.terminal.TerminalExecutionConsole
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -22,8 +26,9 @@ import java.nio.file.Path
 import java.util.regex.Pattern
 import kotlin.io.path.Path
 
-class PowerShellScriptCommandLineState(private val runConfiguration: PowerShellRunConfiguration, environment: ExecutionEnvironment) :
-    CommandLineState(environment), RunProfileState {
+class PowerShellScriptCommandLineState(
+  private val runConfiguration: PowerShellRunConfiguration,
+  private val environment: ExecutionEnvironment) : RunProfileState {
 
   lateinit var workingDirectory: Path
   suspend fun prepareExecution() {
@@ -39,7 +44,7 @@ class PowerShellScriptCommandLineState(private val runConfiguration: PowerShellR
     )
   }
 
-  override fun startProcess(): ProcessHandler {
+  private fun startProcess(): ProcessHandler {
     try {
       val command = buildCommand(
         runConfiguration.executablePath ?: LSPInitMain.getInstance().getPowerShellExecutable(),
@@ -48,6 +53,7 @@ class PowerShellScriptCommandLineState(private val runConfiguration: PowerShellR
         runConfiguration.scriptParameters
       )
       val commandLine = PtyCommandLine(command)
+        .withConsoleMode(false)
         .withWorkDirectory(workingDirectory.toString())
 
       runConfiguration.environmentVariables.configureCommandLine(commandLine, true)
@@ -89,6 +95,12 @@ class PowerShellScriptCommandLineState(private val runConfiguration: PowerShellR
       commandString.addAll(matchedParams)
     }
     return commandString
+  }
+
+  override fun execute(executor: Executor?, runner: ProgramRunner<*>): ExecutionResult? {
+    val process = startProcess()
+    val console = TerminalExecutionConsole(environment.project, process)
+    return DefaultExecutionResult(console, process)
   }
 }
 
