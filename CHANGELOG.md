@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - [#160](https://github.com/ant-druha/intellij-powershell/issues/160): the `exit` keyword is now allowed in more positions in the parser
 - [#166](https://github.com/ant-druha/intellij-powershell/issues/166): "Slow operations are prohibited on EDT" report about disk IO on run configuration startup
 ### Changed
-- The **PowerShell** run configuration no longer reports certain kinds of internal exceptions; they will be properly reported
+- The **PowerShell** run configuration no longer ignores certain kinds of internal exceptions; they will be properly reported
 
 ## [2.3.0] - 2023-10-29
 ### Changed
