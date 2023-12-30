@@ -6,7 +6,7 @@ import com.intellij.execution.ExecutionResult
 import com.intellij.execution.Executor
 import com.intellij.execution.configurations.PtyCommandLine
 import com.intellij.execution.configurations.RunProfileState
-import com.intellij.execution.process.KillableColoredProcessHandler
+import com.intellij.execution.process.KillableProcessHandler
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
@@ -30,7 +30,7 @@ class PowerShellScriptCommandLineState(
   private val runConfiguration: PowerShellRunConfiguration,
   private val environment: ExecutionEnvironment) : RunProfileState {
 
-  lateinit var workingDirectory: Path
+  private lateinit var workingDirectory: Path
   suspend fun prepareExecution() {
     val project = runConfiguration.project
     val file = withContext(Dispatchers.IO) { LocalFileSystem.getInstance().findFileByIoFile(File(runConfiguration.scriptPath)) }
@@ -60,7 +60,7 @@ class PowerShellScriptCommandLineState(
       logger.debug("Command line: $command")
       logger.debug("Environment: " + commandLine.environment.toString())
       logger.debug("Effective Environment: " + commandLine.effectiveEnvironment.toString())
-      return KillableColoredProcessHandler(commandLine)
+      return KillableProcessHandler(commandLine)
     } catch (e: PowerShellNotInstalled) {
       logger.warn("Can not start PowerShell: ${e.message}")
       throw ExecutionException(e.message, e)
@@ -97,7 +97,7 @@ class PowerShellScriptCommandLineState(
     return commandString
   }
 
-  override fun execute(executor: Executor?, runner: ProgramRunner<*>): ExecutionResult? {
+  override fun execute(executor: Executor?, runner: ProgramRunner<*>): ExecutionResult {
     val process = startProcess()
     val console = TerminalExecutionConsole(environment.project, process)
     return DefaultExecutionResult(console, process)
