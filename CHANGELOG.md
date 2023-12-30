@@ -4,9 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased] (2.3.1)
+## [2.3.1] - 2023-12-30
 ### Fixed
+- [#172](https://github.com/ant-druha/intellij-powershell/issues/172): Console output forcibly wraps output to 80 characters
 - [#160](https://github.com/ant-druha/intellij-powershell/issues/160): the `exit` keyword is now allowed in more positions in the parser
+- [#166](https://github.com/ant-druha/intellij-powershell/issues/166): "Slow operations are prohibited on EDT" report about disk IO on run configuration startup
+### Changed
+- The **PowerShell** run configuration no longer reports certain kinds of internal exceptions; they will be properly reported
 
 ## [2.3.0] - 2023-10-29
 ### Changed
@@ -203,4 +207,5 @@ Initial editor and code completion support:
 [2.1.0]: https://github.com/ant-druha/intellij-powershell/compare/v2.0.10...v2.1.0
 [2.2.0]: https://github.com/ant-druha/intellij-powershell/compare/v2.1.0...v2.2.0
 [2.3.0]: https://github.com/ant-druha/intellij-powershell/compare/v2.2.0...v2.3.0
-[Unreleased]: https://github.com/ant-druha/intellij-powershell/compare/v2.3.0...HEAD
+[2.3.1]: https://github.com/ant-druha/intellij-powershell/compare/v2.3.0...v2.3.1
+[Unreleased]: https://github.com/ant-druha/intellij-powershell/compare/v2.3.1...HEAD
