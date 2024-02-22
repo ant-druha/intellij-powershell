@@ -13,6 +13,7 @@ import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.rd.util.withSyncIOBackgroundContext
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
@@ -139,39 +140,44 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
     if (sessionInfo is SessionInfo.Pipes) {
       val readPipeName = sessionInfo.languageServiceReadPipeName
       val writePipeName = sessionInfo.languageServiceWritePipeName
-      return if (SystemInfo.isWindows) {
-        val readPipe = RandomAccessFile(readPipeName, "rwd")
-        val writePipe = RandomAccessFile(writePipeName, "r")
-        val serverReadChannel = readPipe.channel
-        val serverWriteChannel = writePipe.channel
-        val inSf = Channels.newInputStream(serverWriteChannel)
-        val outSf = BufferedOutputStream(Channels.newOutputStream(serverReadChannel))
-        Pair(inSf, outSf)
-      } else {
-        val readSock = AFUNIXSocket.newInstance()
-        val writeSock = AFUNIXSocket.newInstance()
-        readSock.connect(AFUNIXSocketAddress(File(readPipeName)))
-        writeSock.connect(AFUNIXSocketAddress(File(writePipeName)))
-        Pair(writeSock.inputStream, readSock.outputStream)
+      return withSyncIOBackgroundContext {
+        if (SystemInfo.isWindows) {
+          val readPipe = RandomAccessFile(readPipeName, "rwd")
+          val writePipe = RandomAccessFile(writePipeName, "r")
+          val serverReadChannel = readPipe.channel
+          val serverWriteChannel = writePipe.channel
+          val inSf = Channels.newInputStream(serverWriteChannel)
+          val outSf = BufferedOutputStream(Channels.newOutputStream(serverReadChannel))
+          Pair(inSf, outSf)
+        } else {
+          val readSock = AFUNIXSocket.newInstance()
+          val writeSock = AFUNIXSocket.newInstance()
+          readSock.connect(AFUNIXSocketAddress(File(readPipeName)))
+          writeSock.connect(AFUNIXSocketAddress(File(writePipeName)))
+          Pair(writeSock.inputStream, readSock.outputStream)
+        }
       }
     } else {
-      val port = (sessionInfo as? SessionInfo.Tcp)?.languageServicePort ?: return Pair(null, null)
-      try {
-        socket = Socket("127.0.0.1", port)
-      } catch (e: Exception) {
-        logger.error("Unable to open connection to language host: $e")
-      }
-      if (socket == null) {
-        logger.error("Unable to create socket: " + toString())
-      }
-      if (socket?.isConnected == true) {
-        logger.info("Connection to language host established: ${socket?.localPort} -> ${socket?.port}")
-        val inputStream = socket?.getInputStream()
-        val outputStream = socket?.getOutputStream()
-        if (inputStream != null && outputStream != null) return Pair(inputStream, outputStream)
+      return withSyncIOBackgroundContext block@{
+        val port = (sessionInfo as? SessionInfo.Tcp)?.languageServicePort ?: return@block Pair(null, null)
+        try {
+          socket = Socket("127.0.0.1", port)
+        } catch (e: Exception) {
+          logger.error("Unable to open connection to language host: $e")
+        }
+        if (socket == null) {
+          logger.error("Unable to create socket: " + toString())
+        }
+        if (socket?.isConnected == true) {
+          logger.info("Connection to language host established: ${socket?.localPort} -> ${socket?.port}")
+          val inputStream = socket?.getInputStream()
+          val outputStream = socket?.getOutputStream()
+          if (inputStream != null && outputStream != null) return@block Pair(inputStream, outputStream)
+        }
+
+        Pair(null, null)
       }
     }
-    return Pair(null, null)
   }
 
   private fun getSessionCount(): Int {
@@ -239,12 +245,15 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
       } else ""
     val scriptText = "$preamble${escapePath(startupScript)} $args"
 
-    val scriptFile = File.createTempFile("start-pses-host", ".ps1")
-    scriptFile.deleteOnExit()
-    try {
-      FileUtil.writeToFile(scriptFile, scriptText)
-    } catch (e: Exception) {
-      logger.error("Error writing $scriptFile script file: $e")
+    val scriptFile = withSyncIOBackgroundContext {
+      File.createTempFile("start-pses-host", ".ps1").apply {
+        deleteOnExit()
+        try {
+          FileUtil.writeToFile(this, scriptText)
+        } catch (e: Exception) {
+          logger.error("Error writing $this script file: $e")
+        }
+      }
     }
 
     FileUtil.createParentDirs(File(logPath))
