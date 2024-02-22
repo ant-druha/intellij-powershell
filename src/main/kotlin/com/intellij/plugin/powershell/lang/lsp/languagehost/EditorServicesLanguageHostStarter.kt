@@ -378,8 +378,8 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
   }
 
   private suspend fun waitForSessionFile(fileWithSessionInfo: File): Boolean {
-    var tries = 25
-    val waitTimeoutMillis = 500L
+    var tries = 120
+    val waitTimeoutMillis = 500L // the total timeout is about 1 minute
     try {
       while (!fileWithSessionInfo.exists() && tries > 0) {
         tries--
