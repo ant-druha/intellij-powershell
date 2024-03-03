@@ -3800,7 +3800,7 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // simple_name_reference //todo reference_expression ? (to be able to use 'function type' for it)
+  // simple_name_reference
   //                         | string_literal_expression
   // //->                        | string_literal_with_subexpression
   //                         | expression_with_unary_operator //prefix_op unary_expression //
@@ -4272,7 +4272,7 @@ public class PowerShellParser implements PsiParser, LightPsiParser {
   //                               | (PATH_SEP nws path_item)+ //just container+
   //                               | (COLON|DS) (nws PATH_SEP)?     // just drive
   //                               | PATH_SEP //just PATH_SEP
-  //                                 ) | PATH_SEP (nws (path_expression | path_item))?//todo do not produce another path_expression node
+  //                                 ) | PATH_SEP (nws (path_expression | path_item))?
   //                                   | relative_path_item
   public static boolean path_expression(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "path_expression")) return false;
