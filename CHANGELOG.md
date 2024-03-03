@@ -6,7 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased] (2.3.2)
 ### Fixed
-A bit more of IO work during language server connection moved to the corresponding threads, saving some IDE responsibility in rare cases when it could be a problem.
+- A bit more of IO work during language server connection moved to the corresponding threads, saving some IDE responsibility in rare cases when it could be a problem.
+- Increased timeout on connecting to the language server; should fix issues on slower computers.
 
 ## [2.3.1] - 2023-12-30
 ### Fixed
