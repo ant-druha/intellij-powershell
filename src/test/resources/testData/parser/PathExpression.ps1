@@ -27,12 +27,12 @@ Not-Path-Arg 42d
 #Starting in Windows PowerShell 5.0, you can run
 Get-ItemPropertyValue -Path HKLM:\SOFTWARE\Microsoft\PowerShell\3\PowerShellEngine -Name ApplicationBase
 
-cd (Get-Location)\pip #command with 2 arguments: (Get-Location) and \pip todo: check it is really works
+cd (Get-Location)\pip #command with 2 arguments: (Get-Location) and \pip TODO[#200]: check it is really works
 cd (Get-Location)\pip\(Get-Location)\
 cd \pip
 cd \pip\wwe
 
-#drive name in unc path 
+#drive name in unc path
 $acl = Get-Acl \$(hostname)\e$\"some folder"
 
 foreach ($srv in (Get-ChildItem HKLM:\SYSTEM\CurrentControlSet\Services\ts*).Name) {}

@@ -168,7 +168,7 @@ node_block ::= node_token nls? command_argument_list+
 private node_token ::= SIMPLE_ID
 //node_name ::= primary_expression | statement_rule | identifier  //function_name
 
-resource_block ::= resource_type nls? ( resource_name nls? resource_block_tail | resource_block_tail )//todo: or predicate is faster?
+resource_block ::= resource_type nls? ( resource_name nls? resource_block_tail | resource_block_tail )
 private resource_block_tail ::= LCURLY nls? resource_block_body? nls? RCURLY
 resource_block_body ::= hash_literal_body
 {elementType=block_body}
@@ -395,14 +395,14 @@ command_call_expression ::= command_invocation_operator ( (command_module comman
   implements='com.intellij.plugin.powershell.psi.PowerShellQualifiedReferenceElement<com.intellij.plugin.powershell.psi.PowerShellExpression>'
   mixin='com.intellij.plugin.powershell.psi.impl.PowerShellInvocationExpressionImpl'
  */
-private command_name_expression ::= path_expression | command_name//todo parse path_item where appropriate: path_item all bare identifiers including command_name
+private command_name_expression ::= path_expression | command_name
 command_name ::= command_name_identifier //generic_token
 command_name_identifier ::= generic_token_with_sub_expr | generic_token_part //generic_token
 {elementType=identifier}
 
 
 
-private generic_token_with_sub_expr ::= generic_token_with_subexpr_start statement_list? RP nws command_name //todo word index is not built by default words scanner
+private generic_token_with_sub_expr ::= generic_token_with_subexpr_start statement_list? RP nws command_name
 
 private generic_token_with_subexpr_start ::= generic_token_part nws DS nws LP
 
@@ -687,7 +687,7 @@ path_expression ::=  path_item nws (
                               | (PATH_SEP nws path_item)+ //just container+
                               | (COLON|DS) (nws PATH_SEP)?     // just drive
                               | PATH_SEP //just PATH_SEP
-                                ) | PATH_SEP (nws (path_expression | path_item))?//todo do not produce another path_expression node
+                                ) | PATH_SEP (nws (path_expression | path_item))?
                                   | relative_path_item             // just relative path
 path_item ::= path_item_name
 relative_path_item ::= relative_path
@@ -700,8 +700,6 @@ private relative_path ::= DOT | DOT_DOT | PATH_SEP
 command_parameter ::= CMD_PARAMETER | binary_operator
 private binary_operator ::= OP_C | OP_NOT | OP_BNOT | OP_BAND | OP_BOR | OP_BXOR | OP_AND | OP_OR | OP_XOR
 verbatim_command_argument ::= VERBATIM_ARG_START VERBATIM_ARG_INPUT //(verbatim_command_string | AMP_ARG | generic_token_chars )+
-//private verbatim_command_string ::= EXPANDABLE_STRING //TODO: 02/09/17 variable substitution:
-
 
 private primary_expression ::= value (invocation_expression | member_access_expression | element_access_expression | post_increment_expression | post_decrement_expression)*
 
@@ -727,7 +725,7 @@ private expression_list_rule ::= expression ( nls? COMMA nls? expression)*
 left post_increment_expression ::= PP
 left post_decrement_expression ::= MM
 
-private member_name ::=   simple_name_reference //todo reference_expression ? (to be able to use 'function type' for it)
+private member_name ::=   simple_name_reference
                         | string_literal_expression
 //->                        | string_literal_with_subexpression
                         | expression_with_unary_operator //prefix_op unary_expression //
@@ -815,7 +813,7 @@ label ::= ':' nws label_name
   mixin="com.intellij.plugin.powershell.psi.impl.PowerShellAbstractComponent"
   implements="com.intellij.plugin.powershell.psi.PowerShellComponent"
 }
-label_name ::=  SIMPLE_ID// todo ALNUM?
+label_name ::=  SIMPLE_ID// TODO[#202]: ALNUM?
 {elementType=identifier}
 
 private nws ::= <<isNotWhiteSpace>>

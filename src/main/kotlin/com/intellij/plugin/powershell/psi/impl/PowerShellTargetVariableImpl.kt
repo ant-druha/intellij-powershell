@@ -28,7 +28,6 @@ open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractCompo
   override fun getType(): PowerShellType {
     //in case of $this variable resolves to class declaration
     if (isInstanceThis()) {
-      //todo where create it (need somewhere in PSI element getType())?
       val enclosingType = resolve()
       if (enclosingType is PowerShellTypeDeclaration) return PowerShellImmediateClassTypeImpl(enclosingType)
     }
@@ -86,7 +85,6 @@ open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractCompo
   override fun getElement(): PsiElement = this
 
   override fun resolve(): PowerShellComponent? {
-    //todo resolve it in Resolver
     if (isInstanceThis()) return PsiTreeUtil.findFirstContext(this, false) { c -> c is PowerShellTypeDeclaration } as? PowerShellComponent
     val res = multiResolve(false)
     return if (res.isEmpty()) this else res[0].element

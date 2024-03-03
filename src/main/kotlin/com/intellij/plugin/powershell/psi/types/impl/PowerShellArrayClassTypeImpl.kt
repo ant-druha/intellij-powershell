@@ -18,7 +18,7 @@ class PowerShellArrayClassTypeImpl(private val psiElement: PowerShellArrayTypeEl
     return "[" + getName() + "]"
   }
 
-  override fun resolve(): PowerShellComponent? {//todo resolve to the actual array class
+  override fun resolve(): PowerShellComponent? {//TODO[#194] resolve to the actual array class
     val componentType = getComponentType()
     return (componentType as? PowerShellClassType)?.resolve()
   }

@@ -29,7 +29,7 @@ fun getModuleVersion(moduleBase: String, moduleName: String): String {
   val lines = FileUtil.loadLines(moduleFile)
   for (l in lines) {
     if (l.contains("ModuleVersion", true)) {
-      //todo can be not in one line
+      //TODO[#196]: can be not in one line
       return l.trimStart { c -> c != '=' }.substringAfter('=').trim().trim { c -> c == '\'' }
     }
   }

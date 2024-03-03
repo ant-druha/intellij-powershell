@@ -23,7 +23,7 @@ abstract class PowerShellQualifiedReferenceExpression(node: ASTNode) : PowerShel
   }
 
   protected open fun inferTypeFromResolved(resolved: PowerShellComponent): PowerShellType {
-    //todo create function type and return function image here
+    //TODO[#198]: create function type and return function image here
     if (resolved is PowerShellAttributesHolder) resolved.getAttributeList().mapNotNull { it.typeLiteralExpression }.forEach { return it.getType() }
     return PowerShellType.UNKNOWN
   }

@@ -6,7 +6,6 @@ import com.intellij.plugin.powershell.psi.PowerShellPsiElementFactory
 import com.intellij.plugin.powershell.psi.PowerShellStringLiteralExpression
 import com.intellij.psi.AbstractElementManipulator
 import com.intellij.util.IncorrectOperationException
-import java.lang.StringBuilder
 
 
 class PowerShellStringManipulator : AbstractElementManipulator<PowerShellStringLiteralExpression>() {
@@ -17,7 +16,7 @@ class PowerShellStringManipulator : AbstractElementManipulator<PowerShellStringL
     val oldText = element.node.text
     val contentRange = element.getContentRange()
     val newString = oldText.substring(0, contentRange.startOffset) + escapeString(element, newContent) + oldText.substring(contentRange.endOffset)
-//    val newString = oldText.substring(0, range.startOffset) + escapeString(element, newContent) + oldText.substring(range.endOffset)//todo fix range to use it from parameter
+//    val newString = oldText.substring(0, range.startOffset) + escapeString(element, newContent) + oldText.substring(range.endOffset)//TODO[#190]: fix range to use it from parameter
     val stringLiteral = PowerShellPsiElementFactory.createExpression(element.project, newString)
     return element.replace(stringLiteral) as PowerShellStringLiteralExpression
   }
@@ -63,7 +62,7 @@ class PowerShellStringManipulator : AbstractElementManipulator<PowerShellStringL
     return PowerShellStringUtil.escapeHereStringCharacters(text, "$", false, true, StringBuilder()).toString()
   }
 
-  //todo implement in PowerShellStringUtil.escapeStringCharacters()
+  //TODO[#191]: implement in PowerShellStringUtil.escapeStringCharacters()
   private fun escapeQuotes(str: String?, quoteChar: Char, escapeChar: Char): String {
     return str?.replace("$quoteChar", "$escapeChar$quoteChar") ?: ""
   }

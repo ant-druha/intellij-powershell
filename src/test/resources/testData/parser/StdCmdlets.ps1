@@ -10,9 +10,9 @@ $a = $a | Add-Member -MemberType NoteProperty -Name StringUse -Value Display -Pa
 Clear-Content J:\Files\Test*.*
 
 #This cmdlet deletes the value of one or more items, but it does not delete them.
-#Clear-Item Variable:Count #todo no need to specify '$' for the variable?
+#Clear-Item Variable:Count #TODO[#201]: no need to specify '$' for the variable?
 Clear-Item $Variable:Count
-Clear-Item $Alias:log* -Include *1* -Exclude *3* #todo SIMPLE_ID include '*'?
+Clear-Item $Alias:log* -Include *1* -Exclude *3*
 
 #Deletes the value of one or more existing variables.
 Clear-Variable 'Count10?' -Exclude 'Count101','Count102'

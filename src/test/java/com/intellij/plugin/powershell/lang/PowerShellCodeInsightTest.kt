@@ -5,7 +5,6 @@ import com.intellij.plugin.powershell.psi.PowerShellStringLiteralExpression
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import java.io.File
-import java.lang.StringBuilder
 
 class PowerShellCodeInsightTest : BasePlatformTestCase() {
 
@@ -128,7 +127,7 @@ class PowerShellCodeInsightTest : BasePlatformTestCase() {
                           "}\n",
                       "var array = {`\"1`\":`\"2`\"}`nfor (var obj in array) {`n    obj.concat(`\"1234`\",`\"1212112`\",`\"22222`\")`n}`n")
 
-    //sub-expressions todo missingValue
+    //sub-expressions TODO[#197]: missingValue
 //    checkInjectedText("This is a sample \"string\" with \$( Write-Output \"Sub-expression\" )end \$( Write-Output \"Sub-expression \" ) \"of\" string.",
 //                      "This is a sample `\"string`\" with \$( Write-Output \"Sub-expression\" )end \$( Write-Output \"Sub-expression \" ) `\"of`\" string.")
 

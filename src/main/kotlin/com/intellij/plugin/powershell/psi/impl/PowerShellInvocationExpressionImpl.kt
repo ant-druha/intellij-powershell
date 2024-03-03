@@ -25,7 +25,7 @@ open class PowerShellInvocationExpressionImpl(node: ASTNode) : PowerShellQualifi
 
   override fun multiResolve(incompleteCode: Boolean): Array<PowerShellResolveResult> {
     if (isConstructorCall()) {
-      //todo where is the best place to implement resolve to a default constructor?
+      //TODO[#195] where is the best place to implement resolve to a default constructor?
       val qType = getQualifierType()
       if (qType is PowerShellClassType) {
         val qClass = qType.resolve()

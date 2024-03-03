@@ -125,7 +125,7 @@ class PSLanguageClientImpl(private val project: Project) : LanguageClient, Endpo
    * to wait for an answer from the client.
    */
   override fun showMessageRequest(requestParams: ShowMessageRequestParams): CompletableFuture<MessageActionItem> {
-    TODO("Not implemented")
+    error("Not supported")
   }
 
   /**

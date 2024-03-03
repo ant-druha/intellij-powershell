@@ -223,11 +223,10 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
       psesVersionString = "-EditorServicesVersion '$psesVersionString'"
     }
     val bundledModulesPath = getPSExtensionModulesDir(psExtensionPath)
-    val additionalModules = ""//todo check if something could be added here
     val useReplSwitch = if (useConsoleRepl()) "-EnableConsoleRepl" else ""
     val logLevel = if (useConsoleRepl()) "Normal" else "Diagnostic"
     val args = "$psesVersionString -HostName '${myHostDetails.name}' -HostProfileId '${myHostDetails.profileId}' " +
-        "-HostVersion '${myHostDetails.version}' -AdditionalModules @($additionalModules) " +
+        "-HostVersion '${myHostDetails.version}' -AdditionalModules @() " +
         "-BundledModulesPath '$bundledModulesPath' $useReplSwitch " +
         "-LogLevel '$logLevel' -LogPath '$logPath' -SessionDetailsPath '$sessionDetailsPath' -FeatureFlags @() $splitInOutPipesSwitch"
     val preamble =
@@ -286,7 +285,6 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
     )
 
     val fileWithSessionInfo = getSessionDetailsFile()
-    //todo retry starting language service process one more time
     if (!waitForSessionFile(fileWithSessionInfo)) {
       process.destroyForcibly()
       return null

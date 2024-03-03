@@ -93,7 +93,6 @@ class LanguageServerEndpoint(
       ensureStarted()
       val capabilities = getServerCapabilities()
       if (capabilities != null) {
-        //todo move it to LanguageHostConnectionManager (notify it when server initialized)
         languageServer?.workspaceService?.didChangeConfiguration(DEFAULT_DID_CHANGE_CONFIGURATION_PARAMS)//notify Editor Services to start REPL loop
       }
     }

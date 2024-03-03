@@ -65,12 +65,6 @@ enum class PowerShellComponentType(icon: Icon) {
         CompletionItemKind.Enum -> ENUM
         CompletionItemKind.File -> GENERIC_FILE
         CompletionItemKind.Text -> TEXT
-//        CompletionItemKind.Color -> TODO()
-//        CompletionItemKind.Snippet -> TODO()
-//        CompletionItemKind.Keyword -> TODO()
-//        CompletionItemKind.Reference -> TODO()
-//        CompletionItemKind.Value -> TODO()
-//        CompletionItemKind.Unit -> TODO()
         else -> null
       }
     }

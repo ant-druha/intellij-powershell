@@ -179,7 +179,7 @@ public class PowerShellJPanelComponent {
   }
 
   void fillPowerShellInfo(@NotNull LSPInitMain.PowerShellInfo powerShellInfo) {
-    setEditorServicesVersionLabelValue(powerShellInfo.getEditorServicesModuleVersion());//todo make consistent with 'setPowerShellExtensionPath'
+    setEditorServicesVersionLabelValue(powerShellInfo.getEditorServicesModuleVersion());
     setPowerShellExtensionPath(powerShellInfo.getPowerShellExtensionPath());
     setPowerShellExePath(powerShellInfo.getPowerShellExePath());
     psExecutableChooserPanel.setPowerShellVersionLabelValue(powerShellInfo.getPowerShellVersion());
