@@ -41,10 +41,8 @@ jobs:
           distribution: 'corretto'
           java-version: '17'
 
-      - name: Set up Gradle
-        uses: gradle/gradle-build-action@v2
-        with:
-          gradle-home-cache-cleanup: true
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
 
       - name: Build the plugin
         run: ./gradlew buildPlugin
