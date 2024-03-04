@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellParallelStatementImplGen extends PowerShellPsiElementImpl implements PowerShellParallelStatement {
 
-  public PowerShellParallelStatementImplGen(@NotNull ASTNode node) {
+  public PowerShellParallelStatementImplGen(ASTNode node) {
     super(node);
   }
 

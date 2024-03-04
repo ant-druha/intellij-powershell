@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellTargetVariableExpressionImplGen extends PowerShellTargetVariableImpl implements PowerShellTargetVariableExpression {
 
-  public PowerShellTargetVariableExpressionImplGen(@NotNull ASTNode node) {
+  public PowerShellTargetVariableExpressionImplGen(ASTNode node) {
     super(node);
   }
 

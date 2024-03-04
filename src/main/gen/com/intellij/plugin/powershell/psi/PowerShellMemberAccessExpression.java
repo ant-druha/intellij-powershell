@@ -19,6 +19,4 @@ public interface PowerShellMemberAccessExpression extends PowerShellExpression, 
   @Nullable
   PsiElement getDash();
 
-  @Nullable PsiElement getIdentifier();
-
 }

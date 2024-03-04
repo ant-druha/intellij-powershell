@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellVerbatimCommandArgumentImplGen extends PowerShellPsiElementImpl implements PowerShellVerbatimCommandArgument {
 
-  public PowerShellVerbatimCommandArgumentImplGen(@NotNull ASTNode node) {
+  public PowerShellVerbatimCommandArgumentImplGen(ASTNode node) {
     super(node);
   }
 

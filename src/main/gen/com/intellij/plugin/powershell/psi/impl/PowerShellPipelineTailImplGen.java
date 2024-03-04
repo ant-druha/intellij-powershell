@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellPipelineTailImplGen extends PowerShellPsiElementImpl implements PowerShellPipelineTail {
 
-  public PowerShellPipelineTailImplGen(@NotNull ASTNode node) {
+  public PowerShellPipelineTailImplGen(ASTNode node) {
     super(node);
   }
 

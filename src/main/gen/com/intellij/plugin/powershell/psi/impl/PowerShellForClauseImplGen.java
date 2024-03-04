@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellForClauseImplGen extends PowerShellPsiElementImpl implements PowerShellForClause {
 
-  public PowerShellForClauseImplGen(@NotNull ASTNode node) {
+  public PowerShellForClauseImplGen(ASTNode node) {
     super(node);
   }
 

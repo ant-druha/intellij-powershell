@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellWhileStatementImplGen extends PowerShellPsiElementImpl implements PowerShellWhileStatement {
 
-  public PowerShellWhileStatementImplGen(@NotNull ASTNode node) {
+  public PowerShellWhileStatementImplGen(ASTNode node) {
     super(node);
   }
 

@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellResourceBlockImplGen extends PowerShellPsiElementImpl implements PowerShellResourceBlock {
 
-  public PowerShellResourceBlockImplGen(@NotNull ASTNode node) {
+  public PowerShellResourceBlockImplGen(ASTNode node) {
     super(node);
   }
 

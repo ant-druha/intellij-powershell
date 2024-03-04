@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellCommandCallExpressionImplGen extends PowerShellCommandCallExpressionImpl implements PowerShellCommandCallExpression {
 
-  public PowerShellCommandCallExpressionImplGen(@NotNull ASTNode node) {
+  public PowerShellCommandCallExpressionImplGen(ASTNode node) {
     super(node);
   }
 

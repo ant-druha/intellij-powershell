@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellKeyExpressionImplGen extends PowerShellExpressionImplGen implements PowerShellKeyExpression {
 
-  public PowerShellKeyExpressionImplGen(@NotNull ASTNode node) {
+  public PowerShellKeyExpressionImplGen(ASTNode node) {
     super(node);
   }
 

@@ -13,7 +13,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public abstract class PowerShellTypeElementImplGen extends PowerShellTypedElementImpl implements PowerShellTypeElement {
 
-  public PowerShellTypeElementImplGen(@NotNull ASTNode node) {
+  public PowerShellTypeElementImplGen(ASTNode node) {
     super(node);
   }
 

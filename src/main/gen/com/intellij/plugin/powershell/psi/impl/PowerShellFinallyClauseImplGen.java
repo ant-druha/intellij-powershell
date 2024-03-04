@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellFinallyClauseImplGen extends PowerShellPsiElementImpl implements PowerShellFinallyClause {
 
-  public PowerShellFinallyClauseImplGen(@NotNull ASTNode node) {
+  public PowerShellFinallyClauseImplGen(ASTNode node) {
     super(node);
   }
 

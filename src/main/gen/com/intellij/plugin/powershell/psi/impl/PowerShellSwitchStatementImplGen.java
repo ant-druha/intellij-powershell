@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellSwitchStatementImplGen extends PowerShellPsiElementImpl implements PowerShellSwitchStatement {
 
-  public PowerShellSwitchStatementImplGen(@NotNull ASTNode node) {
+  public PowerShellSwitchStatementImplGen(ASTNode node) {
     super(node);
   }
 

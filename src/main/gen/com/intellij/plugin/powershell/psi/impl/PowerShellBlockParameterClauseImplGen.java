@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellBlockParameterClauseImplGen extends PowerShellPsiElementImpl implements PowerShellBlockParameterClause {
 
-  public PowerShellBlockParameterClauseImplGen(@NotNull ASTNode node) {
+  public PowerShellBlockParameterClauseImplGen(ASTNode node) {
     super(node);
   }
 

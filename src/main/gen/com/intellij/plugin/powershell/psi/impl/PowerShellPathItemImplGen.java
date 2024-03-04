@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellPathItemImplGen extends PowerShellPsiElementImpl implements PowerShellPathItem {
 
-  public PowerShellPathItemImplGen(@NotNull ASTNode node) {
+  public PowerShellPathItemImplGen(ASTNode node) {
     super(node);
   }
 

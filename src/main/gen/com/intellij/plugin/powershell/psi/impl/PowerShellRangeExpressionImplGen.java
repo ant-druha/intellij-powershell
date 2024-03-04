@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellRangeExpressionImplGen extends PowerShellExpressionImplGen implements PowerShellRangeExpression {
 
-  public PowerShellRangeExpressionImplGen(@NotNull ASTNode node) {
+  public PowerShellRangeExpressionImplGen(ASTNode node) {
     super(node);
   }
 

@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellParenthesizedArgumentListImplGen extends PowerShellPsiElementImpl implements PowerShellParenthesizedArgumentList {
 
-  public PowerShellParenthesizedArgumentListImplGen(@NotNull ASTNode node) {
+  public PowerShellParenthesizedArgumentListImplGen(ASTNode node) {
     super(node);
   }
 

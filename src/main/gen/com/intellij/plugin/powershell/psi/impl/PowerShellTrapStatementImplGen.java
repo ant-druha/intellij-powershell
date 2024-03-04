@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellTrapStatementImplGen extends PowerShellPsiElementImpl implements PowerShellTrapStatement {
 
-  public PowerShellTrapStatementImplGen(@NotNull ASTNode node) {
+  public PowerShellTrapStatementImplGen(ASTNode node) {
     super(node);
   }
 

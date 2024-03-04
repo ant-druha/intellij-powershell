@@ -2,6 +2,7 @@ package com.intellij.plugin.powershell.ide.resolve
 
 import com.intellij.plugin.powershell.psi.*
 import com.intellij.plugin.powershell.psi.impl.PowerShellQualifiedReferenceExpression
+import com.intellij.plugin.powershell.psi.impl.targetVariables
 import com.intellij.plugin.powershell.psi.types.PowerShellArrayClassType
 import com.intellij.plugin.powershell.psi.types.PowerShellClassType
 import com.intellij.plugin.powershell.psi.types.PowerShellType

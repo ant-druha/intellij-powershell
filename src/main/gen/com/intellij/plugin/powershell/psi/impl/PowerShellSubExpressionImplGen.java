@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellSubExpressionImplGen extends PowerShellExpressionImplGen implements PowerShellSubExpression {
 
-  public PowerShellSubExpressionImplGen(@NotNull ASTNode node) {
+  public PowerShellSubExpressionImplGen(ASTNode node) {
     super(node);
   }
 

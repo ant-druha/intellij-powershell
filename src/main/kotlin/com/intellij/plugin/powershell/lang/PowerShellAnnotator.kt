@@ -6,7 +6,8 @@ import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.plugin.powershell.ide.editor.highlighting.PowerShellSyntaxHighlighter
 import com.intellij.plugin.powershell.psi.*
-import com.intellij.plugin.powershell.psi.impl.PowerShellPsiImplUtil
+import com.intellij.plugin.powershell.psi.impl.identifier
+import com.intellij.plugin.powershell.psi.impl.isTypeDeclarationContext
 import com.intellij.psi.PsiElement
 
 /**
@@ -21,7 +22,7 @@ class PowerShellAnnotator : Annotator {
           createInfoAnnotation(holder, e, PowerShellSyntaxHighlighter.COMMAND_NAME)
         }
       }
-      e is PowerShellIdentifier && PowerShellPsiImplUtil.isTypeDeclarationContext(e) -> createInfoAnnotation(holder, e, PowerShellSyntaxHighlighter.TYPE_NAME)
+      e is PowerShellIdentifier && e.isTypeDeclarationContext() -> createInfoAnnotation(holder, e, PowerShellSyntaxHighlighter.TYPE_NAME)
       e is PowerShellReferenceTypeElement -> createInfoAnnotation(holder, e, PowerShellSyntaxHighlighter.TYPE_REFERENCE)
       e is PowerShellTargetVariableExpression -> annotateVariable(holder, e, PowerShellSyntaxHighlighter.VARIABLE_NAME)
       e is PowerShellMemberAccessExpression -> annotateMemberAccess(holder, e, PowerShellSyntaxHighlighter.PROPERTY_REFERENCE)

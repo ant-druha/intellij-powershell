@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellMultiplicativeExpressionImplGen extends PowerShellExpressionImplGen implements PowerShellMultiplicativeExpression {
 
-  public PowerShellMultiplicativeExpressionImplGen(@NotNull ASTNode node) {
+  public PowerShellMultiplicativeExpressionImplGen(ASTNode node) {
     super(node);
   }
 

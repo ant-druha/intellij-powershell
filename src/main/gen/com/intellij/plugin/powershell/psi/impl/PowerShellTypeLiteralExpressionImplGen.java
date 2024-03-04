@@ -8,16 +8,15 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static com.intellij.plugin.powershell.psi.PowerShellTypes.*;
+import com.intellij.plugin.powershell.psi.impl.mixin.PowerShellTypeLiteralExpressionMixin;
 import com.intellij.plugin.powershell.psi.*;
-import com.intellij.plugin.powershell.psi.types.PowerShellType;
 
-public class PowerShellTypeLiteralExpressionImplGen extends PowerShellExpressionImplGen implements PowerShellTypeLiteralExpression {
+public class PowerShellTypeLiteralExpressionImplGen extends PowerShellTypeLiteralExpressionMixin implements PowerShellTypeLiteralExpression {
 
-  public PowerShellTypeLiteralExpressionImplGen(@NotNull ASTNode node) {
+  public PowerShellTypeLiteralExpressionImplGen(ASTNode node) {
     super(node);
   }
 
-  @Override
   public void accept(@NotNull PowerShellVisitor visitor) {
     visitor.visitTypeLiteralExpression(this);
   }
@@ -32,11 +31,6 @@ public class PowerShellTypeLiteralExpressionImplGen extends PowerShellExpression
   @NotNull
   public PowerShellTypeElement getTypeElement() {
     return findNotNullChildByClass(PowerShellTypeElement.class);
-  }
-
-  @Override
-  public @NotNull PowerShellType getType() {
-    return PowerShellPsiImplUtil.getType(this);
   }
 
 }

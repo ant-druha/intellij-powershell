@@ -2,8 +2,6 @@
   parserClass="com.intellij.plugin.powershell.lang.parser.PowerShellParser"
   parserImports=["static com.intellij.lang.parser.GeneratedParserUtilBase.*;"]
 
-  psiImplUtilClass="com.intellij.plugin.powershell.psi.impl.PowerShellPsiImplUtil"
-
   parserUtilClass="com.intellij.plugin.powershell.lang.parser.PowerShellGeneratedParserUtil"
 
     extends="com.intellij.plugin.powershell.psi.impl.PowerShellPsiElementImpl"
@@ -335,7 +333,6 @@ assignment_expression ::= expression (!is_in_call_arguments assignment_operator)
 {
   pin=2
   rightAssociative=true
-  methods=[getTargetVariables getRHSElement]
 }
 
 logical_expression ::=   expression ( OP_AND | OP_OR | OP_XOR ) nls? expression
@@ -378,7 +375,7 @@ private expression_with_unary_operator ::= prefix_op nls? unary_expression | cas
 
 cast_expression ::= type_literal_expression unary_expression
 {
-  methods=[getCastType getType]
+  mixin="com.intellij.plugin.powershell.psi.impl.mixin.PowerShellCastExpressionMixin"
 }
 
 //private attributed_expression ::= type_literal variable
@@ -474,7 +471,7 @@ private trap_pipeline ::= trap_statement statement?
 trap_statement ::= 'trap' nls? type_literal_expression? nls? statement_block {pin=1}
 type_literal_expression ::= SQBR_L type_element SQBR_R
 {
-  methods=[getType]
+  mixin="com.intellij.plugin.powershell.psi.impl.mixin.PowerShellTypeLiteralExpressionMixin"
 }
 type_element ::= array_type_element | generic_type_element | reference_type_element
 {
@@ -484,7 +481,7 @@ type_element ::= array_type_element | generic_type_element | reference_type_elem
 
 array_type_element ::= array_type_name nls? dimension? SQBR_R
 {
-  methods=[getType]
+  mixin="com.intellij.plugin.powershell.psi.impl.mixin.PowerShellArrayTypeElementMixin"
 }
 generic_type_element ::= generic_type_name nls? generic_type_arguments SQBR_R
 reference_type_element ::= simple_type_identifier compound_type_identifier*
@@ -513,9 +510,8 @@ private break_continue_statement ::= ('break' | 'continue') label_reference_expr
 private throw_return_exit_statement ::= ('throw' | 'return' | 'exit') pipeline? {pin=1}
 label_reference_expression ::= label_identifier_expression
 {
-  mixin="com.intellij.plugin.powershell.psi.impl.PowerShellReferencePsiElementImpl"
+  mixin="com.intellij.plugin.powershell.psi.impl.mixin.PowerShellLabelReferenceExpressionMixin"
   implements="com.intellij.plugin.powershell.psi.PowerShellReferencePsiElement"
-  methods=[getType]
 }
 private label_identifier_expression::= simple_name_identifier | unary_expression
 // class/enum
@@ -708,14 +704,12 @@ left member_access_expression ::= nws member_access_operator nls? member_name
 {
   implements='com.intellij.plugin.powershell.psi.PowerShellQualifiedReferenceElement<com.intellij.plugin.powershell.psi.PowerShellExpression>'
   mixin='com.intellij.plugin.powershell.psi.impl.PowerShellMemberAccessExpressionImpl'
-  methods=[getIdentifier]
 }
 left element_access_expression ::= nws SQBR_L nls? expression nls? SQBR_R
 left invocation_expression ::= nws member_access_operator nls? member_name call_arguments
 {
   implements='com.intellij.plugin.powershell.psi.PowerShellQualifiedReferenceElement<com.intellij.plugin.powershell.psi.PowerShellExpression>'
   mixin='com.intellij.plugin.powershell.psi.impl.PowerShellInvocationExpressionImpl'
-  methods=[getIdentifier]
 }
 private call_arguments ::= ncm nls? parenthesized_argument_list | primary_expression
 parenthesized_argument_list ::= LP nls? argument_expression_list? nls? RP
@@ -745,7 +739,7 @@ private value ::=   parenthesized_expression
 
 parenthesized_expression ::= LP nls? <<allow_any_expression pipeline>> nls? RP
 {
-  methods=[getType]
+  mixin="com.intellij.plugin.powershell.psi.impl.mixin.PowerShellParenthesizedExpressionMixin"
 }
 sub_expression ::= DS nws LP nls? statement_list_rule? nls? RP
 private statement_list_rule ::= <<allow_any_expression statement_list>>

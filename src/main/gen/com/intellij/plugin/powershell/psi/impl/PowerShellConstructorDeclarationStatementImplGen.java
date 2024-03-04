@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellConstructorDeclarationStatementImplGen extends PowerShellMethodDeclarationImpl implements PowerShellConstructorDeclarationStatement {
 
-  public PowerShellConstructorDeclarationStatementImplGen(@NotNull ASTNode node) {
+  public PowerShellConstructorDeclarationStatementImplGen(ASTNode node) {
     super(node);
   }
 

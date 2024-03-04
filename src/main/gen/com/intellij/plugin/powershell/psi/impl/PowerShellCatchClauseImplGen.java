@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellCatchClauseImplGen extends PowerShellPsiElementImpl implements PowerShellCatchClause {
 
-  public PowerShellCatchClauseImplGen(@NotNull ASTNode node) {
+  public PowerShellCatchClauseImplGen(ASTNode node) {
     super(node);
   }
 

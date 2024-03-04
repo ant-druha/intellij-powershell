@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellPathExpressionImplGen extends PowerShellExpressionImplGen implements PowerShellPathExpression {
 
-  public PowerShellPathExpressionImplGen(@NotNull ASTNode node) {
+  public PowerShellPathExpressionImplGen(ASTNode node) {
     super(node);
   }
 

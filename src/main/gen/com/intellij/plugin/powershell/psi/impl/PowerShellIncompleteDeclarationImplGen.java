@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellIncompleteDeclarationImplGen extends PowerShellPsiElementImpl implements PowerShellIncompleteDeclaration {
 
-  public PowerShellIncompleteDeclarationImplGen(@NotNull ASTNode node) {
+  public PowerShellIncompleteDeclarationImplGen(ASTNode node) {
     super(node);
   }
 

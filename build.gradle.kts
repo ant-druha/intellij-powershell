@@ -3,6 +3,7 @@ import org.jetbrains.intellij.tasks.PrepareSandboxTask
 plugins {
   id("java")
   id("org.jetbrains.changelog") version "2.2.0"
+  id("org.jetbrains.grammarkit") version "2022.3.2.2"
   id("org.jetbrains.intellij") version "1.15.0"
   id("org.jetbrains.kotlin.jvm") version "1.9.0"
 }
@@ -57,12 +58,31 @@ tasks {
     gradleVersion = "8.3"
   }
 
+  val resources = file("src/main/resources")
+  val genRoot = file("src/main/gen")
+  val genPackageDirectory = genRoot.resolve("com/intellij/plugin/powershell/lang")
+  generateLexer {
+    sourceFile = resources.resolve("_PowerShellLexer.flex")
+    targetOutputDir = genPackageDirectory
+  }
+
+  generateParser {
+    sourceFile = resources.resolve("PowerShell.bnf")
+    targetRootOutputDir = genRoot
+    pathToParser = "com/intellij/plugin/powershell/lang/parser"
+    pathToPsiRoot = "com/intellij/plugin/powershell/psi"
+  }
+
   withType<JavaCompile> {
+    dependsOn(generateLexer, generateParser)
+
     options.encoding = "UTF-8"
     sourceCompatibility = "17"
     targetCompatibility = "17"
   }
   withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    dependsOn(generateLexer, generateParser)
+
     kotlinOptions.jvmTarget = "17"
   }
 

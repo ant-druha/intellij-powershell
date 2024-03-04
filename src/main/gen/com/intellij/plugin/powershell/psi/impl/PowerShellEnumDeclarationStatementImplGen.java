@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellEnumDeclarationStatementImplGen extends PowerShellEnumDeclarationImpl implements PowerShellEnumDeclarationStatement {
 
-  public PowerShellEnumDeclarationStatementImplGen(@NotNull ASTNode node) {
+  public PowerShellEnumDeclarationStatementImplGen(ASTNode node) {
     super(node);
   }
 

@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellReferenceIdentifierImplGen extends PowerShellPsiElementImpl implements PowerShellReferenceIdentifier {
 
-  public PowerShellReferenceIdentifierImplGen(@NotNull ASTNode node) {
+  public PowerShellReferenceIdentifierImplGen(ASTNode node) {
     super(node);
   }
 

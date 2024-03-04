@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellComparisonExpressionImplGen extends PowerShellExpressionImplGen implements PowerShellComparisonExpression {
 
-  public PowerShellComparisonExpressionImplGen(@NotNull ASTNode node) {
+  public PowerShellComparisonExpressionImplGen(ASTNode node) {
     super(node);
   }
 

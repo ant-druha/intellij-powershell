@@ -8,12 +8,12 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static com.intellij.plugin.powershell.psi.PowerShellTypes.*;
+import com.intellij.plugin.powershell.psi.impl.mixin.PowerShellLabelReferenceExpressionMixin;
 import com.intellij.plugin.powershell.psi.*;
-import com.intellij.plugin.powershell.psi.types.PowerShellType;
 
-public class PowerShellLabelReferenceExpressionImplGen extends PowerShellReferencePsiElementImpl implements PowerShellLabelReferenceExpression {
+public class PowerShellLabelReferenceExpressionImplGen extends PowerShellLabelReferenceExpressionMixin implements PowerShellLabelReferenceExpression {
 
-  public PowerShellLabelReferenceExpressionImplGen(@NotNull ASTNode node) {
+  public PowerShellLabelReferenceExpressionImplGen(ASTNode node) {
     super(node);
   }
 
@@ -37,11 +37,6 @@ public class PowerShellLabelReferenceExpressionImplGen extends PowerShellReferen
   @Nullable
   public PowerShellIdentifier getIdentifier() {
     return findChildByClass(PowerShellIdentifier.class);
-  }
-
-  @Override
-  public @NotNull PowerShellType getType() {
-    return PowerShellPsiImplUtil.getType(this);
   }
 
 }

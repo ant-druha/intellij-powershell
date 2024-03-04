@@ -3,7 +3,7 @@ package com.intellij.plugin.powershell.ide.editor.formatting
 import com.intellij.lang.ASTNode
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.plugin.powershell.psi.*
-import com.intellij.plugin.powershell.psi.impl.PowerShellPsiImplUtil
+import com.intellij.plugin.powershell.psi.impl.isWhiteSpaceOrNls
 import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IElementType
 
@@ -190,7 +190,7 @@ internal fun isAdditiveOperator(node: ASTNode): Boolean {
 }
 
 internal fun isWhiteSpaceOrNls(node: ASTNode): Boolean {
-  return PowerShellPsiImplUtil.isWhiteSpaceOrNls(node) || node.textLength == 0
+  return node.isWhiteSpaceOrNls() || node.textLength == 0
 }
 
 internal fun isForParameter(node: ASTNode): Boolean {

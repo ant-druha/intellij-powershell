@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellBitwiseExpressionImplGen extends PowerShellExpressionImplGen implements PowerShellBitwiseExpression {
 
-  public PowerShellBitwiseExpressionImplGen(@NotNull ASTNode node) {
+  public PowerShellBitwiseExpressionImplGen(ASTNode node) {
     super(node);
   }
 

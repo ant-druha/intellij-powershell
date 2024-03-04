@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellGenericTypeElementImplGen extends PowerShellTypeElementImplGen implements PowerShellGenericTypeElement {
 
-  public PowerShellGenericTypeElementImplGen(@NotNull ASTNode node) {
+  public PowerShellGenericTypeElementImplGen(ASTNode node) {
     super(node);
   }
 

@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellConfigurationBlockImplGen extends PowerShellAbstractComponent implements PowerShellConfigurationBlock {
 
-  public PowerShellConfigurationBlockImplGen(@NotNull ASTNode node) {
+  public PowerShellConfigurationBlockImplGen(ASTNode node) {
     super(node);
   }
 

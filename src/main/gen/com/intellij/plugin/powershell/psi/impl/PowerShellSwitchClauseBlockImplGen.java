@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellSwitchClauseBlockImplGen extends PowerShellPsiElementImpl implements PowerShellSwitchClauseBlock {
 
-  public PowerShellSwitchClauseBlockImplGen(@NotNull ASTNode node) {
+  public PowerShellSwitchClauseBlockImplGen(ASTNode node) {
     super(node);
   }
 

@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellRedirectionImplGen extends PowerShellPsiElementImpl implements PowerShellRedirection {
 
-  public PowerShellRedirectionImplGen(@NotNull ASTNode node) {
+  public PowerShellRedirectionImplGen(ASTNode node) {
     super(node);
   }
 

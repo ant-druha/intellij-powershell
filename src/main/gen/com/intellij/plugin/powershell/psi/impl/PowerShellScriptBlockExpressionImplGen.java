@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellScriptBlockExpressionImplGen extends PowerShellExpressionImplGen implements PowerShellScriptBlockExpression {
 
-  public PowerShellScriptBlockExpressionImplGen(@NotNull ASTNode node) {
+  public PowerShellScriptBlockExpressionImplGen(ASTNode node) {
     super(node);
   }
 

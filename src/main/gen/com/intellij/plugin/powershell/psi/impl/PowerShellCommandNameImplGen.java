@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellCommandNameImplGen extends PowerShellPsiElementImpl implements PowerShellCommandName {
 
-  public PowerShellCommandNameImplGen(@NotNull ASTNode node) {
+  public PowerShellCommandNameImplGen(ASTNode node) {
     super(node);
   }
 

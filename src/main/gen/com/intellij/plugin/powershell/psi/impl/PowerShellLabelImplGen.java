@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellLabelImplGen extends PowerShellAbstractComponent implements PowerShellLabel {
 
-  public PowerShellLabelImplGen(@NotNull ASTNode node) {
+  public PowerShellLabelImplGen(ASTNode node) {
     super(node);
   }
 

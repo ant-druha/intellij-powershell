@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellInvocationExpressionImplGen extends PowerShellInvocationExpressionImpl implements PowerShellInvocationExpression {
 
-  public PowerShellInvocationExpressionImplGen(@NotNull ASTNode node) {
+  public PowerShellInvocationExpressionImplGen(ASTNode node) {
     super(node);
   }
 
@@ -54,11 +54,6 @@ public class PowerShellInvocationExpressionImplGen extends PowerShellInvocationE
   @Nullable
   public PsiElement getDash() {
     return findChildByType(DASH);
-  }
-
-  @Override
-  public @Nullable PsiElement getIdentifier() {
-    return PowerShellPsiImplUtil.getIdentifier(this);
   }
 
 }

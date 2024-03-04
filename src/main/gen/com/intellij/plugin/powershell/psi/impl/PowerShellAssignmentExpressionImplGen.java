@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellAssignmentExpressionImplGen extends PowerShellExpressionImplGen implements PowerShellAssignmentExpression {
 
-  public PowerShellAssignmentExpressionImplGen(@NotNull ASTNode node) {
+  public PowerShellAssignmentExpressionImplGen(ASTNode node) {
     super(node);
   }
 
@@ -175,16 +175,6 @@ public class PowerShellAssignmentExpressionImplGen extends PowerShellExpressionI
   @Nullable
   public PowerShellWhileStatement getWhileStatement() {
     return findChildByClass(PowerShellWhileStatement.class);
-  }
-
-  @Override
-  public List<PowerShellTargetVariableExpression> getTargetVariables() {
-    return PowerShellPsiImplUtil.getTargetVariables(this);
-  }
-
-  @Override
-  public @Nullable PowerShellPsiElement getRHSElement() {
-    return PowerShellPsiImplUtil.getRHSElement(this);
   }
 
 }

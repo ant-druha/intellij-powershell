@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellLogicalExpressionImplGen extends PowerShellExpressionImplGen implements PowerShellLogicalExpression {
 
-  public PowerShellLogicalExpressionImplGen(@NotNull ASTNode node) {
+  public PowerShellLogicalExpressionImplGen(ASTNode node) {
     super(node);
   }
 

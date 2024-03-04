@@ -8,16 +8,15 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static com.intellij.plugin.powershell.psi.PowerShellTypes.*;
+import com.intellij.plugin.powershell.psi.impl.mixin.PowerShellArrayTypeElementMixin;
 import com.intellij.plugin.powershell.psi.*;
-import com.intellij.plugin.powershell.psi.types.PowerShellType;
 
-public class PowerShellArrayTypeElementImplGen extends PowerShellTypeElementImplGen implements PowerShellArrayTypeElement {
+public class PowerShellArrayTypeElementImplGen extends PowerShellArrayTypeElementMixin implements PowerShellArrayTypeElement {
 
-  public PowerShellArrayTypeElementImplGen(@NotNull ASTNode node) {
+  public PowerShellArrayTypeElementImplGen(ASTNode node) {
     super(node);
   }
 
-  @Override
   public void accept(@NotNull PowerShellVisitor visitor) {
     visitor.visitArrayTypeElement(this);
   }
@@ -38,11 +37,6 @@ public class PowerShellArrayTypeElementImplGen extends PowerShellTypeElementImpl
   @NotNull
   public PowerShellReferenceTypeElement getReferenceTypeElement() {
     return findNotNullChildByClass(PowerShellReferenceTypeElement.class);
-  }
-
-  @Override
-  public @NotNull PowerShellType getType() {
-    return PowerShellPsiImplUtil.getType(this);
   }
 
 }

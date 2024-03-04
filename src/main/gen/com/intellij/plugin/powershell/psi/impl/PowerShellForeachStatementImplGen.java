@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellForeachStatementImplGen extends PowerShellPsiElementImpl implements PowerShellForeachStatement {
 
-  public PowerShellForeachStatementImplGen(@NotNull ASTNode node) {
+  public PowerShellForeachStatementImplGen(ASTNode node) {
     super(node);
   }
 

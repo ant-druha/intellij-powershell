@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellFlowControlStatementImplGen extends PowerShellPsiElementImpl implements PowerShellFlowControlStatement {
 
-  public PowerShellFlowControlStatementImplGen(@NotNull ASTNode node) {
+  public PowerShellFlowControlStatementImplGen(ASTNode node) {
     super(node);
   }
 

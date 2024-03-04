@@ -8,16 +8,15 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static com.intellij.plugin.powershell.psi.PowerShellTypes.*;
+import com.intellij.plugin.powershell.psi.impl.mixin.PowerShellCastExpressionMixin;
 import com.intellij.plugin.powershell.psi.*;
-import com.intellij.plugin.powershell.psi.types.PowerShellType;
 
-public class PowerShellCastExpressionImplGen extends PowerShellExpressionImplGen implements PowerShellCastExpression {
+public class PowerShellCastExpressionImplGen extends PowerShellCastExpressionMixin implements PowerShellCastExpression {
 
-  public PowerShellCastExpressionImplGen(@NotNull ASTNode node) {
+  public PowerShellCastExpressionImplGen(ASTNode node) {
     super(node);
   }
 
-  @Override
   public void accept(@NotNull PowerShellVisitor visitor) {
     visitor.visitCastExpression(this);
   }
@@ -32,16 +31,6 @@ public class PowerShellCastExpressionImplGen extends PowerShellExpressionImplGen
   @NotNull
   public List<PowerShellExpression> getExpressionList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, PowerShellExpression.class);
-  }
-
-  @Override
-  public @NotNull PowerShellType getCastType() {
-    return PowerShellPsiImplUtil.getCastType(this);
-  }
-
-  @Override
-  public @NotNull PowerShellType getType() {
-    return PowerShellPsiImplUtil.getType(this);
   }
 
 }

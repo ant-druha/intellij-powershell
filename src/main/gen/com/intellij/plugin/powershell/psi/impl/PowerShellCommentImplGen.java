@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellCommentImplGen extends PowerShellPsiElementImpl implements PowerShellComment {
 
-  public PowerShellCommentImplGen(@NotNull ASTNode node) {
+  public PowerShellCommentImplGen(ASTNode node) {
     super(node);
   }
 

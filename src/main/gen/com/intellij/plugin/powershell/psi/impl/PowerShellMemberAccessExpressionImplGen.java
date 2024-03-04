@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellMemberAccessExpressionImplGen extends PowerShellMemberAccessExpressionImpl implements PowerShellMemberAccessExpression {
 
-  public PowerShellMemberAccessExpressionImplGen(@NotNull ASTNode node) {
+  public PowerShellMemberAccessExpressionImplGen(ASTNode node) {
     super(node);
   }
 
@@ -48,11 +48,6 @@ public class PowerShellMemberAccessExpressionImplGen extends PowerShellMemberAcc
   @Nullable
   public PsiElement getDash() {
     return findChildByType(DASH);
-  }
-
-  @Override
-  public @Nullable PsiElement getIdentifier() {
-    return PowerShellPsiImplUtil.getIdentifier(this);
   }
 
 }

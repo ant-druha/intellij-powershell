@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellUnaryExpressionImplGen extends PowerShellExpressionImplGen implements PowerShellUnaryExpression {
 
-  public PowerShellUnaryExpressionImplGen(@NotNull ASTNode node) {
+  public PowerShellUnaryExpressionImplGen(ASTNode node) {
     super(node);
   }
 

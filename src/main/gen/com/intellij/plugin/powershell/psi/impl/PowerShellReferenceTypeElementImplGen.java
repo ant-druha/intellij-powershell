@@ -13,7 +13,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellReferenceTypeElementImplGen extends PowerShellReferenceTypeElementImpl implements PowerShellReferenceTypeElement {
 
-  public PowerShellReferenceTypeElementImplGen(@NotNull ASTNode node) {
+  public PowerShellReferenceTypeElementImplGen(ASTNode node) {
     super(node);
   }
 

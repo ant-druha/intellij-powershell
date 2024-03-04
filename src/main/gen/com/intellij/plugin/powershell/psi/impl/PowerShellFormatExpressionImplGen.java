@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellFormatExpressionImplGen extends PowerShellExpressionImplGen implements PowerShellFormatExpression {
 
-  public PowerShellFormatExpressionImplGen(@NotNull ASTNode node) {
+  public PowerShellFormatExpressionImplGen(ASTNode node) {
     super(node);
   }
 

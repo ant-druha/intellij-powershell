@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellPostDecrementExpressionImplGen extends PowerShellExpressionImplGen implements PowerShellPostDecrementExpression {
 
-  public PowerShellPostDecrementExpressionImplGen(@NotNull ASTNode node) {
+  public PowerShellPostDecrementExpressionImplGen(ASTNode node) {
     super(node);
   }
 

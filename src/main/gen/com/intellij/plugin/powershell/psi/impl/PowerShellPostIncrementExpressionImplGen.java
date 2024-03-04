@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellPostIncrementExpressionImplGen extends PowerShellExpressionImplGen implements PowerShellPostIncrementExpression {
 
-  public PowerShellPostIncrementExpressionImplGen(@NotNull ASTNode node) {
+  public PowerShellPostIncrementExpressionImplGen(ASTNode node) {
     super(node);
   }
 

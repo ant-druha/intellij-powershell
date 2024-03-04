@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellElseifClauseImplGen extends PowerShellPsiElementImpl implements PowerShellElseifClause {
 
-  public PowerShellElseifClauseImplGen(@NotNull ASTNode node) {
+  public PowerShellElseifClauseImplGen(ASTNode node) {
     super(node);
   }
 

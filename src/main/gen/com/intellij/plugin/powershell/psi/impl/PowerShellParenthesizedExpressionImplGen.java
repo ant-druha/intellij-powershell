@@ -8,16 +8,15 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static com.intellij.plugin.powershell.psi.PowerShellTypes.*;
+import com.intellij.plugin.powershell.psi.impl.mixin.PowerShellParenthesizedExpressionMixin;
 import com.intellij.plugin.powershell.psi.*;
-import com.intellij.plugin.powershell.psi.types.PowerShellType;
 
-public class PowerShellParenthesizedExpressionImplGen extends PowerShellExpressionImplGen implements PowerShellParenthesizedExpression {
+public class PowerShellParenthesizedExpressionImplGen extends PowerShellParenthesizedExpressionMixin implements PowerShellParenthesizedExpression {
 
-  public PowerShellParenthesizedExpressionImplGen(@NotNull ASTNode node) {
+  public PowerShellParenthesizedExpressionImplGen(ASTNode node) {
     super(node);
   }
 
-  @Override
   public void accept(@NotNull PowerShellVisitor visitor) {
     visitor.visitParenthesizedExpression(this);
   }
@@ -32,11 +31,6 @@ public class PowerShellParenthesizedExpressionImplGen extends PowerShellExpressi
   @NotNull
   public List<PowerShellComment> getCommentList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, PowerShellComment.class);
-  }
-
-  @Override
-  public @NotNull PowerShellType getType() {
-    return PowerShellPsiImplUtil.getType(this);
   }
 
 }

@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellRealLiteralExpressionImplGen extends PowerShellExpressionImplGen implements PowerShellRealLiteralExpression {
 
-  public PowerShellRealLiteralExpressionImplGen(@NotNull ASTNode node) {
+  public PowerShellRealLiteralExpressionImplGen(ASTNode node) {
     super(node);
   }
 

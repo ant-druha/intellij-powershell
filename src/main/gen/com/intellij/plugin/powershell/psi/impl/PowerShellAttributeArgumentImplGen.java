@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellAttributeArgumentImplGen extends PowerShellPsiElementImpl implements PowerShellAttributeArgument {
 
-  public PowerShellAttributeArgumentImplGen(@NotNull ASTNode node) {
+  public PowerShellAttributeArgumentImplGen(ASTNode node) {
     super(node);
   }
 

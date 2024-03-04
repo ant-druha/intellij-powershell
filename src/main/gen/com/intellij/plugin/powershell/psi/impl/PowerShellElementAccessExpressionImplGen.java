@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellElementAccessExpressionImplGen extends PowerShellExpressionImplGen implements PowerShellElementAccessExpression {
 
-  public PowerShellElementAccessExpressionImplGen(@NotNull ASTNode node) {
+  public PowerShellElementAccessExpressionImplGen(ASTNode node) {
     super(node);
   }
 

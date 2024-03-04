@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellEnumLabelDeclarationImplGen extends PowerShellMemberDeclarationImpl implements PowerShellEnumLabelDeclaration {
 
-  public PowerShellEnumLabelDeclarationImplGen(@NotNull ASTNode node) {
+  public PowerShellEnumLabelDeclarationImplGen(ASTNode node) {
     super(node);
   }
 

@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellInlinescriptStatementImplGen extends PowerShellPsiElementImpl implements PowerShellInlinescriptStatement {
 
-  public PowerShellInlinescriptStatementImplGen(@NotNull ASTNode node) {
+  public PowerShellInlinescriptStatementImplGen(ASTNode node) {
     super(node);
   }
 

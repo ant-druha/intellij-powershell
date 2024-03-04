@@ -12,7 +12,7 @@ import com.intellij.plugin.powershell.psi.*;
 
 public class PowerShellDataStatementImplGen extends PowerShellPsiElementImpl implements PowerShellDataStatement {
 
-  public PowerShellDataStatementImplGen(@NotNull ASTNode node) {
+  public PowerShellDataStatementImplGen(ASTNode node) {
     super(node);
   }
 
