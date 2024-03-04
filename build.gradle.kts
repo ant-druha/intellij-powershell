@@ -64,6 +64,7 @@ tasks {
   generateLexer {
     sourceFile = resources.resolve("_PowerShellLexer.flex")
     targetOutputDir = genPackageDirectory
+    defaultCharacterEncoding = "UTF-8"
   }
 
   generateParser {
@@ -71,6 +72,7 @@ tasks {
     targetRootOutputDir = genRoot
     pathToParser = "com/intellij/plugin/powershell/lang/parser"
     pathToPsiRoot = "com/intellij/plugin/powershell/psi"
+    defaultCharacterEncoding = "UTF-8"
   }
 
   withType<JavaCompile> {
