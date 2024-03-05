@@ -13,7 +13,10 @@ import com.intellij.execution.runners.ProgramRunner
 import com.intellij.execution.util.ProgramParametersUtil
 import com.intellij.openapi.application.readAction
 import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.diagnostic.runAndLogException
+import com.intellij.openapi.options.advanced.AdvancedSettings
 import com.intellij.openapi.roots.ProjectRootManager
+import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.plugin.powershell.lang.lsp.LSPInitMain
@@ -22,6 +25,7 @@ import com.intellij.terminal.TerminalExecutionConsole
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.nio.charset.Charset
 import java.nio.file.Path
 import java.util.regex.Pattern
 import kotlin.io.path.Path
@@ -55,6 +59,7 @@ class PowerShellScriptCommandLineState(
       val commandLine = PtyCommandLine(command)
         .withConsoleMode(false)
         .withWorkDirectory(workingDirectory.toString())
+        .withCharset(getTerminalCharSet())
 
       runConfiguration.environmentVariables.configureCommandLine(commandLine, true)
       logger.debug("Command line: $command")
@@ -102,6 +107,11 @@ class PowerShellScriptCommandLineState(
     val console = TerminalExecutionConsole(environment.project, process)
     return DefaultExecutionResult(console, process)
   }
+}
+
+private fun getTerminalCharSet(): Charset {
+  val name = AdvancedSettings.getString("terminal.character.encoding")
+  return logger.runAndLogException { charset(name) } ?: Charsets.UTF_8
 }
 
 private val logger = logger<PowerShellScriptCommandLineState>()
