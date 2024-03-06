@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - A bit more of IO work during language server connection moved to the corresponding threads, saving some IDE responsibility in rare cases when it could be a problem.
 - Increased timeout on connecting to the language server; should fix issues on slower computers.
 - [#42: The run configuration now uses terminal encoding](https://github.com/ant-druha/intellij-powershell/issues/42) (UTF-8 by default).
+- [#17: When the username has a space, the plugin fails to initialize](https://github.com/ant-druha/intellij-powershell/issues/17).
 
 ## [2.3.1] - 2023-12-30
 ### Fixed

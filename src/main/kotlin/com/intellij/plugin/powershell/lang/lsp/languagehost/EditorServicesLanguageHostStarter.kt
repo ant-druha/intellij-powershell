@@ -261,7 +261,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
     command.add("-NoProfile")
     command.add("-NonInteractive")
     command.addAll(listOf("-ExecutionPolicy", "RemoteSigned")) // to run under default Restricted policy on PowerShell 5
-    command.add(scriptFile.canonicalPath)
+    command.addAll(listOf("-File", scriptFile.canonicalPath))
     logger.info("Language server startup command: '$command',\n launch command: $scriptText")
     return command
   }
