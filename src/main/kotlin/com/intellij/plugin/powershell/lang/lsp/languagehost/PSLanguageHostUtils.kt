@@ -3,7 +3,6 @@ package com.intellij.plugin.powershell.lang.lsp.languagehost
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.util.SystemInfo
 import com.intellij.plugin.powershell.ide.PluginAppRoot
 import com.intellij.plugin.powershell.ide.run.checkExists
 import com.intellij.plugin.powershell.ide.run.getModuleVersion
@@ -56,8 +55,7 @@ object PSLanguageHostUtils {
 
 private suspend fun readPowerShellVersion(exePath: String): PSVersionInfo {
   var process: Process? = null
-  val qInner = if (SystemInfo.isWindows) '\'' else '"'
-  val commandString = "(\$PSVersionTable.PSVersion, \$PSVersionTable.PSEdition) -join $qInner $qInner"
+  val commandString = "(\$PSVersionTable.PSVersion, \$PSVersionTable.PSEdition) -join ' '"
   val commandLine = GeneralCommandLine(exePath, "-command", commandString)
   return coroutineScope {
     try {
