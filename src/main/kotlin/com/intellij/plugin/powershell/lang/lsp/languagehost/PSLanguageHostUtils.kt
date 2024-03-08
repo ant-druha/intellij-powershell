@@ -56,7 +56,7 @@ object PSLanguageHostUtils {
 private suspend fun readPowerShellVersion(exePath: String): PSVersionInfo {
   var process: Process? = null
   val commandString = "(\$PSVersionTable.PSVersion, \$PSVersionTable.PSEdition) -join ' '"
-  val commandLine = GeneralCommandLine(exePath, "-command", commandString)
+  val commandLine = GeneralCommandLine(exePath, "-Command", commandString)
   return coroutineScope {
     try {
       process = commandLine.createProcess()
