@@ -1,4 +1,4 @@
-[foo]
+[CmdLetBinding()]
 param (
 [PSParameter(Mandatory = $true)] $foo
 )
