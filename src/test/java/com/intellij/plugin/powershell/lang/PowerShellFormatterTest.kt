@@ -54,6 +54,10 @@ class PowerShellFormatterTest : FormatterTestCase() {
     doTest("wrap_block_parameters", "wrap_block_parameters_res")
   }
 
+  fun testBlockParameterIndent() {
+    doTest("block_parameter_indent", "block_parameter_indent_res")
+  }
+
   fun testDefault1() {
     val tempTestSettings = getCommonSettings()
     tempTestSettings.KEEP_LINE_BREAKS = false
@@ -69,7 +73,7 @@ class PowerShellFormatterTest : FormatterTestCase() {
     settings.WRAP_FIRST_METHOD_IN_CALL_CHAIN = true
     doTest("wrap_chained_call", "wrap_chained_call_if_long_first_wrap_res")
   }
-  
+
   fun testNoSpacingForCompoundIdentifiers() {
     val settings = getCommonSettings()
     settings.SPACE_AROUND_MULTIPLICATIVE_OPERATORS = true
