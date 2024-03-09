@@ -25,11 +25,12 @@ $ErrorActionPreference = 'Stop'
 
 $file = & "$PSScriptRoot/Get-Distribution.ps1" -DistributionsPath $DistributionsPath
 curl -i `
+    --fail-with-body `
     --header "Authorization: Bearer $AuthToken" `
     -F xmlId=$PluginXmlId `
     -F file=@$file `
     https://plugins.jetbrains.com/plugin/uploadPlugin
 
 if (!$?) {
-    throw "Curl failed with exit code $LASTEXITCODE"
+   throw "Curl failed with exit code $LASTEXITCODE"
 }
