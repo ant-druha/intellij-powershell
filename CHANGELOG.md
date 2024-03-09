@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 ### Fixed
 - [#138: Run configuration template doesn't work](https://github.com/ant-druha/intellij-powershell/issues/138)
+- [#67](https://github.com/ant-druha/intellij-powershell/issues/67): an attribute block before function's `param` could lead to incorrect indentation
 
 ## [2.4.0] - 2024-03-09
 ### Changed
