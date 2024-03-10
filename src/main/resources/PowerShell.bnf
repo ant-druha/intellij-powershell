@@ -317,6 +317,7 @@ expression ::=   assignment_expression
                | logical_expression
                | bitwise_expression
                | comparison_expression
+               | null_coalesce_expression
                | additive_expression
                | multiplicative_expression
                | format_expression
@@ -338,6 +339,8 @@ logical_expression ::=   expression ( OP_AND | OP_OR | OP_XOR ) nls? expression
 bitwise_expression ::=  expression (OP_BAND | OP_BOR | OP_BXOR )  nls? expression
 
 comparison_expression ::= expression comparison_operator nls? expression
+
+null_coalesce_expression ::= expression DOUBLE_QUESTION_MARK expression
 
 additive_expression ::= expression (( PLUS | DASH ) nls? expression)+
 

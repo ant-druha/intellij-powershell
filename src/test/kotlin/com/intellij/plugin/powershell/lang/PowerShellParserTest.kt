@@ -23,6 +23,7 @@ class PowerShellParserTest : ParsingTestCase("parser", "ps1", PowerShellParserDe
   fun testMemberElementAccess() { doTest(true) }
   fun testTypeMemberAccess() { doTest(true) }
   fun testOperators() { doTest(true) }
+  fun testNullCoalesceOperator() { doTest(true) }
   fun testLabeledStatement() { doTest(true) }
   fun testStatements() { doTest(true) }
   fun testFunctionMultilineDefinition() { doTest(true) }

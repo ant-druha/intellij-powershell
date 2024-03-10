@@ -385,6 +385,7 @@ BRACED_VAR_START={DS}{LCURLY}
   {EQ_STAR}                                                    { return EQ_STAR; }
   {EQ_DIV}                                                     { return EQ_DIV; }
   {EQ_PERS}                                                    { return EQ_PERS; }
+  "??"                                                         { return DOUBLE_QUESTION_MARK; }
   "+"                                                          { return PLUS; }
   {STAR}                                                       { return STAR; }
   {DIV}                                                        { return DIV; }
