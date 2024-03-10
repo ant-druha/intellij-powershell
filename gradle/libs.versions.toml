@@ -14,5 +14,5 @@ junixsocket = ["junixsocket-common", "junixsocket-native-common"]
 [plugins]
 changelog = { id = "org.jetbrains.changelog", version = "2.2.0" }
 grammarkit = { id = "org.jetbrains.grammarkit", version = "2022.3.2.2" }
-intellij = { id = "org.jetbrains.intellij", version = "1.15.0" }
+intellij = { id = "org.jetbrains.intellij", version = "1.17.2" }
 kotlin = { id = "org.jetbrains.kotlin.jvm", version = "1.9.0" }
