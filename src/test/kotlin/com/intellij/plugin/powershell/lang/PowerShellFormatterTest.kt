@@ -176,12 +176,20 @@ class PowerShellFormatterTest : FormatterTestCase() {
     doTextTest(after, before, false)
   }
 
-  fun testNotOperatorSpacing() {
-    doTextTest("if (-Not \$DryRun) {}", """
-      if (-Not ${'$'}DryRun)
-      {
-      }
-    """.trimIndent())
+  fun testWhitespaceDependentOperatorSpacing() {
+    doTextTest(
+      """
+      -Not  ${'$'}DryRun
+      -BNot  0x123
+      -Split  '1 2 3'
+      -Join  @('1', '2')
+    """.trimIndent(), """
+      -Not ${'$'}DryRun
+      -BNot 0x123
+      -Split '1 2 3'
+      -Join @('1', '2')
+    """.trimIndent()
+    )
   }
 
   fun testCommandLineArgumentSpacing() {
