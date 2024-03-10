@@ -2,15 +2,15 @@ import org.jetbrains.intellij.tasks.PrepareSandboxTask
 
 plugins {
   id("java")
-  id("org.jetbrains.changelog") version "2.2.0"
-  id("org.jetbrains.grammarkit") version "2022.3.2.2"
-  id("org.jetbrains.intellij") version "1.15.0"
-  id("org.jetbrains.kotlin.jvm") version "1.9.0"
+  alias(libs.plugins.changelog)
+  alias(libs.plugins.grammarkit)
+  alias(libs.plugins.intellij)
+  alias(libs.plugins.kotlin)
 }
 
 intellij {
   type.set("IC")
-  version.set("2023.2")
+  version.set(libs.versions.intellij)
   plugins.set(listOf("org.intellij.intelliLang", "terminal"))
   pluginName.set("PowerShell")
 }
@@ -36,12 +36,11 @@ repositories {
 }
 
 dependencies {
-  implementation("com.kohlschutter.junixsocket:junixsocket-common:2.3.3")
-  implementation("com.kohlschutter.junixsocket:junixsocket-native-common:2.3.3")
+  implementation(libs.bundles.junixsocket)
 
-  implementation("org.eclipse.lsp4j:org.eclipse.lsp4j:0.3.0")
+  implementation(libs.lsp4j)
   testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
-  testImplementation("junit:junit:4.11")
+  testImplementation(libs.junit)
 }
 
 configurations {

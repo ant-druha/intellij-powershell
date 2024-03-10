@@ -1,0 +1,18 @@
+[versions]
+intellij = "2023.2"
+junixsocket = "2.3.3"
+
+[libraries]
+junixsocket-common = { module = "com.kohlschutter.junixsocket:junixsocket-common", version.ref = "junixsocket" }
+junixsocket-native-common = { module = "com.kohlschutter.junixsocket:junixsocket-native-common", version.ref = "junixsocket" }
+lsp4j = "org.eclipse.lsp4j:org.eclipse.lsp4j:0.3.0"
+junit = "junit:junit:4.11"
+
+[bundles]
+junixsocket = ["junixsocket-common", "junixsocket-native-common"]
+
+[plugins]
+changelog = { id = "org.jetbrains.changelog", version = "2.2.0" }
+grammarkit = { id = "org.jetbrains.grammarkit", version = "2022.3.2.2" }
+intellij = { id = "org.jetbrains.intellij", version = "1.15.0" }
+kotlin = { id = "org.jetbrains.kotlin.jvm", version = "1.9.0" }
