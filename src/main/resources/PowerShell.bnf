@@ -116,8 +116,6 @@
     DIV='/'
     STAR='*'
     HASH='#'
-    DEL_COMENT_START='regexp:\<\#'
-    DEL_COMENT_END='regexp:\#+\>'
     VERBATIM_ARG_START='--%'
     VERBATIM_ARG_INPUT='regexp:[^\|\r\n]'
     BRACED_VAR_START='${'
