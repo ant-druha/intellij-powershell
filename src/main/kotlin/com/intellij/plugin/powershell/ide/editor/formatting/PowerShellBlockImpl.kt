@@ -355,6 +355,12 @@ class PowerShellSpacingProcessor(private val myCommonSettings: CommonCodeStyleSe
     val node2 = myChild2 as ASTNode
     val type2 = myChild2!!.elementType
 
+    if (node1.treeParent == node2.treeParent) {
+      // Check for a command argument: we should not rearrange anything inside an argument.
+      val parent = node1.treeParent
+      if (parent.elementType === COMMAND_ARGUMENT) return null
+    }
+
     if (LCURLY === type1 || RCURLY === type2) {
       val braceNode = if (LCURLY === type1) node1 else node2
       val blockBody = findSiblingSkipping(braceNode, arrayOf(NLS, WHITE_SPACE), braceNode === node1)

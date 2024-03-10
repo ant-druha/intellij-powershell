@@ -184,6 +184,11 @@ class PowerShellFormatterTest : FormatterTestCase() {
     """.trimIndent())
   }
 
+  fun testCommandLineArgumentSpacing() {
+    val example = "git log --pretty=format:'%Cred'"
+    doTextTest(example, example)
+  }
+
   private fun doTextTest(text: String, textAfter: String, reformatAsText: Boolean = true, textRange: TextRange? = null) {
     val file = createFileFromText(text)
     val manager = PsiDocumentManager.getInstance(project)
