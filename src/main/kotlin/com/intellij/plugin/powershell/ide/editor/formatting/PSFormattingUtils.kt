@@ -156,6 +156,12 @@ internal fun isReferenceDoubleColonOperator(type: IElementType): Boolean {
   return type === PowerShellTypes.COLON2
 }
 
+internal fun isWhitespaceRequiringUnaryOperator(node: ASTNode): Boolean {
+  if (node.psi.context !is PowerShellUnaryExpression) return false
+  val type = node.elementType
+  return type === PowerShellTypes.OP_NOT || type === PowerShellTypes.OP_BNOT
+}
+
 /**
  * By "whitespace-flexible", I mean that the operator may be joined to the next expression: whitespace may be omitted.
  * For example, unary plus may be joined, while unary `-Not` may not.

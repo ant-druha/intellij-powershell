@@ -30,7 +30,7 @@ function foo
 
     $a -band $b
 
-    -not($a)
+    -not ($a)
     !($a)
 
     "abcdef" -like "abc*"

@@ -510,6 +510,9 @@ class PowerShellSpacingProcessor(private val myCommonSettings: CommonCodeStyleSe
     if (isMultiplicativeOperator(type1) || isMultiplicativeOperator(type2)) {
       if (!isIdentifier(node1.treeParent) && !isIdentifier(node2.treeParent)) return simpleSpacing(myCommonSettings.SPACE_AROUND_MULTIPLICATIVE_OPERATORS)
     }
+    if (isWhitespaceRequiringUnaryOperator(node1)) {
+      return createSpacing(addSpace = true, ensureLineBreak = false)
+    }
     if (isWhitespaceFlexibleUnaryOperator(node1) || isWhitespaceFlexibleUnaryOperator(node2)) {
       return simpleSpacing(myCommonSettings.SPACE_AROUND_UNARY_OPERATOR)
     }

@@ -1,8 +1,8 @@
 foreach ($i in get-childitem | sort-object length) {
     $i  #highlight
-    $i = $i + 1
+    $i=$i + 1
 
-    $sum += $i.length
+    $sum+=$i.length
     0x0F0F -band $i
 
     $j = 20 + $i
@@ -10,9 +10,9 @@ foreach ($i in get-childitem | sort-object length) {
     Write-Object (($j -gt 5) -and ($i -lt 15))
 }
 #logical not
--not-not$false         # False
--not1.23                # False
-!"xyz"                # False
+-not  -not $false         # False
+-not 1.23                # False
+! "xyz"                # False
 [int] $x = 10.6         # type int, value 11
 switch -regex (asas)
 {

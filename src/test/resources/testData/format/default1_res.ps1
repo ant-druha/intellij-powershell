@@ -11,8 +11,8 @@ foreach ($i in get-childitem | sort-object length)
     Write-Object (($j -gt 5) -and ($i -lt 15))
 }
 #logical not
--not-not$false         # False
--not1.23                # False
+-not -not $false         # False
+-not 1.23                # False
 !"xyz"                # False
 [int]$x = 10.6         # type int, value 11
 switch -regex (asas)

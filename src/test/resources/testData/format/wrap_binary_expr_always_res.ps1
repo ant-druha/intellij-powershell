@@ -24,7 +24,7 @@ function foo
 
     (1 -eq
             1) -and
-            -not(2 -gt
+            -not (2 -gt
                     2)
 
     !($Null)
@@ -41,7 +41,7 @@ function foo
     $a -band
             $b
 
-    -not($a)
+    -not ($a)
     !($a)
 
     "abcdef" -like
