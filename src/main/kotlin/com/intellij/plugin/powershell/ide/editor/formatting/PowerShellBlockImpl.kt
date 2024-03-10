@@ -19,7 +19,6 @@ import com.intellij.psi.formatter.WrappingUtil
 import com.intellij.psi.formatter.common.AbstractBlock
 import com.intellij.psi.impl.source.SourceTreeToPsiMap
 import com.intellij.psi.impl.source.tree.CompositeElement
-import java.util.*
 
 
 /**
@@ -505,7 +504,7 @@ class PowerShellSpacingProcessor(private val myCommonSettings: CommonCodeStyleSe
     if (isMultiplicativeOperator(type1) || isMultiplicativeOperator(type2)) {
       if (!isIdentifier(node1.treeParent) && !isIdentifier(node2.treeParent)) return simpleSpacing(myCommonSettings.SPACE_AROUND_MULTIPLICATIVE_OPERATORS)
     }
-    if (isUnaryOperator(node1) || isUnaryOperator(node2)) {
+    if (isWhitespaceFlexibleUnaryOperator(node1) || isWhitespaceFlexibleUnaryOperator(node2)) {
       return simpleSpacing(myCommonSettings.SPACE_AROUND_UNARY_OPERATOR)
     }
     if (isReferenceDoubleColonOperator(type1) || isReferenceDoubleColonOperator(type2)) {
