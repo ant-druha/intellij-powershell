@@ -30,7 +30,7 @@ jobs:
           output: ./changelog-section.md
 
       - name: Upload the changelog
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: changelog-section.md
           path: ./changelog-section.md
@@ -52,7 +52,7 @@ jobs:
         run: src/scripts/Unpack-Distribution.ps1
 
       - name: Upload the artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: PowerShell-${{ steps.version.outputs.version }}
           path: build/distributions/unpacked
