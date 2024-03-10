@@ -32,6 +32,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - [#172](https://github.com/ant-druha/intellij-powershell/issues/172): Console output forcibly wraps output to 80 characters
 - [#160](https://github.com/ant-druha/intellij-powershell/issues/160): the `exit` keyword is now allowed in more positions in the parser
 - [#166](https://github.com/ant-druha/intellij-powershell/issues/166): "Slow operations are prohibited on EDT" report about disk IO on run configuration startup
+- [#154](https://github.com/ant-druha/intellij-powershell/issues/154): Input not properly processed in the run configuration
 ### Changed
 - The **PowerShell** run configuration no longer ignores certain kinds of internal exceptions; they will be properly reported
 
