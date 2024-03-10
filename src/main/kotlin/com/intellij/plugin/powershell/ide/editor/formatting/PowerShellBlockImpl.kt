@@ -94,7 +94,7 @@ open class PowerShellBlockImpl(node: ASTNode, wrap: Wrap?, alignment: Alignment?
 
   override fun buildChildren(): MutableList<Block> {
     if (isLeaf) {
-      return AbstractBlock.EMPTY
+      return EMPTY
     }
     val tlChildren = ArrayList<Block>()
     var childNode: ASTNode? = node.firstChildNode
