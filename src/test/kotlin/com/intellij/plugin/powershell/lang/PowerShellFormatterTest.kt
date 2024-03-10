@@ -193,8 +193,11 @@ class PowerShellFormatterTest : FormatterTestCase() {
   }
 
   fun testCommandLineArgumentSpacing() {
-    val example = "git log --pretty=format:'%Cred'"
-    doTextTest(example, example)
+    val sample = """
+      git log --pretty=format:'%Cred'
+      & msbuild ".\solution.sln" -t:Restore,Rebuild -p:RestorePackagesConfig=true -p:Configuration=${'$'}configuration -p:Deterministic=True
+    """.trimIndent()
+    doTextTest(sample, sample)
   }
 
   private fun doTextTest(text: String, textAfter: String, reformatAsText: Boolean = true, textRange: TextRange? = null) {

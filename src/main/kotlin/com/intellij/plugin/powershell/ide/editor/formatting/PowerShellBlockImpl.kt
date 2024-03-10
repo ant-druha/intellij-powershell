@@ -357,8 +357,18 @@ class PowerShellSpacingProcessor(private val myCommonSettings: CommonCodeStyleSe
 
     if (node1.treeParent == node2.treeParent) {
       // Check for a command argument: we should not rearrange anything inside an argument.
+      // Example of this:
+      // git log --pretty=format:'%Cred'
       val parent = node1.treeParent
       if (parent.elementType === COMMAND_ARGUMENT) return null
+
+      // Another example:
+      // & msbuild ".\solution.sln" -t:Restore,Rebuild
+      // in this case, the parent of both notes is a COMMAND_CALL_EXPRESSION, and we can figure out that we shouldn't
+      // touch it based on the absence of existing spaces between arguments.
+      if (parent.elementType === COMMAND_CALL_EXPRESSION && node1.textRange.endOffset == node2.textRange.startOffset) {
+        return null
+      }
     }
 
     if (LCURLY === type1 || RCURLY === type2) {
