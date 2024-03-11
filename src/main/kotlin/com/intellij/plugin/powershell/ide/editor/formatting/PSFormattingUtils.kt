@@ -190,7 +190,10 @@ internal fun isBitwiseOperator(type: IElementType): Boolean {
 }
 
 internal fun isLogicalOperator(type: IElementType): Boolean {
-  return type == PowerShellTypes.OP_AND || type == PowerShellTypes.OP_OR || type == PowerShellTypes.OP_XOR
+  return type == PowerShellTypes.OP_AND
+    || type == PowerShellTypes.OP_OR
+    || type == PowerShellTypes.OP_XOR
+    || type == PowerShellTypes.DOUBLE_QUESTION_MARK
 }
 
 internal fun isAssignmentOperator(type: IElementType): Boolean {

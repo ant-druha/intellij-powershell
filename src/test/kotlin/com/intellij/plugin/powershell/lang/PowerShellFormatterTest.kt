@@ -200,6 +200,8 @@ class PowerShellFormatterTest : FormatterTestCase() {
     doTextTest(sample, sample)
   }
 
+  fun testNullCoalescingOperator() = doTextTest("\$foo = \$bar  ??\$baz", "\$foo = \$bar ?? \$baz")
+
   private fun doTextTest(text: String, textAfter: String, reformatAsText: Boolean = true, textRange: TextRange? = null) {
     val file = createFileFromText(text)
     val manager = PsiDocumentManager.getInstance(project)
