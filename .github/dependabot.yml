@@ -7,7 +7,7 @@ updates:
       interval: "daily"
     ignore:
       # Prevent Dependabot from updating LSP4J to new versions
-      # TODO: Remove this block after updating to the new PSES
+      # TODO[#232]: Remove this block after updating to the new PSES
       - dependency-name: "org.eclipse.lsp4j:org.eclipse.lsp4j"
         update-types:
           - version-update:semver-major
