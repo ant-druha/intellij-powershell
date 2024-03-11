@@ -1,6 +1,7 @@
 package com.intellij.plugin.powershell.lang.lsp.psi
 
 import com.intellij.navigation.ItemPresentation
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.plugin.powershell.ide.search.PowerShellComponentType
 import com.intellij.plugin.powershell.psi.PowerShellIdentifier
@@ -8,6 +9,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.FakePsiElement
 import org.eclipse.lsp4j.CompletionItem
 import org.eclipse.lsp4j.CompletionItemKind
+import org.eclipse.lsp4j.MarkupKind
 import javax.swing.Icon
 
 class LSPWrapperPsiElementImpl(private val myName: String, private val myParent: PsiElement, kind: CompletionItemKind?) : FakePsiElement(), LSPWrapperPsiElement {
@@ -30,7 +32,18 @@ class LSPWrapperPsiElementImpl(private val myName: String, private val myParent:
   override fun getCompletionItem(): CompletionItem? = myCompletionItem
 
   override fun getDocumentation(): String? {
-    val doc = myCompletionItem?.documentation
+    val doc = myCompletionItem?.documentation?.let {
+      val right = it.right
+      when {
+        it.left != null -> it.left
+        right != null && right.kind == MarkupKind.PLAINTEXT -> right.value
+        right != null -> {
+          logger.warn("Received markup kind ${right.kind} instead of ${MarkupKind.PLAINTEXT}.")
+          right.value
+        }
+        else -> null
+      }
+    }
     return if (StringUtil.isEmpty(doc)) myCompletionItem?.detail else doc
   }
 
@@ -48,3 +61,5 @@ class LSPWrapperPsiElementImpl(private val myName: String, private val myParent:
   override fun getParent(): PsiElement? = myParent
 
 }
+
+private val logger = logger<LSPWrapperPsiElementImpl>()

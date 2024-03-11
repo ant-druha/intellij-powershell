@@ -64,7 +64,7 @@ class TextDocumentServiceQueue(private val textDocumentService: () -> TextDocume
     }
   }
 
-  suspend fun completion(params: TextDocumentPositionParams): Either<List<CompletionItem>, CompletionList>? =
+  suspend fun completion(params: CompletionParams): Either<List<CompletionItem>, CompletionList>? =
     executeTask("completion request", params) {
       service?.completion(params)?.await()
     }
