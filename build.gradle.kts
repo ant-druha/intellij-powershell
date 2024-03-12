@@ -17,7 +17,8 @@ intellij {
 
 sourceSets {
   main {
-    java.srcDir("src/main/gen")
+    java.srcDir("src/main/gen-parser")
+    java.srcDir("src/main/gen-lexer")
     resources {
       exclude("**.bnf")
       exclude("**.flex")
@@ -58,17 +59,23 @@ tasks {
   }
 
   val resources = file("src/main/resources")
-  val genRoot = file("src/main/gen")
-  val genPackageDirectory = genRoot.resolve("com/intellij/plugin/powershell/lang")
+
   generateLexer {
+    val genLexerRoot = file("src/main/gen-lexer")
+    val genLexerPackageDirectory = genLexerRoot.resolve("com/intellij/plugin/powershell/lang")
+
+    purgeOldFiles = true
     sourceFile = resources.resolve("_PowerShellLexer.flex")
-    targetOutputDir = genPackageDirectory
+    targetOutputDir = genLexerPackageDirectory
     defaultCharacterEncoding = "UTF-8"
   }
 
   generateParser {
+    val genParserRoot = file("src/main/gen-parser")
+
+    purgeOldFiles = true
     sourceFile = resources.resolve("PowerShell.bnf")
-    targetRootOutputDir = genRoot
+    targetRootOutputDir = genParserRoot
     pathToParser = "com/intellij/plugin/powershell/lang/parser"
     pathToPsiRoot = "com/intellij/plugin/powershell/psi"
     defaultCharacterEncoding = "UTF-8"
