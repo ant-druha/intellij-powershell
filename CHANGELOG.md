@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [2.5.0] - 2024-03-12
 ### Fixed
 - [#67](https://github.com/ant-druha/intellij-powershell/issues/67): An attribute block before function's `param` could lead to incorrect indentation
 - [#102](https://github.com/ant-druha/intellij-powershell/issues/102): Formatter breaking the code around unary operators such as `-Not` and equal signs in command-line arguments
@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - [LSP4J](https://github.com/eclipse-lsp4j/lsp4j) library has been updated to v0.3.1
+- [junixsocket](https://github.com/kohlschutter/junixsocket) has been updated to 2.9.0
 
 ## [2.4.0] - 2024-03-09
 ### Changed
@@ -240,4 +241,5 @@ Initial editor and code completion support:
 [2.3.0]: https://github.com/ant-druha/intellij-powershell/compare/v2.2.0...v2.3.0
 [2.3.1]: https://github.com/ant-druha/intellij-powershell/compare/v2.3.0...v2.3.1
 [2.4.0]: https://github.com/ant-druha/intellij-powershell/compare/v2.3.1...v2.4.0
-[Unreleased]: https://github.com/ant-druha/intellij-powershell/compare/v2.4.0...HEAD
+[2.5.0]: https://github.com/ant-druha/intellij-powershell/compare/v2.4.0...v2.5.0
+[Unreleased]: https://github.com/ant-druha/intellij-powershell/compare/v2.5.0...HEAD
