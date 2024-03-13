@@ -16,7 +16,7 @@ internal fun findSiblingSkipping(node: ASTNode, toSkip: Array<IElementType>, for
 }
 
 internal fun findSiblingSkippingWS(node: ASTNode, forward: Boolean = true): ASTNode? {
-  return findSiblingSkipping(node, arrayOf(PowerShellTypes.NLS, TokenType.WHITE_SPACE), forward)
+  return findSiblingSkipping(node, arrayOf(PowerShellTypes.NEWLINE, TokenType.WHITE_SPACE), forward)
 }
 
 fun isTargetVariableContext(node: ASTNode): Boolean {

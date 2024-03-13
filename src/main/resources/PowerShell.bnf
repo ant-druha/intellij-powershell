@@ -26,10 +26,8 @@
     OP_BNOT='-bnot'
     EXCL_MARK='!'
 
-  // NewLines and spaces //
-    NLS ='regexp:[\ \t\f]*(\r|\n|\r\n)((\r|\n|\r\n)|([\ \t\f])*)*'
-    LF = 'regexp:(\r|\n|\r\n)+'
-
+  // A single newline
+  NEWLINE = 'regexp:(\r|\n|\r\n)'
 
     LP='('
     RP=')'
@@ -381,7 +379,7 @@ cast_expression ::= type_literal_expression unary_expression
 
 //private attributed_expression ::= type_literal variable
 
-left pipeline_tail ::= ( nls? PIPE nls? command_call_expression )+
+left pipeline_tail ::= ( NEWLINE? PIPE nls? command_call_expression )+
 {elementType=pipeline}
 
 command_call_expression ::= command_invocation_operator ( (command_module command_name_expr command_element* ) | command_name_expr command_element* ) | command_name_expression command_element*
@@ -793,9 +791,9 @@ if_statement ::= 'if' nls? LP nls? pipeline nls? RP nls? statement_block (nls? e
 elseif_clause ::= 'elseif' nls? LP nls? pipeline nls? RP nls? statement_block {pin=1}
 else_clause ::= 'else' nls? statement_block {pin=1}
 
-private sep ::= SEMI |  NLS | new_line_char | comment //COMMENT //hide psi
+private sep ::= SEMI | (NEWLINE space*) | new_line_char | comment //COMMENT //hide psi
 private statement_end ::= sep | RCURLY | RP | <<eof>>//ex: parethnisized_expression $AllNodes.Where{$_.Role -eq "WebServer"}
-private nls ::= (comment? NLS comment?)+ //NLS
+private nls ::= (comment? NEWLINE space* comment?)+
 private new_line_char ::= LF
 
 comment ::= !is_id requires_comment | !is_id SINGLE_LINE_COMMENT | DELIMITED_COMMENT
