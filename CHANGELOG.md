@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased] (2.6.0)
+### Changed
+- [#229](https://github.com/ant-druha/intellij-powershell/issues/229): the **PowerShell** run configuration will now save all the files before executing
+
+  This fixes the cases when the started configuration wasn't using the latest version of an edited script file.
+
 ## [2.5.0] - 2024-03-12
 ### Fixed
 - [#67](https://github.com/ant-druha/intellij-powershell/issues/67): An attribute block before function's `param` could lead to incorrect indentation

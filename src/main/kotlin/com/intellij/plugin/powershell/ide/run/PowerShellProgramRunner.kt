@@ -8,6 +8,7 @@ import com.intellij.execution.runners.AsyncProgramRunner
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.showRunContent
 import com.intellij.execution.ui.RunContentDescriptor
+import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.rd.util.toPromise
 import com.intellij.openapi.rd.util.withUiContext
 import com.intellij.plugin.powershell.ide.PluginProjectRoot
@@ -17,7 +18,7 @@ import kotlinx.coroutines.async
 import org.jetbrains.concurrency.Promise
 
 /**
- * The only purpose of this runner is to call [RunProfileState.execute] or a background thread instead of a foreground
+ * The main purpose of this runner is to call [RunProfileState.execute] or a background thread instead of a foreground
  * one, as our [RunProfileState] implementation requires FS access that's only possible from the background.
  */
 class PowerShellProgramRunner : AsyncProgramRunner<RunnerSettings>() {
@@ -31,6 +32,9 @@ class PowerShellProgramRunner : AsyncProgramRunner<RunnerSettings>() {
   override fun execute(environment: ExecutionEnvironment, state: RunProfileState): Promise<RunContentDescriptor?> =
     PluginProjectRoot.getInstance(environment.project).coroutineScope.async(Dispatchers.Default) {
       state as PowerShellScriptCommandLineState
+      withUiContext {
+        FileDocumentManager.getInstance().saveAllDocuments()
+      }
       state.prepareExecution()
       val executionResult = state.execute(environment.executor, this@PowerShellProgramRunner)
       val descriptor = withUiContext { showRunContent(executionResult, environment) }
