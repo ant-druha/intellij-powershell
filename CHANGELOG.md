@@ -28,6 +28,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - [#79: Can't detect PowerShell version on Linux](https://github.com/ant-druha/intellij-powershell/issues/79)
 
   Thanks to @8ru73u5 for investigation of the issue.
+
+  This problem was caused by [the PowerShell issue #11747](https://github.com/PowerShell/PowerShell/issues/11747).
 - A bit more of IO work during language server connection moved to the corresponding threads
 
   This should save some IDE responsibility in rare cases when it could be a problem.
