@@ -40,4 +40,5 @@ class PowerShellParserTest : ParsingTestCase("parser", "ps1", PowerShellParserDe
   fun testEnumDeclaration() { doTest(true) }
   fun testParamBlock() { doTest(true) }
   fun testComment() { doTest(true) }
+  fun testNewLineThenPipeOperator() { doTest(true) }
 }
