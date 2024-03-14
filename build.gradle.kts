@@ -1,6 +1,7 @@
 import de.undercouch.gradle.tasks.download.Download
 import org.jetbrains.intellij.tasks.PrepareSandboxTask
 import java.security.MessageDigest
+import java.util.zip.ZipFile
 import kotlin.io.path.deleteExisting
 
 plugins {
@@ -107,6 +108,8 @@ tasks {
   val psScriptAnalyzerOutFile = downloads.file(psScriptAnalyzerFileName)
 
   val downloadPsScriptAnalyzer by register<Download>("downloadPsScriptAnalyzer") {
+    group = "dependencies"
+
     inputs.property("version", psScriptAnalyzerVersion)
     inputs.property("hash", psScriptAnalyzerSha256Hash)
 
@@ -132,7 +135,9 @@ tasks {
     }
   }
 
-  val getPsScriptAnalyzer by register<Copy>("getPsScriptAnalyzer") {
+  val getPsScriptAnalyzer by registering(Copy::class) {
+    group = "dependencies"
+
     val outDir = projectDir.resolve("language_host/current/LanguageHost/modules/PSScriptAnalyzer")
     doFirst {
       if (!outDir.deleteRecursively()) error("Cannot delete \"$outDir\".")
@@ -153,6 +158,30 @@ tasks {
     from("${project.rootDir}/language_host/current") {
       into("${intellij.pluginName.get()}/lib/")
     }
+  }
+
+  val maxUnpackedPluginBytes: String by project
+  val verifyDistributionSize by registering {
+    group = "verification"
+    dependsOn(buildPlugin)
+
+    doLast {
+      val artifact = buildPlugin.flatMap { it.archiveFile }.get().asFile
+      val unpackedSize = ZipFile(artifact).use { it.entries().asSequence().sumOf { e -> e.size } }
+      val unpackedSizeMiB = "%.3f".format(unpackedSize / 1024.0 / 1024.0)
+      if (unpackedSize > maxUnpackedPluginBytes.toLong()) {
+        error(
+          "The resulting artifact size is too large. Expected no more than $maxUnpackedPluginBytes, but got" +
+            " $unpackedSize bytes ($unpackedSizeMiB MiB).\nArtifact path: \"$artifact\"."
+        )
+      }
+
+      println("Verified unpacked distribution size: $unpackedSizeMiB MiB.")
+    }
+  }
+
+  check {
+    dependsOn(verifyDistributionSize)
   }
 
   runIde {
