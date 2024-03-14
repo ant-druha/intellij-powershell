@@ -1,8 +1,12 @@
+import de.undercouch.gradle.tasks.download.Download
 import org.jetbrains.intellij.tasks.PrepareSandboxTask
+import java.security.MessageDigest
+import kotlin.io.path.deleteExisting
 
 plugins {
   id("java")
   alias(libs.plugins.changelog)
+  alias(libs.plugins.download)
   alias(libs.plugins.grammarkit)
   alias(libs.plugins.intellij)
   alias(libs.plugins.kotlin)
@@ -94,7 +98,58 @@ tasks {
     kotlinOptions.jvmTarget = "17"
   }
 
+  val downloads = layout.buildDirectory.get().dir("download")
+
+  val psScriptAnalyzerVersion: String by project
+  val psScriptAnalyzerSha256Hash: String by project
+
+  val psScriptAnalyzerFileName = "PSScriptAnalyzer.$psScriptAnalyzerVersion.nupkg"
+  val psScriptAnalyzerOutFile = downloads.file(psScriptAnalyzerFileName)
+
+  val downloadPsScriptAnalyzer by register<Download>("downloadPsScriptAnalyzer") {
+    inputs.property("version", psScriptAnalyzerVersion)
+    inputs.property("hash", psScriptAnalyzerSha256Hash)
+
+    // NOTE: Do not overwrite: the verification step should delete an incorrect file.
+    // NOTE: Notably, this property allows us to skip the task completely if no inputs change.
+    overwrite(false)
+
+    src("https://github.com/PowerShell/PSScriptAnalyzer/releases/download/" +
+      "$psScriptAnalyzerVersion/$psScriptAnalyzerFileName")
+    dest(psScriptAnalyzerOutFile)
+
+    doLast {
+      val data = psScriptAnalyzerOutFile.asFile.readBytes()
+      val hash = MessageDigest.getInstance("SHA-256").let { sha256 ->
+        sha256.update(data)
+        sha256.digest().joinToString("") { "%02x".format(it) }
+      }
+      if (!hash.equals(psScriptAnalyzerSha256Hash, ignoreCase = true)) {
+        psScriptAnalyzerOutFile.asFile.toPath().deleteExisting()
+        error("PSScriptAnalyzer hash check failed. Expected ${psScriptAnalyzerSha256Hash}, but got $hash\n" +
+          "Please try running the task again, or update the expected hash in the gradle.properties file.")
+      }
+    }
+  }
+
+  val getPsScriptAnalyzer by register<Copy>("getPsScriptAnalyzer") {
+    val outDir = projectDir.resolve("language_host/current/LanguageHost/modules/PSScriptAnalyzer")
+    doFirst {
+      if (!outDir.deleteRecursively()) error("Cannot delete \"$outDir\".")
+    }
+
+    dependsOn(downloadPsScriptAnalyzer)
+    from(zipTree(psScriptAnalyzerOutFile))
+    // NuGet stuff:
+    exclude("_manifest/**", "_rels/**", "package/**", "[Content_Types].xml", "*.nuspec")
+
+    // Compatibility profiles, see https://github.com/PowerShell/PSScriptAnalyzer/issues/1148
+    exclude("compatibility_profiles/**")
+    into(outDir)
+  }
+
   withType<PrepareSandboxTask> {
+    dependsOn(getPsScriptAnalyzer)
     from("${project.rootDir}/language_host/current") {
       into("${intellij.pluginName.get()}/lib/")
     }
