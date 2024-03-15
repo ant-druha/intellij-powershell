@@ -1,6 +1,6 @@
 import de.undercouch.gradle.tasks.download.Download
-import org.intellij.markdown.html.URI
 import org.jetbrains.intellij.tasks.PrepareSandboxTask
+import java.net.URI
 import java.security.MessageDigest
 import java.util.zip.ZipFile
 import kotlin.io.path.deleteExisting
