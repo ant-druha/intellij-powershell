@@ -1,4 +1,5 @@
 /language_host/current/LanguageHost/modules/PSScriptAnalyzer
+/language_host/current/LanguageHost/modules/PowerShellEditorServices
 /src/main/gen-parser
 /src/main/gen-lexer
 
