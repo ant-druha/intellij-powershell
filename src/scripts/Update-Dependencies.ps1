@@ -124,7 +124,7 @@ foreach ($dependency in $currentVersions.Keys)
 $hasChanges = $updates.Count -gt 0
 if ($hasChanges)
 {
-  $branchName = 'dependencies' + ($updates.Keys -join '+')
+  $branchName = 'dependencies/' + ($updates.Keys -join '+')
   [array] $versionUpdateStrings = $updates.Values | ForEach-Object { "$($_.Name) to v$($_.Version)" }
   $prTitle = 'Update ' + ($versionUpdateStrings -join ' and ')
   $commitMessage = $prTitle
@@ -134,7 +134,17 @@ if ($hasChanges)
     $($_.ReleaseNotes)
 "@
   }
-  $prBody = $updateReleaseNoteStrings -join "`n"
+  $prBody = @'
+# Maintainer Note
+> [!WARNING]
+> This PR will not trigger CI by default. Please close it and reopen manually to trigger the CI.
+>
+> Unfortunately, this is a consequence of the current GitHub Action security model (by default, PRs created by bots
+> aren't allowed to trigger other bots).
+
+The updates packages' release notes follow below.
+
+'@ + $updateReleaseNoteStrings -join "`n"
 }
 
 ApplyUpdates $updates
