@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - [#229](https://github.com/ant-druha/intellij-powershell/issues/229): the **PowerShell** run configuration will now save all the files before executing
 
   This fixes the cases when the started configuration wasn't using the latest version of an edited script file.
+- [#51: Update PowerShellEditorServices](https://github.com/ant-druha/intellij-powershell/issues/51) to v3.18.0
 
 ## [2.5.0] - 2024-03-12
 ### Fixed

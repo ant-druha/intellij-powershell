@@ -122,14 +122,17 @@ tasks {
       dest(destination)
 
       doLast {
+        println("Calculating hash for $dependencyName")
         val data = destination.asFile.readBytes()
         val hash = MessageDigest.getInstance("SHA-256").let { sha256 ->
           sha256.update(data)
           sha256.digest().joinToString("") { "%02x".format(it) }
         }
+        println("Expected hash for $dependencyName = $expectedHash")
+        println("Calculated hash for $dependencyName = $hash")
         if (!hash.equals(expectedHash, ignoreCase = true)) {
           destination.asFile.toPath().deleteExisting()
-          error("$dependencyName hash check failed. Expected $expectedHash, but got $hash\n" +
+          error("$dependencyName hash check failed.\n" +
             "The downloaded file has been deleted.\n" +
             "Please try running the task again, or update the expected hash in the gradle.properties file.")
         }
@@ -189,9 +192,9 @@ tasks {
     ),
     downloads.file("PowerShellEditorServices.zip")
   ) {
-    include("PowerShellEditorServices/PowerShellEditorServices/**")
+    include("PowerShellEditorServices/**")
     eachFile {
-      relativePath = RelativePath(true, *relativePath.segments.drop(2).toTypedArray())
+      relativePath = RelativePath(true, *relativePath.segments.drop(1).toTypedArray())
     }
   }
 

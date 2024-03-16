@@ -45,7 +45,7 @@ class LSPRequestManager(
     }
   }
 
-  suspend fun completion(params: TextDocumentPositionParams): Either<List<CompletionItem>, CompletionList>? {
+  suspend fun completion(params: CompletionParams): Either<List<CompletionItem>, CompletionList>? {
     if (checkStatus()) {
       return handleServerError {
         if (capabilities.completionProvider != null)

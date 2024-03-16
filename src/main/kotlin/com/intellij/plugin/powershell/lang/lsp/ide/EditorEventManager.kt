@@ -49,10 +49,6 @@ class EditorEventManager(
     editor.putUserData(EDITOR_EVENT_MANAGER_KEY, this)
   }
 
-  fun getEditor(): Editor {
-    return editor
-  }
-
   fun getDiagnostics(): List<Diagnostic> = diagnosticsInfo
 
   companion object {
@@ -111,7 +107,6 @@ class EditorEventManager(
       TextDocumentSyncKind.Incremental -> {
         val newText = event.newFragment
         val offset = event.offset
-        val newTextLength = event.newLength
         val lspPosition: Position = offsetToLSPPos(editor, offset)
         val startLine = lspPosition.line
         val startColumn = lspPosition.character
@@ -128,7 +123,6 @@ class EditorEventManager(
         val range = Range(Position(startLine, startColumn), Position(endLine, endColumn))
         TextDocumentContentChangeEvent(
           range,
-          newTextLength,
           newText.toString()
         )
       }
@@ -138,9 +132,7 @@ class EditorEventManager(
     }
 
     return DidChangeTextDocumentParams(
-      VersionedTextDocumentIdentifier(incVersion()).apply {
-        uri = identifier.uri
-      },
+      VersionedTextDocumentIdentifier(identifier.uri, incVersion()),
       listOf(change)
     )
   }
@@ -155,7 +147,7 @@ class EditorEventManager(
   suspend fun completion(pos: Position): CompletionList {
     val completions = CompletionList()
     logger.runAndLogException {
-      val res = requestManager.completion(TextDocumentPositionParams(identifier, pos)) ?: return completions
+      val res = requestManager.completion(CompletionParams(identifier, pos)) ?: return completions
       if (res.isLeft) {
         completions.items = res.left
       } else if (res.isRight) {
