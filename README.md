@@ -39,7 +39,6 @@ Third-Party Software
 --------------------
 This plugin bundles the following third-party software:
 
-- [Plaster](https://github.com/PowerShellOrg/Plaster),
 - [PowerShell Editor Services](https://github.com/PowerShell/PowerShellEditorServices),
 - [PSScriptAnalyzer](https://github.com/PowerShell/PSScriptAnalyzer).
 

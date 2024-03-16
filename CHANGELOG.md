@@ -11,6 +11,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
   This fixes the cases when the started configuration wasn't using the latest version of an edited script file.
 - [#51: Update PowerShellEditorServices](https://github.com/ant-druha/intellij-powershell/issues/51) to v3.18.0
 
+### Removed
+- The plugin no longer bundles Plaster that was a part of an older PowerShellEditorServices distribution, even though it wasn't used by the plugin.
+
 ## [2.5.0] - 2024-03-12
 ### Fixed
 - [#67](https://github.com/ant-druha/intellij-powershell/issues/67): An attribute block before function's `param` could lead to incorrect indentation

@@ -8,7 +8,6 @@
     <p><b>Plugin page:</b> <a href="https://plugins.jetbrains.com/plugin/10249">https://plugins.jetbrains.com/plugin/10249</a></p>
     <p>This plugin bundles the following third-party software:</p>
     <ul>
-      <li><a href="https://github.com/PowerShellOrg/Plaster">Plaster</a>,</li>
       <li><a href="https://github.com/PowerShell/PowerShellEditorServices">PowerShell Editor Services</a>,</li>
       <li><a href="https://github.com/PowerShell/PSScriptAnalyzer">PSScriptAnalyzer</a>.</li>
     </ul>
