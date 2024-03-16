@@ -142,7 +142,7 @@ tasks {
     return register<Copy>("get$dependencyName") {
       group = "dependencies"
 
-      val outDir = projectDir.resolve("language_host/current/LanguageHost/modules/$dependencyName")
+      val outDir = projectDir.resolve("language_host/LanguageHost/modules/$dependencyName")
       doFirst {
         if (!outDir.deleteRecursively()) error("Cannot delete \"$outDir\".")
       }
@@ -204,7 +204,7 @@ tasks {
 
   withType<PrepareSandboxTask> {
     dependsOn(getAllDependencies)
-    from("${project.rootDir}/language_host/current") {
+    from("${project.rootDir}/language_host") {
       into("${intellij.pluginName.get()}/lib/")
     }
   }
