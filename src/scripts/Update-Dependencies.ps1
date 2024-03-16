@@ -131,7 +131,7 @@ if ($hasChanges)
   [array] $updateReleaseNoteStrings = $updates.Values | ForEach-Object {
     @"
 ## $($_.Name) v$($_.Version)
-    $($_.ReleaseNotes)
+$($_.ReleaseNotes)
 "@
   }
   $prBody = @'
