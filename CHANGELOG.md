@@ -9,6 +9,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - **Requirement update!** If you set the plugin to use PowerShell (aka PowerShell Core, as opposed to Windows PowerShell), then PowerShell 7.2.11 is the minimal supported version
 
   The requirements related to Windows PowerShell version are not changed.
+- [#22](https://github.com/ant-druha/intellij-powershell/issues/22): the default working directory for a newly created **PowerShell** run configuration is now the script's parent directory
+
+  Configurations created by previous versions of the plugin are unchanged.
 - [#229](https://github.com/ant-druha/intellij-powershell/issues/229): the **PowerShell** run configuration will now save all the files before executing
 
   This fixes the cases when the started configuration wasn't using the latest version of an edited script file.
