@@ -35,10 +35,10 @@ class PowerShellRunConfigurationTests : BasePlatformTestCase() {
   }
 
   fun testInvalidWorkingDir() {
-    assertWorkingDirectory(custom = """\\\""", expected = defaultWorkingDirectory)
+    assertWorkingDirectory(custom = invalidPath, expected = defaultWorkingDirectory)
   }
   fun testInvalidScriptPath() {
-    assertWorkingDirectory(custom = null, scriptPath = """\\\""", expected = Path(System.getProperty("user.home")))
+    assertWorkingDirectory(custom = null, scriptPath = invalidPath, expected = Path(System.getProperty("user.home")))
   }
 
   private fun assertWorkingDirectory(custom: String?, scriptPath: String? = null, expected: Path) {
@@ -68,3 +68,5 @@ class PowerShellRunConfigurationTests : BasePlatformTestCase() {
     }
   }
 }
+
+private const val invalidPath = "\u0000"
