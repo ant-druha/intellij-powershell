@@ -17,8 +17,9 @@ import com.intellij.ui.components.fields.ExtendableTextField;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.io.File;
-import java.util.Objects;
 
 import static com.intellij.openapi.util.io.NioFiles.toPath;
 
@@ -39,6 +40,29 @@ public class PowerShellRunSettingsEditor extends SettingsEditor<PowerShellRunCon
 
     FileChooserDescriptor descriptor = new FileChooserDescriptor(true, false, false, false, false, false);
     scriptTextField.addBrowseFolderListener("Chose Script", "Please choose script to run", project, descriptor);
+
+    var textChangeListener = new DocumentListener() {
+      @Override
+      public void insertUpdate(DocumentEvent e) {
+        changedUpdate(e);
+      }
+
+      @Override
+      public void removeUpdate(DocumentEvent e) {
+        changedUpdate(e);
+      }
+
+      @Override
+      public void changedUpdate(DocumentEvent e) {
+        if (StringUtil.isEmpty(workingDirectoryTextField.getText())) {
+          var path = toPath(scriptTextField.getText());
+          var defaultWorkingDir = PSExecutionUtilKt.getDefaultWorkingDirectory(path);
+          workingDirectoryTextField.getEmptyText().setText(defaultWorkingDir.toString());
+        }
+      }
+    };
+    scriptTextField.getTextField().getDocument().addDocumentListener(textChangeListener);
+    workingDirectoryTextField.getDocument().addDocumentListener(textChangeListener);
   }
 
   @Override
@@ -49,13 +73,8 @@ public class PowerShellRunSettingsEditor extends SettingsEditor<PowerShellRunCon
     EnvironmentVariablesData envVars = configuration.getEnvironmentVariables();
     String executablePath = configuration.getExecutablePath();
 
-    var path = toPath(scriptPath);
-    var customWorkingDirPath = customWorkingDir == null ? null : toPath(customWorkingDir);
-    if (Objects.equals(customWorkingDirPath, PSExecutionUtilKt.getDefaultWorkingDirectory(path))) {
-      workingDirectoryTextField.getEmptyText().setText(customWorkingDir);
-    } else {
-      workingDirectoryTextFieldWithBrowseBtn.setText(customWorkingDir);
-    }
+    workingDirectoryTextFieldWithBrowseBtn.setText(customWorkingDir);
+
     String scriptParameters = configuration.getScriptParameters();
     String commandOptions = configuration.getCommandOptions();
     if (!StringUtil.isEmpty(scriptPath)) {
