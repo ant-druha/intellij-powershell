@@ -23,7 +23,11 @@ class PowerShellRunConfigurationTests : BasePlatformTestCase() {
   }
 
   fun testNoCustomWorkingDirectory() {
-    assertWorkingDirectory(custom = null, expected = projectPath.resolve("scripts"))
+    assertWorkingDirectory(custom = null, expected = defaultWorkingDirectory)
+  }
+
+  fun testEmptyCustomWorkingDirectory() {
+    assertWorkingDirectory(custom = "", expected = defaultWorkingDirectory)
   }
 
   fun testCustomWorkingDirectoryPathVariable() {

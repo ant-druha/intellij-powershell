@@ -22,6 +22,7 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.plugin.powershell.lang.lsp.LSPInitMain
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PowerShellNotInstalled
 import com.intellij.terminal.TerminalExecutionConsole
+import com.intellij.util.text.nullize
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.TestOnly
@@ -45,7 +46,7 @@ class PowerShellScriptCommandLineState(
         ProjectRootManager.getInstance(project).fileIndex.getModuleForFile(it)
       }
     }
-    workingDirectory = runConfiguration.customWorkingDirectory?.let {
+    workingDirectory = runConfiguration.customWorkingDirectory.nullize(nullizeSpaces = true)?.let {
       toPath(ProgramParametersUtil.expandPathAndMacros(it, module, project))
     } ?: getDefaultWorkingDirectory(toPath(runConfiguration.scriptPath))
   }
