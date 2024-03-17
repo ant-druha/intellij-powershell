@@ -16,7 +16,7 @@ import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.diagnostic.runAndLogException
 import com.intellij.openapi.options.advanced.AdvancedSettings
 import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.openapi.util.Key
+import com.intellij.openapi.util.io.NioFiles.toPath
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.plugin.powershell.lang.lsp.LSPInitMain
@@ -24,17 +24,19 @@ import com.intellij.plugin.powershell.lang.lsp.languagehost.PowerShellNotInstall
 import com.intellij.terminal.TerminalExecutionConsole
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.jetbrains.annotations.TestOnly
 import java.io.File
 import java.nio.charset.Charset
 import java.nio.file.Path
 import java.util.regex.Pattern
-import kotlin.io.path.Path
 
 class PowerShellScriptCommandLineState(
   private val runConfiguration: PowerShellRunConfiguration,
-  private val environment: ExecutionEnvironment) : RunProfileState {
+  private val environment: ExecutionEnvironment
+) : RunProfileState {
 
-  private lateinit var workingDirectory: Path
+  @TestOnly
+  lateinit var workingDirectory: Path
   suspend fun prepareExecution() {
     val project = runConfiguration.project
     val file = withContext(Dispatchers.IO) { LocalFileSystem.getInstance().findFileByIoFile(File(runConfiguration.scriptPath)) }
@@ -43,9 +45,9 @@ class PowerShellScriptCommandLineState(
         ProjectRootManager.getInstance(project).fileIndex.getModuleForFile(it)
       }
     }
-    workingDirectory = Path(
-      ProgramParametersUtil.expandPathAndMacros(runConfiguration.workingDirectory, module, project)
-    )
+    workingDirectory = runConfiguration.customWorkingDirectory?.let {
+      toPath(ProgramParametersUtil.expandPathAndMacros(it, module, project))
+    } ?: getDefaultWorkingDirectory(toPath(runConfiguration.scriptPath))
   }
 
   private fun startProcess(): ProcessHandler {

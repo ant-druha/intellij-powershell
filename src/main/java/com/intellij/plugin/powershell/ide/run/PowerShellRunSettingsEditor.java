@@ -18,6 +18,9 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.io.File;
+import java.util.Objects;
+
+import static com.intellij.openapi.util.io.NioFiles.toPath;
 
 public class PowerShellRunSettingsEditor extends SettingsEditor<PowerShellRunConfiguration> {
 
@@ -42,14 +45,16 @@ public class PowerShellRunSettingsEditor extends SettingsEditor<PowerShellRunCon
   protected void resetEditorFrom(@NotNull PowerShellRunConfiguration configuration) {
     String configName = configuration.getName();
     String scriptPath = configuration.getScriptPath();
-    String workingDir = configuration.getWorkingDirectory();
+    String customWorkingDir = configuration.getCustomWorkingDirectory();
     EnvironmentVariablesData envVars = configuration.getEnvironmentVariables();
     String executablePath = configuration.getExecutablePath();
 
-    if (workingDir.equals(PSExecutionUtilKt.getDefaultWorkingDirectory())) {
-      workingDirectoryTextField.getEmptyText().setText(workingDir);
+    var path = toPath(scriptPath);
+    var customWorkingDirPath = customWorkingDir == null ? null : toPath(customWorkingDir);
+    if (Objects.equals(customWorkingDirPath, PSExecutionUtilKt.getDefaultWorkingDirectory(path))) {
+      workingDirectoryTextField.getEmptyText().setText(customWorkingDir);
     } else {
-      workingDirectoryTextFieldWithBrowseBtn.setText(workingDir);
+      workingDirectoryTextFieldWithBrowseBtn.setText(customWorkingDir);
     }
     String scriptParameters = configuration.getScriptParameters();
     String commandOptions = configuration.getCommandOptions();
@@ -77,7 +82,7 @@ public class PowerShellRunSettingsEditor extends SettingsEditor<PowerShellRunCon
   @Override
   protected void applyEditorTo(@NotNull PowerShellRunConfiguration configuration) {
     configuration.setScriptPath(scriptTextField.getText().trim());
-    configuration.setWorkingDirectory(workingDirectoryTextFieldWithBrowseBtn.getText().trim());
+    configuration.setCustomWorkingDirectory(workingDirectoryTextFieldWithBrowseBtn.getText().trim());
     configuration.setScriptParameters(parametersTextField.getText().trim());
     configuration.setCommandOptions(commandOptionsTextField.getText().trim());
     configuration.setEnvironmentVariables(environmentVariablesTextFieldWithBrowseButton.getData());

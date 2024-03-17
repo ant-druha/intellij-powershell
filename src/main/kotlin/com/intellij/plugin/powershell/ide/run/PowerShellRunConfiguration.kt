@@ -6,7 +6,6 @@ import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.execution.configurations.LocatableConfigurationBase
 import com.intellij.execution.configurations.RunConfiguration
-import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
@@ -26,8 +25,7 @@ class PowerShellRunConfiguration(project: Project, configurationFactory: Configu
   private val EXE_PATH = "executablePath"
 
   var scriptPath: String = ""
-  var workingDirectory: String = getDefaultWorkingDirectory()
-    get() = if (StringUtil.isEmptyOrSpaces(field)) getDefaultWorkingDirectory() else field
+  var customWorkingDirectory: String? = null
   var scriptParameters: String = ""
   private var commandOptions: String? = null
   var environmentVariables: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
@@ -36,7 +34,7 @@ class PowerShellRunConfiguration(project: Project, configurationFactory: Configu
   override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = PowerShellRunSettingsEditor(project, this)
 
   @Throws(ExecutionException::class)
-  override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState =
+  override fun getState(executor: Executor, environment: ExecutionEnvironment): PowerShellScriptCommandLineState =
       PowerShellScriptCommandLineState(this, environment)
 
   @Throws(InvalidDataException::class)
@@ -57,7 +55,7 @@ class PowerShellRunConfiguration(project: Project, configurationFactory: Configu
       this.commandOptions = commandOptions
     }
     if (!StringUtil.isEmpty(workingDirectory)) {
-      this.workingDirectory = workingDirectory
+      this.customWorkingDirectory = workingDirectory
     }
     environmentVariables = EnvironmentVariablesData.readExternal(element)
     executablePath = if (StringUtil.isEmpty(exePath)) FormUIUtil.globalSettingsExecutablePath else exePath
@@ -75,8 +73,8 @@ class PowerShellRunConfiguration(project: Project, configurationFactory: Configu
     if (!StringUtil.isEmpty(commandOptions)) {
       element.setAttribute(COMMAND_OPTIONS, commandOptions)
     }
-    if (!StringUtil.isEmpty(workingDirectory)) {
-      element.setAttribute(WORKING_DIRECTORY, workingDirectory)
+    if (!StringUtil.isEmpty(customWorkingDirectory)) {
+      element.setAttribute(WORKING_DIRECTORY, customWorkingDirectory)
     }
     environmentVariables.writeExternal(element)
 
