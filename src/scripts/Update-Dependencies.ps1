@@ -114,6 +114,8 @@ foreach ($dependency in $currentVersions.Keys)
 {
   $currentVersion = $currentVersions[$dependency]
   $latestVersion = $latestVersions[$dependency]
+  Write-Host "Checking update for $($dependency): installed version $currentVersion, latest version $latestVersion."
+
   if ($latestVersion -gt $currentVersion)
   {
     Write-Host "A dependency $dependency has version $currentVersion and can be updated to $latestVersion."
@@ -142,7 +144,7 @@ $($_.ReleaseNotes)
 > Unfortunately, this is a consequence of the current GitHub Action security model (by default, PRs created by bots
 > aren't allowed to trigger other bots).
 
-The updates packages' release notes follow below.
+The updated packages' release notes follow below.
 
 '@ + $updateReleaseNoteStrings -join "`n"
 }
