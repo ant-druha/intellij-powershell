@@ -14,9 +14,9 @@ fun findPsExecutable(): String {
   val osPath = EnvironmentUtil.getValue("PATH") ?: throw PowerShellNotInstalled("Can not get OS PATH")
   val paths = osPath.split(if (SystemInfo.isWindows) ";" else ":")
   val suf = if (SystemInfo.isWindows) ".exe" else ""
-  val exec = arrayListOf("powershell$suf", "pwsh$suf")
-  paths.forEach { p ->
-    exec.forEach { e ->
+  val exec = arrayListOf("pwsh$suf", "powershell$suf")
+  exec.forEach { e ->
+    paths.forEach { p ->
       val answer = join(p, e)
       if (checkExists(answer)) return answer
     }

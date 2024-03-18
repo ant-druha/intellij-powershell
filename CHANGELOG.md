@@ -12,6 +12,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - [#22](https://github.com/ant-druha/intellij-powershell/issues/22): the default working directory for a newly created **PowerShell** run configuration is now the script's parent directory
 
   Configurations created by previous versions of the plugin are unchanged.
+- [#176: Migrate to PowerShell Core by default](https://github.com/ant-druha/intellij-powershell/issues/176)
+
+  If available on the target system, the modern PowerShell will be used be default, if available. Note that only new plugin installations will be affected, due to how we store the plugin settings. If the plugin is already installed, then it will use the previously discovered PowerShell instance.
+
+  This is a Windows-only change, because only on Windows there are two PowerShell versions that may coexist.
 - [#229](https://github.com/ant-druha/intellij-powershell/issues/229): the **PowerShell** run configuration will now save all the files before executing
 
   This fixes the cases when the started configuration wasn't using the latest version of an edited script file.
