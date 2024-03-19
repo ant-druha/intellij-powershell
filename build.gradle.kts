@@ -90,14 +90,20 @@ tasks {
   withType<JavaCompile> {
     dependsOn(generateLexer, generateParser)
 
-    options.encoding = "UTF-8"
+    options.apply {
+      compilerArgs.add("-Werror")
+      encoding = "UTF-8"
+    }
     sourceCompatibility = "17"
     targetCompatibility = "17"
   }
   withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     dependsOn(generateLexer, generateParser)
 
-    kotlinOptions.jvmTarget = "17"
+    kotlinOptions {
+      jvmTarget = "17"
+      allWarningsAsErrors = true
+    }
   }
 
   fun getDependencyTask(

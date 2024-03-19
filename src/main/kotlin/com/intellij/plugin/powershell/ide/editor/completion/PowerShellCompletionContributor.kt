@@ -154,7 +154,7 @@ class PowerShellCompletionContributor : CompletionContributor() {
             val qType = expr.qualifier?.getType()
             if (qType != null && qType != PowerShellType.UNKNOWN) {
               val membersProcessor = PowerShellMemberScopeProcessor()
-              PowerShellResolveUtil.processMembersForType(qType, true, membersProcessor)
+              PowerShellResolveUtil.processMembersForType(qType, membersProcessor)
               val res = membersProcessor.getResult()
               res.map { it.element }.filter { it !is PowerShellConstructorDeclarationStatement }.forEach { result.addElement(buildLookupElement(it, context)) }
               if (expr.isTypeMemberAccess()) {

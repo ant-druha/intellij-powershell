@@ -152,8 +152,8 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
         } else {
           val readSock = AFUNIXSocket.newInstance()
           val writeSock = AFUNIXSocket.newInstance()
-          readSock.connect(AFUNIXSocketAddress(File(readPipeName)))
-          writeSock.connect(AFUNIXSocketAddress(File(writePipeName)))
+          readSock.connect(AFUNIXSocketAddress.of(File(readPipeName)))
+          writeSock.connect(AFUNIXSocketAddress.of(File(writePipeName)))
           Pair(writeSock.inputStream, readSock.outputStream)
         }
       }

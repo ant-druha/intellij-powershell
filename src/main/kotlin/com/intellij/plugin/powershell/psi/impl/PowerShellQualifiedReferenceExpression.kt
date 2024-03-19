@@ -38,7 +38,7 @@ abstract class PowerShellQualifiedReferenceExpression(node: ASTNode) : PowerShel
     }
     val resolveProcessor = PowerShellResolveUtil.getMemberScopeProcessor(this)
     if (resolveProcessor != null && qType != null) {
-      if (PowerShellResolveUtil.processMembersForType(qType, incompleteCode, resolveProcessor)) return extractResults(resolveProcessor)
+      if (PowerShellResolveUtil.processMembersForType(qType, resolveProcessor)) return extractResults(resolveProcessor)
     }
     return super.multiResolve(incompleteCode)
   }

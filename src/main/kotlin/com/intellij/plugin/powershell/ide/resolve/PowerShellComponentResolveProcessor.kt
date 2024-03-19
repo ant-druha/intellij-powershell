@@ -6,9 +6,6 @@ import com.intellij.psi.ResolveState
 import com.intellij.psi.impl.source.resolve.ResolveCache
 import com.intellij.psi.util.PsiTreeUtil
 
-/**
- * Andrey 19/08/17.
- */
 class PowerShellComponentResolveProcessor : ResolveCache.AbstractResolver<PowerShellReferencePsiElement, List<PsiElement>> {
 
   companion object {
@@ -18,16 +15,9 @@ class PowerShellComponentResolveProcessor : ResolveCache.AbstractResolver<PowerS
   override fun resolve(ref: PowerShellReferencePsiElement, incompleteCode: Boolean): List<PsiElement> {
 
     // local
-    val maxScope = getMaxScope(ref.element)
     val resolveProcessor = PowerShellComponentScopeProcessor()
-    PsiTreeUtil.treeWalkUp(resolveProcessor, ref.element, maxScope, ResolveState.initial())
+    PsiTreeUtil.treeWalkUp(resolveProcessor, ref.element, null, ResolveState.initial())
     val results = resolveProcessor.getResult()
     return results.toList()
   }
-
-  private fun getMaxScope(context: PsiElement): PsiElement? {
-    return null
-  }
-
-
 }

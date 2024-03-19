@@ -37,7 +37,7 @@ open class PowerShellInvocationExpressionImpl(node: ASTNode) : PowerShellQualifi
         val refName = referenceName
         if (refName != null) {
           val resolveProcessor = PSMethodScopeProcessor(refName)
-          if (PowerShellResolveUtil.processMembersForType(qType, incompleteCode, resolveProcessor)) return extractResults(resolveProcessor)
+          if (PowerShellResolveUtil.processMembersForType(qType, resolveProcessor)) return extractResults(resolveProcessor)
         }
       }
     }

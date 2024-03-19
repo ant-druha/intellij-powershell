@@ -7,9 +7,6 @@ import com.intellij.psi.impl.source.resolve.ResolveCache
 import com.intellij.psi.scope.PsiScopeProcessor
 import com.intellij.psi.util.PsiTreeUtil
 
-/**
- * Andrey 21/08/17.
- */
 class PowerShellResolver<T> : ResolveCache.AbstractResolver<T, List<PowerShellResolveResult>> where T : PowerShellReferencePsiElement {
   companion object {
     val INSTANCE = PowerShellResolver<PowerShellReferencePsiElement>()
@@ -98,11 +95,7 @@ class PowerShellTypeResolveProcessor(ref: PowerShellReferenceTypeElement) : Powe
 
 class PowerShellQualifiedElementResolveProcessor(ref: PowerShellQualifiedReferenceElement<PowerShellPsiElement>) : PowerShellReferenceResolveProcessor<PowerShellQualifiedReferenceElement<*>>(ref) {
   override fun execute(element: PsiElement, state: ResolveState): Boolean {
-    val qualifier = myRef.qualifier
-//    val definition = qualifier?.resolve()
-
     return true
   }
-
 }
 

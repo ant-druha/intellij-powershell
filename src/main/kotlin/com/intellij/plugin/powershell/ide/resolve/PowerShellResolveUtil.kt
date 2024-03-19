@@ -13,10 +13,6 @@ import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.scope.PsiScopeProcessor
 import com.intellij.util.Processor
 
-/**
- * Andrey 21/08/17.
- */
-
 object PowerShellResolveUtil {
 
   fun toCandidateInfoArray2(elements: List<PowerShellResolveResult>?): Array<PowerShellResolveResult> {
@@ -77,7 +73,7 @@ object PowerShellResolveUtil {
 
   }
 
-  fun processMembersForType(psType: PowerShellType, incompleteCode: Boolean, resolveProcessor: PowerShellMemberScopeProcessor): Boolean {
+  fun processMembersForType(psType: PowerShellType, resolveProcessor: PowerShellMemberScopeProcessor): Boolean {
     val declarationsProvider = Processor<PowerShellMemberScopeProcessor> { processor ->
       psType.accept(object : PowerShellTypeVisitor<Boolean>() {
 
@@ -103,11 +99,10 @@ object PowerShellResolveUtil {
         }
       }) ?: false
     }
-    return processDeclarations(declarationsProvider, incompleteCode, resolveProcessor)
+    return processDeclarations(declarationsProvider, resolveProcessor)
   }
 
   private fun processDeclarations(declarationsProvider: Processor<PowerShellMemberScopeProcessor>,
-                                  incompleteCode: Boolean,
                                   resolveProcessor: PowerShellMemberScopeProcessor): Boolean {
     return declarationsProvider.process(resolveProcessor)
   }
