@@ -132,8 +132,8 @@ if ($hasChanges)
   $commitMessage = $prTitle
   [array] $updateReleaseNoteStrings = $updates.Values | ForEach-Object {
     @"
-## $($_.Name) v$($_.Version)
-[Read the release notes]($($_.ReleaseNotesUrl))
+## $($_.Name): v$($currentVersions[$_.Name]) → v$($_.Version)
+[Read the release notes of the latest version]($($_.ReleaseNotesUrl))
 "@
   }
   $prBody = @'
