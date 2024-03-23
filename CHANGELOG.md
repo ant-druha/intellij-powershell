@@ -20,7 +20,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - [#229](https://github.com/ant-druha/intellij-powershell/issues/229): the **PowerShell** run configuration will now save all the files before executing
 
   This fixes the cases when the started configuration wasn't using the latest version of an edited script file.
-- [#51: Update PowerShellEditorServices](https://github.com/ant-druha/intellij-powershell/issues/51) to v3.18.0
+- [#51: Update PowerShellEditorServices](https://github.com/ant-druha/intellij-powershell/issues/51) to v3.18.1
 - PowerShellEditorServices have been updated to the latest v1.22.0
 ### Removed
 - The plugin no longer bundles Plaster that was a part of an older PowerShellEditorServices distribution, even though it wasn't used by the plugin.
