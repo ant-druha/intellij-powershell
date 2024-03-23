@@ -58,7 +58,7 @@ function FetchVersionDetails($dependency)
   @{
     Name = $dependency
     Version = $details.tag_name.Trim('v')
-    ReleaseNotes = $details.body
+    ReleaseNotesUrl = $details.html_url
     DownloadUrl = $releaseAsset.browser_download_url
   }
 }
@@ -133,7 +133,7 @@ if ($hasChanges)
   [array] $updateReleaseNoteStrings = $updates.Values | ForEach-Object {
     @"
 ## $($_.Name) v$($_.Version)
-$($_.ReleaseNotes)
+[Read the release notes]($($_.ReleaseNotesUrl))
 "@
   }
   $prBody = @'
