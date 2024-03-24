@@ -70,7 +70,7 @@ class EditorEventManager(
       if (isOpen) {
         logger.warn("Editor $editor was already open")
       } else {
-        requestManager.didOpen(DidOpenTextDocumentParams(TextDocumentItem(identifier.uri, PowerShellLanguage.INSTANCE.id, incVersion(), editor.document.text)))
+        requestManager.didOpen(DidOpenTextDocumentParams(TextDocumentItem(identifier.uri, PowerShellLanguage.LSP_ID, incVersion(), editor.document.text)))
         isOpen = true
       }
     }
