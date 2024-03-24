@@ -15,11 +15,8 @@ private val logger = logger<TextDocumentServiceQueue>()
 
 class TextDocumentServiceQueue(private val textDocumentService: () -> TextDocumentService?) {
 
-  private val service: TextDocumentService?
-    get() = textDocumentService()
-
   private val mutex = Mutex()
-  private suspend fun <T> executeTask(id: String, logDescription: Any? = null, task: suspend () -> T): T {
+  private suspend fun <T> executeTask(id: String, logDescription: Any? = null, task: suspend (TextDocumentService) -> T): T? {
     logger.trace {
       val summary = "$id: operation queued."
       val description = logDescription?.toString()
@@ -32,7 +29,10 @@ class TextDocumentServiceQueue(private val textDocumentService: () -> TextDocume
       withContext(Dispatchers.IO) {
         logger.trace { "$id: executing on the IO context." }
         try {
-          task()
+          textDocumentService()?.let { task(it) } ?: run {
+            logger.error("Cannot get the service to perform task $id.")
+            null
+          }
         } finally {
           logger.trace { "$id: finished." }
         }
@@ -41,31 +41,31 @@ class TextDocumentServiceQueue(private val textDocumentService: () -> TextDocume
   }
 
   suspend fun didOpen(params: DidOpenTextDocumentParams) {
-    executeTask("didOpen notification", params) {
-      service?.didOpen(params)
+    executeTask("didOpen notification", params) { service ->
+      service.didOpen(params)
     }
   }
 
   suspend fun didClose(params: DidCloseTextDocumentParams) {
-    executeTask("didClose notification", params) {
-      service?.didClose(params)
+    executeTask("didClose notification", params) { service ->
+      service.didClose(params)
     }
   }
 
   suspend fun didSave(params: DidSaveTextDocumentParams) {
-    executeTask("didSave notification", params) {
-      service?.didSave(params)
+    executeTask("didSave notification", params) { service ->
+      service.didSave(params)
     }
   }
 
   suspend fun didChange(params: DidChangeTextDocumentParams) {
-    executeTask("didChange notification", params) {
-      service?.didChange(params)
+    executeTask("didChange notification", params) { service ->
+      service.didChange(params)
     }
   }
 
   suspend fun completion(params: CompletionParams): Either<List<CompletionItem>, CompletionList>? =
-    executeTask("completion request", params) {
-      service?.completion(params)?.await()
+    executeTask("completion request", params) { service ->
+      service.completion(params)?.await()
     }
 }

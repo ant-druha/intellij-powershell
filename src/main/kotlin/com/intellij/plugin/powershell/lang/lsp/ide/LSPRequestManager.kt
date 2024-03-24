@@ -3,6 +3,7 @@
  */
 package com.intellij.plugin.powershell.lang.lsp.ide
 
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.plugin.powershell.lang.lsp.languagehost.LanguageServerEndpoint
@@ -22,42 +23,36 @@ class LSPRequestManager(
   private fun checkStatus(): Boolean = serverEndpoint.isRunning
 
   suspend fun didClose(params: DidCloseTextDocumentParams) {
-    if (checkStatus()) {
-      handleServerError {
-        if (documentSyncOptions == null || documentSyncOptions.openClose) queue.didClose(params)
-      }
+    serviceCall {
+      if (documentSyncOptions == null || documentSyncOptions.openClose) queue.didClose(params)
     }
   }
 
   suspend fun didOpen(params: DidOpenTextDocumentParams) {
-    if (checkStatus()) {
-      handleServerError {
-        if (documentSyncOptions == null || documentSyncOptions.openClose) queue.didOpen(params)
-      }
+    serviceCall {
+      if (documentSyncOptions == null || documentSyncOptions.openClose) queue.didOpen(params)
     }
   }
 
   suspend fun didChange(params: DidChangeTextDocumentParams) {
-    if (checkStatus()) {
-      handleServerError {
-        if (documentSyncOptions == null || documentSyncOptions.change != null) queue.didChange(params)
-      }
+    serviceCall {
+      if (documentSyncOptions == null || documentSyncOptions.change != null) queue.didChange(params)
     }
   }
 
-  suspend fun completion(params: CompletionParams): Either<List<CompletionItem>, CompletionList>? {
-    if (checkStatus()) {
-      return handleServerError {
-        if (capabilities.completionProvider != null)
-          queue.completion(params)
-        else null
-      }
+  suspend fun completion(params: CompletionParams): Either<List<CompletionItem>, CompletionList>? =
+    serviceCall {
+      if (capabilities.completionProvider != null)
+        queue.completion(params)
+      else null
     }
 
-    return null
-  }
+  private suspend fun <T> serviceCall(action: suspend () -> T): T? {
+    if (!checkStatus()) {
+      logger.error("ServerEndpoint does not report isRunning == true")
+      return null
+    }
 
-  private suspend fun <T> handleServerError(action: suspend () -> T): T? {
     try {
       return action()
     } catch (e: Throwable) {
@@ -71,3 +66,5 @@ class LSPRequestManager(
     }
   }
 }
+
+private val logger = logger<LSPRequestManager>()
