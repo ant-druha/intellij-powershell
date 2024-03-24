@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased] (2.6.0)
+## [2.6.0] - 2024-03-24
 ### Changed
 - **Requirement update!** If you set the plugin to use PowerShell (aka PowerShell Core, as opposed to Windows PowerShell), then PowerShell 7.2.11 is the minimal supported version
 
@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
   This fixes the cases when the started configuration wasn't using the latest version of an edited script file.
 - [#51: Update PowerShellEditorServices](https://github.com/ant-druha/intellij-powershell/issues/51) to v3.18.1
 - PowerShellEditorServices have been updated to the latest v1.22.0
+
 ### Removed
 - The plugin no longer bundles Plaster that was a part of an older PowerShellEditorServices distribution, even though it wasn't used by the plugin.
 
@@ -265,4 +266,5 @@ Initial editor and code completion support:
 [2.3.1]: https://github.com/ant-druha/intellij-powershell/compare/v2.3.0...v2.3.1
 [2.4.0]: https://github.com/ant-druha/intellij-powershell/compare/v2.3.1...v2.4.0
 [2.5.0]: https://github.com/ant-druha/intellij-powershell/compare/v2.4.0...v2.5.0
-[Unreleased]: https://github.com/ant-druha/intellij-powershell/compare/v2.5.0...HEAD
+[2.6.0]: https://github.com/ant-druha/intellij-powershell/compare/v2.5.0...v2.6.0
+[Unreleased]: https://github.com/ant-druha/intellij-powershell/compare/v2.6.0...HEAD
