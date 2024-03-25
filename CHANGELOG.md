@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased] (2.6.1)
+### Fixed
+- [#257](https://github.com/ant-druha/intellij-powershell/pull/257): pass `-NoProfile` to PowerShell when detecting its version, to determine the version faster and avoid possible problems caused by shell customizations
+
+  Thanks to @En3Tho for the contribution.
+
 ## [2.6.0] - 2024-03-24
 ### Changed
 - **Requirement update!** If you set the plugin to use PowerShell (aka PowerShell Core, as opposed to Windows PowerShell), then PowerShell 7.2.11 is the minimal supported version
