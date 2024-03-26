@@ -159,7 +159,6 @@ OP_BOR={DASH}[bB]{OR}
 EXCL_MARK="!"
 
 NL=(\r|\n|\r\n)
-NLS={WHITE_SPACE}*{NL}({NL}|{WHITE_SPACE}*)*
 WS_OR_NL={WHITE_SPACE}|{NL}
 CH_DQ=(\"|“|”|„)
 CH_SQ=(\'|‘|’|‚|‛)
@@ -302,12 +301,12 @@ BRACED_VAR_START={DS}{LCURLY}
 <VERBATIM_ARGUMENT> {
   {VERBATIM_ARG_INPUT}                                         { return VERBATIM_ARG_INPUT; }
   "|"                                                          { popState(); return PIPE; }
-  {NLS}                                                        { popState(); return NLS; }
+  {NL}                                                         { popState(); return NEWLINE; }
 }
 <FUNCTION_ID> {
   {SIMPLE_ID}                                                  { popState(); return SIMPLE_ID; }
   {WHITE_SPACE}                                                { return WHITE_SPACE; }
-  {NLS}                                                        { return NLS; }
+  {NL}                                                         { return NEWLINE; }
   {GENERIC_ID_PART_TOKENS}                                     { popState(); return GENERIC_ID_PART; }
   [^]                                                          { popState(); yypushback(yylength()); }
 }
@@ -420,7 +419,7 @@ BRACED_VAR_START={DS}{LCURLY}
   {OP_OR}/[^a-zA-Z]+{PARAMETER_CHAR}*      { return OP_OR; }
   {OP_XOR}/[^a-zA-Z]+{PARAMETER_CHAR}*     { return OP_XOR; }
   {EXCL_MARK}                      { return EXCL_MARK; }
-  {NLS}                            { return NLS; }
+  {NL}                             { return NEWLINE; }
   {CH_DQ}                          { pushState(STRING); return DQ_OPEN; }
   {VERBATIM_STRING}                { return VERBATIM_STRING; }
   {EXPANDABLE_HERE_STRING_START}   { pushState(HERE_STRING); return EXPANDABLE_HERE_STRING_START; }
