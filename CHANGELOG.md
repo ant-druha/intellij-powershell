@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - [#257](https://github.com/ant-druha/intellij-powershell/pull/257): pass `-NoProfile` to PowerShell when detecting its version, to determine the version faster and avoid possible problems caused by shell customizations
 
   Thanks to @En3Tho for the contribution.
+- [#259](https://github.com/ant-druha/intellij-powershell/pull/259): additionally, pass `-NonInteractive` argument
 
 ## [2.6.0] - 2024-03-24
 ### Changed

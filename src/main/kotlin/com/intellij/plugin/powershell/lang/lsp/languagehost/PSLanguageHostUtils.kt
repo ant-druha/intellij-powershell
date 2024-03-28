@@ -8,11 +8,8 @@ import com.intellij.plugin.powershell.ide.run.checkExists
 import com.intellij.plugin.powershell.ide.run.getModuleVersion
 import com.intellij.plugin.powershell.ide.run.join
 import com.intellij.util.io.awaitExit
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.future.asCompletableFuture
-import kotlinx.coroutines.runInterruptible
 import java.io.InputStream
 import java.util.concurrent.CompletableFuture
 
@@ -56,7 +53,7 @@ object PSLanguageHostUtils {
 private suspend fun readPowerShellVersion(exePath: String): PSVersionInfo {
   var process: Process? = null
   val commandString = "(\$PSVersionTable.PSVersion, \$PSVersionTable.PSEdition) -join ' '"
-  val commandLine = GeneralCommandLine(exePath, "–NoProfile", "-Command", commandString)
+  val commandLine = GeneralCommandLine(exePath, "–NoProfile", "-NonInteractive", "-Command", commandString)
   return coroutineScope {
     try {
       process = commandLine.createProcess()
