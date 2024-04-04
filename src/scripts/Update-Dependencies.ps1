@@ -137,7 +137,7 @@ if ($hasChanges)
 "@
   }
   $prBody = @'
-# Maintainer Note
+## Maintainer Note
 > [!WARNING]
 > This PR will not trigger CI by default. Please close it and reopen manually to trigger the CI.
 >
