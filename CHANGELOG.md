@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased] (2.7.0)
+### Changed
+- Update PowerShellEditorServices to v3.19.0
+
 ## [2.6.1] - 2024-03-28
 ### Fixed
 - [#257](https://github.com/ant-druha/intellij-powershell/pull/257): pass `-NoProfile` to PowerShell when detecting its version, to determine the version faster and avoid possible problems caused by shell customizations
