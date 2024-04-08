@@ -1,6 +1,6 @@
 [versions]
 intellij = "2023.2"
-junixsocket = "2.9.0"
+junixsocket = "2.9.1"
 
 [libraries]
 junixsocket-common = { module = "com.kohlschutter.junixsocket:junixsocket-common", version.ref = "junixsocket" }
