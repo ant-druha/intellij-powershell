@@ -6,7 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased] (2.7.0)
 ### Changed
-- Update PowerShellEditorServices to v3.19.0
+- Update PowerShellEditorServices from v3.18.1 to v3.19.0
+- Update junixsocket from v2.9.0 to v2.9.1
 
 ## [2.6.1] - 2024-03-28
 ### Fixed
@@ -32,7 +33,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
   This fixes the cases when the started configuration wasn't using the latest version of an edited script file.
 - [#51: Update PowerShellEditorServices](https://github.com/ant-druha/intellij-powershell/issues/51) to v3.18.1
-- PowerShellEditorServices have been updated to the latest v1.22.0
+- PSScriptAnalyzer has been updated to the latest v1.22.0
 
 ### Removed
 - The plugin no longer bundles Plaster that was a part of an older PowerShellEditorServices distribution, even though it wasn't used by the plugin.
