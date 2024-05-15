@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased] (2.7.0)
 ### Changed
-- Update PowerShellEditorServices from v3.18.1 to v3.19.0
+- Update PowerShellEditorServices from v3.18.1 to v3.20.1
 - Update junixsocket from v2.9.0 to v2.9.1
 
 ## [2.6.1] - 2024-03-28
