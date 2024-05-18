@@ -3,7 +3,6 @@
  */
 package com.intellij.plugin.powershell.lang.lsp.languagehost
 
-import com.intellij.collaboration.async.launchNow
 import com.intellij.ide.actions.ShowSettingsUtilImpl
 import com.intellij.notification.*
 import com.intellij.openapi.Disposable
@@ -33,10 +32,7 @@ import com.intellij.plugin.powershell.lang.lsp.ide.settings.PowerShellConfigurab
 import com.intellij.plugin.powershell.lang.lsp.util.getTextEditor
 import com.intellij.plugin.powershell.lang.lsp.util.isRemotePath
 import com.intellij.util.io.await
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import org.eclipse.lsp4j.*
 import org.eclipse.lsp4j.jsonrpc.messages.Either
 import org.eclipse.lsp4j.launch.LSPLauncher
@@ -87,7 +83,7 @@ class LanguageServerEndpoint(
   }
 
   fun start() {
-    coroutineScope.launchNow {
+    coroutineScope.launch(start = CoroutineStart.UNDISPATCHED) {
       ensureStarted()
       val capabilities = getServerCapabilities()
       if (capabilities != null) {
@@ -130,7 +126,7 @@ class LanguageServerEndpoint(
               documentListener.setManager(manager)
               selectionListener.setManager(manager)
               manager.registerListeners()
-              coroutineScope.launchNow { manager.documentOpened() }
+              coroutineScope.launch(start = CoroutineStart.UNDISPATCHED) { manager.documentOpened() }
               logger.debug("Created manager for $uri")
               return@async manager
             }
@@ -180,7 +176,7 @@ class LanguageServerEndpoint(
   fun disconnectEditor(uri: URI) {
     val deferred = connectedEditors.remove(uri)
     if (deferred != null) {
-      coroutineScope.launchNow {
+      coroutineScope.launch(start = CoroutineStart.UNDISPATCHED) {
         val manager = deferred.await()
         manager?.removeListeners()
         manager?.documentClosed()
@@ -273,7 +269,7 @@ class LanguageServerEndpoint(
                 .filter { isRemotePath(it) }
                 .map { Paths.get(it).toUri().toASCIIString() }
                 .forEach { uri ->
-                  coroutineScope.launchNow {
+                  coroutineScope.launch(start = CoroutineStart.UNDISPATCHED) {
                     textDocumentServiceQueue.didSave(DidSaveTextDocumentParams(TextDocumentIdentifier(uri), null))
                   }
                 }
