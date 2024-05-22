@@ -9,6 +9,7 @@ plugins {
   id("java")
   alias(libs.plugins.changelog)
   alias(libs.plugins.download)
+  alias(libs.plugins.gradleJvmWrapper)
   alias(libs.plugins.grammarkit)
   alias(libs.plugins.intellij)
   alias(libs.plugins.kotlin)
@@ -60,10 +61,6 @@ configurations {
 }
 
 tasks {
-  wrapper {
-    gradleVersion = "8.3"
-  }
-
   val resources = file("src/main/resources")
 
   generateLexer {

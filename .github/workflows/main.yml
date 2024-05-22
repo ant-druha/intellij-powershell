@@ -18,13 +18,16 @@ jobs:
         image: [macos-12, ubuntu-22.04, windows-2022]
       fail-fast: false
     steps:
-      - uses: actions/checkout@v4
+      - name: "Check out the sources"
+        uses: actions/checkout@v4
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
+      - name: Cache downloaded JDK
+        uses: actions/cache@v4
         with:
-          distribution: 'corretto'
-          java-version: '17'
+          path: |
+            ~/.local/share/gradle-jvm
+            ~/AppData/Local/gradle-jvm
+          key: ${{ runner.os }}-${{ hashFiles('gradlew*') }}
 
       - name: "Validate Gradle wrapper"
         uses: gradle/actions/wrapper-validation@v3

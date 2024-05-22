@@ -20,8 +20,16 @@ jobs:
         shell: pwsh
         run: echo "version=$(if ($env:GITHUB_REF.StartsWith('refs/tags/v')) { $env:GITHUB_REF -replace '^refs/tags/v', '' } else { 'next' })" >> $env:GITHUB_OUTPUT
 
-      - name: Checkout
+      - name: "Check out the sources"
         uses: actions/checkout@v4
+
+      - name: Cache downloaded JDK
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.local/share/gradle-jvm
+            ~/AppData/Local/gradle-jvm
+          key: ${{ runner.os }}-${{ hashFiles('gradlew*') }}
 
       - name: Read the changelog
         uses: ForNeVeR/ChangelogAutomation.action@v1

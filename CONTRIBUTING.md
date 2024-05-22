@@ -14,7 +14,9 @@ Keep an eye on the following issue labels:
 
 Development Prerequisites
 -------------------------
-To develop the plugin, JDK 17 should be installed. For example, get [Amazon Corretto 17][downloads.corretto].
+JDK 17 is required to develop the plugin.
+
+If you use the default Gradle wrapper (`gradlew` or `gradlew.bat`), it will be auto-downloaded on wrapper start. Otherwise (say, to open the project in an IDE), you should get a JDK17-compatible installation. For example, install [Amazon Corretto 17][downloads.corretto].
 
 Build and Test
 --------------
