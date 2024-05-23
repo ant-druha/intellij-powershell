@@ -1,15 +1,11 @@
-import de.undercouch.gradle.tasks.download.Download
 import org.jetbrains.intellij.tasks.PrepareSandboxTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import java.net.URI
 import java.security.MessageDigest
 import java.util.zip.ZipFile
-import kotlin.io.path.deleteExisting
 
 plugins {
   id("java")
   alias(libs.plugins.changelog)
-  alias(libs.plugins.download)
   alias(libs.plugins.gradleJvmWrapper)
   alias(libs.plugins.grammarkit)
   alias(libs.plugins.intellij)
@@ -41,19 +37,25 @@ repositories {
   mavenCentral()
   ivy {
     url = uri("https://github.com/PowerShell/PSScriptAnalyzer/releases/download/")
-    patternLayout {
-      artifact("[revision]/[module].[revision].[ext]")
-    }
-    content {
-      includeGroup("PSScriptAnalyzer")
-    }
-    metadataSources {
-      artifact()
-    }
+    patternLayout { artifact("[revision]/[module].[revision].[ext]") }
+    content { includeGroup("PSScriptAnalyzer") }
+    metadataSources { artifact() }
+  }
+  ivy {
+    url = uri("https://github.com/PowerShell/PowerShellEditorServices/releases/download/")
+    patternLayout { artifact("v[revision]/[module].[ext]") }
+    content { includeGroup("PowerShellEditorServices") }
+    metadataSources { artifact() }
   }
 }
 
+val psScriptAnalyzerVersion: String by project
+val psScriptAnalyzerSha256Hash: String by project
 val psScriptAnalyzer: Configuration by configurations.creating
+
+val psesVersion: String by project
+val psesSha256Hash: String by project
+val powerShellEditorServices: Configuration by configurations.creating
 
 dependencies {
   implementation(libs.bundles.junixsocket)
@@ -62,9 +64,19 @@ dependencies {
   testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
   testImplementation(libs.junit)
 
-  libs.psScriptAnalyzer.get().apply {
-    psScriptAnalyzer(group = this.group!!, name = this.name, version = this.version, ext = "nupkg")
-  }
+  psScriptAnalyzer(
+    group = "PSScriptAnalyzer",
+    name = "PSScriptAnalyzer",
+    version = psScriptAnalyzerVersion,
+    ext = "nupkg"
+  )
+
+  powerShellEditorServices(
+    group = "PowerShellEditorServices",
+    name = "PowerShellEditorServices",
+    version = psesVersion,
+    ext = "zip"
+  )
 }
 
 configurations {
@@ -119,68 +131,31 @@ tasks {
     }
   }
 
-  fun getDependencyTask(
-    dependencyName: String,
-    version: String,
-    expectedHash: String,
-    uri: URI,
-    destination: RegularFile,
-    customizeZip: Action<CopySpec>
-  ): TaskProvider<Copy> {
-    val download by register<Download>("download$dependencyName") {
-      group = "dependencies"
-
-      inputs.property("version", version)
-      inputs.property("hash", expectedHash)
-
-      // NOTE: Do not overwrite: the verification step should delete an incorrect file.
-      // NOTE: Notably, this property allows us to skip the task completely if no inputs change.
-      overwrite(false)
-
-      src(uri)
-      dest(destination)
-
-      doLast {
-        println("Calculating hash for $dependencyName")
-        val data = destination.asFile.readBytes()
-        val hash = MessageDigest.getInstance("SHA-256").let { sha256 ->
-          sha256.update(data)
-          sha256.digest().joinToString("") { "%02x".format(it) }
-        }
-        println("Expected hash for $dependencyName = $expectedHash")
-        println("Calculated hash for $dependencyName = $hash")
-        if (!hash.equals(expectedHash, ignoreCase = true)) {
-          destination.asFile.toPath().deleteExisting()
-          error("$dependencyName hash check failed.\n" +
-            "The downloaded file has been deleted.\n" +
-            "Please try running the task again, or update the expected hash in the gradle.properties file.")
-        }
-      }
+  fun File.verifyHash(expectedHash: String) {
+    println("Calculating hash for $name...")
+    val data = readBytes()
+    val hash = MessageDigest.getInstance("SHA-256").let { sha256 ->
+      sha256.update(data)
+      sha256.digest().joinToString("") { "%02x".format(it) }
     }
-
-    return register<Copy>("get$dependencyName") {
-      group = "dependencies"
-
-      val outDir = projectDir.resolve("language_host/LanguageHost/modules/$dependencyName")
-      doFirst {
-        if (!outDir.deleteRecursively()) error("Cannot delete \"$outDir\".")
-      }
-
-      dependsOn(download)
-      from(zipTree(destination)) {
-        customizeZip(this)
-      }
-      into(outDir)
+    println("Expected hash for $name = $expectedHash")
+    println("Calculated hash for $name = $hash")
+    if (!hash.equals(expectedHash, ignoreCase = true)) {
+      error("$name hash check failed.\n" +
+        "Please try re-downloading the dependency, or update the expected hash in the gradle.properties file.")
     }
   }
 
-  val downloads = layout.buildDirectory.get().dir("download")
-
-  val psesVersion: String by project
-  val psesSha256Hash: String by project
+  val verifyPsScriptAnalyzer by registering {
+    dependsOn(psScriptAnalyzer)
+    inputs.property("hash", psScriptAnalyzerSha256Hash)
+    doFirst {
+      psScriptAnalyzer.singleFile.verifyHash(psScriptAnalyzerSha256Hash)
+    }
+  }
 
   fun PrepareSandboxTask.unpackPsScriptAnalyzer(outDir: String) {
-    dependsOn(psScriptAnalyzer)
+    dependsOn(psScriptAnalyzer, verifyPsScriptAnalyzer)
 
     from(zipTree(psScriptAnalyzer.singleFile)) {
       into("$outDir/PSScriptAnalyzer")
@@ -193,34 +168,27 @@ tasks {
     }
   }
 
-  val getPowerShellEditorServices = getDependencyTask(
-    "PowerShellEditorServices",
-    psesVersion,
-    psesSha256Hash,
-    URI(
-      "https://github.com/PowerShell/PowerShellEditorServices/releases/download/" +
-        "v$psesVersion/PowerShellEditorServices.zip"
-    ),
-    downloads.file("PowerShellEditorServices.zip")
-  ) {
-    include("PowerShellEditorServices/**")
-    eachFile {
-      relativePath = RelativePath(true, *relativePath.segments.drop(1).toTypedArray())
+  val verifyPowerShellEditorServices by registering {
+    dependsOn(powerShellEditorServices)
+    inputs.property("hash", psesSha256Hash)
+    doFirst {
+      powerShellEditorServices.singleFile.verifyHash(psesSha256Hash)
     }
   }
 
-  val getAllDependencies by registering {
-    dependsOn(getPowerShellEditorServices)
+  fun PrepareSandboxTask.unpackPowerShellEditorServices(outDir: String) {
+    dependsOn(powerShellEditorServices, verifyPowerShellEditorServices)
+
+    from(zipTree(powerShellEditorServices.singleFile)) {
+      into("$outDir/")
+      include("PowerShellEditorServices/**")
+    }
   }
 
   withType<PrepareSandboxTask> {
-    dependsOn(getAllDependencies)
     val outDir = "${intellij.pluginName.get()}/lib/LanguageHost/modules"
     unpackPsScriptAnalyzer(outDir)
-
-    from("${project.rootDir}/language_host") {
-      into("${intellij.pluginName.get()}/lib/")
-    }
+    unpackPowerShellEditorServices(outDir)
   }
 
   val maxUnpackedPluginBytes: String by project
@@ -265,5 +233,4 @@ tasks {
       )
     })
   }
-
 }
