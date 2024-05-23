@@ -1,5 +1,6 @@
 import de.undercouch.gradle.tasks.download.Download
 import org.jetbrains.intellij.tasks.PrepareSandboxTask
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.net.URI
 import java.security.MessageDigest
 import java.util.zip.ZipFile
@@ -94,8 +95,8 @@ tasks {
   withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     dependsOn(generateLexer, generateParser)
 
-    kotlinOptions {
-      jvmTarget = "17"
+    compilerOptions {
+      jvmTarget.set(JvmTarget.JVM_17)
       allWarningsAsErrors = true
     }
   }
