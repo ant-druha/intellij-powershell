@@ -39,7 +39,21 @@ version = "2.6.1"
 
 repositories {
   mavenCentral()
+  ivy {
+    url = uri("https://github.com/PowerShell/PSScriptAnalyzer/releases/download/")
+    patternLayout {
+      artifact("[revision]/[module].[revision].[ext]")
+    }
+    content {
+      includeGroup("PSScriptAnalyzer")
+    }
+    metadataSources {
+      artifact()
+    }
+  }
 }
+
+val psScriptAnalyzer: Configuration by configurations.creating
 
 dependencies {
   implementation(libs.bundles.junixsocket)
@@ -47,6 +61,10 @@ dependencies {
   implementation(libs.lsp4j)
   testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
   testImplementation(libs.junit)
+
+  libs.psScriptAnalyzer.get().apply {
+    psScriptAnalyzer(group = this.group!!, name = this.name, version = this.version, ext = "nupkg")
+  }
 }
 
 configurations {
@@ -158,29 +176,21 @@ tasks {
 
   val downloads = layout.buildDirectory.get().dir("download")
 
-  val psScriptAnalyzerVersion: String by project
-  val psScriptAnalyzerSha256Hash: String by project
-  val psScriptAnalyzerFileName = "PSScriptAnalyzer.$psScriptAnalyzerVersion.nupkg"
-  val psScriptAnalyzerOutFile = downloads.file(psScriptAnalyzerFileName)
-
   val psesVersion: String by project
   val psesSha256Hash: String by project
 
-  val getPsScriptAnalyzer = getDependencyTask(
-    "PSScriptAnalyzer",
-    psScriptAnalyzerVersion,
-    psScriptAnalyzerSha256Hash,
-    URI(
-      "https://github.com/PowerShell/PSScriptAnalyzer/releases/download/" +
-        "$psScriptAnalyzerVersion/$psScriptAnalyzerFileName"
-    ),
-    psScriptAnalyzerOutFile
-  ) {
-    // NuGet stuff:
-    exclude("_manifest/**", "_rels/**", "package/**", "[Content_Types].xml", "*.nuspec")
+  fun PrepareSandboxTask.unpackPsScriptAnalyzer(outDir: String) {
+    dependsOn(psScriptAnalyzer)
 
-    // Compatibility profiles, see https://github.com/PowerShell/PSScriptAnalyzer/issues/1148
-    exclude("compatibility_profiles/**")
+    from(zipTree(psScriptAnalyzer.singleFile)) {
+      into("$outDir/PSScriptAnalyzer")
+
+      // NuGet stuff:
+      exclude("_manifest/**", "_rels/**", "package/**", "[Content_Types].xml", "*.nuspec")
+
+      // Compatibility profiles, see https://github.com/PowerShell/PSScriptAnalyzer/issues/1148
+      exclude("compatibility_profiles/**")
+    }
   }
 
   val getPowerShellEditorServices = getDependencyTask(
@@ -200,11 +210,14 @@ tasks {
   }
 
   val getAllDependencies by registering {
-    dependsOn(getPsScriptAnalyzer, getPowerShellEditorServices)
+    dependsOn(getPowerShellEditorServices)
   }
 
   withType<PrepareSandboxTask> {
     dependsOn(getAllDependencies)
+    val outDir = "${intellij.pluginName.get()}/lib/LanguageHost/modules"
+    unpackPsScriptAnalyzer(outDir)
+
     from("${project.rootDir}/language_host") {
       into("${intellij.pluginName.get()}/lib/")
     }
