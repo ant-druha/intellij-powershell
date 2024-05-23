@@ -38,9 +38,6 @@ version = "2.6.1"
 
 repositories {
   mavenCentral()
-  maven {
-    setUrl("https://mvnrepository.com/artifact/com.kohlschutter.junixsocket/junixsocket-common")
-  }
 }
 
 dependencies {
