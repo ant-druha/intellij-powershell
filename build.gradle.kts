@@ -181,6 +181,7 @@ tasks {
 
     from(zipTree(powerShellEditorServices.singleFile)) {
       into("$outDir/")
+      // We only need this module and not anything else from the archive:
       include("PowerShellEditorServices/**")
     }
   }
