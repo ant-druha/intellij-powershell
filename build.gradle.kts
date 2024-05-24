@@ -136,7 +136,7 @@ tasks {
     val data = readBytes()
     val hash = MessageDigest.getInstance("SHA-256").let { sha256 ->
       sha256.update(data)
-      sha256.digest().joinToString("") { "%02x".format(it) }
+      sha256.digest().joinToString("") { "%02X".format(it) }
     }
     println("Expected hash for $name = $expectedHash")
     println("Calculated hash for $name = $hash")
