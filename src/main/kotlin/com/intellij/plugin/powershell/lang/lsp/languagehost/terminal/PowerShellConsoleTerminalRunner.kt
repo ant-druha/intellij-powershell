@@ -100,7 +100,7 @@ class PowerShellConsoleTerminalRunner(project: Project) : EditorServicesLanguage
 
   override fun getLogFileName(): String = "EditorServices-IJ-Console-${getSessionCount()}"
 
-  override fun createProcess(project: Project, command: List<String>, environment: Map<String, String>?): PtyProcess {
+  override fun createProcess(command: List<String>, environment: Map<String, String>?): PtyProcess {
     LOG.info("Language server starting... exe: '$command'")
     val process = createPtyProcess(myProject, command.toTypedArray(), environment)
     try {
