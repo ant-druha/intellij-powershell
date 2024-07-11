@@ -193,7 +193,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
     return file
   }
 
-  override fun createProcess(project: Project, command: List<String>, environment: Map<String, String>?): Process {
+  override fun createProcess(command: List<String>, environment: Map<String, String>?): Process {
     return GeneralCommandLine(command)
       .withEnvironment(environment)
       .createProcess()
@@ -275,7 +275,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
     cachedPowerShellExtensionDir = null
     cachedEditorServicesModuleVersion = null
     val commandLine = buildCommandLine()
-    val process = createProcess(myProject, commandLine, mapOf(INTELLIJ_POWERSHELL_PARENT_PID to ProcessHandle.current().pid().toString()))
+    val process = createProcess(commandLine, mapOf(INTELLIJ_POWERSHELL_PARENT_PID to ProcessHandle.current().pid().toString()))
     val pid: Long = getProcessID(process)
     processOutput(
       process,

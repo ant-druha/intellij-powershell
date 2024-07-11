@@ -1,6 +1,5 @@
 package com.intellij.plugin.powershell.lang.lsp.languagehost
 
-import com.intellij.openapi.project.Project
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -9,7 +8,7 @@ interface LanguageHostConnectionManager {
   fun closeConnection()
   fun isConnected(): Boolean
   fun getProcess(): Process?
-  fun createProcess(project: Project, command: List<String>, environment: Map<String, String>?): Process
+  fun createProcess(command: List<String>, environment: Map<String, String>?): Process
   fun connectServer(server: LanguageServerEndpoint) {}
   fun useConsoleRepl(): Boolean = false
 }
