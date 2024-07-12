@@ -20,10 +20,6 @@
 
   <extensions defaultExtensionNs="com.intellij">
 
-    <toolWindow id="DebugLogWindow"
-                anchor="bottom"
-                factoryClass="com.intellij.execution."></toolWindow>
-
     <fileType name="PowerShell" language="PowerShell" extensions="ps1;psm1;psd1"
               implementationClass="com.intellij.plugin.powershell.PowerShellFileType" />
 
@@ -69,7 +65,10 @@
     <runConfigurationProducer
         implementation="com.intellij.plugin.powershell.ide.run.PowerShellConfigurationProducer" order="first"/>
 
+    <xdebugger.breakpointType implementation="com.intellij.plugin.powershell.ide.debugger.PowerShellBreakpointType"/>
+
     <programRunner implementation="com.intellij.plugin.powershell.ide.run.PowerShellProgramRunner"/>
+    <programRunner implementation="com.intellij.plugin.powershell.ide.run.PowerShellProgramDebugRunner"/>
 
     <targetElementEvaluator language="PowerShell"
                             implementationClass="com.intellij.plugin.powershell.ide.search.PowerShellTargetElementEvaluator"/>
