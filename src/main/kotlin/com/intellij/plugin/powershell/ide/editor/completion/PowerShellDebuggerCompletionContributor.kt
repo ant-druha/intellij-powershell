@@ -13,6 +13,7 @@ import com.intellij.patterns.ElementPattern
 import com.intellij.patterns.PatternCondition
 import com.intellij.patterns.PlatformPatterns.psiElement
 import com.intellij.patterns.StandardPatterns.or
+import com.intellij.plugin.powershell.ide.debugger.PowerShellDebugProcess
 import com.intellij.plugin.powershell.ide.debugger.documentSessionKey
 import com.intellij.plugin.powershell.ide.resolve.*
 import com.intellij.plugin.powershell.ide.search.PowerShellComponentType
@@ -30,6 +31,7 @@ import com.intellij.psi.impl.source.resolve.ResolveCache
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.ProcessingContext
+import com.intellij.xdebugger.XDebugSession
 import org.eclipse.lsp4j.CompletionItem
 import org.eclipse.lsp4j.CompletionItemKind
 
@@ -48,24 +50,25 @@ private val TYPE_REFERENCE: ElementPattern<PsiElement> =
 private val VARIABLE: ElementPattern<PsiElement> = psiElement().withParent(PowerShellIdentifier::class.java)
   .withSuperParent(2, PowerShellVariable::class.java).with(PUT_VARIABLE_CONTEXT)
 
-class PowerShellCompletionContributor : CompletionContributor() {
+class PowerShellDebuggerCompletionContributor : CompletionContributor() {
 
   override fun beforeCompletion(context: CompletionInitializationContext) {
-    context.dummyIdentifier = CompletionUtilCore.DUMMY_IDENTIFIER_TRIMMED
+    //context.dummyIdentifier = CompletionUtilCore.DUMMY_IDENTIFIER_TRIMMED
     super.beforeCompletion(context)
   }
 
   override fun fillCompletionVariants(parameters: CompletionParameters, result: CompletionResultSet) {
-    if(parameters.editor.document.getUserData(documentSessionKey) != null)
-      return
+    val debugSession = parameters.editor.document.getUserData(documentSessionKey) ?: return
+    val debugProcess = debugSession.debugProcess as PowerShellDebugProcess
+
     @Suppress("UnstableApiUsage") val gotResultFromHost = runBlockingCancellable {
-      getCompletionFromLanguageHost(parameters, result)
+      getCompletionFromLanguageHost(parameters, result, debugSession)
     }
     if (gotResultFromHost) return
     super.fillCompletionVariants(parameters, result)
   }
 
-  private suspend fun getCompletionFromLanguageHost(parameters: CompletionParameters, result: CompletionResultSet): Boolean {
+  private suspend fun getCompletionFromLanguageHost(parameters: CompletionParameters, result: CompletionResultSet, xDebugSession: XDebugSession): Boolean {
     val position = parameters.position
     val offset = parameters.offset
     val editor = parameters.editor
@@ -74,7 +77,7 @@ class PowerShellCompletionContributor : CompletionContributor() {
       val serverPos = offsetToLSPPos(editor, offset)
       val toAdd2 = manager.completion(serverPos)
       val psiFile = position.containingFile
-          ?: PsiDocumentManager.getInstance(position.project).getPsiFile(editor.document)
+        ?: PsiDocumentManager.getInstance(position.project).getPsiFile(editor.document)
       if (toAdd2.items.isNotEmpty()) {
         val newResult = adjustPrefixMatcher(result)
         for (item in toAdd2.items) {
@@ -107,83 +110,83 @@ class PowerShellCompletionContributor : CompletionContributor() {
   }
 
   private val commandName: ElementPattern<PsiElement> = psiElement().withParent(PowerShellIdentifier::class.java)
-      .withSuperParent(2, PowerShellCommandName::class.java)
+    .withSuperParent(2, PowerShellCommandName::class.java)
   private val memberAccess: ElementPattern<PsiElement> = psiElement().withParent(PowerShellReferenceIdentifier::class.java)
-      .withSuperParent(2, or(
-          psiElement(PowerShellMemberAccessExpression::class.java),
-          psiElement(PowerShellInvocationExpression::class.java)
-      )
-      ).with(PUT_VARIABLE_CONTEXT)
+    .withSuperParent(2, or(
+      psiElement(PowerShellMemberAccessExpression::class.java),
+      psiElement(PowerShellInvocationExpression::class.java)
+    )
+    ).with(PUT_VARIABLE_CONTEXT)
   private val typeBody: ElementPattern<PsiElement> = psiElement().withParent(PowerShellBlockBody::class.java)
-      .withSuperParent(2, PowerShellTypeDeclaration::class.java)
+    .withSuperParent(2, PowerShellTypeDeclaration::class.java)
 
   init {
     extend(CompletionType.BASIC, commandName,
-        object : CompletionProvider<CompletionParameters>() {
-          override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
-            val ref = PsiTreeUtil.getContextOfType(parameters.position.context, PowerShellReferencePsiElement::class.java)
-                ?: return
-            val elements = ResolveCache.getInstance(parameters.originalFile.project)
-                .resolveWithCaching(ref, PowerShellComponentResolveProcessor.INSTANCE, true, true) ?: emptyList()
+      object : CompletionProvider<CompletionParameters>() {
+        override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
+          val ref = PsiTreeUtil.getContextOfType(parameters.position.context, PowerShellReferencePsiElement::class.java)
+            ?: return
+          val elements = ResolveCache.getInstance(parameters.originalFile.project)
+            .resolveWithCaching(ref, PowerShellComponentResolveProcessor.INSTANCE, true, true) ?: emptyList()
 
-            elements.forEach { e ->
-              result.addElement(buildLookupElement(e, context))
-              if (e is PowerShellVariable) {
-                addFunctionCall(result, e)
-              }
+          elements.forEach { e ->
+            result.addElement(buildLookupElement(e, context))
+            if (e is PowerShellVariable) {
+              addFunctionCall(result, e)
             }
-            PowerShellTokenTypeSets.KEYWORDS.types.forEach { keyword -> result.addElement(buildKeyword(keyword)) }
           }
-        })
+          PowerShellTokenTypeSets.KEYWORDS.types.forEach { keyword -> result.addElement(buildKeyword(keyword)) }
+        }
+      })
 
     extend(CompletionType.BASIC, VARIABLE,
-        object : CompletionProvider<CompletionParameters>() {
-          override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
-            val ref = PsiTreeUtil.getContextOfType(parameters.position.context, PowerShellReferencePsiElement::class.java)
-                ?: return
-            val elements = ResolveCache.getInstance(parameters.originalFile.project)
-                .resolveWithCaching(ref, PowerShellComponentResolveProcessor.INSTANCE, true, true) ?: emptyList()
+      object : CompletionProvider<CompletionParameters>() {
+        override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
+          val ref = PsiTreeUtil.getContextOfType(parameters.position.context, PowerShellReferencePsiElement::class.java)
+            ?: return
+          val elements = ResolveCache.getInstance(parameters.originalFile.project)
+            .resolveWithCaching(ref, PowerShellComponentResolveProcessor.INSTANCE, true, true) ?: emptyList()
 
-            elements.filterIsInstance<PowerShellVariable>().forEach { result.addElement(buildLookupElement(it, context)) }
-            result.addElement(buildKeyword(PowerShellTypes.THIS))
-          }
-        })
+          elements.filterIsInstance<PowerShellVariable>().forEach { result.addElement(buildLookupElement(it, context)) }
+          result.addElement(buildKeyword(PowerShellTypes.THIS))
+        }
+      })
 
     extend(CompletionType.BASIC, memberAccess,
-        object : CompletionProvider<CompletionParameters>() {
-          override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
-            val expr = PsiTreeUtil.getContextOfType(parameters.position.context, PowerShellMemberAccessExpression::class.java)
-                ?: return
-            val qType = expr.qualifier?.getType()
-            if (qType != null && qType != PowerShellType.UNKNOWN) {
-              val membersProcessor = PowerShellMemberScopeProcessor()
-              PowerShellResolveUtil.processMembersForType(qType, membersProcessor)
-              val res = membersProcessor.getResult()
-              res.map { it.element }.filter { it !is PowerShellConstructorDeclarationStatement }.forEach { result.addElement(buildLookupElement(it, context)) }
-              if (expr.isTypeMemberAccess()) {
-                addCallNew(result, qType)
-              }
+      object : CompletionProvider<CompletionParameters>() {
+        override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
+          val expr = PsiTreeUtil.getContextOfType(parameters.position.context, PowerShellMemberAccessExpression::class.java)
+            ?: return
+          val qType = expr.qualifier?.getType()
+          if (qType != null && qType != PowerShellType.UNKNOWN) {
+            val membersProcessor = PowerShellMemberScopeProcessor()
+            PowerShellResolveUtil.processMembersForType(qType, membersProcessor)
+            val res = membersProcessor.getResult()
+            res.map { it.element }.filter { it !is PowerShellConstructorDeclarationStatement }.forEach { result.addElement(buildLookupElement(it, context)) }
+            if (expr.isTypeMemberAccess()) {
+              addCallNew(result, qType)
             }
           }
-        })
+        }
+      })
 
     extend(CompletionType.BASIC, TYPE_REFERENCE,
-        object : CompletionProvider<CompletionParameters>() {
-          override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
-            val ref = PsiTreeUtil.getContextOfType(parameters.position, PowerShellReferenceTypeElement::class.java)
-                ?: return
-            val resolveProcessor = PowerShellClassScopeProcessor()
-            PsiTreeUtil.treeWalkUp(resolveProcessor, ref, null, ResolveState.initial())
-            resolveProcessor.getResult().map { it.element }.forEach { result.addElement(buildLookupElement(it, context)) }
-          }
-        })
+      object : CompletionProvider<CompletionParameters>() {
+        override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
+          val ref = PsiTreeUtil.getContextOfType(parameters.position, PowerShellReferenceTypeElement::class.java)
+            ?: return
+          val resolveProcessor = PowerShellClassScopeProcessor()
+          PsiTreeUtil.treeWalkUp(resolveProcessor, ref, null, ResolveState.initial())
+          resolveProcessor.getResult().map { it.element }.forEach { result.addElement(buildLookupElement(it, context)) }
+        }
+      })
 
     extend(CompletionType.BASIC, typeBody,
-        object : CompletionProvider<CompletionParameters>() {
-          override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
-            addTypeBodyKeywords(result)
-          }
-        })
+      object : CompletionProvider<CompletionParameters>() {
+        override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
+          addTypeBodyKeywords(result)
+        }
+      })
   }
 
   private fun addTypeBodyKeywords(result: CompletionResultSet) {
