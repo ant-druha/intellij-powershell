@@ -4,8 +4,10 @@ import com.intellij.execution.DefaultExecutionResult
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.ExecutionResult
 import com.intellij.execution.Executor
-import com.intellij.execution.configurations.PtyCommandLine
+import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.configurations.RunProfileState
+import com.intellij.execution.executors.DefaultDebugExecutor
+import com.intellij.execution.executors.DefaultRunExecutor
 import com.intellij.execution.process.KillableProcessHandler
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
@@ -15,21 +17,40 @@ import com.intellij.openapi.application.readAction
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.diagnostic.runAndLogException
 import com.intellij.openapi.options.advanced.AdvancedSettings
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.io.NioFiles.toPath
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.plugin.powershell.ide.PluginProjectRoot
+import com.intellij.plugin.powershell.ide.debugger.PowerShellBreakpointType
+import com.intellij.plugin.powershell.ide.debugger.PowerShellDebugSession
+import com.intellij.plugin.powershell.lang.debugger.PSDebugClient
 import com.intellij.plugin.powershell.lang.lsp.LSPInitMain
+import com.intellij.plugin.powershell.lang.lsp.languagehost.EditorServicesLanguageHostStarter
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PowerShellNotInstalled
 import com.intellij.terminal.TerminalExecutionConsole
+import com.intellij.util.io.await
 import com.intellij.util.text.nullize
+import com.intellij.xdebugger.XDebugSession
+import com.intellij.xdebugger.XDebuggerManager
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import org.eclipse.lsp4j.debug.*
+import org.eclipse.lsp4j.debug.launch.DSPLauncher
+import org.eclipse.lsp4j.debug.services.IDebugProtocolServer
+import org.eclipse.lsp4j.jsonrpc.Launcher
 import org.jetbrains.annotations.TestOnly
 import java.io.File
+import java.io.InputStream
+import java.io.OutputStream
 import java.nio.charset.Charset
 import java.nio.file.Path
+import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
+
 
 class PowerShellScriptCommandLineState(
   private val runConfiguration: PowerShellRunConfiguration,
@@ -59,8 +80,8 @@ class PowerShellScriptCommandLineState(
         runConfiguration.getCommandOptions(),
         runConfiguration.scriptParameters
       )
-      val commandLine = PtyCommandLine(command)
-        .withConsoleMode(false)
+      val commandLine = GeneralCommandLine(command)
+        //.withConsoleMode(false)
         .withWorkDirectory(workingDirectory.toString())
         .withCharset(getTerminalCharSet())
 
@@ -105,12 +126,97 @@ class PowerShellScriptCommandLineState(
     return commandString
   }
 
-  override fun execute(executor: Executor?, runner: ProgramRunner<*>): ExecutionResult {
-    val process = startProcess()
-    val console = TerminalExecutionConsole(environment.project, process)
-    return DefaultExecutionResult(console, process)
+  override fun execute(executor: Executor?, runner: ProgramRunner<*>): ExecutionResult? {
+    if (executor?.id == DefaultRunExecutor.EXECUTOR_ID) {
+      val process = startProcess()
+      val console = TerminalExecutionConsole(environment.project, process)
+      return DefaultExecutionResult(console, process)
+    } else if (executor?.id == DefaultDebugExecutor.EXECUTOR_ID) {
+      val processRunner = EditorServicesLanguageHostStarter(environment.project)
+      processRunner.useConsoleRepl()
+      return runBlocking {
+        val InOutPair = processRunner.establishDebuggerConnection()
+        val process = processRunner.getProcess() ?: return@runBlocking null
+        val handler = KillableProcessHandler(process, "PowerShellEditorService")
+        val console = TerminalExecutionConsole(environment.project, handler)
+        handler.startNotify()
+        val session = environment.getUserData(XSessionKey)
+        processDebuging(InOutPair.first!!, InOutPair.second!!, session!!) //todo nullcheck
+        DefaultExecutionResult(console, handler)
+      }
+    } else {
+      error("Unknown executor")
+    }
+  }
+  private fun processDebuging(inputStream: InputStream, outputStream: OutputStream, debugSession: XDebugSession){
+    val targetPath = runConfiguration.scriptPath
+
+    val client = PSDebugClient(debugSession)
+    val launcher: Launcher<IDebugProtocolServer> = DSPLauncher.createClientLauncher(client, inputStream, outputStream)
+    launcher.startListening()
+
+    val arguments = InitializeRequestArguments()
+    arguments.clientID = "client1"
+    arguments.adapterID = "adapter1"
+    arguments.setSupportsRunInTerminalRequest(false)
+
+    val remoteProxy = launcher.remoteProxy
+
+    val capabilities: Capabilities = remoteProxy.initialize(arguments)[10, TimeUnit.SECONDS]
+
+    val scope = PluginProjectRoot.getInstance(environment.project).coroutineScope
+
+    val powerShellDebugSession = PowerShellDebugSession(client, remoteProxy, debugSession, scope, debugSession)
+    environment.putUserData(ClientSessionKey, powerShellDebugSession)
+    val allBreakpoints = XDebuggerManager.getInstance(environment.project).breakpointManager.getBreakpoints(PowerShellBreakpointType::class.java)
+    allBreakpoints.filter{x -> x.sourcePosition != null && x.sourcePosition!!.file.exists() && x.sourcePosition!!.file.isValid}
+      .groupBy { x -> VfsUtil.virtualToIoFile(x.sourcePosition!!.file).toURI().toASCIIString() }
+      .forEach { entry ->
+
+        val fileURL = entry.key
+
+      val breakpointArgs = SetBreakpointsArguments()
+      val source: Source = Source()
+      source.setPath(fileURL)
+      breakpointArgs.source = source
+      val bps = entry.value
+      breakpointArgs.breakpoints = bps.map {
+        val bp = it
+        SourceBreakpoint().apply {
+          line = bp.line + 1
+          condition = bp.conditionExpression?.expression
+          logMessage = bp.logExpressionObject?.expression
+        }
+      }.toTypedArray()
+      val setBreakpointsResponse = remoteProxy.setBreakpoints(breakpointArgs).join()
+      val breakpointsResponse: Array<Breakpoint> = setBreakpointsResponse.breakpoints
+    }
+    // Add a breakpoint.
+    /*val breakpointArgs = SetBreakpointsArguments()
+    val source: Source = Source()
+    source.setPath(targetPath)
+    breakpointArgs.source = source
+    val sourceBreakpoint = SourceBreakpoint()
+    sourceBreakpoint.line = 1
+    val breakpoints = arrayOf(sourceBreakpoint)
+    breakpointArgs.breakpoints = breakpoints
+    val future = remoteProxy.setBreakpoints(breakpointArgs)
+    val setBreakpointsResponse = future[10, TimeUnit.SECONDS]
+    val breakpointsResponse: Array<Breakpoint> = setBreakpointsResponse.breakpoints*/
+
+    val launchArgs: MutableMap<String, Any> = HashMap()
+    launchArgs["terminal"] = "none"
+    launchArgs["script"] = targetPath
+    launchArgs["noDebug"] = false
+    launchArgs["__sessionId"] = "sessionId"
+    val launch = remoteProxy.launch(launchArgs).join()
+
+// Signal that the configuration is finished
+    remoteProxy.configurationDone(ConfigurationDoneArguments())
   }
 }
+
+
 
 private fun getTerminalCharSet(): Charset {
   val name = AdvancedSettings.getString("terminal.character.encoding")

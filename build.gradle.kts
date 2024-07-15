@@ -71,6 +71,7 @@ dependencies {
 
   implementation(libs.bundles.junixsocket)
   implementation(libs.lsp4j)
+  implementation("org.eclipse.lsp4j:org.eclipse.lsp4j.debug:0.23.1")
   testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
   testImplementation(libs.junit)
   testImplementation(libs.openTest4J)
