@@ -16,9 +16,13 @@ import com.jetbrains.rd.util.lifetime.Lifetime
 import kotlinx.coroutines.Dispatchers
 import org.eclipse.lsp4j.debug.ContinueArguments
 
-class PowerShellDebugProcess(val xDebugSession: XDebugSession, val executionResult: ExecutionResult, val debuggerManager: XDebuggerManager, val clientSession: PowerShellDebugSession) : XDebugProcess(xDebugSession), Disposable {
+class PowerShellDebugProcess(val xDebugSession: XDebugSession, val executionResult: ExecutionResult, val clientSession: PowerShellDebugSession)
+  : XDebugProcess(xDebugSession), Disposable {
 
-  val KEY: Key<PowerShellDebugProcess> = Key.create("com.intellij.plugin.powershell.ide.debugger.PowerShellDebugProcess")
+  companion object {
+    val KEY: Key<PowerShellDebugProcess> = Key.create("com.intellij.plugin.powershell.ide.debugger.PowerShellDebugProcess")
+  }
+
   val myBreakpointHandler = PowerShellBreakpointHandler(this, PowerShellBreakpointType::class.java)
   val myProcessHandler = executionResult.processHandler
   init {

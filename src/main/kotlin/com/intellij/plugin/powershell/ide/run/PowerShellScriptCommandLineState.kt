@@ -53,7 +53,7 @@ import java.util.regex.Pattern
 
 
 class PowerShellScriptCommandLineState(
-  private val runConfiguration: PowerShellRunConfiguration,
+  val runConfiguration: PowerShellRunConfiguration,
   private val environment: ExecutionEnvironment
 ) : RunProfileState {
 
@@ -127,7 +127,10 @@ class PowerShellScriptCommandLineState(
   }
 
   override fun execute(executor: Executor?, runner: ProgramRunner<*>): ExecutionResult? {
-    if (executor?.id == DefaultRunExecutor.EXECUTOR_ID) {
+    val process = startProcess()
+    val console = TerminalExecutionConsole(environment.project, process)
+    return DefaultExecutionResult(console, process)
+    /* if (executor?.id == DefaultRunExecutor.EXECUTOR_ID) {
       val process = startProcess()
       val console = TerminalExecutionConsole(environment.project, process)
       return DefaultExecutionResult(console, process)
@@ -146,9 +149,9 @@ class PowerShellScriptCommandLineState(
       }
     } else {
       error("Unknown executor")
-    }
+    }*/
   }
-  private fun processDebuging(inputStream: InputStream, outputStream: OutputStream, debugSession: XDebugSession){
+  /*private fun processDebuging(inputStream: InputStream, outputStream: OutputStream, debugSession: XDebugSession){
     val targetPath = runConfiguration.scriptPath
 
     val client = PSDebugClient(debugSession)
@@ -213,7 +216,7 @@ class PowerShellScriptCommandLineState(
 
 // Signal that the configuration is finished
     remoteProxy.configurationDone(ConfigurationDoneArguments())
-  }
+  }*/
 }
 
 
