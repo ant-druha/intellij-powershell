@@ -34,7 +34,10 @@ import javax.swing.Icon
 import kotlin.collections.HashMap
 import kotlin.io.path.Path
 
-class PowerShellDebugSession(val client: PSDebugClient, val server: IDebugProtocolServer, val session: XDebugSession, val coroutineScope: CoroutineScope, val xDebugSession: XDebugSession) {
+class PowerShellDebugSession(val client: PSDebugClient, val server: IDebugProtocolServer,
+                             val session: XDebugSession,
+                             val coroutineScope: CoroutineScope,
+                             val xDebugSession: XDebugSession) {
   val breakpointMap = mutableMapOf<String, MutableMap<Int, XLineBreakpoint<XBreakpointProperties<*>>>>()
 
   init{
@@ -216,13 +219,15 @@ class PowerShellDebuggerVariableValue(val variable: Variable, val parentReferenc
                                       val coroutineScope: CoroutineScope, val xDebugSession: XDebugSession) : XNamedValue(variable.name ?: "") {
 
   init {
-    val variablesCache = (xDebugSession.suspendContext as PowerShellSuspendContext).variablesCache
-    variablesCache.getOrDefault((Pair(parentReference, variable.name)), null)?.let {
-      variable.value = it.value
-      variable.type = it.type ?: variable.type
-      variable.variablesReference = variable.variablesReference
-      variable.namedVariables = it.namedVariables
-      variable.indexedVariables = it.indexedVariables
+    xDebugSession.suspendContext?.let {
+      val variablesCache = (xDebugSession.suspendContext as PowerShellSuspendContext).variablesCache
+      variablesCache.getOrDefault((Pair(parentReference, variable.name)), null)?.let {
+        variable.value = it.value
+        variable.type = it.type ?: variable.type
+        variable.variablesReference = variable.variablesReference
+        variable.namedVariables = it.namedVariables
+        variable.indexedVariables = it.indexedVariables
+      }
     }
   }
 
