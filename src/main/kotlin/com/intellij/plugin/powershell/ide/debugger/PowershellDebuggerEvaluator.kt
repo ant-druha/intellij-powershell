@@ -1,8 +1,5 @@
 package com.intellij.plugin.powershell.ide.debugger
 
-import com.intellij.openapi.editor.Document
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
 import com.intellij.util.io.await
 import com.intellij.xdebugger.XSourcePosition
 import com.intellij.xdebugger.evaluation.XDebuggerEvaluator
@@ -21,14 +18,22 @@ class PowershellDebuggerEvaluator(val server: IDebugProtocolServer,
         this.expression = expression
         frameId = stackFrame.stack.id
       }).await()
-      val variable : Variable = Variable().apply {
+      val variable: Variable = Variable().apply {
         value = result.result
         evaluateName = expression
         variablesReference = result.variablesReference
         type = result.type
         presentationHint = result.presentationHint
       }
-      callback.evaluated(PowerShellDebuggerVariableValue(variable, null, server, coroutineScope, stackFrame.xDebugSession))
+      callback.evaluated(
+        PowerShellDebuggerVariableValue(
+          variable,
+          null,
+          server,
+          coroutineScope,
+          stackFrame.xDebugSession
+        )
+      )
     }
   }
 

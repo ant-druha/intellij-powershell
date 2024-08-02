@@ -20,23 +20,27 @@ class PowerShellDebugProcess(val xDebugSession: XDebugSession, val executionResu
   : XDebugProcess(xDebugSession), Disposable {
 
   companion object {
-    val KEY: Key<PowerShellDebugProcess> = Key.create("com.intellij.plugin.powershell.ide.debugger.PowerShellDebugProcess")
+    val KEY: Key<PowerShellDebugProcess> =
+      Key.create("com.intellij.plugin.powershell.ide.debugger.PowerShellDebugProcess")
   }
 
   val myBreakpointHandler = PowerShellBreakpointHandler(this, PowerShellBreakpointType::class.java)
   val myProcessHandler = executionResult.processHandler
+
   init {
     myProcessHandler.putUserData(KEY, this)
   }
+
   val myExecutionConsole = executionResult.executionConsole
   val myEditorsProvider = PowerShellDebuggerEditorsProvider(xDebugSession)
+
   init {
     com.intellij.openapi.util.Disposer.register(myExecutionConsole, this)
     myBreakpointHandler.registerBreakpointEvent.adviseSuspend(Lifetime.Eternal, Dispatchers.EDT) {
       pair -> clientSession.setBreakpoint(pair.first, pair.second)
     }
     myBreakpointHandler.unregisterBreakpointEvent.adviseSuspend(Lifetime.Eternal, Dispatchers.EDT) {
-        pair -> clientSession.removeBreakpoint(pair.first, pair.second)
+      pair -> clientSession.removeBreakpoint(pair.first, pair.second)
     }
   }
 
@@ -81,6 +85,7 @@ class PowerShellDebugProcess(val xDebugSession: XDebugSession, val executionResu
   override fun createConsole(): ExecutionConsole {
     return myExecutionConsole
   }
+
   override fun getEditorsProvider(): XDebuggerEditorsProvider {
     return myEditorsProvider
   }
