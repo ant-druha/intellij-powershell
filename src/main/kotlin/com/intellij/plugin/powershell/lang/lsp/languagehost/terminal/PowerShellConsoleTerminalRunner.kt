@@ -29,6 +29,7 @@ import com.intellij.terminal.JBTerminalWidget
 import com.intellij.terminal.pty.PtyProcessTtyConnector
 import com.intellij.util.EnvironmentUtil
 import com.intellij.util.ModalityUiUtil
+import com.intellij.util.application
 import com.intellij.util.concurrency.AppExecutorUtil
 import com.jediterm.terminal.TtyConnector
 import com.jediterm.terminal.ui.TerminalWidget
@@ -79,11 +80,15 @@ class PowerShellConsoleTerminalRunner(project: Project) : EditorServicesLanguage
         EnvironmentUtil.setLocaleEnv(envs, charset("UTF-8"))
       }
       try {
+        val workingDirectory = if (application.isUnitTestMode) {
+          project.basePath ?: error("Project has no base path.")
+        } else TerminalProjectOptionsProvider.getInstance(project).startingDirectory
+
         val logFile = File(PathManager.getLogPath(), "pty-ps.log")
         logFile.createNewFile()
         return PtyProcessBuilder(command)
             .setEnvironment(envs)
-            .setDirectory(TerminalProjectOptionsProvider.getInstance(project).startingDirectory)
+            .setDirectory(workingDirectory)
             .setConsole(false)
             .setCygwin(false)
             .setLogFile(logFile)
