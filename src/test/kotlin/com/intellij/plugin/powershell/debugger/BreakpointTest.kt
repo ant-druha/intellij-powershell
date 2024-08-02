@@ -2,26 +2,17 @@ package com.intellij.plugin.powershell.debugger
 
 import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx
 import com.intellij.plugin.powershell.ide.debugger.PowerShellSuspendContext
-import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import com.intellij.testFramework.fixtures.TempDirTestFixture
-import com.intellij.testFramework.fixtures.impl.TempDirTestFixtureImpl
+import com.intellij.plugin.powershell.testFramework.DebuggerTestBase
 import com.intellij.xdebugger.XDebuggerTestUtil
 import com.intellij.xdebugger.XTestCompositeNode
 import com.jetbrains.rd.util.lifetime.Lifetime
 import junit.framework.TestCase
-import org.junit.AfterClass
 
-class BreakpointTest: BasePlatformTestCase() {
-
-  override fun getTestDataPath() = "src/test/resources/testData"
-
-
-  override fun createTempDirTestFixture(): TempDirTestFixture {
-    return TempDirTestFixtureImpl()
-  }
+class BreakpointTest : DebuggerTestBase() {
 
   fun testBreakpoint() {
-    val psiFile = myFixture.configureByFile("debugger/testBreakpoint.ps1")
+
+    val psiFile = copyAndOpenFile("debugger/testBreakpoint.ps1")
     val file = psiFile.virtualFile
 
     val fileLine = 5 // line in file, starting from 1
@@ -41,7 +32,7 @@ class BreakpointTest: BasePlatformTestCase() {
 
   fun testConditionalBreakpoint()
   {
-    val psiFile = myFixture.configureByFile("debugger/testBreakpoint.ps1")
+    val psiFile = copyAndOpenFile("debugger/testBreakpoint.ps1")
     val file = psiFile.virtualFile
 
     val fileLine = 5 // line in file, starting from 1

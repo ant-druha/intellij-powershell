@@ -3,7 +3,6 @@ package com.intellij.plugin.powershell.lang.lsp.languagehost
 import com.google.common.io.Files
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.configurations.PtyCommandLine
 import com.intellij.execution.process.*
 import com.intellij.notification.BrowseNotificationAction
