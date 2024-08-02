@@ -53,8 +53,7 @@ class PowerShellTestSession(val project: Project, val scriptPath: Path) {
         val clientSession = environment.getUserData(ClientSessionKey)
         return PowerShellDebugProcess(
           session,
-          executionResult!!,
-          debuggerManager,
+          executionResult,
           clientSession!!
         )
       }
