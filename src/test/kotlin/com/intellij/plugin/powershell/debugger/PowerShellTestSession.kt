@@ -7,7 +7,9 @@ import com.intellij.execution.impl.RunnerAndConfigurationSettingsImpl
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.openapi.project.Project
+import com.intellij.plugin.powershell.ide.debugger.ClientSessionKey
 import com.intellij.plugin.powershell.ide.debugger.PowerShellDebugProcess
+import com.intellij.plugin.powershell.ide.debugger.PowerShellDebugServiceStarter
 import com.intellij.plugin.powershell.ide.run.*
 import com.intellij.xdebugger.*
 import kotlinx.coroutines.runBlocking
@@ -49,13 +51,8 @@ class PowerShellTestSession(val project: Project, val scriptPath: Path) {
       @Throws(ExecutionException::class)
       override fun start(session: XDebugSession): XDebugProcess {
         environment.putUserData(XSessionKey, session)
-        val executionResult = state.execute(environment.executor, runner)
-        val clientSession = environment.getUserData(ClientSessionKey)
-        return PowerShellDebugProcess(
-          session,
-          executionResult,
-          clientSession!!
-        )
+        val result = PowerShellDebugServiceStarter.startDebugServiceProcess(environment, state.runConfiguration, session)
+        return PowerShellDebugProcess(session, result?.second!!, result.first) //todo add null check
       }
     })
     session.addSessionListener(sessionListener)

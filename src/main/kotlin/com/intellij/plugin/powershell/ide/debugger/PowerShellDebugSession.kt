@@ -154,7 +154,7 @@ class PowerShellDebugSession(val client: PSDebugClient, val server: IDebugProtoc
           }.toTypedArray()
           try {
             val setBreakpointsResponse = server.setBreakpoints(breakpointArgs).await()
-            val responseSet = setBreakpointsResponse.breakpoints.map { x -> x.line }.toHashSet()
+            val responseSet = setBreakpointsResponse.breakpoints.map { x -> x.line - 1 }.toHashSet()
             breakpointMapEntry.value.forEach {
               if(!responseSet.contains(it.key))
                 session.setBreakpointInvalid(it.value, MessagesBundle.message("powershell.debugger.breakpoints.invalidBreakPoint"))
