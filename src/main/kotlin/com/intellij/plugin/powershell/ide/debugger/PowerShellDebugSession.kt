@@ -1,9 +1,7 @@
 package com.intellij.plugin.powershell.ide.debugger
 
 import com.intellij.openapi.application.EDT
-import com.intellij.openapi.diagnostic.getOrLogException
 import com.intellij.openapi.diagnostic.logger
-import com.intellij.openapi.diagnostic.runAndLogException
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.plugin.powershell.ide.MessagesBundle
@@ -29,13 +27,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import org.apache.xml.resolver.helpers.FileURL
 import org.eclipse.lsp4j.debug.*
 import org.eclipse.lsp4j.debug.services.IDebugProtocolServer
-import java.util.*
-import java.util.concurrent.TimeUnit
 import javax.swing.Icon
-import kotlin.collections.HashMap
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.io.path.Path
 

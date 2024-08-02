@@ -1,10 +1,8 @@
 package com.intellij.plugin.powershell.debugger
 
-import com.intellij.plugin.powershell.ide.debugger.PowerShellSuspendContext
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.testFramework.fixtures.TempDirTestFixture
 import com.intellij.testFramework.fixtures.impl.TempDirTestFixtureImpl
-import com.intellij.vcs.commit.CommitSessionInfo.Default.session
 import com.intellij.xdebugger.XDebuggerTestUtil
 import com.jetbrains.rd.util.lifetime.Lifetime
 import junit.framework.TestCase

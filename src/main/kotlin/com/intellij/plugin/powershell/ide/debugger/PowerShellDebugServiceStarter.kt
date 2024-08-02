@@ -3,8 +3,6 @@ package com.intellij.plugin.powershell.ide.debugger
 import com.intellij.execution.DefaultExecutionResult
 import com.intellij.execution.process.KillableProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
-import com.intellij.openapi.rd.defineNestedLifetime
-import com.intellij.openapi.rd.util.lifetimedCoroutineScope
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.plugin.powershell.ide.PluginProjectRoot
 import com.intellij.plugin.powershell.ide.run.PowerShellRunConfiguration
@@ -13,7 +11,6 @@ import com.intellij.plugin.powershell.lang.lsp.languagehost.terminal.PowerShellC
 import com.intellij.terminal.TerminalExecutionConsole
 import com.intellij.util.io.await
 import com.intellij.xdebugger.XDebugSession
-import com.intellij.xdebugger.XDebugSessionListener
 import com.intellij.xdebugger.XDebuggerManager
 import kotlinx.coroutines.runBlocking
 import org.eclipse.lsp4j.debug.*

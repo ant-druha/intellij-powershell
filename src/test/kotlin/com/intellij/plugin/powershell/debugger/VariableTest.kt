@@ -9,12 +9,8 @@ import com.intellij.testFramework.fixtures.TempDirTestFixture
 import com.intellij.testFramework.fixtures.impl.TempDirTestFixtureImpl
 import com.intellij.xdebugger.XDebuggerTestUtil
 import com.intellij.xdebugger.XTestCompositeNode
-import com.intellij.xdebugger.XTestEvaluationCallback
-import com.intellij.xdebugger.frame.XValue
-import com.intellij.xdebugger.frame.XValueModifier
 import com.intellij.xdebugger.frame.XValueModifier.XModificationCallback
 import com.intellij.xdebugger.impl.breakpoints.XExpressionImpl
-import com.intellij.xdebugger.impl.ui.tree.nodes.XEvaluationCallbackBase
 import com.jetbrains.rd.util.lifetime.Lifetime
 import junit.framework.TestCase
 import org.junit.Assert

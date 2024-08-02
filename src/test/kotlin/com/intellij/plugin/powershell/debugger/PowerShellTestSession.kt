@@ -7,18 +7,17 @@ import com.intellij.execution.impl.RunnerAndConfigurationSettingsImpl
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.openapi.project.Project
-import com.intellij.plugin.powershell.ide.debugger.ClientSessionKey
 import com.intellij.plugin.powershell.ide.debugger.PowerShellDebugProcess
 import com.intellij.plugin.powershell.ide.debugger.PowerShellDebugServiceStarter
 import com.intellij.plugin.powershell.ide.run.*
 import com.intellij.xdebugger.*
 import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rd.util.reactive.Signal
 import kotlinx.coroutines.runBlocking
 import java.nio.file.Path
 import java.time.Duration
 import java.util.concurrent.Semaphore
 import kotlin.io.path.Path
-import com.jetbrains.rd.util.reactive.Signal
 import kotlin.io.path.pathString
 
 class PowerShellTestSession(val project: Project, val scriptPath: Path) {
