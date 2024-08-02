@@ -3,6 +3,7 @@ package com.intellij.plugin.powershell.ide.debugger
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.plugin.powershell.ide.MessagesBundle
 import com.intellij.plugin.powershell.lang.debugger.PSDebugClient
 import com.intellij.ui.ColoredTextContainer
 import com.intellij.ui.IconManager
@@ -38,6 +39,7 @@ class PowerShellDebugSession(val client: PSDebugClient, val server: IDebugProtoc
                              val session: XDebugSession,
                              val coroutineScope: CoroutineScope,
                              val xDebugSession: XDebugSession) {
+
   val breakpointMap = mutableMapOf<String, MutableMap<Int, XLineBreakpoint<XBreakpointProperties<*>>>>()
 
   init{
@@ -136,23 +138,34 @@ class PowerShellDebugSession(val client: PSDebugClient, val server: IDebugProtoc
   private fun sendBreakpointRequest() {
     coroutineScope.launch(start = CoroutineStart.UNDISPATCHED) {
       linearizer.withLock {
-      for (breakpointMapEntry in breakpointMap) {
-        val breakpointArgs = SetBreakpointsArguments()
-        val source: Source = Source()
-        source.path = breakpointMapEntry.key
-        breakpointArgs.source = source
+        for (breakpointMapEntry in breakpointMap) {
+          val breakpointArgs = SetBreakpointsArguments()
+          val source: Source = Source()
+          source.path = breakpointMapEntry.key
+          breakpointArgs.source = source
 
-        breakpointArgs.breakpoints = breakpointMapEntry.value.map {
-          val bp = it.value
-          SourceBreakpoint().apply {
-            line = bp.line + 1
-            condition = bp.conditionExpression?.expression
-            logMessage = bp.logExpressionObject?.expression
+          breakpointArgs.breakpoints = breakpointMapEntry.value.map {
+            val bp = it.value
+            SourceBreakpoint().apply {
+              line = bp.line + 1
+              condition = bp.conditionExpression?.expression
+              logMessage = bp.logExpressionObject?.expression
+            }
+          }.toTypedArray()
+          try {
+            val setBreakpointsResponse = server.setBreakpoints(breakpointArgs).await()
+            val responseSet = setBreakpointsResponse.breakpoints.map { x -> x.line }.toHashSet()
+            breakpointMapEntry.value.forEach {
+              if(!responseSet.contains(it.key))
+                session.setBreakpointInvalid(it.value, MessagesBundle.message("powershell.debugger.breakpoints.invalidBreakPoint"))
+            }
+          } catch (e: Throwable) {
+            session.reportMessage(
+              e.message ?: e.javaClass.simpleName,
+              com.intellij.openapi.ui.MessageType.ERROR
+            )
           }
-        }.toTypedArray()
-        val setBreakpointsResponse = server.setBreakpoints(breakpointArgs).await()
-        val breakpointsResponse: Array<Breakpoint> = setBreakpointsResponse.breakpoints
-      }
+        }
       }
     }
   }
@@ -168,7 +181,6 @@ class PowerShellExecutionStack(val stackResponse: StackTraceResponse,
   override fun computeStackFrames(firstFrameIndex: Int, container: XStackFrameContainer?) {
     container?.addStackFrames(stackResponse.stackFrames.drop(firstFrameIndex).map { PowerShellStackFrame(it, server, coroutineScope, xDebugSession) }, true)
   }
-
 }
 
 class PowerShellStackFrame(val stack: StackFrame, val server: IDebugProtocolServer, val coroutineScope: CoroutineScope, val xDebugSession: XDebugSession): XStackFrame() {
@@ -232,7 +244,6 @@ class PowerShellDebuggerVariableValue(val variable: Variable, val parentReferenc
   }
 
   override fun computePresentation(node: XValueNode, place: XValuePlace) {
-    //val kind = variable.presentationHint.kind
     var icon: Icon? = IconManager.getInstance().getPlatformIcon(PlatformIcons.Variable)
 
     node.setPresentation(icon, variable.type, variable.value, variable.variablesReference != 0)
@@ -284,10 +295,6 @@ class PowerShellDebuggerVariableValue(val variable: Variable, val parentReferenc
         }
       }
     }
-  }
-
-  override fun computeSourcePosition(navigatable: XNavigatable) {
-    //navigatable.setSourcePosition(PowerShellSourcePosition())
   }
 }
 
