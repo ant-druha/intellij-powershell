@@ -139,7 +139,7 @@ class PowerShellDebugSession(val client: PSDebugClient, val server: IDebugProtoc
       for (breakpointMapEntry in breakpointMap) {
         val breakpointArgs = SetBreakpointsArguments()
         val source: Source = Source()
-        source.setPath(breakpointMapEntry.key)
+        source.path = breakpointMapEntry.key
         breakpointArgs.source = source
 
         breakpointArgs.breakpoints = breakpointMapEntry.value.map {

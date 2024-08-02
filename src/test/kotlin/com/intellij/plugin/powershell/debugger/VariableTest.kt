@@ -114,7 +114,7 @@ class VariableTest: BasePlatformTestCase() {
   }
 }
 
-class XTestModificationCallback : XValueModifier.XModificationCallback {
+class XTestModificationCallback : XModificationCallback {
   private var myErrorMessage: String? = null
   private val myFinished = Semaphore(0)
 

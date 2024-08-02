@@ -128,7 +128,7 @@ class PowerShellConsoleTerminalRunner(project: Project) : EditorServicesLanguage
 
     val panel = JPanel(BorderLayout())
     panel.add(actionToolbar.component, BorderLayout.WEST)
-    actionToolbar.setTargetComponent(panel)
+      actionToolbar.targetComponent = panel
 
     val processHandler = PSPtyProcessHandler(this, process, "PowerShell console process")
     val contentDescriptor = RunContentDescriptor(null, processHandler, panel, "PowerShell Terminal Console")

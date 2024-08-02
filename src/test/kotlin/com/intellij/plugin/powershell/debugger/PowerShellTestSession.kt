@@ -108,19 +108,4 @@ class PowerShellDebugSessionListener : XDebugSessionListener {
     stoppedSemaphore.release()
   }
 
-  override fun stackFrameChanged() {
-    super.stackFrameChanged()
-  }
-
-  override fun beforeSessionResume() {
-    super.beforeSessionResume()
-  }
-
-  override fun settingsChanged() {
-    super.settingsChanged()
-  }
-
-  override fun breakpointsMuted(muted: Boolean) {
-    super.breakpointsMuted(muted)
-  }
 }

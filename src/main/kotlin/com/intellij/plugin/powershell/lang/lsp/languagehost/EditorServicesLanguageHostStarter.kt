@@ -416,7 +416,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
     return SessionInfo.Tcp(langServicePort, debugServicePort, powerShellVersion, status)
   }
 
-  private fun readPipesInfo(jsonResult: JsonObject): SessionInfo? {
+  private fun readPipesInfo(jsonResult: JsonObject): SessionInfo {
     val langServiceReadPipeName = jsonResult.get("languageServiceReadPipeName")?.asString
     val langServiceWritePipeName = jsonResult.get("languageServiceWritePipeName")?.asString
     val debugServiceReadPipeName = jsonResult.get("debugServiceReadPipeName")?.asString

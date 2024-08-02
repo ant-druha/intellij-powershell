@@ -22,5 +22,5 @@ object PowerShellTokenTypeSets {
   val SIMPLE_VARIABLE_IDENTIFIERS = TokenSet.create(SIMPLE_ID, VAR_ID, THIS, QMARK, HAT, DS)
   val FUNCTION_IDENTIFIERS = TokenSet.orSet(TokenSet.create(SIMPLE_ID, GENERIC_ID_PART, THIS, QMARK, HAT, DS, DOT), IDENTIFIERS_ALLOWED_AS_KEYWORD)
   val OPERATORS = TokenSet.create(OP_C, OP_AND, OP_OR, OP_XOR, OP_BAND, OP_BOR, OP_BXOR, PLUS, DASH, STAR, DIV, PERS)
-  val PROCESS_AS_WORD_TOKENS = TokenSet.create(PowerShellTypes.QMARK, PowerShellTypes.DS, PowerShellTypes.HAT, PowerShellTypes.LP, PowerShellTypes.RP, PowerShellTypes.DOT)
+  val PROCESS_AS_WORD_TOKENS = TokenSet.create(QMARK, DS, HAT, LP, RP, DOT)
 }

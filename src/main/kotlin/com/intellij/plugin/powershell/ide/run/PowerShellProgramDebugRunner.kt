@@ -110,7 +110,7 @@ private fun startDebugging(environment: ExecutionEnvironment, runConfiguration: 
     val arguments = InitializeRequestArguments()
     arguments.clientID = "client1"
     arguments.adapterID = "adapter1"
-    arguments.setSupportsRunInTerminalRequest(false)
+    arguments.supportsRunInTerminalRequest = false
 
     val remoteProxy = launcher.remoteProxy
 
@@ -131,7 +131,7 @@ private fun startDebugging(environment: ExecutionEnvironment, runConfiguration: 
 
         val breakpointArgs = SetBreakpointsArguments()
         val source = Source()
-        source.setPath(fileURL)
+        source.path = fileURL
         breakpointArgs.source = source
         val bps = entry.value
         breakpointArgs.breakpoints = bps.map {

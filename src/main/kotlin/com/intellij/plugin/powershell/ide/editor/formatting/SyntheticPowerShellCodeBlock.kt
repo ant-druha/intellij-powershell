@@ -107,5 +107,5 @@ class SyntheticPowerShellCodeBlock(private val mySubBlocks: MutableList<Block>, 
 
   override fun getWrap(): Wrap? = myBlockWrap
 
-  override fun getIndent(): Indent? = myBlockIndent
+  override fun getIndent(): Indent = myBlockIndent
 }

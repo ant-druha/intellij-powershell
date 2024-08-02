@@ -18,7 +18,7 @@ import org.intellij.plugins.intelliLang.inject.config.BaseInjection
 class PowerShellLanguageInjector : MultiHostInjector {
 
   private val injectionSupport: PowerShellLanguageInjectionSupport? by lazy {
-    ArrayList(InjectorUtils.getActiveInjectionSupports()).filterIsInstance(PowerShellLanguageInjectionSupport::class.java).firstOrNull()
+    ArrayList(InjectorUtils.getActiveInjectionSupports()).filterIsInstance<PowerShellLanguageInjectionSupport>().firstOrNull()
   }
 
   override fun elementsToInjectIn(): MutableList<out Class<out PsiElement>> {
