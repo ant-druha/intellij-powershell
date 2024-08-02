@@ -14,7 +14,7 @@ class PowerShellArrayClassTypeImpl(private val psiElement: PowerShellArrayTypeEl
     return psiElement.referenceTypeElement.getType()
   }
 
-  override fun getReferenceName(): String? {
+  override fun getReferenceName(): String {
     return "[" + getName() + "]"
   }
 

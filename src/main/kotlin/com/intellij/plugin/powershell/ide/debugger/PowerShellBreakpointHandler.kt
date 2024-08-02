@@ -24,7 +24,7 @@ class PowerShellBreakpointHandler(powerShellDebugProcess: PowerShellDebugProcess
       return
     }
     val file = sourcePosition.file
-    val project: Project = myPowerShellDebugProcess.getSession().getProject()
+    val project: Project = myPowerShellDebugProcess.session.project
     val fileURL: String = getFileURL(file)
     val lineNumber: Int = breakpoint.line
     if (lineNumber == -1) {

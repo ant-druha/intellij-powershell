@@ -52,12 +52,7 @@ private val VARIABLE: ElementPattern<PsiElement> = psiElement().withParent(Power
 
 class PowerShellDebuggerCompletionContributor : CompletionContributor() {
 
-  override fun beforeCompletion(context: CompletionInitializationContext) {
-    //context.dummyIdentifier = CompletionUtilCore.DUMMY_IDENTIFIER_TRIMMED
-    super.beforeCompletion(context)
-  }
-
-  override fun fillCompletionVariants(parameters: CompletionParameters, result: CompletionResultSet) {
+    override fun fillCompletionVariants(parameters: CompletionParameters, result: CompletionResultSet) {
     val debugSession = parameters.editor.document.getUserData(documentSessionKey) ?: return
     val debugProcess = debugSession.debugProcess as PowerShellDebugProcess
 

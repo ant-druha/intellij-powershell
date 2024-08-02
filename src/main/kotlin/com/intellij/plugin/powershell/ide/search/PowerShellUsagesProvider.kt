@@ -18,7 +18,7 @@ import com.intellij.psi.tree.TokenSet
  */
 class PowerShellUsagesProvider : FindUsagesProvider {
 
-  override fun getWordsScanner(): WordsScanner? {
+  override fun getWordsScanner(): WordsScanner {
     return DefaultWordsScanner(PowerShellLexerAdapter(),
                                PowerShellTokenTypeSets.IDENTIFIERS,
                                PowerShellTokenTypeSets.COMMENTS,

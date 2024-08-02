@@ -126,7 +126,7 @@ class PowerShellScriptCommandLineState(
     return commandString
   }
 
-  override fun execute(executor: Executor?, runner: ProgramRunner<*>): ExecutionResult? {
+  override fun execute(executor: Executor?, runner: ProgramRunner<*>): ExecutionResult {
     val process = startProcess()
     val console = TerminalExecutionConsole(environment.project, process)
     return DefaultExecutionResult(console, process)

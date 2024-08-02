@@ -24,7 +24,7 @@ class PowerShellDebuggerEditorsProvider(val xDebugSession: XDebugSession? = null
   private var myFileType: PowerShellFileType = PowerShellFileType.INSTANCE
 
   companion object {
-    private var documentId = AtomicInteger(0);
+    private var documentId = AtomicInteger(0)
   }
 
   override fun getFileType(): FileType {
@@ -40,7 +40,7 @@ class PowerShellDebuggerEditorsProvider(val xDebugSession: XDebugSession? = null
     val id = documentId.getAndIncrement()
     val psiFile = PsiFileFactory.getInstance(project)
       .createFileFromText(
-        "$fileName$id." + myFileType.getDefaultExtension(), myFileType, expression.expression,
+        "$fileName$id." + myFileType.defaultExtension, myFileType, expression.expression,
         LocalTimeCounter.currentTime(), true
       )
     val document = checkNotNull(PsiDocumentManager.getInstance(project).getDocument(psiFile))

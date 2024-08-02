@@ -10,7 +10,7 @@ class PowerShellImmediateClassTypeImpl(private val myClass: PowerShellTypeDeclar
     return visitor.visitClassType(this)
   }
 
-  override fun resolve(): PowerShellComponent? {
+  override fun resolve(): PowerShellComponent {
     return myClass
   }
 

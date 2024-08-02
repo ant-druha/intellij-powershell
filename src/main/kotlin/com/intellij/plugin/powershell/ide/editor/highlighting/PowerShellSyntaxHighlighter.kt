@@ -49,7 +49,7 @@ class PowerShellSyntaxHighlighter : SyntaxHighlighterBase() {
   }
 
   override fun getTokenHighlights(tokenType: IElementType?): Array<TextAttributesKey> {
-    return SyntaxHighlighterBase.pack(ATTRIBUTES[tokenType])
+    return pack(ATTRIBUTES[tokenType])
   }
 
   override fun getHighlightingLexer(): Lexer {

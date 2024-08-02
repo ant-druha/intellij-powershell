@@ -14,7 +14,7 @@ class PowerShellFileType : LanguageFileType(PowerShellLanguage.INSTANCE) {
     val INSTANCE = PowerShellFileType()
   }
 
-  override fun getIcon(): Icon? {
+  override fun getIcon(): Icon {
     return PowerShellIcons.FILE
   }
 
