@@ -74,7 +74,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
         "${ApplicationInfo.getInstance().majorVersion}.${ApplicationInfo.getInstance().minorVersion}"
 
     private data class HostDetails(val name: String, val profileId: String, val version: String)
-    private open class SessionInfo private constructor(val powerShellVersion: String?, val status: String?) {
+    open class SessionInfo private constructor(val powerShellVersion: String?, val status: String?) {
 
       class Pipes(
         val languageServiceReadPipeName: String,
@@ -328,7 +328,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
    * @throws PowerShellExtensionNotFound
    * @throws PowerShellNotInstalled
    */
-  private suspend fun startServerSession(isDebugServiceOnly: Boolean = false): SessionInfo? {
+  public suspend fun startServerSession(isDebugServiceOnly: Boolean = false): SessionInfo? {
     cachedPowerShellExtensionDir = null
     cachedEditorServicesModuleVersion = null
     val commandLine = buildCommandLine(isDebugServiceOnly)
