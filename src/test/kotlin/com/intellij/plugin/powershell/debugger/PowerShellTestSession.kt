@@ -12,6 +12,7 @@ import com.intellij.plugin.powershell.ide.debugger.PowerShellDebugProcess
 import com.intellij.plugin.powershell.ide.debugger.PowerShellDebugServiceStarter
 import com.intellij.plugin.powershell.ide.run.*
 import com.intellij.xdebugger.*
+import com.jetbrains.rd.util.lifetime.Lifetime
 import kotlinx.coroutines.runBlocking
 import java.nio.file.Path
 import java.time.Duration
@@ -32,9 +33,9 @@ class PowerShellTestSession(val project: Project, val scriptPath: Path) {
 
   val configuration: PowerShellRunConfiguration = createConfiguration(defaultWorkingDirectory.toString(), scriptPath.pathString)
 
-  fun startDebugSession() = startDebugSession(configuration)
+  fun startDebugSession(lifetime: Lifetime) = startDebugSession(lifetime, configuration)
 
-  fun startDebugSession(configuration: PowerShellRunConfiguration): XDebugSession {
+  fun startDebugSession(lifetime: Lifetime, configuration: PowerShellRunConfiguration): XDebugSession {
     val executor = DefaultDebugExecutor.getDebugExecutorInstance()
     val runner = ProgramRunner.getRunner(executor.id, configuration) as PowerShellProgramDebugRunner
     val environment = ExecutionEnvironment(
@@ -56,6 +57,7 @@ class PowerShellTestSession(val project: Project, val scriptPath: Path) {
       }
     })
     session.addSessionListener(sessionListener)
+    lifetime.onTermination { session.stop() } // TODO: Wait for stop? Think about graceful teardown for the debug process.
     return session
   }
 
