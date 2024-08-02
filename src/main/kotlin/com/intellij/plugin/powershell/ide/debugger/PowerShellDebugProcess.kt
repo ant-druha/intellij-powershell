@@ -1,6 +1,7 @@
 package com.intellij.plugin.powershell.ide.debugger
 
 import com.intellij.execution.ExecutionResult
+import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.ui.ExecutionConsole
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.EDT
@@ -17,7 +18,7 @@ import kotlinx.coroutines.Dispatchers
 import org.eclipse.lsp4j.debug.ContinueArguments
 
 class PowerShellDebugProcess(val xDebugSession: XDebugSession, val executionResult: ExecutionResult, val clientSession: PowerShellDebugSession)
-  : XDebugProcess(xDebugSession), Disposable {
+  : XDebugProcess(xDebugSession), Disposable { // TODO: Dispose
 
   companion object {
     val KEY: Key<PowerShellDebugProcess> =
@@ -30,6 +31,8 @@ class PowerShellDebugProcess(val xDebugSession: XDebugSession, val executionResu
   init {
     myProcessHandler.putUserData(KEY, this)
   }
+
+  override fun doGetProcessHandler(): ProcessHandler = myProcessHandler
 
   val myExecutionConsole = executionResult.executionConsole
   val myEditorsProvider = PowerShellDebuggerEditorsProvider(xDebugSession)

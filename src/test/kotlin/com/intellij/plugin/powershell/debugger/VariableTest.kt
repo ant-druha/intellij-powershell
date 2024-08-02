@@ -15,6 +15,7 @@ import com.intellij.xdebugger.frame.XValueModifier
 import com.intellij.xdebugger.frame.XValueModifier.XModificationCallback
 import com.intellij.xdebugger.impl.breakpoints.XExpressionImpl
 import com.intellij.xdebugger.impl.ui.tree.nodes.XEvaluationCallbackBase
+import com.jetbrains.rd.util.lifetime.Lifetime
 import junit.framework.TestCase
 import org.junit.Assert
 import java.util.concurrent.Semaphore
@@ -37,15 +38,20 @@ class VariableTest: BasePlatformTestCase() {
 
     val testSession = PowerShellTestSession(project, file.toNioPath())
     XDebuggerTestUtil.toggleBreakpoint(project, file, line)
-    val debugSession = testSession.startDebugSession()
-    XDebuggerTestUtil.waitFor(testSession.sessionListener.pausedSemaphore, testSession.waitForBackgroundTimeout.toMillis())
-    val suspendContext = debugSession.suspendContext as PowerShellSuspendContext
-    val topFrame = suspendContext.activeExecutionStack.topFrame!!
-    val children = XTestCompositeNode(topFrame).collectChildren()
-    val variableValue = XDebuggerTestUtil.findVar(children, variableName)
-    val variableValueNode = XDebuggerTestUtil.computePresentation(variableValue)
-    TestCase.assertEquals(value.toString(), variableValueNode.myValue)
-    myFixture.projectDisposable.dispose()
+    Lifetime.using { lt ->
+      val debugSession = testSession.startDebugSession(lt)
+      XDebuggerTestUtil.waitFor(
+        testSession.sessionListener.pausedSemaphore,
+        testSession.waitForBackgroundTimeout.toMillis()
+      )
+      val suspendContext = debugSession.suspendContext as PowerShellSuspendContext
+      val topFrame = suspendContext.activeExecutionStack.topFrame!!
+      val children = XTestCompositeNode(topFrame).collectChildren()
+      val variableValue = XDebuggerTestUtil.findVar(children, variableName)
+      val variableValueNode = XDebuggerTestUtil.computePresentation(variableValue)
+      TestCase.assertEquals(value.toString(), variableValueNode.myValue)
+      myFixture.projectDisposable.dispose()
+    }
   }
 
   fun testComplexVariable()
@@ -63,17 +69,22 @@ class VariableTest: BasePlatformTestCase() {
     val millis = testSession.waitForBackgroundTimeout.toMillis()
 
     XDebuggerTestUtil.toggleBreakpoint(project, file, line)
-    val debugSession = testSession.startDebugSession()
-    XDebuggerTestUtil.waitFor(testSession.sessionListener.pausedSemaphore, millis)
-    val suspendContext = debugSession.suspendContext as PowerShellSuspendContext
-    val topFrame = suspendContext.activeExecutionStack.topFrame!!
-    val children = XTestCompositeNode(topFrame).collectChildren(millis)
-    val variableValue = XDebuggerTestUtil.findVar(children, variableName)
-    val variableChildren = XTestCompositeNode(variableValue).collectChildren(millis)
-    TestCase.assertTrue("variableChildren.size (${variableChildren.size}) is not greater than zero", variableChildren.size > 0)
-    val nestedField = XDebuggerTestUtil.findVar(variableChildren, nestedFieldName)
-    val nestedFieldValueNode = XDebuggerTestUtil.computePresentation(nestedField)
-    TestCase.assertEquals(nestedFieldValue.toString(), nestedFieldValueNode.myValue)
+    Lifetime.using { lt ->
+      val debugSession = testSession.startDebugSession(lt)
+      XDebuggerTestUtil.waitFor(testSession.sessionListener.pausedSemaphore, millis)
+      val suspendContext = debugSession.suspendContext as PowerShellSuspendContext
+      val topFrame = suspendContext.activeExecutionStack.topFrame!!
+      val children = XTestCompositeNode(topFrame).collectChildren(millis)
+      val variableValue = XDebuggerTestUtil.findVar(children, variableName)
+      val variableChildren = XTestCompositeNode(variableValue).collectChildren(millis)
+      TestCase.assertTrue(
+        "variableChildren.size (${variableChildren.size}) is not greater than zero",
+        variableChildren.size > 0
+      )
+      val nestedField = XDebuggerTestUtil.findVar(variableChildren, nestedFieldName)
+      val nestedFieldValueNode = XDebuggerTestUtil.computePresentation(nestedField)
+      TestCase.assertEquals(nestedFieldValue.toString(), nestedFieldValueNode.myValue)
+    }
     myFixture.projectDisposable.dispose()
   }
 
@@ -97,19 +108,25 @@ class VariableTest: BasePlatformTestCase() {
     XDebuggerTestUtil.toggleBreakpoint(project, file, line)
     XDebuggerTestUtil.toggleBreakpoint(project, file, secondLine)
 
-    val debugSession = testSession.startDebugSession()
-    XDebuggerTestUtil.waitFor(testSession.sessionListener.pausedSemaphore, millis)
-    val suspendContext = debugSession.suspendContext as PowerShellSuspendContext
+    Lifetime.using { lt ->
+      val debugSession = testSession.startDebugSession(lt)
+      XDebuggerTestUtil.waitFor(testSession.sessionListener.pausedSemaphore, millis)
+      val suspendContext = debugSession.suspendContext as PowerShellSuspendContext
 
-    val variableValue = PowerShellDebuggerTestUtil.getVariable(suspendContext, variableName)
-    var callback = XTestModificationCallback()
-    variableValue.modifier!!.setValue(setValueExpression, callback)
-    callback.waitFor(millis)
-    debugSession.resume()
-    XDebuggerTestUtil.waitFor(testSession.sessionListener.pausedSemaphore, testSession.waitForBackgroundTimeout.toMillis())
-    val resultVariable = PowerShellDebuggerTestUtil.getVariable(debugSession.suspendContext as PowerShellSuspendContext, variableName)
-    val variableValueNode = XDebuggerTestUtil.computePresentation(resultVariable)
-    TestCase.assertEquals(value.toString(), variableValueNode.myValue)
+      val variableValue = PowerShellDebuggerTestUtil.getVariable(suspendContext, variableName)
+      var callback = XTestModificationCallback()
+      variableValue.modifier!!.setValue(setValueExpression, callback)
+      callback.waitFor(millis)
+      debugSession.resume()
+      XDebuggerTestUtil.waitFor(
+        testSession.sessionListener.pausedSemaphore,
+        testSession.waitForBackgroundTimeout.toMillis()
+      )
+      val resultVariable =
+        PowerShellDebuggerTestUtil.getVariable(debugSession.suspendContext as PowerShellSuspendContext, variableName)
+      val variableValueNode = XDebuggerTestUtil.computePresentation(resultVariable)
+      TestCase.assertEquals(value.toString(), variableValueNode.myValue)
+    }
     myFixture.projectDisposable.dispose()
   }
 }

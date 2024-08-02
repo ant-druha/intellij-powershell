@@ -5,6 +5,7 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.testFramework.fixtures.TempDirTestFixture
 import com.intellij.testFramework.fixtures.impl.TempDirTestFixtureImpl
 import com.intellij.xdebugger.XDebuggerTestUtil
+import com.jetbrains.rd.util.lifetime.Lifetime
 import junit.framework.TestCase
 
 class StepTest: BasePlatformTestCase() {
@@ -25,15 +26,26 @@ class StepTest: BasePlatformTestCase() {
 
     val testSession = PowerShellTestSession(project, file.toNioPath())
     XDebuggerTestUtil.toggleBreakpoint(project, file, line)
-    val debugSession = testSession.startDebugSession()
-    XDebuggerTestUtil.waitFor(testSession.sessionListener.pausedSemaphore, testSession.waitForBackgroundTimeout.toMillis())
-    val suspendContext = debugSession.suspendContext as PowerShellSuspendContext
-    TestCase.assertEquals(line, suspendContext.activeExecutionStack.topFrame?.sourcePosition?.line)
-    debugSession.stepOver(false)
-    XDebuggerTestUtil.waitFor(testSession.sessionListener.pausedSemaphore, testSession.waitForBackgroundTimeout.toMillis())
-    TestCase.assertEquals(line + 1, (debugSession.suspendContext as PowerShellSuspendContext).activeExecutionStack.topFrame?.sourcePosition?.line)
+    Lifetime.using { lt ->
+      val debugSession = testSession.startDebugSession(lt)
+      XDebuggerTestUtil.waitFor(
+        testSession.sessionListener.pausedSemaphore,
+        testSession.waitForBackgroundTimeout.toMillis()
+      )
+      val suspendContext = debugSession.suspendContext as PowerShellSuspendContext
+      TestCase.assertEquals(line, suspendContext.activeExecutionStack.topFrame?.sourcePosition?.line)
+      debugSession.stepOver(false)
+      XDebuggerTestUtil.waitFor(
+        testSession.sessionListener.pausedSemaphore,
+        testSession.waitForBackgroundTimeout.toMillis()
+      )
+      TestCase.assertEquals(
+        line + 1,
+        (debugSession.suspendContext as PowerShellSuspendContext).activeExecutionStack.topFrame?.sourcePosition?.line
+      )
 
-    myFixture.projectDisposable.dispose()
+      myFixture.projectDisposable.dispose()
+    }
   }
 
   fun testStepIn()
@@ -48,15 +60,26 @@ class StepTest: BasePlatformTestCase() {
 
     val testSession = PowerShellTestSession(project, file.toNioPath())
     XDebuggerTestUtil.toggleBreakpoint(project, file, line)
-    val debugSession = testSession.startDebugSession()
-    XDebuggerTestUtil.waitFor(testSession.sessionListener.pausedSemaphore, testSession.waitForBackgroundTimeout.toMillis())
-    val suspendContext = debugSession.suspendContext as PowerShellSuspendContext
-    TestCase.assertEquals(line, suspendContext.activeExecutionStack.topFrame?.sourcePosition?.line)
-    debugSession.stepInto()
-    XDebuggerTestUtil.waitFor(testSession.sessionListener.pausedSemaphore, testSession.waitForBackgroundTimeout.toMillis())
-    TestCase.assertEquals(stepInLine, (debugSession.suspendContext as PowerShellSuspendContext).activeExecutionStack.topFrame?.sourcePosition?.line)
+    Lifetime.using { lt ->
+      val debugSession = testSession.startDebugSession(lt)
+      XDebuggerTestUtil.waitFor(
+        testSession.sessionListener.pausedSemaphore,
+        testSession.waitForBackgroundTimeout.toMillis()
+      )
+      val suspendContext = debugSession.suspendContext as PowerShellSuspendContext
+      TestCase.assertEquals(line, suspendContext.activeExecutionStack.topFrame?.sourcePosition?.line)
+      debugSession.stepInto()
+      XDebuggerTestUtil.waitFor(
+        testSession.sessionListener.pausedSemaphore,
+        testSession.waitForBackgroundTimeout.toMillis()
+      )
+      TestCase.assertEquals(
+        stepInLine,
+        (debugSession.suspendContext as PowerShellSuspendContext).activeExecutionStack.topFrame?.sourcePosition?.line
+      )
 
-    myFixture.projectDisposable.dispose()
+      myFixture.projectDisposable.dispose()
+    }
   }
 
   fun testStepOut()
@@ -72,15 +95,26 @@ class StepTest: BasePlatformTestCase() {
 
     val testSession = PowerShellTestSession(project, file.toNioPath())
     XDebuggerTestUtil.toggleBreakpoint(project, file, line)
-    val debugSession = testSession.startDebugSession()
-    XDebuggerTestUtil.waitFor(testSession.sessionListener.pausedSemaphore, testSession.waitForBackgroundTimeout.toMillis())
-    val suspendContext = debugSession.suspendContext as PowerShellSuspendContext
-    TestCase.assertEquals(line, suspendContext.activeExecutionStack.topFrame?.sourcePosition?.line)
-    debugSession.stepOut()
-    XDebuggerTestUtil.waitFor(testSession.sessionListener.pausedSemaphore, testSession.waitForBackgroundTimeout.toMillis())
-    TestCase.assertEquals(stepOutLine, (debugSession.suspendContext as PowerShellSuspendContext).activeExecutionStack.topFrame?.sourcePosition?.line)
+    Lifetime.using { lt ->
+      val debugSession = testSession.startDebugSession(lt)
+      XDebuggerTestUtil.waitFor(
+        testSession.sessionListener.pausedSemaphore,
+        testSession.waitForBackgroundTimeout.toMillis()
+      )
+      val suspendContext = debugSession.suspendContext as PowerShellSuspendContext
+      TestCase.assertEquals(line, suspendContext.activeExecutionStack.topFrame?.sourcePosition?.line)
+      debugSession.stepOut()
+      XDebuggerTestUtil.waitFor(
+        testSession.sessionListener.pausedSemaphore,
+        testSession.waitForBackgroundTimeout.toMillis()
+      )
+      TestCase.assertEquals(
+        stepOutLine,
+        (debugSession.suspendContext as PowerShellSuspendContext).activeExecutionStack.topFrame?.sourcePosition?.line
+      )
 
-    myFixture.projectDisposable.dispose()
+      myFixture.projectDisposable.dispose()
+    }
   }
 
   override fun tearDown() {

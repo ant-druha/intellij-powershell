@@ -1,6 +1,9 @@
 package com.intellij.plugin.powershell.ide.debugger
 
 import com.intellij.openapi.application.EDT
+import com.intellij.openapi.diagnostic.getOrLogException
+import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.diagnostic.runAndLogException
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.plugin.powershell.ide.MessagesBundle
@@ -33,6 +36,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.swing.Icon
 import kotlin.collections.HashMap
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.io.path.Path
 
 class PowerShellDebugSession(val client: PSDebugClient, val server: IDebugProtocolServer,
@@ -73,7 +77,12 @@ class PowerShellDebugSession(val client: PSDebugClient, val server: IDebugProtoc
   fun terminateDebugging()
   {
     coroutineScope.launch {
-      server.terminate(TerminateArguments()).await()
+      runCatching {
+        server.terminate(TerminateArguments()).await()
+      }.onFailure { t ->
+        // TODO: Investigate if we even need this, or we want to just outright terminate the process.
+        if (t is CancellationException) throw t
+        else logger.warn("Exception during debug session termination", t) }
     }
   }
 
@@ -324,3 +333,5 @@ class PowerShellSuspendContext(val stack: StackTraceResponse, val server: IDebug
     return PowerShellExecutionStack(stack, server, coroutineScope, xDebugSession)
   }
 }
+
+private val logger = logger<PowerShellDebugSession>()
