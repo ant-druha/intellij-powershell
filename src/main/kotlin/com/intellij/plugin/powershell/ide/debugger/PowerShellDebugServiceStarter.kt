@@ -7,7 +7,6 @@ import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.plugin.powershell.ide.PluginProjectRoot
 import com.intellij.plugin.powershell.ide.run.PowerShellRunConfiguration
 import com.intellij.plugin.powershell.lang.debugger.PSDebugClient
-import com.intellij.plugin.powershell.lang.lsp.languagehost.EditorServicesLanguageHostStarter
 import com.intellij.plugin.powershell.lang.lsp.languagehost.terminal.PowerShellConsoleTerminalRunner
 import com.intellij.terminal.TerminalExecutionConsole
 import com.intellij.util.io.await
@@ -30,7 +29,7 @@ class PowerShellDebugServiceStarter {
       session: XDebugSession
     )
       : Pair<PowerShellDebugSession, DefaultExecutionResult>? {
-      val processRunner = EditorServicesLanguageHostStarter(environment.project)
+      val processRunner = PowerShellConsoleTerminalRunner(environment.project)
       processRunner.useConsoleRepl()
       return runBlocking {
         val InOutPair = processRunner.establishDebuggerConnection()
