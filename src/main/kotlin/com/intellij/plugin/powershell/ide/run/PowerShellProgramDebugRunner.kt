@@ -1,30 +1,20 @@
 package com.intellij.plugin.powershell.ide.run
 
-import com.intellij.execution.DefaultExecutionResult
 import com.intellij.execution.ExecutionException
-import com.intellij.execution.ExecutionResult
 import com.intellij.execution.configurations.RunProfile
 import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.configurations.RunnerSettings
 import com.intellij.execution.executors.DefaultDebugExecutor
-import com.intellij.execution.process.KillableProcessHandler
 import com.intellij.execution.runners.AsyncProgramRunner
 import com.intellij.execution.runners.ExecutionEnvironment
-import com.intellij.execution.runners.showRunContent
 import com.intellij.execution.ui.RunContentDescriptor
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.rd.util.toPromise
 import com.intellij.openapi.rd.util.withUiContext
-import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.plugin.powershell.ide.MessagesBundle
 import com.intellij.plugin.powershell.ide.PluginProjectRoot
-import com.intellij.plugin.powershell.ide.debugger.PowerShellBreakpointType
 import com.intellij.plugin.powershell.ide.debugger.PowerShellDebugProcess
 import com.intellij.plugin.powershell.ide.debugger.PowerShellDebugServiceStarter
-import com.intellij.plugin.powershell.ide.debugger.PowerShellDebugSession
-import com.intellij.plugin.powershell.lang.debugger.PSDebugClient
-import com.intellij.plugin.powershell.lang.lsp.languagehost.terminal.PowerShellConsoleTerminalRunner
-import com.intellij.terminal.TerminalExecutionConsole
-import com.intellij.util.io.await
 import com.intellij.xdebugger.XDebugProcess
 import com.intellij.xdebugger.XDebugProcessStarter
 import com.intellij.xdebugger.XDebugSession
@@ -32,16 +22,8 @@ import com.intellij.xdebugger.XDebuggerManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
 import org.eclipse.lsp4j.debug.*
-import org.eclipse.lsp4j.debug.launch.DSPLauncher
-import org.eclipse.lsp4j.debug.services.IDebugProtocolServer
-import org.eclipse.lsp4j.jsonrpc.Launcher
 import org.jetbrains.concurrency.Promise
-import java.io.InputStream
-import java.io.OutputStream
-import java.lang.Boolean
-import java.util.concurrent.TimeUnit
 import kotlin.OptIn
 import kotlin.String
 import kotlin.Throws
@@ -73,7 +55,8 @@ class PowerShellProgramDebugRunner : AsyncProgramRunner<RunnerSettings>() {
             environment.putUserData(XSessionKey, session)
             val result =
               PowerShellDebugServiceStarter.startDebugServiceProcess(environment, state.runConfiguration, session)
-            return PowerShellDebugProcess(session, result?.second!!, result.first) //todo add null check
+                ?: throw ExecutionException(MessagesBundle.message("powershell.debugger.executionException"))
+            return PowerShellDebugProcess(session, result.second, result.first)
           }
         }).runContentDescriptor
       }

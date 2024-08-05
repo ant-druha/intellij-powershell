@@ -182,8 +182,8 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
     }
   }
 
-  override suspend fun establishDebuggerConnection(): Pair<InputStream?, OutputStream?> {
-    val sessionInfo = startServerSession(true) ?: return Pair(null, null)
+  override suspend fun  establishDebuggerConnection(): Pair<InputStream, OutputStream>? {
+    val sessionInfo = startServerSession(true) ?: return null
     if (sessionInfo is SessionInfo.Pipes) {
       val readPipeName = sessionInfo.debugServiceReadPipeName
       val writePipeName = sessionInfo.debugServiceWritePipeName
@@ -206,7 +206,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
       }
     } else {
       return withSyncIOBackgroundContext block@{
-        val port = (sessionInfo as? SessionInfo.Tcp)?.debugServicePort ?: return@block Pair(null, null)
+        val port = (sessionInfo as? SessionInfo.Tcp)?.debugServicePort ?: return@block null
         try {
           socket = Socket("127.0.0.1", port)
         } catch (e: Exception) {
@@ -222,7 +222,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
           if (inputStream != null && outputStream != null) return@block Pair(inputStream, outputStream)
         }
 
-        Pair(null, null)
+        null
       }
     }
   }

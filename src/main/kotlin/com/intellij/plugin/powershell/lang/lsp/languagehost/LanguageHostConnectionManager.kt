@@ -5,7 +5,7 @@ import java.io.OutputStream
 
 interface LanguageHostConnectionManager {
   suspend fun establishConnection(): Pair<InputStream?, OutputStream?>
-  suspend fun establishDebuggerConnection(): Pair<InputStream?, OutputStream?>
+  suspend fun establishDebuggerConnection(): Pair<InputStream, OutputStream>?
   fun closeConnection()
   fun isConnected(): Boolean
   fun getProcess(): Process?

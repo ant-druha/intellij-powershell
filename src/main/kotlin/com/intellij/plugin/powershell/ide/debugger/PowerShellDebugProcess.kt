@@ -14,6 +14,7 @@ import com.intellij.xdebugger.frame.XSuspendContext
 import com.jetbrains.rd.framework.util.adviseSuspend
 import com.jetbrains.rd.util.lifetime.Lifetime
 import kotlinx.coroutines.Dispatchers
+import java.util.concurrent.atomic.AtomicBoolean
 
 class PowerShellDebugProcess(val xDebugSession: XDebugSession, val executionResult: ExecutionResult, val clientSession: PowerShellDebugSession)
   : XDebugProcess(xDebugSession), Disposable { // TODO: Dispose
@@ -25,6 +26,7 @@ class PowerShellDebugProcess(val xDebugSession: XDebugSession, val executionResu
 
   val myBreakpointHandler = PowerShellBreakpointHandler(this, PowerShellBreakpointType::class.java)
   val myProcessHandler = executionResult.processHandler
+  var disposed = AtomicBoolean(false)
 
   init {
     myProcessHandler.putUserData(KEY, this)
@@ -52,10 +54,6 @@ class PowerShellDebugProcess(val xDebugSession: XDebugSession, val executionResu
       return
     }
     clientSession.continueDebugging(context)
-  }
-
-  override fun stop() {
-    clientSession.terminateDebugging()
   }
 
   override fun startStepOver(context: XSuspendContext?) {
@@ -95,7 +93,14 @@ class PowerShellDebugProcess(val xDebugSession: XDebugSession, val executionResu
     return myXBreakpointHandlers
   }
 
+  override fun stop() {
+    dispose()
+  }
+
   override fun dispose() {
-    clientSession.terminateDebugging()
+    if(!disposed.get()) {
+      executionResult.processHandler.destroyProcess()
+      disposed.set(true)
+    }
   }
 }
