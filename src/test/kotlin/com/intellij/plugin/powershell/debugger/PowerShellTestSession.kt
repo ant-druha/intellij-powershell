@@ -7,6 +7,7 @@ import com.intellij.execution.impl.RunnerAndConfigurationSettingsImpl
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.openapi.project.Project
+import com.intellij.plugin.powershell.ide.MessagesBundle
 import com.intellij.plugin.powershell.ide.debugger.PowerShellDebugProcess
 import com.intellij.plugin.powershell.ide.debugger.PowerShellDebugServiceStarter
 import com.intellij.plugin.powershell.ide.run.*
@@ -52,7 +53,9 @@ class PowerShellTestSession(val project: Project, val scriptPath: Path) {
       override fun start(session: XDebugSession): XDebugProcess {
         environment.putUserData(XSessionKey, session)
         val result = PowerShellDebugServiceStarter.startDebugServiceProcess(environment, state.runConfiguration, session)
-        return PowerShellDebugProcess(session, result?.second!!, result.first) //todo add null check
+          ?: throw ExecutionException(MessagesBundle.message("powershell.debugger.executionException"))
+
+        return PowerShellDebugProcess(session, result.second, result.first)
       }
     })
     session.addSessionListener(sessionListener)

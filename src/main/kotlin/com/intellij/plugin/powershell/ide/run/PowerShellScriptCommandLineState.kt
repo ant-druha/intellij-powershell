@@ -5,6 +5,7 @@ import com.intellij.execution.ExecutionException
 import com.intellij.execution.ExecutionResult
 import com.intellij.execution.Executor
 import com.intellij.execution.configurations.GeneralCommandLine
+import com.intellij.execution.configurations.PtyCommandLine
 import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.executors.DefaultDebugExecutor
 import com.intellij.execution.executors.DefaultRunExecutor
@@ -80,8 +81,8 @@ class PowerShellScriptCommandLineState(
         runConfiguration.getCommandOptions(),
         runConfiguration.scriptParameters
       )
-      val commandLine = GeneralCommandLine(command)
-        //.withConsoleMode(false)
+      val commandLine = PtyCommandLine(command)
+        .withConsoleMode(false)
         .withWorkDirectory(workingDirectory.toString())
         .withCharset(getTerminalCharSet())
 
