@@ -33,8 +33,7 @@ class PowerShellDebuggerVariableValue(val variable: Variable, val parentReferenc
   }
 
   override fun computePresentation(node: XValueNode, place: XValuePlace) {
-    var icon: Icon? = IconManager.getInstance().getPlatformIcon(PlatformIcons.Variable)
-
+    val icon: Icon = IconManager.getInstance().getPlatformIcon(PlatformIcons.Variable)
     node.setPresentation(icon, variable.type, variable.value, variable.variablesReference != 0)
   }
 

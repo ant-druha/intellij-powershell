@@ -20,13 +20,14 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.eclipse.lsp4j.debug.*
 import org.eclipse.lsp4j.debug.services.IDebugProtocolServer
+import java.util.*
 
 class PowerShellDebugSession(val client: PSDebugClient, val server: IDebugProtocolServer,
                              val session: XDebugSession,
                              val coroutineScope: CoroutineScope,
                              val xDebugSession: XDebugSession) {
 
-  val breakpointMap = mutableMapOf<String, MutableMap<Int, XLineBreakpoint<XBreakpointProperties<*>>>>()
+  private val breakpointMap = Collections.synchronizedMap(mutableMapOf<String, MutableMap<Int, XLineBreakpoint<XBreakpointProperties<*>>>>())
   val sendKeyPress = Signal<Unit>()
 
   init {
@@ -109,24 +110,7 @@ class PowerShellDebugSession(val client: PSDebugClient, val server: IDebugProtoc
     }
   }
 
-  private val linearizer = Mutex()
-
-  fun muteBreakpoints(sourcePath: String)
-  {
-    coroutineScope.launch(start = CoroutineStart.UNDISPATCHED) {
-      linearizer.withLock {
-        val breakpointArgs = SetBreakpointsArguments().apply {
-          this.source = Source().apply { this.path = sourcePath }
-          this.breakpoints = emptyArray()
-        }
-        server.setBreakpoints(breakpointArgs).await()
-      }
-    }
-  }
-
-  fun unmuteBreakpoints(sourcePath: String) {
-    sendBreakpointRequest() // TODO make for separate file
-  }
+  private val breakpointsMapMutex = Mutex()
 
   private fun sendBreakpointRequest() {
     sendBreakpointRequest(breakpointMap)
@@ -134,7 +118,7 @@ class PowerShellDebugSession(val client: PSDebugClient, val server: IDebugProtoc
 
   fun sendBreakpointRequest(breakpointMap: Map<String, MutableMap<Int, XLineBreakpoint<XBreakpointProperties<*>>>>) {
     coroutineScope.launch(start = CoroutineStart.UNDISPATCHED) {
-      linearizer.withLock {
+      breakpointsMapMutex.withLock {
         for (breakpointMapEntry in breakpointMap) {
           val breakpointArgs = SetBreakpointsArguments()
           val source: Source = Source()
@@ -144,7 +128,7 @@ class PowerShellDebugSession(val client: PSDebugClient, val server: IDebugProtoc
           breakpointArgs.breakpoints = breakpointMapEntry.value.map {
             val bp = it.value
             SourceBreakpoint().apply {
-              line = bp.line + 1
+              line = bp.line + 1 // ide breakpoints line numbering starts from 0, while PSES start from 1
               condition = bp.conditionExpression?.expression
               logMessage = bp.logExpressionObject?.expression
             }

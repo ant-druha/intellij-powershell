@@ -16,8 +16,8 @@ import com.jetbrains.rd.util.lifetime.Lifetime
 import kotlinx.coroutines.Dispatchers
 import java.util.concurrent.atomic.AtomicBoolean
 
-class PowerShellDebugProcess(val xDebugSession: XDebugSession, val executionResult: ExecutionResult, val clientSession: PowerShellDebugSession)
-  : XDebugProcess(xDebugSession), Disposable { // TODO: Dispose
+class PowerShellDebugProcess(val xDebugSession: XDebugSession, val executionResult: ExecutionResult, val powerShellDebugSession: PowerShellDebugSession)
+  : XDebugProcess(xDebugSession), Disposable {
 
   companion object {
     val KEY: Key<PowerShellDebugProcess> =
@@ -40,10 +40,10 @@ class PowerShellDebugProcess(val xDebugSession: XDebugSession, val executionResu
   init {
     com.intellij.openapi.util.Disposer.register(myExecutionConsole, this)
     myBreakpointHandler.registerBreakpointEvent.adviseSuspend(Lifetime.Eternal, Dispatchers.EDT) {
-      pair -> clientSession.setBreakpoint(pair.first, pair.second)
+      pair -> powerShellDebugSession.setBreakpoint(pair.first, pair.second)
     }
     myBreakpointHandler.unregisterBreakpointEvent.adviseSuspend(Lifetime.Eternal, Dispatchers.EDT) {
-      pair -> clientSession.removeBreakpoint(pair.first, pair.second)
+      pair -> powerShellDebugSession.removeBreakpoint(pair.first, pair.second)
     }
   }
 
@@ -53,32 +53,32 @@ class PowerShellDebugProcess(val xDebugSession: XDebugSession, val executionResu
     if(context !is PowerShellSuspendContext) {
       return
     }
-    clientSession.continueDebugging(context)
+    powerShellDebugSession.continueDebugging(context)
   }
 
   override fun startStepOver(context: XSuspendContext?) {
     if(context !is PowerShellSuspendContext) {
       return
     }
-    clientSession.startStepOver(context)
+    powerShellDebugSession.startStepOver(context)
   }
 
   override fun startStepInto(context: XSuspendContext?) {
     if(context !is PowerShellSuspendContext) {
       return
     }
-    clientSession.startStepInto(context)
+    powerShellDebugSession.startStepInto(context)
   }
 
   override fun startStepOut(context: XSuspendContext?) {
     if(context !is PowerShellSuspendContext) {
       return
     }
-    clientSession.startStepOut(context)
+    powerShellDebugSession.startStepOut(context)
   }
 
   override fun startPausing() {
-    clientSession.startPausing()
+    powerShellDebugSession.startPausing()
   }
 
   override fun createConsole(): ExecutionConsole {
