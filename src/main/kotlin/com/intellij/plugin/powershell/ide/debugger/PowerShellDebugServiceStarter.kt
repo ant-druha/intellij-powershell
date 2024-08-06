@@ -3,6 +3,7 @@ package com.intellij.plugin.powershell.ide.debugger
 import com.intellij.execution.DefaultExecutionResult
 import com.intellij.execution.process.KillableProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.plugin.powershell.ide.PluginProjectRoot
 import com.intellij.plugin.powershell.ide.run.PowerShellRunConfiguration
@@ -12,6 +13,9 @@ import com.intellij.terminal.TerminalExecutionConsole
 import com.intellij.util.io.await
 import com.intellij.xdebugger.XDebugSession
 import com.intellij.xdebugger.XDebuggerManager
+import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rd.framework.util.adviseSuspend
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.eclipse.lsp4j.debug.*
 import org.eclipse.lsp4j.debug.launch.DSPLauncher
@@ -34,7 +38,7 @@ class PowerShellDebugServiceStarter {
       return runBlocking {
         val InOutPair = processRunner.establishDebuggerConnection() ?: return@runBlocking null
         val process = processRunner.getProcess() ?: return@runBlocking null
-        val handler = KillableProcessHandler(process, "PowerShellEditorService").apply {
+        val handler = KillableProcessHandler(process, "").apply {
           setShouldKillProcessSoftly(false)
         }
 
@@ -47,6 +51,9 @@ class PowerShellDebugServiceStarter {
           runConfiguration,
           environment
         )
+        powerShellDebugSession.sendKeyPress.adviseSuspend(Lifetime.Eternal, Dispatchers.EDT) {
+          handler.processInput.write(0)
+        }
         Pair(powerShellDebugSession, DefaultExecutionResult(console, handler))
       }
     }
@@ -74,31 +81,33 @@ class PowerShellDebugServiceStarter {
 
       val powerShellDebugSession = PowerShellDebugSession(client, remoteProxy, debugSession, scope, debugSession)
       environment.putUserData(ClientSessionKey, powerShellDebugSession)
-      val allBreakpoints = XDebuggerManager.getInstance(environment.project).breakpointManager.getBreakpoints(
-        PowerShellBreakpointType::class.java
-      )
-      allBreakpoints.filter { x -> x.sourcePosition != null && x.sourcePosition!!.file.exists() && x.sourcePosition!!.file.isValid }
-        .groupBy { x -> VfsUtil.virtualToIoFile(x.sourcePosition!!.file).toURI().toASCIIString() }
-        .forEach { entry ->
+      if(!debugSession.areBreakpointsMuted()) {
+        val allBreakpoints = XDebuggerManager.getInstance(environment.project).breakpointManager.getBreakpoints(
+          PowerShellBreakpointType::class.java
+        )
 
-          val fileURL = entry.key
+        allBreakpoints.filter { x -> x.sourcePosition != null && x.sourcePosition!!.file.exists() && x.sourcePosition!!.file.isValid && x.isEnabled }
+          .groupBy { x -> VfsUtil.virtualToIoFile(x.sourcePosition!!.file).toURI().toASCIIString() }
+          .forEach { entry ->
 
-          val breakpointArgs = SetBreakpointsArguments()
-          val source = Source()
-          source.path = fileURL
-          breakpointArgs.source = source
-          val bps = entry.value
-          breakpointArgs.breakpoints = bps.map {
-            val bp = it
-            SourceBreakpoint().apply {
-              line = bp.line + 1
-              condition = bp.conditionExpression?.expression
-              logMessage = bp.logExpressionObject?.expression
-            }
-          }.toTypedArray()
-          remoteProxy.setBreakpoints(breakpointArgs).await()
-        }
+            val fileURL = entry.key
 
+            val breakpointArgs = SetBreakpointsArguments()
+            val source = Source()
+            source.path = fileURL
+            breakpointArgs.source = source
+            val bps = entry.value
+            breakpointArgs.breakpoints = bps.map {
+              val bp = it
+              SourceBreakpoint().apply {
+                line = bp.line + 1
+                condition = bp.conditionExpression?.expression
+                logMessage = bp.logExpressionObject?.expression
+              }
+            }.toTypedArray()
+            remoteProxy.setBreakpoints(breakpointArgs).await()
+          }
+      }
       val launchArgs: MutableMap<String, Any> = HashMap()
       launchArgs["terminal"] = "none"
       launchArgs["script"] = targetPath
