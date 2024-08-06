@@ -11,6 +11,7 @@ import com.intellij.xdebugger.breakpoints.XBreakpointProperties
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
 import com.jetbrains.rd.framework.util.adviseSuspend
 import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rd.util.reactive.Signal
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
@@ -26,13 +27,16 @@ class PowerShellDebugSession(val client: PSDebugClient, val server: IDebugProtoc
                              val xDebugSession: XDebugSession) {
 
   val breakpointMap = mutableMapOf<String, MutableMap<Int, XLineBreakpoint<XBreakpointProperties<*>>>>()
+  val sendKeyPress = Signal<Unit>()
 
-  init{
-    client.debugStopped.adviseSuspend(Lifetime.Eternal, Dispatchers.EDT){
-        args ->
+  init {
+    client.debugStopped.adviseSuspend(Lifetime.Eternal, Dispatchers.EDT) { args ->
       val stack = server.stackTrace(StackTraceArguments().apply { threadId = args!!.threadId }).await()
       thisLogger().info(stack.toString())
       session.positionReached(PowerShellSuspendContext(stack, server, coroutineScope, args!!.threadId, xDebugSession))
+    }
+    client.sendKeyPress.adviseSuspend(Lifetime.Eternal, Dispatchers.EDT) {
+      sendKeyPress.fire(Unit)
     }
   }
 

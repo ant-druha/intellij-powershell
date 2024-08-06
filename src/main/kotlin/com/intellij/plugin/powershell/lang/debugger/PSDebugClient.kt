@@ -5,17 +5,17 @@ import com.intellij.xdebugger.frame.XSuspendContext
 import com.jetbrains.rd.util.reactive.Signal
 import org.eclipse.lsp4j.debug.*
 import org.eclipse.lsp4j.debug.services.IDebugProtocolClient
+import org.eclipse.lsp4j.jsonrpc.services.JsonNotification
 import java.util.concurrent.CompletableFuture
 
 class PSDebugClient(session: XDebugSession): IDebugProtocolClient {
   private val debugSession = session
 
   val debugStopped = Signal<StoppedEventArguments?>()
+  val sendKeyPress = Signal<Unit>()
 
   override fun breakpoint(args: BreakpointEventArguments?) {
     super.breakpoint(args)
-    /*val bp = debugSession.debugProcess.
-    debugSession.breakpointReached()*/
   }
 
   override fun stopped(args: StoppedEventArguments?) {
@@ -85,5 +85,10 @@ class PSDebugClient(session: XDebugSession): IDebugProtocolClient {
 
   override fun startDebugging(args: StartDebuggingRequestArguments?): CompletableFuture<Void> {
     return super.startDebugging(args)
+  }
+
+  @JsonNotification("powerShell/sendKeyPress")
+  fun sendKeyPress(){
+    sendKeyPress.fire(Unit)
   }
 }
