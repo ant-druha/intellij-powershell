@@ -100,7 +100,7 @@ class PowerShellDebugServiceStarter {
             breakpointArgs.breakpoints = bps.map {
               val bp = it
               SourceBreakpoint().apply {
-                line = bp.line + 1
+                line = bp.line + 1 // ide breakpoints line numbering starts from 0, while PSES start from 1
                 condition = bp.conditionExpression?.expression
                 logMessage = bp.logExpressionObject?.expression
               }
