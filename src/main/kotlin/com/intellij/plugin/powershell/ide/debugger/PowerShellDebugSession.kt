@@ -27,8 +27,11 @@ class PowerShellDebugSession(val client: PSDebugClient, val server: IDebugProtoc
                              val coroutineScope: CoroutineScope,
                              val xDebugSession: XDebugSession) {
 
-  private val breakpointMap = Collections.synchronizedMap(mutableMapOf<String, MutableMap<Int, XLineBreakpoint<XBreakpointProperties<*>>>>())
   val sendKeyPress = Signal<Unit>()
+
+  private val breakpointMap = mutableMapOf<String, MutableMap<Int, XLineBreakpoint<XBreakpointProperties<*>>>>()
+  private val logger = logger<PowerShellDebugSession>()
+  private val breakpointsMapMutex = Mutex()
 
   init {
     client.debugStopped.adviseSuspend(Lifetime.Eternal, Dispatchers.EDT) { args ->
@@ -42,38 +45,41 @@ class PowerShellDebugSession(val client: PSDebugClient, val server: IDebugProtoc
   }
 
   fun setBreakpoint(fileURL: String, breakpoint: XLineBreakpoint<XBreakpointProperties<*>>) {
-    if(!breakpointMap.containsKey(fileURL))
-      breakpointMap[fileURL] = mutableMapOf()
-    val bpMap = breakpointMap[fileURL]!!
-    bpMap[breakpoint.line] = breakpoint
-
-    sendBreakpointRequest()
+    coroutineScope.launch(start = CoroutineStart.UNDISPATCHED) {
+      breakpointsMapMutex.withLock {
+        if (!breakpointMap.containsKey(fileURL))
+          breakpointMap[fileURL] = mutableMapOf()
+        val bpMap = breakpointMap[fileURL]!!
+        bpMap[breakpoint.line] = breakpoint
+      }
+      sendBreakpointRequest()
+    }
   }
 
   fun removeBreakpoint(fileURL: String, breakpoint: XLineBreakpoint<XBreakpointProperties<*>>) {
-    if(!breakpointMap.containsKey(fileURL))
-      breakpointMap[fileURL] = mutableMapOf()
-    val bpMap = breakpointMap[fileURL]!!
-    if(bpMap.containsKey(breakpoint.line))
-      bpMap.remove(breakpoint.line)
-
-    sendBreakpointRequest()
+    coroutineScope.launch(start = CoroutineStart.UNDISPATCHED) {
+      breakpointsMapMutex.withLock {
+        if (!breakpointMap.containsKey(fileURL))
+          breakpointMap[fileURL] = mutableMapOf()
+        val bpMap = breakpointMap[fileURL]!!
+        if (bpMap.containsKey(breakpoint.line))
+          bpMap.remove(breakpoint.line)
+      }
+      sendBreakpointRequest()
+    }
   }
 
-  fun continueDebugging(context: PowerShellSuspendContext)
-  {
+  fun continueDebugging(context: PowerShellSuspendContext) {
     continueDebugging(context.threadId)
   }
 
-  fun continueDebugging(threadId: Int)
-  {
+  fun continueDebugging(threadId: Int) {
     coroutineScope.launch {
       server.continue_(ContinueArguments().apply { this.threadId = threadId }).await()
     }
   }
 
-  fun startStepOver(context: PowerShellSuspendContext)
-  {
+  fun startStepOver(context: PowerShellSuspendContext) {
     startStepOver(context.threadId)
   }
 
@@ -83,8 +89,7 @@ class PowerShellDebugSession(val client: PSDebugClient, val server: IDebugProtoc
     }
   }
 
-  fun startStepInto(context: PowerShellSuspendContext)
-  {
+  fun startStepInto(context: PowerShellSuspendContext) {
     startStepInto(context.threadId)
   }
 
@@ -93,8 +98,8 @@ class PowerShellDebugSession(val client: PSDebugClient, val server: IDebugProtoc
       server.stepIn(StepInArguments().apply { this.threadId = threadId }).await()
     }
   }
-  fun startStepOut(context: PowerShellSuspendContext)
-  {
+
+  fun startStepOut(context: PowerShellSuspendContext) {
     startStepOut(context.threadId)
   }
 
@@ -109,8 +114,6 @@ class PowerShellDebugSession(val client: PSDebugClient, val server: IDebugProtoc
       server.pause(PauseArguments().apply { threadId = 0 }).await()
     }
   }
-
-  private val breakpointsMapMutex = Mutex()
 
   private fun sendBreakpointRequest() {
     sendBreakpointRequest(breakpointMap)
@@ -137,10 +140,14 @@ class PowerShellDebugSession(val client: PSDebugClient, val server: IDebugProtoc
             val setBreakpointsResponse = server.setBreakpoints(breakpointArgs).await()
             val responseSet = setBreakpointsResponse.breakpoints.map { x -> x.line - 1 }.toHashSet()
             breakpointMapEntry.value.forEach {
-              if(!responseSet.contains(it.key))
-                session.setBreakpointInvalid(it.value, MessagesBundle.message("powershell.debugger.breakpoints.invalidBreakPoint"))
+              if (!responseSet.contains(it.key))
+                session.setBreakpointInvalid(
+                  it.value,
+                  MessagesBundle.message("powershell.debugger.breakpoints.invalidBreakPoint")
+                )
             }
           } catch (e: Throwable) {
+            logger.error(e)
             session.reportMessage(
               e.message ?: e.javaClass.simpleName,
               com.intellij.openapi.ui.MessageType.ERROR
@@ -152,4 +159,3 @@ class PowerShellDebugSession(val client: PSDebugClient, val server: IDebugProtoc
   }
 }
 
-private val logger = logger<PowerShellDebugSession>()

@@ -36,17 +36,17 @@ class PowerShellDebugServiceStarter {
       val processRunner = PowerShellConsoleTerminalRunner(environment.project)
       processRunner.useConsoleRepl()
       return runBlocking {
-        val InOutPair = processRunner.establishDebuggerConnection() ?: return@runBlocking null
+        val inOutPair = processRunner.establishDebuggerConnection() ?: return@runBlocking null
         val process = processRunner.getProcess() ?: return@runBlocking null
-        val handler = KillableProcessHandler(process, "").apply {
+        val handler = KillableProcessHandler(process, "PowerShellEditorService").apply {
           setShouldKillProcessSoftly(false)
         }
 
         val console = TerminalExecutionConsole(environment.project, handler)
         handler.startNotify()
         val powerShellDebugSession = startDebugService(
-          InOutPair.first,
-          InOutPair.second,
+          inOutPair.first,
+          inOutPair.second,
           session,
           runConfiguration,
           environment
@@ -75,7 +75,7 @@ class PowerShellDebugServiceStarter {
 
       val remoteProxy = launcher.remoteProxy
 
-      val capabilities: Capabilities = remoteProxy.initialize(arguments).await()
+      remoteProxy.initialize(arguments).await()
 
       val scope = PluginProjectRoot.getInstance(environment.project).coroutineScope
 
@@ -89,9 +89,7 @@ class PowerShellDebugServiceStarter {
         allBreakpoints.filter { x -> x.sourcePosition != null && x.sourcePosition!!.file.exists() && x.sourcePosition!!.file.isValid && x.isEnabled }
           .groupBy { x -> VfsUtil.virtualToIoFile(x.sourcePosition!!.file).toURI().toASCIIString() }
           .forEach { entry ->
-
             val fileURL = entry.key
-
             val breakpointArgs = SetBreakpointsArguments()
             val source = Source()
             source.path = fileURL
