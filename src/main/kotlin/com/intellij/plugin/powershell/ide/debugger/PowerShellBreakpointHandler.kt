@@ -51,8 +51,8 @@ class PowerShellBreakpointHandler(
     }
     unregisterBreakpointEvent.fire(Pair(fileURL, breakpoint))  }
 
-  fun getFileURL(file: VirtualFile?): String {
-    return VfsUtil.virtualToIoFile(file!!).toURI().toASCIIString()
+  fun getFileURL(file: VirtualFile): String {
+    return VfsUtil.virtualToIoFile(file).toURI().toASCIIString()
   }
 
 }
