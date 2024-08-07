@@ -1,5 +1,6 @@
 package com.intellij.plugin.powershell.ide.debugger
 
+import com.intellij.plugin.powershell.ide.MessagesBundle
 import com.intellij.xdebugger.XDebugSession
 import com.intellij.xdebugger.frame.XExecutionStack
 import com.intellij.xdebugger.frame.XStackFrame
@@ -10,7 +11,7 @@ import org.eclipse.lsp4j.debug.services.IDebugProtocolServer
 class PowerShellExecutionStack(val stackResponse: StackTraceResponse,
                                val server: IDebugProtocolServer,
                                val coroutineScope: CoroutineScope, val xDebugSession: XDebugSession
-): XExecutionStack("PowerShell Debug Execution Stack") {
+): XExecutionStack(MessagesBundle.message("powershell.debugger.PowerShellExecutionStackDisplayName")) {
   override fun getTopFrame(): XStackFrame? {
     return stackResponse.stackFrames.firstOrNull()?.let {
         PowerShellStackFrame(

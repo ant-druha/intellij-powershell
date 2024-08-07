@@ -59,11 +59,10 @@ class PowerShellDebugSession(val client: PSDebugClient, val server: IDebugProtoc
   fun removeBreakpoint(fileURL: String, breakpoint: XLineBreakpoint<XBreakpointProperties<*>>) {
     coroutineScope.launch(start = CoroutineStart.UNDISPATCHED) {
       breakpointsMapMutex.withLock {
-        if (!breakpointMap.containsKey(fileURL))
-          breakpointMap[fileURL] = mutableMapOf()
-        val bpMap = breakpointMap[fileURL]!!
-        if (bpMap.containsKey(breakpoint.line))
-          bpMap.remove(breakpoint.line)
+        val bpMap = breakpointMap[fileURL] ?: return@launch
+        if (!bpMap.containsKey(breakpoint.line))
+          return@launch
+        bpMap.remove(breakpoint.line)
       }
       sendBreakpointRequest()
     }

@@ -11,7 +11,6 @@ import junit.framework.TestCase
 class BreakpointTest : DebuggerTestBase() {
 
   fun testBreakpoint() {
-
     val psiFile = copyAndOpenFile("debugger/testBreakpoint.ps1")
     val file = psiFile.virtualFile
 
@@ -26,6 +25,29 @@ class BreakpointTest : DebuggerTestBase() {
         testSession.waitForBackgroundTimeout.toMillis()
       )
       val suspendContext = debugSession.suspendContext as PowerShellSuspendContext
+      TestCase.assertEquals(line, suspendContext.activeExecutionStack.topFrame?.sourcePosition?.line)
+    }
+  }
+
+  fun testBreakpointTwoFiles() {
+    val psiFile = copyAndOpenFile("debugger/testBreakpointTwoFiles.ps1")
+    val psiSecondFile = copyAndOpenFile("debugger/secondFileTest.ps1")
+
+    val file = psiFile.virtualFile
+
+    val fileLine = 4 // line in file, starting from 1
+    val line = fileLine - 1 // breakpoint line, starting from 0
+    val testSession = PowerShellTestSession(project, file.toNioPath())
+    XDebuggerTestUtil.toggleBreakpoint(project, psiSecondFile.virtualFile, line)
+
+    Lifetime.using { lt ->
+      val debugSession = testSession.startDebugSession(lt)
+      XDebuggerTestUtil.waitFor(
+        testSession.sessionListener.pausedSemaphore,
+        testSession.waitForBackgroundTimeout.toMillis()
+      )
+      val suspendContext = debugSession.suspendContext as PowerShellSuspendContext
+      TestCase.assertEquals(psiSecondFile.virtualFile.toNioPath(), suspendContext.activeExecutionStack.topFrame?.sourcePosition?.file?.toNioPath())
       TestCase.assertEquals(line, suspendContext.activeExecutionStack.topFrame?.sourcePosition?.line)
     }
   }
