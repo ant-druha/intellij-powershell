@@ -1,24 +1,18 @@
 package com.intellij.plugin.powershell.debugger
 
+import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx
 import com.intellij.plugin.powershell.ide.debugger.PowerShellSuspendContext
-import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import com.intellij.testFramework.fixtures.TempDirTestFixture
-import com.intellij.testFramework.fixtures.impl.TempDirTestFixtureImpl
+import com.intellij.plugin.powershell.testFramework.DebuggerTestBase
+import com.intellij.plugin.powershell.testFramework.PowerShellTestSession
 import com.intellij.xdebugger.XDebuggerTestUtil
 import com.jetbrains.rd.util.lifetime.Lifetime
 import junit.framework.TestCase
 
-class StepTest: BasePlatformTestCase() {
-
-  override fun getTestDataPath() = "src/test/resources/testData"
-
-  override fun createTempDirTestFixture(): TempDirTestFixture {
-    return TempDirTestFixtureImpl()
-  }
+class StepTest: DebuggerTestBase() {
 
   fun testStepOver()
   {
-    val psiFile = myFixture.configureByFile("debugger/stepTest.ps1")
+    val psiFile = copyAndOpenFile("debugger/stepTest.ps1")
     val file = psiFile.virtualFile
 
     val fileLine = 11 // line in file, starting from 1
@@ -43,14 +37,12 @@ class StepTest: BasePlatformTestCase() {
         line + 1,
         (debugSession.suspendContext as PowerShellSuspendContext).activeExecutionStack.topFrame?.sourcePosition?.line
       )
-
-      myFixture.projectDisposable.dispose()
     }
   }
 
   fun testStepIn()
   {
-    val psiFile = myFixture.configureByFile("debugger/stepTest.ps1")
+    val psiFile = copyAndOpenFile("debugger/stepTest.ps1")
     val file = psiFile.virtualFile
 
     val fileLine = 11 // line in file, starting from 1
@@ -77,14 +69,12 @@ class StepTest: BasePlatformTestCase() {
         stepInLine,
         (debugSession.suspendContext as PowerShellSuspendContext).activeExecutionStack.topFrame?.sourcePosition?.line
       )
-
-      myFixture.projectDisposable.dispose()
     }
   }
 
   fun testStepOut()
   {
-    val psiFile = myFixture.configureByFile("debugger/stepTest.ps1")
+    val psiFile = copyAndOpenFile("debugger/stepTest.ps1")
     val file = psiFile.virtualFile
 
     val fileLine = 7 // line in file, starting from 1
@@ -112,12 +102,11 @@ class StepTest: BasePlatformTestCase() {
         stepOutLine,
         (debugSession.suspendContext as PowerShellSuspendContext).activeExecutionStack.topFrame?.sourcePosition?.line
       )
-
-      myFixture.projectDisposable.dispose()
     }
   }
 
   override fun tearDown() {
-    myFixture.tearDown()
+    FileEditorManagerEx.getInstanceEx(project).closeAllFiles()
+    super.tearDown()
   }
 }
