@@ -1,4 +1,4 @@
-package com.intellij.plugin.powershell.debugger
+package com.intellij.plugin.powershell.testFramework
 
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.executors.DefaultDebugExecutor

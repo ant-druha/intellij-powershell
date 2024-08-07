@@ -1,12 +1,12 @@
 package com.intellij.plugin.powershell.debugger
 
+import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx
 import com.intellij.openapi.util.Pair
 import com.intellij.plugin.powershell.PowerShellDebuggerTestUtil
 import com.intellij.plugin.powershell.ide.debugger.PowerShellSuspendContext
 import com.intellij.plugin.powershell.lang.PowerShellLanguage
-import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import com.intellij.testFramework.fixtures.TempDirTestFixture
-import com.intellij.testFramework.fixtures.impl.TempDirTestFixtureImpl
+import com.intellij.plugin.powershell.testFramework.DebuggerTestBase
+import com.intellij.plugin.powershell.testFramework.PowerShellTestSession
 import com.intellij.xdebugger.XDebuggerTestUtil
 import com.intellij.xdebugger.XTestCompositeNode
 import com.intellij.xdebugger.frame.XValueModifier.XModificationCallback
@@ -16,15 +16,10 @@ import junit.framework.TestCase
 import org.junit.Assert
 import java.util.concurrent.Semaphore
 
-class VariableTest: BasePlatformTestCase() {
-  override fun getTestDataPath() = "src/test/resources/testData"
-
-  override fun createTempDirTestFixture(): TempDirTestFixture {
-    return TempDirTestFixtureImpl()
-  }
+class VariableTest: DebuggerTestBase() {
 
   fun testPrimitiveVariable() {
-    val psiFile = myFixture.configureByFile("debugger/variableTest.ps1")
+    val psiFile = copyAndOpenFile("debugger/variableTest.ps1")
     val file = psiFile.virtualFile
 
     val fileLine = 2 // line in file, starting from 1
@@ -46,13 +41,12 @@ class VariableTest: BasePlatformTestCase() {
       val variableValue = XDebuggerTestUtil.findVar(children, variableName)
       val variableValueNode = XDebuggerTestUtil.computePresentation(variableValue)
       TestCase.assertEquals(value.toString(), variableValueNode.myValue)
-      myFixture.projectDisposable.dispose()
     }
   }
 
   fun testComplexVariable()
   {
-    val psiFile = myFixture.configureByFile("debugger/variableTest.ps1")
+    val psiFile = copyAndOpenFile("debugger/variableTest.ps1")
     val file = psiFile.virtualFile
 
     val fileLine = 5 // line in file, starting from 1
@@ -81,12 +75,11 @@ class VariableTest: BasePlatformTestCase() {
       val nestedFieldValueNode = XDebuggerTestUtil.computePresentation(nestedField)
       TestCase.assertEquals(nestedFieldValue.toString(), nestedFieldValueNode.myValue)
     }
-    myFixture.projectDisposable.dispose()
   }
 
   fun testSetVariable()
   {
-    val psiFile = myFixture.configureByFile("debugger/variableTest.ps1")
+    val psiFile = copyAndOpenFile("debugger/variableTest.ps1")
     val file = psiFile.virtualFile
 
     val fileLine = 2 // line in file, starting from 1
@@ -123,7 +116,11 @@ class VariableTest: BasePlatformTestCase() {
       val variableValueNode = XDebuggerTestUtil.computePresentation(resultVariable)
       TestCase.assertEquals(value.toString(), variableValueNode.myValue)
     }
-    myFixture.projectDisposable.dispose()
+  }
+
+  override fun tearDown() {
+    FileEditorManagerEx.getInstanceEx(project).closeAllFiles()
+    super.tearDown()
   }
 }
 
