@@ -1,5 +1,6 @@
 package com.intellij.plugin.powershell.ide.debugger
 
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.ui.IconManager
 import com.intellij.ui.PlatformIcons
 import com.intellij.util.io.await
@@ -18,6 +19,10 @@ class PowerShellDebuggerVariableValue(val variable: Variable, val parentReferenc
                                       val server: IDebugProtocolServer,
                                       val coroutineScope: CoroutineScope, val xDebugSession: XDebugSession
 ) : XNamedValue(variable.name ?: "") {
+
+  companion object{
+    val logger = logger<PowerShellDebuggerVariableValue>()
+  }
 
   init {
     xDebugSession.suspendContext?.let {
@@ -61,8 +66,10 @@ class PowerShellDebuggerVariableValue(val variable: Variable, val parentReferenc
       }
 
       override fun setValue(expression: XExpression, callback: XModificationCallback) {
-        if(parentReference !is Int)
+        if(parentReference !is Int) {
+          logger.warn("parentReference is $parentReference")
           return
+        }
         coroutineScope.launch {
           val variablesCache = (xDebugSession.suspendContext as PowerShellSuspendContext).variablesCache
           try {
@@ -80,6 +87,7 @@ class PowerShellDebuggerVariableValue(val variable: Variable, val parentReferenc
 
             callback.valueModified()
           } catch (e: Exception) {
+            logger.error(e)
             callback.errorOccurred(e.message ?: e.javaClass.simpleName)
           }
         }
