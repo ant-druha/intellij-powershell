@@ -3,6 +3,7 @@ package com.intellij.plugin.powershell.debugger
 import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx
 import com.intellij.plugin.powershell.ide.debugger.PowerShellSuspendContext
 import com.intellij.plugin.powershell.testFramework.DebuggerTestBase
+import com.intellij.plugin.powershell.testFramework.PowerShellTestSession
 import com.intellij.xdebugger.XDebuggerTestUtil
 import com.intellij.xdebugger.XTestCompositeNode
 import com.jetbrains.rd.util.lifetime.Lifetime

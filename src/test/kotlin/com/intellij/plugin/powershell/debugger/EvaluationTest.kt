@@ -1,21 +1,16 @@
 package com.intellij.plugin.powershell.debugger
 
-import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import com.intellij.testFramework.fixtures.TempDirTestFixture
-import com.intellij.testFramework.fixtures.impl.TempDirTestFixtureImpl
+import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx
+import com.intellij.plugin.powershell.testFramework.DebuggerTestBase
+import com.intellij.plugin.powershell.testFramework.PowerShellTestSession
 import com.intellij.xdebugger.XDebuggerTestUtil
 import com.jetbrains.rd.util.lifetime.Lifetime
 import junit.framework.TestCase
 
-class EvaluationTest: BasePlatformTestCase() {
-  override fun getTestDataPath() = "src/test/resources/testData"
-
-  override fun createTempDirTestFixture(): TempDirTestFixture {
-    return TempDirTestFixtureImpl()
-  }
+class EvaluationTest: DebuggerTestBase() {
 
   fun testEvaluation() {
-    val psiFile = myFixture.configureByFile("debugger/testBreakpoint.ps1")
+    val psiFile = copyAndOpenFile("debugger/testBreakpoint.ps1")
     val file = psiFile.virtualFile
 
     val fileLine = 1 // line in file, starting from 1
@@ -35,7 +30,11 @@ class EvaluationTest: BasePlatformTestCase() {
         XDebuggerTestUtil.evaluate(debugSession, expression, testSession.waitForBackgroundTimeout.toMillis()).first
       val variableValueNode = XDebuggerTestUtil.computePresentation(variableValue)
       TestCase.assertEquals(expectedResult, variableValueNode.myValue)
-      myFixture.projectDisposable.dispose()
     }
+  }
+
+  override fun tearDown() {
+    FileEditorManagerEx.getInstanceEx(project).closeAllFiles()
+    super.tearDown()
   }
 }
