@@ -27,6 +27,7 @@ import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.getEditorServicesModuleVersion
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.getEditorServicesStartupScript
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.getPSExtensionModulesDir
+import com.intellij.util.application
 import com.intellij.util.execution.ParametersListUtil
 import com.intellij.util.io.BaseOutputReader
 import com.intellij.util.io.await
@@ -34,6 +35,7 @@ import com.sun.jna.Pointer
 import com.sun.jna.platform.win32.Kernel32
 import com.sun.jna.platform.win32.WinNT
 import kotlinx.coroutines.delay
+import org.jetbrains.plugins.terminal.TerminalProjectOptionsProvider
 import org.newsclub.net.unix.AFUNIXSocket
 import org.newsclub.net.unix.AFUNIXSocketAddress
 import java.io.*
@@ -239,8 +241,13 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
   }
 
   override fun createProcess(project: Project, command: List<String>, environment: Map<String, String>?): Process {
+    val workingDirectory = if (application.isUnitTestMode) {
+      project.basePath ?: error("Project has no base path.")
+    } else TerminalProjectOptionsProvider.getInstance(project).startingDirectory
+
     return PtyCommandLine(command)
       .withConsoleMode(false)
+      .withWorkDirectory(workingDirectory)
       .withEnvironment(environment)
       .createProcess()
   }
