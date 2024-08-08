@@ -3,7 +3,7 @@ intellij = "2023.2"
 junixsocket = "2.10.0"
 
 [libraries]
-jetBrainsAnnotations = "org.jetbrains:annotations:24.0.1" # TODO: Get rid of this after updating IntelliJ
+jetBrainsAnnotations = "org.jetbrains:annotations:24.0.1" # TODO[#293]: Get rid of this after updating IntelliJ
 junit = "junit:junit:4.13.2"
 junixsocket-common = { module = "com.kohlschutter.junixsocket:junixsocket-common", version.ref = "junixsocket" }
 junixsocket-native-common = { module = "com.kohlschutter.junixsocket:junixsocket-native-common", version.ref = "junixsocket" }
