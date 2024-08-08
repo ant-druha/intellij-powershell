@@ -30,7 +30,6 @@ class PowerShellDebugSession(val client: PSDebugClient, val server: IDebugProtoc
   val sendKeyPress = Signal<Unit>()
 
   private val breakpointMap = mutableMapOf<String, MutableMap<Int, XLineBreakpoint<XBreakpointProperties<*>>>>()
-  private val logger = logger<PowerShellDebugSession>()
   private val breakpointsMapMutex = Mutex()
 
   init {
@@ -158,3 +157,4 @@ class PowerShellDebugSession(val client: PSDebugClient, val server: IDebugProtoc
   }
 }
 
+private val logger = logger<PowerShellDebugSession>()
