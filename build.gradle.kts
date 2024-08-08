@@ -61,6 +61,7 @@ dependencies {
   implementation(libs.bundles.junixsocket)
 
   implementation(libs.lsp4j)
+  implementation(libs.lsp4jdebug)
   testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
   testImplementation(libs.junit)
 

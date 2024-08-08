@@ -6,7 +6,7 @@ import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IElementType
 
 
-fun isLabelContext(node: ASTNode): Boolean = node.treeParent?.elementType === PowerShellTypes.LABEL
+fun isLabelContext(node: ASTNode): Boolean = node.treeParent?.elementType === LABEL
 
 internal fun findSiblingSkipping(node: ASTNode, toSkip: Array<IElementType>, forward: Boolean = true): ASTNode? {
   var result = if (forward) node.treeNext else node.treePrev
@@ -16,7 +16,7 @@ internal fun findSiblingSkipping(node: ASTNode, toSkip: Array<IElementType>, for
 }
 
 internal fun findSiblingSkippingWS(node: ASTNode, forward: Boolean = true): ASTNode? {
-  return findSiblingSkipping(node, arrayOf(PowerShellTypes.NLS, TokenType.WHITE_SPACE), forward)
+  return findSiblingSkipping(node, arrayOf(NLS, TokenType.WHITE_SPACE), forward)
 }
 
 fun isTargetVariableContext(node: ASTNode): Boolean {

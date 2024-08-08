@@ -65,7 +65,10 @@
     <runConfigurationProducer
         implementation="com.intellij.plugin.powershell.ide.run.PowerShellConfigurationProducer" order="first"/>
 
+    <xdebugger.breakpointType implementation="com.intellij.plugin.powershell.ide.debugger.PowerShellBreakpointType"/>
+
     <programRunner implementation="com.intellij.plugin.powershell.ide.run.PowerShellProgramRunner"/>
+    <programRunner implementation="com.intellij.plugin.powershell.ide.run.PowerShellProgramDebugRunner"/>
 
     <targetElementEvaluator language="PowerShell"
                             implementationClass="com.intellij.plugin.powershell.ide.search.PowerShellTargetElementEvaluator"/>
@@ -88,6 +91,9 @@
 
     <completion.contributor language="PowerShell"
                             implementationClass="com.intellij.plugin.powershell.ide.editor.completion.PowerShellCompletionContributor"/>
+
+    <completion.contributor language="PowerShell"
+                            implementationClass="com.intellij.plugin.powershell.ide.editor.completion.PowerShellDebuggerCompletionContributor"/>
 
     <lang.documentationProvider language="PowerShell"
                                 implementationClass="com.intellij.plugin.powershell.ide.editor.documentation.PowerShellDocumentationProvider"/>

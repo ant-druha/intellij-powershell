@@ -57,7 +57,7 @@ class LSPInitMain : PersistentStateComponent<LSPInitMain.PowerShellInfo>, Dispos
   fun getPowerShellExecutable(): String {
     val psExecutable = myPowerShellInfo.powerShellExePath ?: findPsExecutable()
     myPowerShellInfo.powerShellExePath = psExecutable
-    return psExecutable;
+    return psExecutable
   }
 
   private var myPowerShellInfo: PowerShellInfo = PowerShellInfo()

@@ -24,7 +24,7 @@ class PowerShellFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider,
 
   override fun getPresentation(): ItemPresentation {
     return object : ItemPresentation {
-      override fun getLocationString(): String? {
+      override fun getLocationString(): String {
         return viewProvider.virtualFile.path
       }
 

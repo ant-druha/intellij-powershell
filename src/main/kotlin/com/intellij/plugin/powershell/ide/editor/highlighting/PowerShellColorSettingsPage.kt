@@ -57,7 +57,7 @@ class PowerShellColorSettingsPage : ColorSettingsPage {
     return additionalTags
   }
 
-  override fun getIcon(): Icon? {
+  override fun getIcon(): Icon {
     return PowerShellIcons.FILE
   }
 

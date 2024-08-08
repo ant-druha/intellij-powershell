@@ -76,7 +76,7 @@ open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractCompo
 
   override fun getName(): String? = getShortName()
 
-  private fun getExplicitName(): String? {
+  private fun getExplicitName(): String {
     var ns = getScopeName()
     ns = if (StringUtil.isNotEmpty(ns)) "$ns:" else ""
     return ns + getShortName()
@@ -148,7 +148,7 @@ open class PowerShellTargetVariableImpl(node: ASTNode) : PowerShellAbstractCompo
 
       override fun getIcon(unused: Boolean): Icon? = getIcon(0)
 
-      override fun getPresentableText(): String? = getPrefix() + getExplicitName() + (getSuffix() ?: "")
+      override fun getPresentableText(): String = getPrefix() + getExplicitName() + (getSuffix() ?: "")
     }
   }
 

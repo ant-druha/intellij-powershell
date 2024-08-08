@@ -137,7 +137,7 @@ class PowerShellLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsPro
 
   override fun customizeSettings(consumer: CodeStyleSettingsCustomizable, settingsType: SettingsType) {
     when (settingsType) {
-      LanguageCodeStyleSettingsProvider.SettingsType.SPACING_SETTINGS -> {
+      SettingsType.SPACING_SETTINGS -> {
         consumer.showStandardOptions(
           "SPACE_BEFORE_METHOD_PARENTHESES",
           "SPACE_BEFORE_METHOD_CALL_PARENTHESES",
@@ -226,8 +226,8 @@ class PowerShellLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsPro
         )
       }
 
-      LanguageCodeStyleSettingsProvider.SettingsType.BLANK_LINES_SETTINGS -> consumer.showStandardOptions("KEEP_BLANK_LINES_IN_CODE")
-      LanguageCodeStyleSettingsProvider.SettingsType.WRAPPING_AND_BRACES_SETTINGS -> {
+      SettingsType.BLANK_LINES_SETTINGS -> consumer.showStandardOptions("KEEP_BLANK_LINES_IN_CODE")
+      SettingsType.WRAPPING_AND_BRACES_SETTINGS -> {
         consumer.showStandardOptions(
           "RIGHT_MARGIN",
           "KEEP_LINE_BREAKS",
@@ -362,14 +362,14 @@ class PowerShellLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsPro
 
       }
 
-      LanguageCodeStyleSettingsProvider.SettingsType.INDENT_SETTINGS -> consumer.showStandardOptions(
+      SettingsType.INDENT_SETTINGS -> consumer.showStandardOptions(
         "INDENT_SIZE",
         "CONTINUATION_INDENT_SIZE",
         "TAB_SIZE"
       )
 
-      LanguageCodeStyleSettingsProvider.SettingsType.COMMENTER_SETTINGS -> consumer.showStandardOptions("COMMENTER_SETTINGS")
-      LanguageCodeStyleSettingsProvider.SettingsType.LANGUAGE_SPECIFIC -> consumer.showStandardOptions("LANGUAGE_SPECIFIC")
+      SettingsType.COMMENTER_SETTINGS -> consumer.showStandardOptions("COMMENTER_SETTINGS")
+      SettingsType.LANGUAGE_SPECIFIC -> consumer.showStandardOptions("LANGUAGE_SPECIFIC")
     }
   }
 

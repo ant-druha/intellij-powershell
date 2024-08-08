@@ -19,7 +19,7 @@ class LSPInspectionPsiElementImpl(private val myContainingFile: PsiFile, private
   }
   override fun getLanguage(): Language= PowerShellLanguage.INSTANCE
 
-  override fun getTextRange(): TextRange? =  myRange
+  override fun getTextRange(): TextRange =  myRange
 
   override fun isPhysical(): Boolean = true
 
