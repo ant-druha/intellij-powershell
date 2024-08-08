@@ -14,7 +14,6 @@ import com.intellij.xdebugger.XDebugSession
 import com.intellij.xdebugger.XDebugSessionListener
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.Signal
-import kotlinx.coroutines.runBlocking
 import java.nio.file.Path
 import java.time.Duration
 import java.util.concurrent.Semaphore
@@ -32,10 +31,7 @@ class PowerShellTestSession(val project: Project, scriptPath: Path) {
 
   private val configuration: PowerShellRunConfiguration = createConfiguration(defaultWorkingDirectory.toString(), scriptPath.pathString)
 
-  fun startDebugSession(lifetime: Lifetime) =
-    runBlocking {
-      startDebugSession(lifetime, configuration)
-    }
+  suspend fun startDebugSession(lifetime: Lifetime) = startDebugSession(lifetime, configuration)
 
   private suspend fun startDebugSession(lifetime: Lifetime, configuration: PowerShellRunConfiguration): XDebugSession {
     val executor = DefaultDebugExecutor.getDebugExecutorInstance()
