@@ -16,8 +16,6 @@ class PowerShellBreakpointHandler(
 ) : XBreakpointHandler<XLineBreakpoint<XBreakpointProperties<*>>>(breakpointTypeClass) {
 
   val logger = logger<PowerShellBreakpointHandler>()
-  val registerBreakpointEvent = Signal<Pair<String, XLineBreakpoint<XBreakpointProperties<*>>>>()
-  val unregisterBreakpointEvent = Signal<Pair<String, XLineBreakpoint<XBreakpointProperties<*>>>>()
 
   override fun registerBreakpoint(breakpoint: XLineBreakpoint<XBreakpointProperties<*>>) {
     val sourcePosition = breakpoint.sourcePosition
@@ -33,7 +31,7 @@ class PowerShellBreakpointHandler(
       logger.warn("Invalid breakpoint $breakpoint - line $lineNumber")
       return
     }
-    registerBreakpointEvent.fire(Pair(fileURL, breakpoint))
+    powerShellDebugProcess.powerShellDebugSession.setBreakpoint(fileURL, breakpoint)
   }
 
   override fun unregisterBreakpoint(breakpoint: XLineBreakpoint<XBreakpointProperties<*>>, temporary: Boolean) {
@@ -49,7 +47,8 @@ class PowerShellBreakpointHandler(
       logger.warn("Invalid breakpoint $breakpoint - line $lineNumber")
       return
     }
-    unregisterBreakpointEvent.fire(Pair(fileURL, breakpoint))  }
+    powerShellDebugProcess.powerShellDebugSession.setBreakpoint(fileURL, breakpoint)
+  }
 
   fun getFileURL(file: VirtualFile): String {
     return VfsUtil.virtualToIoFile(file).toURI().toASCIIString()
