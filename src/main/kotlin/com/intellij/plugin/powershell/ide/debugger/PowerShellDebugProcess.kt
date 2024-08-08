@@ -30,6 +30,10 @@ class PowerShellDebugProcess(val xDebugSession: XDebugSession, val executionResu
 
   private val myXBreakpointHandlers = arrayOf<XBreakpointHandler<*>>(myBreakpointHandler)
 
+  init {
+      xDebugSession.setPauseActionSupported(true)
+  }
+
   override fun resume(context: XSuspendContext?) {
     if(context !is PowerShellSuspendContext) {
       return

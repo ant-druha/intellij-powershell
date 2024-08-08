@@ -45,7 +45,7 @@ class PowerShellBreakpointHandler(
       logger.warn("Invalid breakpoint $breakpoint - line $lineNumber")
       return
     }
-    powerShellDebugProcess.powerShellDebugSession.setBreakpoint(fileURL, breakpoint)
+    powerShellDebugProcess.powerShellDebugSession.removeBreakpoint(fileURL, breakpoint)
   }
 
   fun getFileURL(file: VirtualFile): String {
