@@ -16,111 +16,114 @@ import junit.framework.TestCase
 import org.junit.Assert
 import java.util.concurrent.Semaphore
 
-class VariableTest: DebuggerTestBase() {
+class VariableTest : DebuggerTestBase() {
 
   fun testPrimitiveVariable() {
-    val psiFile = copyAndOpenFile("debugger/variableTest.ps1")
-    val file = psiFile.virtualFile
+    runInEdt {
+      val psiFile = copyAndOpenFile("debugger/variableTest.ps1")
+      val file = psiFile.virtualFile
 
-    val fileLine = 2 // line in file, starting from 1
-    val line = fileLine - 1 // breakpoint line, starting from 0
-    val variableName = "\$myPrimitiveVar"
-    val value = 69
+      val fileLine = 2 // line in file, starting from 1
+      val line = fileLine - 1 // breakpoint line, starting from 0
+      val variableName = "\$myPrimitiveVar"
+      val value = 69
 
-    val testSession = PowerShellTestSession(project, file.toNioPath())
-    XDebuggerTestUtil.toggleBreakpoint(project, file, line)
-    Lifetime.using { lt ->
-      val debugSession = testSession.startDebugSession(lt)
-      XDebuggerTestUtil.waitFor(
-        testSession.sessionListener.pausedSemaphore,
-        testSession.waitForBackgroundTimeout.toMillis()
-      )
-      val suspendContext = debugSession.suspendContext as PowerShellSuspendContext
-      val topFrame = suspendContext.activeExecutionStack.topFrame!!
-      val children = XTestCompositeNode(topFrame).collectChildren()
-      val variableValue = XDebuggerTestUtil.findVar(children, variableName)
-      val variableValueNode = XDebuggerTestUtil.computePresentation(variableValue)
-      TestCase.assertEquals(value.toString(), variableValueNode.myValue)
+      val testSession = PowerShellTestSession(project, file.toNioPath())
+      XDebuggerTestUtil.toggleBreakpoint(project, file, line)
+      Lifetime.using { lt ->
+        val debugSession = testSession.startDebugSession(lt)
+        XDebuggerTestUtil.waitFor(
+          testSession.sessionListener.pausedSemaphore,
+          testSession.waitForBackgroundTimeout.toMillis()
+        )
+        val suspendContext = debugSession.suspendContext as PowerShellSuspendContext
+        val topFrame = suspendContext.activeExecutionStack.topFrame!!
+        val children = XTestCompositeNode(topFrame).collectChildren()
+        val variableValue = XDebuggerTestUtil.findVar(children, variableName)
+        val variableValueNode = XDebuggerTestUtil.computePresentation(variableValue)
+        TestCase.assertEquals(value.toString(), variableValueNode.myValue)
+      }
     }
   }
 
-  fun testComplexVariable()
-  {
-    val psiFile = copyAndOpenFile("debugger/variableTest.ps1")
-    val file = psiFile.virtualFile
+  fun testComplexVariable() {
+    runInEdt {
+      val psiFile = copyAndOpenFile("debugger/variableTest.ps1")
+      val file = psiFile.virtualFile
 
-    val fileLine = 5 // line in file, starting from 1
-    val line = fileLine - 1 // breakpoint line, starting from 0
-    val variableName = "\$myComplexVar"
-    val nestedFieldName = "NestedField"
-    val nestedFieldValue = 123
+      val fileLine = 5 // line in file, starting from 1
+      val line = fileLine - 1 // breakpoint line, starting from 0
+      val variableName = "\$myComplexVar"
+      val nestedFieldName = "NestedField"
+      val nestedFieldValue = 123
 
-    val testSession = PowerShellTestSession(project, file.toNioPath())
-    val millis = testSession.waitForBackgroundTimeout.toMillis()
+      val testSession = PowerShellTestSession(project, file.toNioPath())
+      val millis = testSession.waitForBackgroundTimeout.toMillis()
 
-    XDebuggerTestUtil.toggleBreakpoint(project, file, line)
-    Lifetime.using { lt ->
-      val debugSession = testSession.startDebugSession(lt)
-      XDebuggerTestUtil.waitFor(testSession.sessionListener.pausedSemaphore, millis)
-      val suspendContext = debugSession.suspendContext as PowerShellSuspendContext
-      val topFrame = suspendContext.activeExecutionStack.topFrame!!
-      val children = XTestCompositeNode(topFrame).collectChildren(millis)
-      val variableValue = XDebuggerTestUtil.findVar(children, variableName)
-      val variableChildren = XTestCompositeNode(variableValue).collectChildren(millis)
-      TestCase.assertTrue(
-        "variableChildren.size (${variableChildren.size}) is not greater than zero",
-        variableChildren.size > 0
-      )
-      val nestedField = XDebuggerTestUtil.findVar(variableChildren, nestedFieldName)
-      val nestedFieldValueNode = XDebuggerTestUtil.computePresentation(nestedField)
-      TestCase.assertEquals(nestedFieldValue.toString(), nestedFieldValueNode.myValue)
+      XDebuggerTestUtil.toggleBreakpoint(project, file, line)
+      Lifetime.using { lt ->
+        val debugSession = testSession.startDebugSession(lt)
+        XDebuggerTestUtil.waitFor(testSession.sessionListener.pausedSemaphore, millis)
+        val suspendContext = debugSession.suspendContext as PowerShellSuspendContext
+        val topFrame = suspendContext.activeExecutionStack.topFrame!!
+        val children = XTestCompositeNode(topFrame).collectChildren(millis)
+        val variableValue = XDebuggerTestUtil.findVar(children, variableName)
+        val variableChildren = XTestCompositeNode(variableValue).collectChildren(millis)
+        TestCase.assertTrue(
+          "variableChildren.size (${variableChildren.size}) is not greater than zero",
+          variableChildren.size > 0
+        )
+        val nestedField = XDebuggerTestUtil.findVar(variableChildren, nestedFieldName)
+        val nestedFieldValueNode = XDebuggerTestUtil.computePresentation(nestedField)
+        TestCase.assertEquals(nestedFieldValue.toString(), nestedFieldValueNode.myValue)
+      }
     }
   }
 
-  fun testSetVariable()
-  {
-    val psiFile = copyAndOpenFile("debugger/variableTest.ps1")
-    val file = psiFile.virtualFile
+  fun testSetVariable() {
+    runInEdt {
+      val psiFile = copyAndOpenFile("debugger/variableTest.ps1")
+      val file = psiFile.virtualFile
 
-    val fileLine = 2 // line in file, starting from 1
-    val line = fileLine - 1 // breakpoint line, starting from 0
-    val secondfileLine = 5 // line in file, starting from 1
-    val secondLine = secondfileLine - 1 // breakpoint line, starting from 0
+      val fileLine = 2 // line in file, starting from 1
+      val line = fileLine - 1 // breakpoint line, starting from 0
+      val secondfileLine = 5 // line in file, starting from 1
+      val secondLine = secondfileLine - 1 // breakpoint line, starting from 0
 
-    val variableName = "\$myPrimitiveVar"
-    val value = 123
-    val setValueExpression = XExpressionImpl("$value", PowerShellLanguage.INSTANCE, "")
+      val variableName = "\$myPrimitiveVar"
+      val value = 123
+      val setValueExpression = XExpressionImpl("$value", PowerShellLanguage.INSTANCE, "")
 
-    val testSession = PowerShellTestSession(project, file.toNioPath())
-    val millis = testSession.waitForBackgroundTimeout.toMillis()
+      val testSession = PowerShellTestSession(project, file.toNioPath())
+      val millis = testSession.waitForBackgroundTimeout.toMillis()
 
-    XDebuggerTestUtil.toggleBreakpoint(project, file, line)
-    XDebuggerTestUtil.toggleBreakpoint(project, file, secondLine)
+      XDebuggerTestUtil.toggleBreakpoint(project, file, line)
+      XDebuggerTestUtil.toggleBreakpoint(project, file, secondLine)
 
-    Lifetime.using { lt ->
-      val debugSession = testSession.startDebugSession(lt)
-      XDebuggerTestUtil.waitFor(testSession.sessionListener.pausedSemaphore, millis)
-      val suspendContext = debugSession.suspendContext as PowerShellSuspendContext
+      Lifetime.using { lt ->
+        val debugSession = testSession.startDebugSession(lt)
+        XDebuggerTestUtil.waitFor(testSession.sessionListener.pausedSemaphore, millis)
+        val suspendContext = debugSession.suspendContext as PowerShellSuspendContext
 
-      val variableValue = PowerShellDebuggerTestUtil.getVariable(suspendContext, variableName)
-      var callback = XTestModificationCallback()
-      variableValue.modifier!!.setValue(setValueExpression, callback)
-      callback.waitFor(millis)
-      debugSession.resume()
-      XDebuggerTestUtil.waitFor(
-        testSession.sessionListener.pausedSemaphore,
-        testSession.waitForBackgroundTimeout.toMillis()
-      )
-      val resultVariable =
-        PowerShellDebuggerTestUtil.getVariable(debugSession.suspendContext as PowerShellSuspendContext, variableName)
-      val variableValueNode = XDebuggerTestUtil.computePresentation(resultVariable)
-      TestCase.assertEquals(value.toString(), variableValueNode.myValue)
+        val variableValue = PowerShellDebuggerTestUtil.getVariable(suspendContext, variableName)
+        val callback = XTestModificationCallback()
+        variableValue.modifier!!.setValue(setValueExpression, callback)
+        callback.waitFor(millis)
+        debugSession.resume()
+        XDebuggerTestUtil.waitFor(
+          testSession.sessionListener.pausedSemaphore,
+          testSession.waitForBackgroundTimeout.toMillis()
+        )
+        val resultVariable =
+          PowerShellDebuggerTestUtil.getVariable(debugSession.suspendContext as PowerShellSuspendContext, variableName)
+        val variableValueNode = XDebuggerTestUtil.computePresentation(resultVariable)
+        TestCase.assertEquals(value.toString(), variableValueNode.myValue)
+      }
     }
   }
 
-  override fun tearDown() {
+  override fun tearDownEdt() {
     FileEditorManagerEx.getInstanceEx(project).closeAllFiles()
-    super.tearDown()
   }
 }
 
