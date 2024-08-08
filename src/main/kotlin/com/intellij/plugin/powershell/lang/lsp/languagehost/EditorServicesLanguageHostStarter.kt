@@ -242,13 +242,9 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
     return file
   }
 
-  override fun createProcess(command: List<String>, environment: Map<String, String>?): Process {
-    val workingDirectory = if (application.isUnitTestMode) {
-      project.basePath ?: error("Project has no base path.")
-    } else TerminalProjectOptionsProvider.getInstance(project).startingDirectory
+  override fun createProcess( command: List<String>, environment: Map<String, String>?): Process {
     return PtyCommandLine(command)
       .withConsoleMode(false)
-      .withWorkDirectory(workingDirectory)
       .withEnvironment(environment)
       .createProcess()
   }
