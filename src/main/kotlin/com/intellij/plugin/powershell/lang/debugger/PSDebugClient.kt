@@ -1,15 +1,12 @@
 package com.intellij.plugin.powershell.lang.debugger
 
-import com.intellij.xdebugger.XDebugSession
-import com.intellij.xdebugger.frame.XSuspendContext
 import com.jetbrains.rd.util.reactive.Signal
 import org.eclipse.lsp4j.debug.*
 import org.eclipse.lsp4j.debug.services.IDebugProtocolClient
 import org.eclipse.lsp4j.jsonrpc.services.JsonNotification
 import java.util.concurrent.CompletableFuture
 
-class PSDebugClient(session: XDebugSession): IDebugProtocolClient {
-  private val debugSession = session
+class PSDebugClient: IDebugProtocolClient {
 
   val debugStopped = Signal<StoppedEventArguments?>()
   val sendKeyPress = Signal<Unit>()

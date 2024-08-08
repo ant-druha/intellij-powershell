@@ -20,14 +20,14 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.eclipse.lsp4j.debug.*
 import org.eclipse.lsp4j.debug.services.IDebugProtocolServer
-import java.util.*
 
-class PowerShellDebugSession(val client: PSDebugClient, val server: IDebugProtocolServer,
-                             val session: XDebugSession,
-                             val coroutineScope: CoroutineScope,
-                             val xDebugSession: XDebugSession) {
+class PowerShellDebugSession(
+  client: PSDebugClient, val server: IDebugProtocolServer,
+  private val session: XDebugSession,
+  val coroutineScope: CoroutineScope
+) {
 
-  val sendKeyPress = Signal<Unit>()
+  private val sendKeyPress = Signal<Unit>()
 
   private val breakpointMap = mutableMapOf<String, MutableMap<Int, XLineBreakpoint<XBreakpointProperties<*>>>>()
   private val breakpointsMapMutex = Mutex()
@@ -36,7 +36,7 @@ class PowerShellDebugSession(val client: PSDebugClient, val server: IDebugProtoc
     client.debugStopped.adviseSuspend(Lifetime.Eternal, Dispatchers.EDT) { args ->
       val stack = server.stackTrace(StackTraceArguments().apply { threadId = args!!.threadId }).await()
       thisLogger().info(stack.toString())
-      session.positionReached(PowerShellSuspendContext(stack, server, coroutineScope, args!!.threadId, xDebugSession))
+      session.positionReached(PowerShellSuspendContext(stack, server, coroutineScope, args!!.threadId, session))
     }
     client.sendKeyPress.adviseSuspend(Lifetime.Eternal, Dispatchers.EDT) {
       sendKeyPress.fire(Unit)
@@ -71,7 +71,7 @@ class PowerShellDebugSession(val client: PSDebugClient, val server: IDebugProtoc
     continueDebugging(context.threadId)
   }
 
-  fun continueDebugging(threadId: Int) {
+  private fun continueDebugging(threadId: Int) {
     coroutineScope.launch {
       server.continue_(ContinueArguments().apply { this.threadId = threadId }).await()
     }
@@ -81,7 +81,7 @@ class PowerShellDebugSession(val client: PSDebugClient, val server: IDebugProtoc
     startStepOver(context.threadId)
   }
 
-  fun startStepOver(threadId: Int) {
+  private fun startStepOver(threadId: Int) {
     coroutineScope.launch {
       server.next(NextArguments().apply { this.threadId = threadId }).await()
     }
@@ -91,7 +91,7 @@ class PowerShellDebugSession(val client: PSDebugClient, val server: IDebugProtoc
     startStepInto(context.threadId)
   }
 
-  fun startStepInto(threadId: Int) {
+  private fun startStepInto(threadId: Int) {
     coroutineScope.launch {
       server.stepIn(StepInArguments().apply { this.threadId = threadId }).await()
     }
@@ -101,7 +101,7 @@ class PowerShellDebugSession(val client: PSDebugClient, val server: IDebugProtoc
     startStepOut(context.threadId)
   }
 
-  fun startStepOut(threadId: Int) {
+  private fun startStepOut(threadId: Int) {
     coroutineScope.launch {
       server.stepOut(StepOutArguments().apply { this.threadId = threadId }).await()
     }
@@ -117,39 +117,37 @@ class PowerShellDebugSession(val client: PSDebugClient, val server: IDebugProtoc
     sendBreakpointRequest(breakpointMap)
   }
 
-  suspend fun sendBreakpointRequest(breakpointMap: Map<String, MutableMap<Int, XLineBreakpoint<XBreakpointProperties<*>>>>) {
-    breakpointsMapMutex.withLock {
-      for (breakpointMapEntry in breakpointMap) {
-        val breakpointArgs = SetBreakpointsArguments()
-        val source: Source = Source()
-        source.path = breakpointMapEntry.key
-        breakpointArgs.source = source
+  private suspend fun sendBreakpointRequest(breakpointMap: Map<String, MutableMap<Int, XLineBreakpoint<XBreakpointProperties<*>>>>) {
+    for (breakpointMapEntry in breakpointMap) {
+      val breakpointArgs = SetBreakpointsArguments()
+      val source = Source()
+      source.path = breakpointMapEntry.key
+      breakpointArgs.source = source
 
-        breakpointArgs.breakpoints = breakpointMapEntry.value.map {
-          val bp = it.value
-          SourceBreakpoint().apply {
-            line = bp.line + 1 // ide breakpoints line numbering starts from 0, while PSES start from 1
-            condition = bp.conditionExpression?.expression
-            logMessage = bp.logExpressionObject?.expression
-          }
-        }.toTypedArray()
-        try {
-          val setBreakpointsResponse = server.setBreakpoints(breakpointArgs).await()
-          val responseSet = setBreakpointsResponse.breakpoints.map { x -> x.line - 1 }.toHashSet()
-          breakpointMapEntry.value.forEach {
-            if (!responseSet.contains(it.key))
-              session.setBreakpointInvalid(
-                it.value,
-                MessagesBundle.message("powershell.debugger.breakpoints.invalidBreakPoint")
-              )
-          }
-        } catch (e: Throwable) {
-          logger.error(e)
-          session.reportMessage(
-            e.message ?: e.javaClass.simpleName,
-            com.intellij.openapi.ui.MessageType.ERROR
-          )
+      breakpointArgs.breakpoints = breakpointMapEntry.value.map {
+        val bp = it.value
+        SourceBreakpoint().apply {
+          line = bp.line + 1 // ide breakpoints line numbering starts from 0, while PSES start from 1
+          condition = bp.conditionExpression?.expression
+          logMessage = bp.logExpressionObject?.expression
         }
+      }.toTypedArray()
+      try {
+        val setBreakpointsResponse = server.setBreakpoints(breakpointArgs).await()
+        val responseSet = setBreakpointsResponse.breakpoints.map { x -> x.line - 1 }.toHashSet()
+        breakpointMapEntry.value.forEach {
+          if (!responseSet.contains(it.key))
+            session.setBreakpointInvalid(
+              it.value,
+              MessagesBundle.message("powershell.debugger.breakpoints.invalidBreakPoint")
+            )
+        }
+      } catch (e: Throwable) {
+        logger.error(e)
+        session.reportMessage(
+          e.message ?: e.javaClass.simpleName,
+          com.intellij.openapi.ui.MessageType.ERROR
+        )
       }
     }
   }

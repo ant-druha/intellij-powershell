@@ -1,17 +1,17 @@
 package com.intellij.plugin.powershell.testFramework
 
-import com.intellij.execution.ExecutionException
 import com.intellij.execution.executors.DefaultDebugExecutor
 import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.execution.impl.RunnerAndConfigurationSettingsImpl
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.openapi.project.Project
-import com.intellij.plugin.powershell.ide.MessagesBundle
-import com.intellij.plugin.powershell.ide.debugger.PowerShellDebugProcess
-import com.intellij.plugin.powershell.ide.debugger.PowerShellDebugServiceStarter
-import com.intellij.plugin.powershell.ide.run.*
-import com.intellij.xdebugger.*
+import com.intellij.plugin.powershell.ide.run.PowerShellConfigurationType
+import com.intellij.plugin.powershell.ide.run.PowerShellProgramDebugRunner
+import com.intellij.plugin.powershell.ide.run.PowerShellRunConfiguration
+import com.intellij.plugin.powershell.ide.run.bootstrapDebugSession
+import com.intellij.xdebugger.XDebugSession
+import com.intellij.xdebugger.XDebugSessionListener
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.Signal
 import kotlinx.coroutines.runBlocking
@@ -21,8 +21,7 @@ import java.util.concurrent.Semaphore
 import kotlin.io.path.Path
 import kotlin.io.path.pathString
 
-class PowerShellTestSession(val project: Project, val scriptPath: Path) {
-  val waitForStopTimeout: Duration = Duration.ofMinutes(3)
+class PowerShellTestSession(val project: Project, scriptPath: Path) {
   val waitForBackgroundTimeout: Duration = Duration.ofSeconds(10)
   val sessionListener: PowerShellDebugSessionListener = PowerShellDebugSessionListener()
 
@@ -31,11 +30,14 @@ class PowerShellTestSession(val project: Project, val scriptPath: Path) {
   private val defaultWorkingDirectory
     get() = projectPath.resolve("scripts")
 
-  val configuration: PowerShellRunConfiguration = createConfiguration(defaultWorkingDirectory.toString(), scriptPath.pathString)
+  private val configuration: PowerShellRunConfiguration = createConfiguration(defaultWorkingDirectory.toString(), scriptPath.pathString)
 
-  fun startDebugSession(lifetime: Lifetime) = startDebugSession(lifetime, configuration)
+  fun startDebugSession(lifetime: Lifetime) =
+    runBlocking {
+      startDebugSession(lifetime, configuration)
+    }
 
-  fun startDebugSession(lifetime: Lifetime, configuration: PowerShellRunConfiguration): XDebugSession {
+  private suspend fun startDebugSession(lifetime: Lifetime, configuration: PowerShellRunConfiguration): XDebugSession {
     val executor = DefaultDebugExecutor.getDebugExecutorInstance()
     val runner = ProgramRunner.getRunner(executor.id, configuration) as PowerShellProgramDebugRunner
     val environment = ExecutionEnvironment(
@@ -45,25 +47,15 @@ class PowerShellTestSession(val project: Project, val scriptPath: Path) {
       project
     )
     val state = configuration.getState(executor, environment)
-    runBlocking { state.prepareExecution() }
-    val debuggerManager = XDebuggerManager.getInstance(environment.project)
+    state.prepareExecution()
 
-    val session = debuggerManager.startSession(environment, object : XDebugProcessStarter() {
-      @Throws(ExecutionException::class)
-      override fun start(session: XDebugSession): XDebugProcess {
-        environment.putUserData(XSessionKey, session)
-        val result = PowerShellDebugServiceStarter.startDebugServiceProcess(environment, state.runConfiguration, session)
-          ?: throw ExecutionException(MessagesBundle.message("powershell.debugger.executionException"))
-
-        return PowerShellDebugProcess(session, result.second, result.first)
-      }
-    })
+    val session = bootstrapDebugSession(project, environment, state)
     session.addSessionListener(sessionListener)
     lifetime.onTermination { session.stop() } // TODO: Wait for stop? Think about graceful teardown for the debug process.
     return session
   }
 
-  fun createConfiguration(
+  private fun createConfiguration(
     customWorkingDirectory: String?,
     customScriptPath: String?
   ): PowerShellRunConfiguration {
@@ -78,14 +70,14 @@ class PowerShellTestSession(val project: Project, val scriptPath: Path) {
 
 class PowerShellDebugSessionListener : XDebugSessionListener {
 
-  // if greater than 0 -> paused, resumed, stopped
+  // if greater than 0 → paused, resumed, stopped
   val pausedSemaphore = Semaphore(0)
-  val resumedSemaphore = Semaphore(0)
-  val stoppedSemaphore = Semaphore(0)
+  private val resumedSemaphore = Semaphore(0)
+  private val stoppedSemaphore = Semaphore(0)
 
-  val pausedEvent = Signal<Unit>()
-  val resumedEvent = Signal<Unit>()
-  val stoppedEvent = Signal<Unit>()
+  private val pausedEvent = Signal<Unit>()
+  private val resumedEvent = Signal<Unit>()
+  private val stoppedEvent = Signal<Unit>()
 
   override fun sessionPaused() {
     pausedEvent.fire(Unit)
