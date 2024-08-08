@@ -13,8 +13,8 @@ lsp4j = "org.eclipse.lsp4j:org.eclipse.lsp4j:0.23.1"
 junixsocket = ["junixsocket-common", "junixsocket-native-common"]
 
 [plugins]
-changelog = { id = "org.jetbrains.changelog", version = "2.2.1" }
+changelog = "org.jetbrains.changelog:2.2.1"
 gradleJvmWrapper = "me.filippov.gradle.jvm.wrapper:0.14.0"
-grammarkit = { id = "org.jetbrains.grammarkit", version = "2022.3.2.2" }
+grammarkit = "org.jetbrains.grammarkit:2022.3.2.2"
 intellijPlatform = "org.jetbrains.intellij.platform:2.0.1"
 kotlin = { id = "org.jetbrains.kotlin.jvm", version = "2.0.0" }
