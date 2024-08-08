@@ -1,4 +1,5 @@
-import org.jetbrains.intellij.tasks.PrepareSandboxTask
+import org.jetbrains.intellij.platform.gradle.TestFrameworkType
+import org.jetbrains.intellij.platform.gradle.tasks.PrepareSandboxTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.security.MessageDigest
 import java.util.zip.ZipFile
@@ -8,15 +9,14 @@ plugins {
   alias(libs.plugins.changelog)
   alias(libs.plugins.gradleJvmWrapper)
   alias(libs.plugins.grammarkit)
-  alias(libs.plugins.intellij)
+  alias(libs.plugins.intellijPlatform)
   alias(libs.plugins.kotlin)
 }
 
-intellij {
-  type.set("IC")
-  version.set(libs.versions.intellij)
-  plugins.set(listOf("org.intellij.intelliLang", "terminal"))
-  pluginName.set("PowerShell")
+intellijPlatform {
+  pluginConfiguration {
+    name = "PowerShell"
+  }
 }
 
 sourceSets {
@@ -34,6 +34,10 @@ group = "com.intellij.plugin"
 version = "2.6.1"
 
 repositories {
+  intellijPlatform {
+    defaultRepositories()
+  }
+
   mavenCentral()
   ivy {
     url = uri("https://github.com/PowerShell/PSScriptAnalyzer/releases/download/")
@@ -58,7 +62,15 @@ val psesSha256Hash: String by project
 val powerShellEditorServices: Configuration by configurations.creating
 
 dependencies {
+  intellijPlatform {
+    intellijIdeaCommunity(libs.versions.intellij)
+    bundledPlugins("org.intellij.intelliLang", "org.jetbrains.plugins.terminal")
+    instrumentationTools()
+    testFramework(TestFrameworkType.Bundled)
+  }
+
   implementation(libs.bundles.junixsocket)
+  compileOnly(libs.jetBrainsAnnotations)
 
   implementation(libs.lsp4j)
   testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
@@ -154,11 +166,11 @@ tasks {
     }
   }
 
-  fun PrepareSandboxTask.unpackPsScriptAnalyzer(outDir: String) {
+  fun PrepareSandboxTask.unpackPsScriptAnalyzer(outDir: Provider<String>) {
     dependsOn(psScriptAnalyzer, verifyPsScriptAnalyzer)
 
     from(zipTree(psScriptAnalyzer.singleFile)) {
-      into("$outDir/PSScriptAnalyzer")
+      into(outDir.map { "$it/PSScriptAnalyzer" })
 
       // NuGet stuff:
       exclude("_manifest/**", "_rels/**", "package/**", "[Content_Types].xml", "*.nuspec")
@@ -176,18 +188,18 @@ tasks {
     }
   }
 
-  fun PrepareSandboxTask.unpackPowerShellEditorServices(outDir: String) {
+  fun PrepareSandboxTask.unpackPowerShellEditorServices(outDir: Provider<String>) {
     dependsOn(powerShellEditorServices, verifyPowerShellEditorServices)
 
     from(zipTree(powerShellEditorServices.singleFile)) {
-      into("$outDir/")
+      into(outDir.map { "$it/" })
       // We only need this module and not anything else from the archive:
       include("PowerShellEditorServices/**")
     }
   }
 
   withType<PrepareSandboxTask> {
-    val outDir = "${intellij.pluginName.get()}/lib/LanguageHost/modules"
+    val outDir = intellijPlatform.pluginConfiguration.name.map { "$it/lib/LanguageHost/modules" }
     unpackPsScriptAnalyzer(outDir)
     unpackPowerShellEditorServices(outDir)
   }
@@ -218,7 +230,7 @@ tasks {
 
   runIde {
     jvmArgs("-Dide.plugins.snapshot.on.unload.fail=true", "-XX:+UnlockDiagnosticVMOptions")
-    autoReloadPlugins.set(true)
+    autoReload = true
   }
 
   patchPluginXml {
