@@ -5,6 +5,8 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    ignore:
+      - dependency-name: "org.jetbrains.kotlin.jvm"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
