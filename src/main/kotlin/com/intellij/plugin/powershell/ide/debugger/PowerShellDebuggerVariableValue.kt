@@ -20,10 +20,6 @@ class PowerShellDebuggerVariableValue(val variable: Variable, val parentReferenc
                                       val coroutineScope: CoroutineScope, val xDebugSession: XDebugSession
 ) : XNamedValue(variable.name ?: "") {
 
-  companion object{
-    val logger = logger<PowerShellDebuggerVariableValue>()
-  }
-
   init {
     xDebugSession.suspendContext?.let {
       val variablesCache = (xDebugSession.suspendContext as PowerShellSuspendContext).variablesCache
@@ -95,3 +91,4 @@ class PowerShellDebuggerVariableValue(val variable: Variable, val parentReferenc
     }
   }
 }
+private val logger = logger<PowerShellDebuggerVariableValue>()

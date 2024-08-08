@@ -15,8 +15,6 @@ class PowerShellBreakpointHandler(
   breakpointTypeClass: Class<out XBreakpointType<XLineBreakpoint<XBreakpointProperties<*>>, *>>
 ) : XBreakpointHandler<XLineBreakpoint<XBreakpointProperties<*>>>(breakpointTypeClass) {
 
-  val logger = logger<PowerShellBreakpointHandler>()
-
   override fun registerBreakpoint(breakpoint: XLineBreakpoint<XBreakpointProperties<*>>) {
     val sourcePosition = breakpoint.sourcePosition
     if (sourcePosition == null || !sourcePosition.file.exists() || !sourcePosition.file.isValid) {
@@ -55,3 +53,5 @@ class PowerShellBreakpointHandler(
   }
 
 }
+
+private val logger = logger<PowerShellBreakpointHandler>()
