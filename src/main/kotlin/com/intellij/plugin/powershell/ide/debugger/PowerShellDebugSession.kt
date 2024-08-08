@@ -50,8 +50,8 @@ class PowerShellDebugSession(val client: PSDebugClient, val server: IDebugProtoc
           breakpointMap[fileURL] = mutableMapOf()
         val bpMap = breakpointMap[fileURL]!!
         bpMap[breakpoint.line] = breakpoint
+        sendBreakpointRequest()
       }
-      sendBreakpointRequest()
     }
   }
 
@@ -62,8 +62,8 @@ class PowerShellDebugSession(val client: PSDebugClient, val server: IDebugProtoc
         if (!bpMap.containsKey(breakpoint.line))
           return@launch
         bpMap.remove(breakpoint.line)
+        sendBreakpointRequest()
       }
-      sendBreakpointRequest()
     }
   }
 
@@ -113,44 +113,42 @@ class PowerShellDebugSession(val client: PSDebugClient, val server: IDebugProtoc
     }
   }
 
-  private fun sendBreakpointRequest() {
+  private suspend fun sendBreakpointRequest() {
     sendBreakpointRequest(breakpointMap)
   }
 
-  fun sendBreakpointRequest(breakpointMap: Map<String, MutableMap<Int, XLineBreakpoint<XBreakpointProperties<*>>>>) {
-    coroutineScope.launch(start = CoroutineStart.UNDISPATCHED) {
-      breakpointsMapMutex.withLock {
-        for (breakpointMapEntry in breakpointMap) {
-          val breakpointArgs = SetBreakpointsArguments()
-          val source: Source = Source()
-          source.path = breakpointMapEntry.key
-          breakpointArgs.source = source
+  suspend fun sendBreakpointRequest(breakpointMap: Map<String, MutableMap<Int, XLineBreakpoint<XBreakpointProperties<*>>>>) {
+    breakpointsMapMutex.withLock {
+      for (breakpointMapEntry in breakpointMap) {
+        val breakpointArgs = SetBreakpointsArguments()
+        val source: Source = Source()
+        source.path = breakpointMapEntry.key
+        breakpointArgs.source = source
 
-          breakpointArgs.breakpoints = breakpointMapEntry.value.map {
-            val bp = it.value
-            SourceBreakpoint().apply {
-              line = bp.line + 1 // ide breakpoints line numbering starts from 0, while PSES start from 1
-              condition = bp.conditionExpression?.expression
-              logMessage = bp.logExpressionObject?.expression
-            }
-          }.toTypedArray()
-          try {
-            val setBreakpointsResponse = server.setBreakpoints(breakpointArgs).await()
-            val responseSet = setBreakpointsResponse.breakpoints.map { x -> x.line - 1 }.toHashSet()
-            breakpointMapEntry.value.forEach {
-              if (!responseSet.contains(it.key))
-                session.setBreakpointInvalid(
-                  it.value,
-                  MessagesBundle.message("powershell.debugger.breakpoints.invalidBreakPoint")
-                )
-            }
-          } catch (e: Throwable) {
-            logger.error(e)
-            session.reportMessage(
-              e.message ?: e.javaClass.simpleName,
-              com.intellij.openapi.ui.MessageType.ERROR
-            )
+        breakpointArgs.breakpoints = breakpointMapEntry.value.map {
+          val bp = it.value
+          SourceBreakpoint().apply {
+            line = bp.line + 1 // ide breakpoints line numbering starts from 0, while PSES start from 1
+            condition = bp.conditionExpression?.expression
+            logMessage = bp.logExpressionObject?.expression
           }
+        }.toTypedArray()
+        try {
+          val setBreakpointsResponse = server.setBreakpoints(breakpointArgs).await()
+          val responseSet = setBreakpointsResponse.breakpoints.map { x -> x.line - 1 }.toHashSet()
+          breakpointMapEntry.value.forEach {
+            if (!responseSet.contains(it.key))
+              session.setBreakpointInvalid(
+                it.value,
+                MessagesBundle.message("powershell.debugger.breakpoints.invalidBreakPoint")
+              )
+          }
+        } catch (e: Throwable) {
+          logger.error(e)
+          session.reportMessage(
+            e.message ?: e.javaClass.simpleName,
+            com.intellij.openapi.ui.MessageType.ERROR
+          )
         }
       }
     }
