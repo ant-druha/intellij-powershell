@@ -19,33 +19,14 @@ import java.util.concurrent.atomic.AtomicBoolean
 class PowerShellDebugProcess(val xDebugSession: XDebugSession, val executionResult: ExecutionResult, val powerShellDebugSession: PowerShellDebugSession)
   : XDebugProcess(xDebugSession), Disposable {
 
-  companion object {
-    val KEY: Key<PowerShellDebugProcess> =
-      Key.create("com.intellij.plugin.powershell.ide.debugger.PowerShellDebugProcess")
-  }
-
-  val myBreakpointHandler = PowerShellBreakpointHandler(this, PowerShellBreakpointType::class.java)
-  val myProcessHandler = executionResult.processHandler
-  var disposed = AtomicBoolean(false)
-
-  init {
-    myProcessHandler.putUserData(KEY, this)
-  }
+  private val myBreakpointHandler = PowerShellBreakpointHandler(this, PowerShellBreakpointType::class.java)
+  private val myProcessHandler = executionResult.processHandler
+  private val disposed = AtomicBoolean(false)
 
   override fun doGetProcessHandler(): ProcessHandler = myProcessHandler
 
-  val myExecutionConsole = executionResult.executionConsole
-  val myEditorsProvider = PowerShellDebuggerEditorsProvider(xDebugSession)
-
-  init {
-    com.intellij.openapi.util.Disposer.register(myExecutionConsole, this)
-    myBreakpointHandler.registerBreakpointEvent.adviseSuspend(Lifetime.Eternal, Dispatchers.EDT) {
-      pair -> powerShellDebugSession.setBreakpoint(pair.first, pair.second)
-    }
-    myBreakpointHandler.unregisterBreakpointEvent.adviseSuspend(Lifetime.Eternal, Dispatchers.EDT) {
-      pair -> powerShellDebugSession.removeBreakpoint(pair.first, pair.second)
-    }
-  }
+  private val myExecutionConsole = executionResult.executionConsole
+  private val myEditorsProvider = PowerShellDebuggerEditorsProvider(xDebugSession)
 
   private val myXBreakpointHandlers = arrayOf<XBreakpointHandler<*>>(myBreakpointHandler)
 
