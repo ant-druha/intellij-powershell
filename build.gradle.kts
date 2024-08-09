@@ -246,4 +246,14 @@ tasks {
       )
     })
   }
+
+  val testPreview by intellijPlatformTesting.testIde.registering {
+    version = libs.versions.intellijPreview
+    useInstaller = false
+    task {
+      enabled = libs.versions.intellij.get() != libs.versions.intellijPreview.get()
+    }
+  }
+
+  check { dependsOn(testPreview.name) }
 }
