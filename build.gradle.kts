@@ -75,6 +75,7 @@ dependencies {
   implementation(libs.lsp4j)
   testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
   testImplementation(libs.junit)
+  testImplementation(libs.openTest4J)
 
   psScriptAnalyzer(
     group = "PSScriptAnalyzer",

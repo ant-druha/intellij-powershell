@@ -9,10 +9,9 @@ class PowerShellLexerTest : LexerTestCase() {
     return PowerShellLexerAdapter()
   }
 
-  override fun getDirPath(): String? {
-    return null
+  override fun getDirPath(): String {
+    error("Should not be called.")
   }
-
 
   fun testLineComment() {
     doTest("hello#world", "SIMPLE_ID ('hello#world')")
