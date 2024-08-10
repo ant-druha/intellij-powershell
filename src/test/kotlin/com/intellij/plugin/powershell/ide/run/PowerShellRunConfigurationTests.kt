@@ -5,38 +5,53 @@ import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.execution.impl.RunnerAndConfigurationSettingsImpl
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
-import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import com.intellij.openapi.project.Project
+import com.intellij.testFramework.junit5.TestApplication
+import com.intellij.testFramework.junit5.fixture.projectFixture
 import kotlinx.coroutines.runBlocking
+import org.junit.Assert.assertEquals
+import org.junit.Test
 import java.nio.file.Path
 import kotlin.io.path.Path
 
-class PowerShellRunConfigurationTests : BasePlatformTestCase() {
+@TestApplication
+class PowerShellRunConfigurationTests {
 
+  private val projectFixture = projectFixture()
+
+  private val project: Project
+    get() = projectFixture.get()
   private val projectPath: Path
     get() = Path(project.basePath!!)
   private val defaultWorkingDirectory
     get() = projectPath.resolve("scripts")
 
+  @Test
   fun testCustomWorkingDirectoryPath() {
     val customDir = projectPath.resolve("ttt")
     assertWorkingDirectory(custom = customDir.toString(), expected = customDir)
   }
 
+  @Test
   fun testNoCustomWorkingDirectory() {
     assertWorkingDirectory(custom = null, expected = defaultWorkingDirectory)
   }
 
+  @Test
   fun testEmptyCustomWorkingDirectory() {
     assertWorkingDirectory(custom = "", expected = defaultWorkingDirectory)
   }
 
+  @Test
   fun testCustomWorkingDirectoryPathVariable() {
     assertWorkingDirectory(custom = "\$PROJECT_DIR$/foobar", expected = projectPath.resolve("foobar"))
   }
 
+  @Test
   fun testInvalidWorkingDir() {
     assertWorkingDirectory(custom = invalidPath, expected = defaultWorkingDirectory)
   }
+  @Test
   fun testInvalidScriptPath() {
     assertWorkingDirectory(custom = null, scriptPath = invalidPath, expected = Path(System.getProperty("user.home")))
   }
