@@ -70,8 +70,6 @@ dependencies {
   }
 
   implementation(libs.bundles.junixsocket)
-  compileOnly(libs.jetBrainsAnnotations)
-
   implementation(libs.lsp4j)
   testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
   testImplementation(libs.junit)
