@@ -13,7 +13,6 @@ import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.rd.util.withSyncIOBackgroundContext
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
@@ -33,7 +32,9 @@ import com.intellij.util.io.await
 import com.sun.jna.Pointer
 import com.sun.jna.platform.win32.Kernel32
 import com.sun.jna.platform.win32.WinNT
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import org.newsclub.net.unix.AFUNIXSocket
 import org.newsclub.net.unix.AFUNIXSocketAddress
 import java.io.*
@@ -140,7 +141,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
     if (sessionInfo is SessionInfo.Pipes) {
       val readPipeName = sessionInfo.languageServiceReadPipeName
       val writePipeName = sessionInfo.languageServiceWritePipeName
-      return withSyncIOBackgroundContext {
+      return withContext(Dispatchers.IO) {
         if (SystemInfo.isWindows) {
           val readPipe = RandomAccessFile(readPipeName, "rwd")
           val writePipe = RandomAccessFile(writePipeName, "r")
@@ -158,7 +159,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
         }
       }
     } else {
-      return withSyncIOBackgroundContext block@{
+      return withContext(Dispatchers.IO) block@{
         val port = (sessionInfo as? SessionInfo.Tcp)?.languageServicePort ?: return@block Pair(null, null)
         try {
           socket = Socket("127.0.0.1", port)
@@ -244,7 +245,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
       } else ""
     val scriptText = "$preamble${escapePath(startupScript)} $args"
 
-    val scriptFile = withSyncIOBackgroundContext {
+    val scriptFile = withContext(Dispatchers.IO) {
       File.createTempFile("start-pses-host", ".ps1").apply {
         deleteOnExit()
         try {

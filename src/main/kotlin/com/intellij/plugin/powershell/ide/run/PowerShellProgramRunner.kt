@@ -8,13 +8,14 @@ import com.intellij.execution.runners.AsyncProgramRunner
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.showRunContent
 import com.intellij.execution.ui.RunContentDescriptor
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.rd.util.toPromise
-import com.intellij.openapi.rd.util.withUiContext
 import com.intellij.plugin.powershell.ide.PluginProjectRoot
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
+import kotlinx.coroutines.withContext
 import org.jetbrains.concurrency.Promise
 
 /**
@@ -32,12 +33,12 @@ class PowerShellProgramRunner : AsyncProgramRunner<RunnerSettings>() {
   override fun execute(environment: ExecutionEnvironment, state: RunProfileState): Promise<RunContentDescriptor?> =
     PluginProjectRoot.getInstance(environment.project).coroutineScope.async(Dispatchers.Default) {
       state as PowerShellScriptCommandLineState
-      withUiContext {
+      withContext(Dispatchers.EDT) {
         FileDocumentManager.getInstance().saveAllDocuments()
       }
       state.prepareExecution()
       val executionResult = state.execute(environment.executor, this@PowerShellProgramRunner)
-      val descriptor = withUiContext { showRunContent(executionResult, environment) }
+      val descriptor = withContext(Dispatchers.EDT) { showRunContent(executionResult, environment) }
       descriptor
     }.toPromise()
 }
