@@ -69,6 +69,9 @@ dependencies {
     testFramework(TestFrameworkType.Bundled)
   }
 
+  testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
+  testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.8.1")
+
   implementation(libs.bundles.junixsocket)
   implementation(libs.lsp4j)
   testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
@@ -121,6 +124,10 @@ tasks {
     pathToParser = "com/intellij/plugin/powershell/lang/parser"
     pathToPsiRoot = "com/intellij/plugin/powershell/psi"
     defaultCharacterEncoding = "UTF-8"
+  }
+
+  withType<Test> {
+    useJUnitPlatform()
   }
 
   withType<JavaCompile> {

@@ -4,7 +4,7 @@ intellijPreview = "242.20224-EAP-CANDIDATE-SNAPSHOT"
 junixsocket = "2.10.0"
 
 [libraries]
-junit = "junit:junit:4.13.2"
+junit = "org.junit.jupiter:junit-jupiter-api:5.10.3"
 junixsocket-common = { module = "com.kohlschutter.junixsocket:junixsocket-common", version.ref = "junixsocket" }
 junixsocket-native-common = { module = "com.kohlschutter.junixsocket:junixsocket-native-common", version.ref = "junixsocket" }
 lsp4j = "org.eclipse.lsp4j:org.eclipse.lsp4j:0.23.1"
