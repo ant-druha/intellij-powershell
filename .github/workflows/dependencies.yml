@@ -34,7 +34,7 @@ jobs:
           author: "intellij-powershell automation <friedrich@fornever.me>"
           commit-message: ${{ steps.update.outputs.commit-message }}
           title: ${{ steps.update.outputs.pr-title }}
-          body-path: ${{ steps.update.outputs.pr-body-path }}+
+          body-path: ${{ steps.update.outputs.pr-body-path }}
 
   powershell-modules:
     permissions:
