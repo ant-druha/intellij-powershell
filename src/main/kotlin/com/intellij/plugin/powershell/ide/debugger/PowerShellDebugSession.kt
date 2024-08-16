@@ -9,9 +9,9 @@ import com.intellij.util.io.await
 import com.intellij.xdebugger.XDebugSession
 import com.intellij.xdebugger.breakpoints.XBreakpointProperties
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
-import com.jetbrains.rd.framework.util.adviseSuspend
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.Signal
+import com.jetbrains.rd.util.threading.coroutines.adviseSuspend
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers

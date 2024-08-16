@@ -53,7 +53,7 @@ class PowerShellProgramDebugRunner : AsyncProgramRunner<RunnerSettings>() {
 
     return PluginProjectRoot.getInstance(project).coroutineScope.async(Dispatchers.Default) {
       state as PowerShellScriptCommandLineState
-      withUiContext {
+      withContext(Dispatchers.EDT) {
         FileDocumentManager.getInstance().saveAllDocuments()
       }
       state.prepareExecution()
