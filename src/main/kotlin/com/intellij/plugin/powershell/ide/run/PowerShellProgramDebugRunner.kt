@@ -15,7 +15,6 @@ import com.intellij.openapi.application.EDT
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.util.toPromise
-import com.intellij.openapi.rd.util.withUiContext
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.plugin.powershell.ide.MessagesBundle
 import com.intellij.plugin.powershell.ide.PluginProjectRoot
