@@ -26,6 +26,7 @@ import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.getEditorServicesModuleVersion
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.getEditorServicesStartupScript
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.getPSExtensionModulesDir
+import com.intellij.util.application
 import com.intellij.util.execution.ParametersListUtil
 import com.intellij.util.io.BaseOutputReader
 import com.intellij.util.io.await
@@ -223,7 +224,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
     val useReplSwitch = if (useConsoleRepl() || isDebugServiceOnly) "-EnableConsoleRepl" else ""
     val logLevel = if (useConsoleRepl() || isDebugServiceOnly) "Normal" else "Diagnostic"
     val debugServiceOnlySwitch = if(isDebugServiceOnly) " -DebugServiceOnly" else ""
-    var args = "$psesVersionString -HostName '${myHostDetails.name}' -HostProfileId '${myHostDetails.profileId}' " +
+    val args = "$psesVersionString -HostName '${myHostDetails.name}' -HostProfileId '${myHostDetails.profileId}' " +
         "-HostVersion '${myHostDetails.version}' -AdditionalModules @() " +
         "-BundledModulesPath '$bundledModulesPath' $useReplSwitch $debugServiceOnlySwitch " +
         "-LogLevel '$logLevel' -LogPath '$logPath' -SessionDetailsPath '$sessionDetailsPath' -FeatureFlags @() $splitInOutPipesSwitch"
@@ -305,7 +306,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
   }
 
   private fun processOutput(process: Process, pid: Long, commandLine: String, editorServicesVersion: String) {
-    if (useConsoleRepl()) return
+    if (useConsoleRepl() && !application.isUnitTestMode) return
 
     fun showInstallNotification() {
       val content = "Required $editorServicesVersion 'PowerShellEditorServices' module is not found. Please install PowerShell VS Code extension"

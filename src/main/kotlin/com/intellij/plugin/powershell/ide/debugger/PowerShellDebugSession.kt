@@ -6,6 +6,7 @@ import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.plugin.powershell.ide.MessagesBundle
 import com.intellij.plugin.powershell.lang.debugger.PSDebugClient
 import com.intellij.util.io.await
+import com.intellij.util.text.nullize
 import com.intellij.xdebugger.XDebugSession
 import com.intellij.xdebugger.breakpoints.XBreakpointProperties
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
@@ -29,7 +30,7 @@ class PowerShellDebugSession(
 
   private val sendKeyPress = Signal<Unit>()
 
-  private val breakpointMap = mutableMapOf<String, MutableMap<Int, XLineBreakpoint<XBreakpointProperties<*>>>>()
+  private val breakpointMap = mutableMapOf<String, MutableMap<Int, XLineBreakpoint<XBreakpointProperties<*>>>>() // todo: Path as key
   private val breakpointsMapMutex = Mutex()
 
   init {
@@ -43,12 +44,12 @@ class PowerShellDebugSession(
     }
   }
 
-  fun setBreakpoint(fileURL: String, breakpoint: XLineBreakpoint<XBreakpointProperties<*>>) {
+  fun setBreakpoint(filePath: String, breakpoint: XLineBreakpoint<XBreakpointProperties<*>>) {
     coroutineScope.launch(start = CoroutineStart.UNDISPATCHED) {
       breakpointsMapMutex.withLock {
-        if (!breakpointMap.containsKey(fileURL))
-          breakpointMap[fileURL] = mutableMapOf()
-        val bpMap = breakpointMap[fileURL]!!
+        if (!breakpointMap.containsKey(filePath))
+          breakpointMap[filePath] = mutableMapOf()
+        val bpMap = breakpointMap[filePath]!!
         bpMap[breakpoint.line] = breakpoint
         sendBreakpointRequest()
       }
@@ -134,13 +135,19 @@ class PowerShellDebugSession(
       }.toTypedArray()
       try {
         val setBreakpointsResponse = server.setBreakpoints(breakpointArgs).await()
-        val responseSet = setBreakpointsResponse.breakpoints.map { x -> x.line - 1 }.toHashSet()
+        val responseMap = setBreakpointsResponse.breakpoints.associateBy { x -> x.line - 1 }
         breakpointMapEntry.value.forEach {
-          if (!responseSet.contains(it.key))
+          val bp = responseMap[it.value.line]
+          if (bp?.isVerified == true) {
+            logger.info("Set breakpoint at ${breakpointMapEntry.key}:${bp.line} successfully.")
+          } else {
             session.setBreakpointInvalid(
               it.value,
-              MessagesBundle.message("powershell.debugger.breakpoints.invalidBreakPoint")
+              bp?.message.nullize(nullizeSpaces = true)
+                ?: MessagesBundle.message("powershell.debugger.breakpoints.invalidBreakPoint")
             )
+            logger.info("Invalid breakpoint at ${breakpointMapEntry.key}:${bp?.line}: ${bp?.message}")
+          }
         }
       } catch (e: Throwable) {
         logger.error(e)
