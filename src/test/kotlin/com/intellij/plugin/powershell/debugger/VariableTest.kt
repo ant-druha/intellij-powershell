@@ -32,10 +32,10 @@ class VariableTest : DebuggerTestBase() {
       XDebuggerTestUtil.toggleBreakpoint(project, file, line)
       Lifetime.using { lt ->
         val debugSession = testSession.startDebugSession(lt)
-        XDebuggerTestUtil.waitFor(
+        assertTrue("Pause should be triggered in ${testSession.waitForBackgroundTimeout}", XDebuggerTestUtil.waitFor(
           testSession.sessionListener.pausedSemaphore,
           testSession.waitForBackgroundTimeout.toMillis()
-        )
+        ))
         val suspendContext = debugSession.suspendContext as PowerShellSuspendContext
         val topFrame = suspendContext.activeExecutionStack.topFrame!!
         val children = XTestCompositeNode(topFrame).collectChildren()
@@ -63,7 +63,10 @@ class VariableTest : DebuggerTestBase() {
       XDebuggerTestUtil.toggleBreakpoint(project, file, line)
       Lifetime.using { lt ->
         val debugSession = testSession.startDebugSession(lt)
-        XDebuggerTestUtil.waitFor(testSession.sessionListener.pausedSemaphore, millis)
+        assertTrue(
+          "Pause should be triggered in $millis ms.",
+          XDebuggerTestUtil.waitFor(testSession.sessionListener.pausedSemaphore, millis)
+        )
         val suspendContext = debugSession.suspendContext as PowerShellSuspendContext
         val topFrame = suspendContext.activeExecutionStack.topFrame!!
         val children = XTestCompositeNode(topFrame).collectChildren(millis)
@@ -102,7 +105,10 @@ class VariableTest : DebuggerTestBase() {
 
       Lifetime.using { lt ->
         val debugSession = testSession.startDebugSession(lt)
-        XDebuggerTestUtil.waitFor(testSession.sessionListener.pausedSemaphore, millis)
+        assertTrue(
+          "Pause should be triggered in $millis ms.",
+          XDebuggerTestUtil.waitFor(testSession.sessionListener.pausedSemaphore, millis)
+        )
         val suspendContext = debugSession.suspendContext as PowerShellSuspendContext
 
         val variableValue = PowerShellDebuggerTestUtil.getVariable(suspendContext, variableName)
@@ -110,10 +116,10 @@ class VariableTest : DebuggerTestBase() {
         variableValue.modifier!!.setValue(setValueExpression, callback)
         callback.waitFor(millis)
         debugSession.resume()
-        XDebuggerTestUtil.waitFor(
+        assertTrue("Pause should be triggered in ${testSession.waitForBackgroundTimeout}", XDebuggerTestUtil.waitFor(
           testSession.sessionListener.pausedSemaphore,
           testSession.waitForBackgroundTimeout.toMillis()
-        )
+        ))
         val resultVariable =
           PowerShellDebuggerTestUtil.getVariable(debugSession.suspendContext as PowerShellSuspendContext, variableName)
         val variableValueNode = XDebuggerTestUtil.computePresentation(resultVariable)

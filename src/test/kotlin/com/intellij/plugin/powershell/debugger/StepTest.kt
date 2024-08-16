@@ -22,17 +22,17 @@ class StepTest: DebuggerTestBase() {
       XDebuggerTestUtil.toggleBreakpoint(project, file, line)
       Lifetime.using { lt ->
         val debugSession = testSession.startDebugSession(lt)
-        XDebuggerTestUtil.waitFor(
+        assertTrue("Pause should be triggered in ${testSession.waitForBackgroundTimeout}", XDebuggerTestUtil.waitFor(
           testSession.sessionListener.pausedSemaphore,
           testSession.waitForBackgroundTimeout.toMillis()
-        )
+        ))
         val suspendContext = debugSession.suspendContext as PowerShellSuspendContext
         TestCase.assertEquals(line, suspendContext.activeExecutionStack.topFrame?.sourcePosition?.line)
         debugSession.stepOver(false)
-        XDebuggerTestUtil.waitFor(
+        assertTrue("Pause should be triggered in ${testSession.waitForBackgroundTimeout}", XDebuggerTestUtil.waitFor(
           testSession.sessionListener.pausedSemaphore,
           testSession.waitForBackgroundTimeout.toMillis()
-        )
+        ))
         TestCase.assertEquals(
           line + 1,
           (debugSession.suspendContext as PowerShellSuspendContext).activeExecutionStack.topFrame?.sourcePosition?.line
@@ -55,17 +55,17 @@ class StepTest: DebuggerTestBase() {
       XDebuggerTestUtil.toggleBreakpoint(project, file, line)
       Lifetime.using { lt ->
         val debugSession = testSession.startDebugSession(lt)
-        XDebuggerTestUtil.waitFor(
+        assertTrue("Pause should be triggered in ${testSession.waitForBackgroundTimeout}", XDebuggerTestUtil.waitFor(
           testSession.sessionListener.pausedSemaphore,
           testSession.waitForBackgroundTimeout.toMillis()
-        )
+        ))
         val suspendContext = debugSession.suspendContext as PowerShellSuspendContext
         TestCase.assertEquals(line, suspendContext.activeExecutionStack.topFrame?.sourcePosition?.line)
         debugSession.stepInto()
-        XDebuggerTestUtil.waitFor(
+        assertTrue("Pause should be triggered in ${testSession.waitForBackgroundTimeout}", XDebuggerTestUtil.waitFor(
           testSession.sessionListener.pausedSemaphore,
           testSession.waitForBackgroundTimeout.toMillis()
-        )
+        ))
         TestCase.assertEquals(
           stepInLine,
           (debugSession.suspendContext as PowerShellSuspendContext).activeExecutionStack.topFrame?.sourcePosition?.line
@@ -89,17 +89,17 @@ class StepTest: DebuggerTestBase() {
       XDebuggerTestUtil.toggleBreakpoint(project, file, line)
       Lifetime.using { lt ->
         val debugSession = testSession.startDebugSession(lt)
-        XDebuggerTestUtil.waitFor(
+        assertTrue("Pause should be triggered in ${testSession.waitForBackgroundTimeout}", XDebuggerTestUtil.waitFor(
           testSession.sessionListener.pausedSemaphore,
           testSession.waitForBackgroundTimeout.toMillis()
-        )
+        ))
         val suspendContext = debugSession.suspendContext as PowerShellSuspendContext
         TestCase.assertEquals(line, suspendContext.activeExecutionStack.topFrame?.sourcePosition?.line)
         debugSession.stepOut()
-        XDebuggerTestUtil.waitFor(
+        assertTrue("Pause should be triggered in ${testSession.waitForBackgroundTimeout}", XDebuggerTestUtil.waitFor(
           testSession.sessionListener.pausedSemaphore,
           testSession.waitForBackgroundTimeout.toMillis()
-        )
+        ))
         TestCase.assertEquals(
           stepOutLine,
           (debugSession.suspendContext as PowerShellSuspendContext).activeExecutionStack.topFrame?.sourcePosition?.line
