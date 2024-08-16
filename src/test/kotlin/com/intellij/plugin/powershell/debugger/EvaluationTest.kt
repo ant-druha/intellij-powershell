@@ -23,10 +23,10 @@ class EvaluationTest: DebuggerTestBase() {
       XDebuggerTestUtil.toggleBreakpoint(project, file, line)
       Lifetime.using { lt ->
         val debugSession = testSession.startDebugSession(lt)
-        XDebuggerTestUtil.waitFor(
+        assertTrue("Pause should be triggered in ${testSession.waitForBackgroundTimeout}", XDebuggerTestUtil.waitFor(
           testSession.sessionListener.pausedSemaphore,
           testSession.waitForBackgroundTimeout.toMillis()
-        )
+        ))
         val variableValue =
           XDebuggerTestUtil.evaluate(debugSession, expression, testSession.waitForBackgroundTimeout.toMillis()).first
         val variableValueNode = XDebuggerTestUtil.computePresentation(variableValue)

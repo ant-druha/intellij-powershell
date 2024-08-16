@@ -22,10 +22,10 @@ class BreakpointTest : DebuggerTestBase() {
       XDebuggerTestUtil.toggleBreakpoint(project, file, line)
       Lifetime.using { lt ->
         val debugSession = testSession.startDebugSession(lt)
-        XDebuggerTestUtil.waitFor(
+        assertTrue("Pause should be triggered in ${testSession.waitForBackgroundTimeout}", XDebuggerTestUtil.waitFor(
           testSession.sessionListener.pausedSemaphore,
           testSession.waitForBackgroundTimeout.toMillis()
-        )
+        ))
         val suspendContext = debugSession.suspendContext as PowerShellSuspendContext
         TestCase.assertEquals(line, suspendContext.activeExecutionStack.topFrame?.sourcePosition?.line)
       }
@@ -46,10 +46,10 @@ class BreakpointTest : DebuggerTestBase() {
 
       Lifetime.using { lt ->
         val debugSession = testSession.startDebugSession(lt)
-        XDebuggerTestUtil.waitFor(
+        assertTrue("Pause should be triggered in ${testSession.waitForBackgroundTimeout}", XDebuggerTestUtil.waitFor(
           testSession.sessionListener.pausedSemaphore,
           testSession.waitForBackgroundTimeout.toMillis()
-        )
+        ))
         val suspendContext = debugSession.suspendContext as PowerShellSuspendContext
         TestCase.assertEquals(
           psiSecondFile.virtualFile.toNioPath(),
@@ -77,10 +77,10 @@ class BreakpointTest : DebuggerTestBase() {
       XDebuggerTestUtil.setBreakpointCondition(project, line, condition)
       Lifetime.using { lt ->
         val debugSession = testSession.startDebugSession(lt)
-        XDebuggerTestUtil.waitFor(
+        assertTrue("Pause should be triggered in ${testSession.waitForBackgroundTimeout}", XDebuggerTestUtil.waitFor(
           testSession.sessionListener.pausedSemaphore,
           testSession.waitForBackgroundTimeout.toMillis()
-        )
+        ))
         val suspendContext = debugSession.suspendContext as PowerShellSuspendContext
         val topFrame = suspendContext.activeExecutionStack.topFrame!!
         val children = XTestCompositeNode(topFrame).collectChildren()
