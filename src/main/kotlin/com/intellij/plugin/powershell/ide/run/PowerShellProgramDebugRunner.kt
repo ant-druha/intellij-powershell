@@ -12,6 +12,7 @@ import com.intellij.execution.runners.AsyncProgramRunner
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.ui.RunContentDescriptor
 import com.intellij.openapi.application.EDT
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.util.toPromise
@@ -155,5 +156,8 @@ private suspend fun launchDebuggee(scriptPath: Path, remoteProxy: IDebugProtocol
   launchArgs["script"] = scriptPath.toString()
   launchArgs["noDebug"] = false
   launchArgs["__sessionId"] = "sessionId" // TODO: should we renumber these?
+  logger.info("Starting script file \"$scriptPath\" in a debug session.")
   remoteProxy.launch(launchArgs).await()
 }
+
+private val logger = logger<PowerShellDebugSession>()
