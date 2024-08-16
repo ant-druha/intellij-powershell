@@ -207,8 +207,7 @@ class LanguageServerEndpoint(
 
     return coroutineScope.async job@{
       try {
-        val (inStream, outStream) = languageHostConnectionManager.establishConnection()
-        if (inStream == null || outStream == null) {
+        val (inStream, outStream) = languageHostConnectionManager.establishConnection() ?: run {
           logger.warn("Connection creation to PowerShell language host failed for $rootPath")
           onStartFailure()
           return@job null
