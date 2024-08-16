@@ -1,6 +1,6 @@
 [versions]
 intellij = "2024.2.0.1"
-intellijPreview = "242.21829-EAP-CANDIDATE-SNAPSHOT"
+intellijPreview = "242.21829.15-EAP-SNAPSHOT"
 junixsocket = "2.10.0"
 
 [libraries]
