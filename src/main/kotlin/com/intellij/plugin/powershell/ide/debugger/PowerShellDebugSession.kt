@@ -28,7 +28,7 @@ class PowerShellDebugSession(
   val coroutineScope: CoroutineScope
 ) {
 
-  private val sendKeyPress = Signal<Unit>()
+  public val sendKeyPress = Signal<Unit>()
 
   private val breakpointMap = mutableMapOf<String, MutableMap<Int, XLineBreakpoint<XBreakpointProperties<*>>>>() // todo: Path as key
   private val breakpointsMapMutex = Mutex()

@@ -28,6 +28,8 @@ import com.intellij.xdebugger.XDebugProcessStarter
 import com.intellij.xdebugger.XDebugSession
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
+import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rd.util.threading.coroutines.adviseSuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
@@ -101,6 +103,9 @@ suspend fun bootstrapDebugSession(
         val scope = PluginProjectRoot.getInstance(project).coroutineScope
         val debugSession = PowerShellDebugSession(client, remoteProxy, session, scope)
         val executionResult = DefaultExecutionResult(console, handler)
+        debugSession.sendKeyPress.adviseSuspend(Lifetime.Eternal, Dispatchers.EDT) {
+          handler.processInput.write(0)
+        }
 
         return PowerShellDebugProcess(session, executionResult, debugSession)
       }
