@@ -19,14 +19,14 @@ import com.intellij.openapi.rd.util.toPromise
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.plugin.powershell.ide.MessagesBundle
 import com.intellij.plugin.powershell.ide.PluginProjectRoot
-import com.intellij.plugin.powershell.ide.debugger.*
+import com.intellij.plugin.powershell.ide.debugger.EditorServicesDebuggerHostStarter
+import com.intellij.plugin.powershell.ide.debugger.PowerShellBreakpointType
+import com.intellij.plugin.powershell.ide.debugger.PowerShellDebugProcess
+import com.intellij.plugin.powershell.ide.debugger.PowerShellDebugSession
 import com.intellij.plugin.powershell.lang.debugger.PSDebugClient
 import com.intellij.terminal.TerminalExecutionConsole
 import com.intellij.util.io.await
-import com.intellij.xdebugger.XDebugProcess
-import com.intellij.xdebugger.XDebugProcessStarter
-import com.intellij.xdebugger.XDebugSession
-import com.intellij.xdebugger.XDebuggerManager
+import com.intellij.xdebugger.*
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.threading.coroutines.adviseSuspend
@@ -68,7 +68,8 @@ class PowerShellProgramDebugRunner : AsyncProgramRunner<RunnerSettings>() {
 suspend fun bootstrapDebugSession(
   project: Project,
   environment: ExecutionEnvironment,
-  state: PowerShellScriptCommandLineState
+  state: PowerShellScriptCommandLineState,
+  listener: XDebugSessionListener? = null
 ): XDebugSession {
   val debuggerManager = XDebuggerManager.getInstance(project)
 
@@ -100,11 +101,14 @@ suspend fun bootstrapDebugSession(
     val session = debuggerManager.startSession(environment, object : XDebugProcessStarter() {
       @Throws(ExecutionException::class)
       override fun start(session: XDebugSession): XDebugProcess {
+        listener?.let { session.addSessionListener(it) }
+
         val scope = PluginProjectRoot.getInstance(project).coroutineScope
         val debugSession = PowerShellDebugSession(client, remoteProxy, session, scope)
         val executionResult = DefaultExecutionResult(console, handler)
         debugSession.sendKeyPress.adviseSuspend(Lifetime.Eternal, Dispatchers.EDT) {
           handler.processInput.write(0)
+          handler.processInput.flush()
         }
 
         return PowerShellDebugProcess(session, executionResult, debugSession)
@@ -118,7 +122,7 @@ suspend fun bootstrapDebugSession(
     Pair(session, breakpoints)
   }
 
-  initializeBreakpoints(breakpoints, session, remoteProxy)
+  initializeBreakpoints(breakpoints, session, remoteProxy) // TODO: Not needed?
 
   val targetPath = Path(state.runConfiguration.scriptPath)
   launchDebuggee(targetPath, remoteProxy)
