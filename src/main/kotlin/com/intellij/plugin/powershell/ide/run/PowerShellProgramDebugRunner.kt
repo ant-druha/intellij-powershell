@@ -25,6 +25,7 @@ import com.intellij.plugin.powershell.ide.debugger.PowerShellDebugProcess
 import com.intellij.plugin.powershell.ide.debugger.PowerShellDebugSession
 import com.intellij.plugin.powershell.lang.debugger.PSDebugClient
 import com.intellij.terminal.TerminalExecutionConsole
+import com.intellij.util.execution.ParametersListUtil
 import com.intellij.util.io.await
 import com.intellij.xdebugger.*
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
@@ -125,7 +126,7 @@ suspend fun bootstrapDebugSession(
   initializeBreakpoints(breakpoints, session, remoteProxy) // TODO: Not needed?
 
   val targetPath = Path(state.runConfiguration.scriptPath)
-  launchDebuggee(targetPath, remoteProxy)
+  launchDebuggee(targetPath, remoteProxy, state.runConfiguration)
 
   remoteProxy.configurationDone(ConfigurationDoneArguments()).await()
   return session
@@ -159,12 +160,17 @@ private suspend fun initializeBreakpoints(
   }
 }
 
-private suspend fun launchDebuggee(scriptPath: Path, remoteProxy: IDebugProtocolServer) {
+private suspend fun launchDebuggee(scriptPath: Path, remoteProxy: IDebugProtocolServer, runConfiguration: PowerShellRunConfiguration) {
+  val runtimeArgs = ParametersListUtil.parse(runConfiguration.scriptParameters)
+  val envs = runConfiguration.environmentVariables.envs
+
   val launchArgs: MutableMap<String, Any> = HashMap()
   launchArgs["terminal"] = "none"
   launchArgs["script"] = scriptPath.toString()
   launchArgs["noDebug"] = false
-  launchArgs["__sessionId"] = "sessionId" // TODO: should we renumber these?
+  launchArgs["__sessionId"] = "sessionId"
+  launchArgs["Args"] = runtimeArgs
+  launchArgs["Env"] = envs
   logger.info("Starting script file \"$scriptPath\" in a debug session.")
   remoteProxy.launch(launchArgs).await()
 }
