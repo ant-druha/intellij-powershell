@@ -221,7 +221,11 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
       psesVersionString = "-EditorServicesVersion '$psesVersionString'"
     }
     val bundledModulesPath = getPSExtensionModulesDir(psExtensionPath)
-    val useReplSwitch = if (useConsoleRepl() || isDebugServiceOnly) "-EnableConsoleRepl" else ""
+
+    val shouldUseRepl = !application.isUnitTestMode && (useConsoleRepl() || isDebugServiceOnly)
+    val useReplSwitch = if (shouldUseRepl) "-EnableConsoleRepl" else ""
+    // NOTE: -EnableConsoleRepl breaks tests on Unix, so we disabled it for now
+
     val logLevel = if (useConsoleRepl() || isDebugServiceOnly) "Normal" else "Diagnostic"
     val debugServiceOnlySwitch = if(isDebugServiceOnly) " -DebugServiceOnly" else ""
     val args = "$psesVersionString -HostName '${myHostDetails.name}' -HostProfileId '${myHostDetails.profileId}' " +
