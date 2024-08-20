@@ -132,7 +132,7 @@ open class PowerShellBlockImpl(node: ASTNode, wrap: Wrap?, alignment: Alignment?
         val type = child.elementType
         if (type === INVOCATION_EXPRESSION) {
           collectNodes(nodes, child)
-        } else if (type !== NLS) {
+        } else if (type !== NEWLINE) {
           nodes.add(child)
         }
       }
@@ -225,7 +225,7 @@ open class PowerShellBlockImpl(node: ASTNode, wrap: Wrap?, alignment: Alignment?
   }
 
   private fun createWrap(childNode: ASTNode): Wrap {
-    if ((isFunctionParameter(childNode) || isBlockParameter(childNode)) && findSiblingSkipping(childNode, arrayOf(NLS, WHITE_SPACE), false)?.elementType != LP) {
+    if ((isFunctionParameter(childNode) || isBlockParameter(childNode)) && findSiblingSkipping(childNode, arrayOf(NEWLINE, WHITE_SPACE), false)?.elementType != LP) {
       val firstNode = isFirstNodeInParameter(childNode, true)
       val wrapValue = if (isFunctionParameter(childNode)) myCommonSettings.METHOD_PARAMETERS_WRAP else myPSSettings.BLOCK_PARAMETER_CLAUSE_WRAP
       val paramWrap = Wrap.createWrap(WrappingUtil.getWrapType(wrapValue), firstNode)
@@ -246,7 +246,7 @@ open class PowerShellBlockImpl(node: ASTNode, wrap: Wrap?, alignment: Alignment?
       return paramWrap
     }
 
-    if (isCallArgument(childNode) && findSiblingSkipping(childNode, arrayOf(NLS, WHITE_SPACE), false)?.elementType != LP) {
+    if (isCallArgument(childNode) && findSiblingSkipping(childNode, arrayOf(NEWLINE, WHITE_SPACE), false)?.elementType != LP) {
       return Wrap.createWrap(WrappingUtil.getWrapType(myCommonSettings.CALL_PARAMETERS_WRAP), isFirstNodeInParameter(childNode, true))
     }
 
@@ -373,7 +373,7 @@ class PowerShellSpacingProcessor(private val myCommonSettings: CommonCodeStyleSe
 
     if (LCURLY === type1 || RCURLY === type2) {
       val braceNode = if (LCURLY === type1) node1 else node2
-      val blockBody = findSiblingSkipping(braceNode, arrayOf(NLS, WHITE_SPACE), braceNode === node1)
+      val blockBody = findSiblingSkipping(braceNode, arrayOf(NEWLINE, WHITE_SPACE), braceNode === node1)
       val blockBodyToken = blockBody?.elementType
       if (blockBodyToken === IDENTIFIER || blockBodyToken === SIMPLE_ID) return null
 
@@ -403,7 +403,7 @@ class PowerShellSpacingProcessor(private val myCommonSettings: CommonCodeStyleSe
 
     if (LP === type1) {
       if (isArgumentListContext(node1)) {
-        val treeNext = findSiblingSkipping(node1, arrayOf(NLS, WHITE_SPACE))
+        val treeNext = findSiblingSkipping(node1, arrayOf(NEWLINE, WHITE_SPACE))
         val lfAfterLparen = myCommonSettings.CALL_PARAMETERS_WRAP != DO_NOT_WRAP && myCommonSettings.CALL_PARAMETERS_LPAREN_ON_NEXT_LINE
         if (treeNext?.elementType === RP) {
           val lfAfterRparen = myCommonSettings.CALL_PARAMETERS_WRAP != DO_NOT_WRAP && myCommonSettings.CALL_PARAMETERS_RPAREN_ON_NEXT_LINE
@@ -413,7 +413,7 @@ class PowerShellSpacingProcessor(private val myCommonSettings: CommonCodeStyleSe
         return createSpacing(myCommonSettings.SPACE_WITHIN_METHOD_CALL_PARENTHESES, lfAfterLparen)
       }
       if (isParameterClauseContext(node1) || isBlockParameterClauseContext(node1)) {
-        val treeNext = findSiblingSkipping(node1, arrayOf(NLS, WHITE_SPACE))
+        val treeNext = findSiblingSkipping(node1, arrayOf(NEWLINE, WHITE_SPACE))
         val methodParam = isParameterClauseContext(node1)
         val wrapValue = if (methodParam) myCommonSettings.METHOD_PARAMETERS_WRAP else myPowerShellSettings.BLOCK_PARAMETER_CLAUSE_WRAP
         val lParenNextLine = if (methodParam) myCommonSettings.METHOD_PARAMETERS_LPAREN_ON_NEXT_LINE else myPowerShellSettings.BLOCK_PARAMETERS_LPAREN_ON_NEXT_LINE
@@ -447,14 +447,14 @@ class PowerShellSpacingProcessor(private val myCommonSettings: CommonCodeStyleSe
     }
     if (RP === type2) {
       if (isArgumentListContext(node2)) {
-        val treePrev = findSiblingSkipping(node2, arrayOf(NLS, WHITE_SPACE), false)
+        val treePrev = findSiblingSkipping(node2, arrayOf(NEWLINE, WHITE_SPACE), false)
         val lfAfterRparen = myCommonSettings.CALL_PARAMETERS_WRAP != DO_NOT_WRAP && myCommonSettings.CALL_PARAMETERS_RPAREN_ON_NEXT_LINE
         if (treePrev?.elementType === LP) return createSpacing(myCommonSettings.SPACE_WITHIN_EMPTY_METHOD_CALL_PARENTHESES, lfAfterRparen)
 
         return createSpacing(myCommonSettings.SPACE_WITHIN_METHOD_CALL_PARENTHESES, lfAfterRparen)
       }
       if (isParameterClauseContext(node2) || isBlockParameterClauseContext(node1)) {
-        val treePrev = findSiblingSkipping(node2, arrayOf(NLS, WHITE_SPACE), false)
+        val treePrev = findSiblingSkipping(node2, arrayOf(NEWLINE, WHITE_SPACE), false)
         val methodParam = isParameterClauseContext(node2)
         val wrapValue = if (methodParam) myCommonSettings.METHOD_PARAMETERS_WRAP else myPowerShellSettings.BLOCK_PARAMETER_CLAUSE_WRAP
         val rParenNextLine = if (methodParam) myCommonSettings.METHOD_PARAMETERS_RPAREN_ON_NEXT_LINE else myPowerShellSettings.BLOCK_PARAMETERS_RPAREN_ON_NEXT_LINE
@@ -641,7 +641,7 @@ class PowerShellSpacingProcessor(private val myCommonSettings: CommonCodeStyleSe
 
     if (type2 == SEMI) return simpleSpacing(myCommonSettings.SPACE_BEFORE_SEMICOLON)
 
-    if ((PowerShellTokenTypeSets.KEYWORDS.contains(type1) && !isIdentifier(node1.treeParent)/*|| HANDLER_PARAMETER_LABEL === type1*/) && NLS !== type2) {
+    if ((PowerShellTokenTypeSets.KEYWORDS.contains(type1) && !isIdentifier(node1.treeParent)/*|| HANDLER_PARAMETER_LABEL === type1*/) && NEWLINE !== type2) {
       return Spacing.createSpacing(1, 1, 0, true, 0)
     }
 

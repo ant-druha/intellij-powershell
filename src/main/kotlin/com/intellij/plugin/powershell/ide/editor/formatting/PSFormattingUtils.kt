@@ -50,7 +50,7 @@ internal fun isSwitchStatementContext(node: ASTNode): Boolean {
 
 //internal fun isFirstInChainedCall(node: ASTNode): Boolean {
 //  if (node.treeParent?.elementType !== PowerShellTypes.INVOCATION_EXPRESSION) return false
-//  return findSiblingSkipping(node, arrayOf(PowerShellTypes.NLS, TokenType.WHITE_SPACE, PowerShellTypes.DOT, PowerShellTypes.COLON2), false)?.elementType !== PowerShellTypes.INVOCATION_EXPRESSION
+//  return findSiblingSkipping(node, arrayOf(PowerShellTypes.NEWLINE, TokenType.WHITE_SPACE, PowerShellTypes.DOT, PowerShellTypes.COLON2), false)?.elementType !== PowerShellTypes.INVOCATION_EXPRESSION
 //}
 
 internal fun isSubExpressionContext(node: ASTNode): Boolean {
@@ -231,16 +231,16 @@ internal fun isParenthesizedExpressionContext(node: ASTNode): Boolean {
   return node.treeParent?.elementType === PowerShellTypes.PARENTHESIZED_EXPRESSION
 }
 
-internal fun isFollowedByAttribute(childNode: ASTNode) = findSiblingSkipping(childNode, arrayOf(PowerShellTypes.NLS, TokenType.WHITE_SPACE), false)?.elementType === PowerShellTypes.ATTRIBUTE
+internal fun isFollowedByAttribute(childNode: ASTNode) = findSiblingSkipping(childNode, arrayOf(PowerShellTypes.NEWLINE, TokenType.WHITE_SPACE), false)?.elementType === PowerShellTypes.ATTRIBUTE
 
 internal fun isRhsBinaryExpressionContext(node: ASTNode): Boolean {
   if (!isBinaryExpressionContext(node)) return false
-  val type = findSiblingSkipping(node, arrayOf(PowerShellTypes.NLS, TokenType.WHITE_SPACE), false)?.elementType
+  val type = findSiblingSkipping(node, arrayOf(PowerShellTypes.NEWLINE, TokenType.WHITE_SPACE), false)?.elementType
   return node.psi is PowerShellExpression && PowerShellTokenTypeSets.OPERATORS.contains(type)
 }
 
 internal fun isFirstNodeInForParameter(node: ASTNode): Boolean {
-  val prevIEType = findSiblingSkipping(node, arrayOf(PowerShellTypes.NLS, TokenType.WHITE_SPACE), false)?.elementType
+  val prevIEType = findSiblingSkipping(node, arrayOf(PowerShellTypes.NEWLINE, TokenType.WHITE_SPACE), false)?.elementType
   return node.treeParent.elementType === PowerShellTypes.FOR_CLAUSE && (prevIEType === PowerShellTypes.SEMI || prevIEType === PowerShellTypes.LP)
 }
 
@@ -258,12 +258,12 @@ internal fun isArrayElement(node: ASTNode): Boolean {
 
 internal fun isInvocationExpressionQualifier(node: ASTNode): Boolean {
   if (node.treeParent?.elementType !== PowerShellTypes.INVOCATION_EXPRESSION) return false
-  val prevElement = findSiblingSkipping(node, arrayOf(PowerShellTypes.NLS, TokenType.WHITE_SPACE), false)?.elementType
+  val prevElement = findSiblingSkipping(node, arrayOf(PowerShellTypes.NEWLINE, TokenType.WHITE_SPACE), false)?.elementType
   return (prevElement === PowerShellTypes.DOT || prevElement === PowerShellTypes.COLON2) && (node.elementType === PowerShellTypes.REFERENCE_IDENTIFIER || node.psi is PowerShellExpression)
 }
 
 internal fun isFirstNodeInParameter(node: ASTNode, checkFirstParameter: Boolean = false): Boolean {
-  val prevSibling = findSiblingSkipping(node, arrayOf(PowerShellTypes.NLS, TokenType.WHITE_SPACE), false)
+  val prevSibling = findSiblingSkipping(node, arrayOf(PowerShellTypes.NEWLINE, TokenType.WHITE_SPACE), false)
   return prevSibling != null && (prevSibling.elementType === PowerShellTypes.COMMA || (checkFirstParameter && prevSibling.elementType === PowerShellTypes.LP))
 }
 

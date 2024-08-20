@@ -86,7 +86,7 @@ class PowerShellFoldingBuilder : CustomFoldingBuilder(), DumbAware {
 
 fun PsiElement.getNextSiblingNonWhiteSpace(): PsiElement? {
   var next = this.nextSibling
-  while (next != null && (next is PsiWhiteSpace || next.node.elementType == NLS)) {
+  while (next != null && (next is PsiWhiteSpace || next.node.elementType == NEWLINE)) {
     next = next.nextSibling
   }
   return next

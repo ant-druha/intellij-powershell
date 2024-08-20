@@ -14,7 +14,7 @@ private fun isWhiteSpace(node: ASTNode): Boolean {
 }
 
 fun ASTNode.isWhiteSpaceOrNls(): Boolean {
-  return isWhiteSpace(this) || elementType === PowerShellTypes.NLS || elementType === PowerShellTypes.LF
+  return isWhiteSpace(this) || elementType === PowerShellTypes.NEWLINE || elementType === PowerShellTypes.LF
 }
 
 val PowerShellAssignmentExpression.targetVariables: List<PowerShellTargetVariableExpression>
