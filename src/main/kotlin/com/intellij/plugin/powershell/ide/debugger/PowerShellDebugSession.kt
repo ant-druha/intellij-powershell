@@ -31,7 +31,7 @@ class PowerShellDebugSession(
 
   public val sendKeyPress = Signal<Unit>()
 
-  private val breakpointMap = mutableMapOf<Path, MutableMap<Int, XLineBreakpoint<XBreakpointProperties<*>>>>() // todo: Path as key
+  private val breakpointMap = mutableMapOf<Path, MutableMap<Int, XLineBreakpoint<XBreakpointProperties<*>>>>()
   private val breakpointsMapMutex = Mutex()
 
   init {
