@@ -21,6 +21,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.eclipse.lsp4j.debug.*
 import org.eclipse.lsp4j.debug.services.IDebugProtocolServer
+import java.nio.file.Path
 
 class PowerShellDebugSession(
   client: PSDebugClient, val server: IDebugProtocolServer,
@@ -30,21 +31,20 @@ class PowerShellDebugSession(
 
   public val sendKeyPress = Signal<Unit>()
 
-  private val breakpointMap = mutableMapOf<String, MutableMap<Int, XLineBreakpoint<XBreakpointProperties<*>>>>() // todo: Path as key
+  private val breakpointMap = mutableMapOf<Path, MutableMap<Int, XLineBreakpoint<XBreakpointProperties<*>>>>() // todo: Path as key
   private val breakpointsMapMutex = Mutex()
 
   init {
     client.debugStopped.adviseSuspend(Lifetime.Eternal, Dispatchers.EDT) { args ->
-      val stack = server.stackTrace(StackTraceArguments().apply { threadId = args!!.threadId }).await()
-      thisLogger().info(stack.toString())
-      session.positionReached(PowerShellSuspendContext(stack, server, coroutineScope, args!!.threadId, session))
+      val stack = server.stackTrace(StackTraceArguments().apply { threadId = args.threadId }).await()
+      session.positionReached(PowerShellSuspendContext(stack, server, coroutineScope, args.threadId, session))
     }
     client.sendKeyPress.adviseSuspend(Lifetime.Eternal, Dispatchers.EDT) {
       sendKeyPress.fire(Unit)
     }
   }
 
-  fun setBreakpoint(filePath: String, breakpoint: XLineBreakpoint<XBreakpointProperties<*>>) {
+  fun setBreakpoint(filePath: Path, breakpoint: XLineBreakpoint<XBreakpointProperties<*>>) {
     coroutineScope.launch(start = CoroutineStart.UNDISPATCHED) {
       breakpointsMapMutex.withLock {
         if (!breakpointMap.containsKey(filePath))
@@ -56,10 +56,10 @@ class PowerShellDebugSession(
     }
   }
 
-  fun removeBreakpoint(fileURL: String, breakpoint: XLineBreakpoint<XBreakpointProperties<*>>) {
+  fun removeBreakpoint(filePath: Path, breakpoint: XLineBreakpoint<XBreakpointProperties<*>>) {
     coroutineScope.launch(start = CoroutineStart.UNDISPATCHED) {
       breakpointsMapMutex.withLock {
-        val bpMap = breakpointMap[fileURL] ?: return@launch
+        val bpMap = breakpointMap[filePath] ?: return@launch
         if (!bpMap.containsKey(breakpoint.line))
           return@launch
         bpMap.remove(breakpoint.line)
@@ -118,11 +118,11 @@ class PowerShellDebugSession(
     sendBreakpointRequest(breakpointMap)
   }
 
-  private suspend fun sendBreakpointRequest(breakpointMap: Map<String, MutableMap<Int, XLineBreakpoint<XBreakpointProperties<*>>>>) {
+  private suspend fun sendBreakpointRequest(breakpointMap: Map<Path, MutableMap<Int, XLineBreakpoint<XBreakpointProperties<*>>>>) {
     for (breakpointMapEntry in breakpointMap) {
       val breakpointArgs = SetBreakpointsArguments()
       val source = Source()
-      source.path = breakpointMapEntry.key
+      source.path = breakpointMapEntry.key.toString()
       breakpointArgs.source = source
 
       breakpointArgs.breakpoints = breakpointMapEntry.value.map {

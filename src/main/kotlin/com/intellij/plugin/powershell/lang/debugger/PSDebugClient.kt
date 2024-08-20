@@ -8,79 +8,79 @@ import java.util.concurrent.CompletableFuture
 
 class PSDebugClient: IDebugProtocolClient {
 
-  val debugStopped = Signal<StoppedEventArguments?>()
+  val debugStopped = Signal<StoppedEventArguments>()
   val sendKeyPress = Signal<Unit>()
 
-  override fun breakpoint(args: BreakpointEventArguments?) {
+  override fun breakpoint(args: BreakpointEventArguments) {
     super.breakpoint(args)
   }
 
-  override fun stopped(args: StoppedEventArguments?) {
+  override fun stopped(args: StoppedEventArguments) {
     super.stopped(args)
     debugStopped.fire(args)
   }
 
-  override fun continued(args: ContinuedEventArguments?) {
+  override fun continued(args: ContinuedEventArguments) {
     super.continued(args)
   }
 
-  override fun exited(args: ExitedEventArguments?) {
+  override fun exited(args: ExitedEventArguments) {
     super.exited(args)
   }
 
-  override fun terminated(args: TerminatedEventArguments?) {
+  override fun terminated(args: TerminatedEventArguments) {
     super.terminated(args)
   }
 
-  override fun thread(args: ThreadEventArguments?) {
+  override fun thread(args: ThreadEventArguments) {
     super.thread(args)
   }
 
-  override fun output(args: OutputEventArguments?) {
+  override fun output(args: OutputEventArguments) {
     super.output(args)
   }
 
-  override fun module(args: ModuleEventArguments?) {
+  override fun module(args: ModuleEventArguments) {
     super.module(args)
   }
 
-  override fun loadedSource(args: LoadedSourceEventArguments?) {
+  override fun loadedSource(args: LoadedSourceEventArguments) {
     super.loadedSource(args)
   }
 
-  override fun process(args: ProcessEventArguments?) {
+  override fun process(args: ProcessEventArguments) {
     super.process(args)
   }
 
-  override fun capabilities(args: CapabilitiesEventArguments?) {
+  override fun capabilities(args: CapabilitiesEventArguments) {
     super.capabilities(args)
   }
 
-  override fun progressStart(args: ProgressStartEventArguments?) {
+  override fun progressStart(args: ProgressStartEventArguments) {
     super.progressStart(args)
   }
 
-  override fun progressUpdate(args: ProgressUpdateEventArguments?) {
+  override fun progressUpdate(args: ProgressUpdateEventArguments) {
     super.progressUpdate(args)
   }
 
-  override fun progressEnd(args: ProgressEndEventArguments?) {
+  override fun progressEnd(args: ProgressEndEventArguments) {
     super.progressEnd(args)
   }
 
-  override fun invalidated(args: InvalidatedEventArguments?) {
+  override fun invalidated(args: InvalidatedEventArguments) {
     super.invalidated(args)
   }
 
-  override fun memory(args: MemoryEventArguments?) {
+  override fun memory(args: MemoryEventArguments) {
     super.memory(args)
   }
 
-  override fun runInTerminal(args: RunInTerminalRequestArguments?): CompletableFuture<RunInTerminalResponse> {
+  override fun runInTerminal(args: RunInTerminalRequestArguments): CompletableFuture<RunInTerminalResponse> {
     return super.runInTerminal(args)
   }
 
-  override fun startDebugging(args: StartDebuggingRequestArguments?): CompletableFuture<Void> {
+  override fun startDebugging(args: StartDebuggingRequestArguments): CompletableFuture<Void> {
     return super.startDebugging(args)
   }
 

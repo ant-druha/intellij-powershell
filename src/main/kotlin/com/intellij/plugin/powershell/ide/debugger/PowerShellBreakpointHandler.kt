@@ -1,11 +1,13 @@
 package com.intellij.plugin.powershell.ide.debugger
 
 import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.util.io.toNioPathOrNull
 import com.intellij.plugin.powershell.ide.MessagesBundle
 import com.intellij.xdebugger.breakpoints.XBreakpointHandler
 import com.intellij.xdebugger.breakpoints.XBreakpointProperties
 import com.intellij.xdebugger.breakpoints.XBreakpointType
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
+import kotlin.io.path.Path
 
 class PowerShellBreakpointHandler(
   val powerShellDebugProcess: PowerShellDebugProcess,
@@ -15,6 +17,7 @@ class PowerShellBreakpointHandler(
   override fun registerBreakpoint(breakpoint: XLineBreakpoint<XBreakpointProperties<*>>) {
     val sourcePosition = breakpoint.sourcePosition
     if (sourcePosition == null || !sourcePosition.file.exists() || !sourcePosition.file.isValid) {
+      powerShellDebugProcess.xDebugSession.setBreakpointInvalid(breakpoint, MessagesBundle.message("powershell.debugger.breakpoints.invalidBreakPoint"))
       logger.warn("Invalid breakpoint $breakpoint")
       return
     }
@@ -25,7 +28,7 @@ class PowerShellBreakpointHandler(
       logger.warn("Invalid breakpoint $breakpoint - line $lineNumber")
       return
     }
-    powerShellDebugProcess.powerShellDebugSession.setBreakpoint(file.path, breakpoint)
+    powerShellDebugProcess.powerShellDebugSession.setBreakpoint(Path(file.path), breakpoint)
   }
 
   override fun unregisterBreakpoint(breakpoint: XLineBreakpoint<XBreakpointProperties<*>>, temporary: Boolean) {
@@ -40,7 +43,7 @@ class PowerShellBreakpointHandler(
       logger.warn("Invalid breakpoint $breakpoint - line $lineNumber")
       return
     }
-    powerShellDebugProcess.powerShellDebugSession.removeBreakpoint(file.path, breakpoint)
+    powerShellDebugProcess.powerShellDebugSession.removeBreakpoint(Path(file.path), breakpoint)
   }
 }
 
