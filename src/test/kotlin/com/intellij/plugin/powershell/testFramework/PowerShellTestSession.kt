@@ -45,8 +45,7 @@ class PowerShellTestSession(val project: Project, scriptPath: Path) {
     val state = configuration.getState(executor, environment)
     state.prepareExecution()
 
-    val session = bootstrapDebugSession(project, environment, state)
-    session.addSessionListener(sessionListener)
+    val session = bootstrapDebugSession(project, environment, state, sessionListener)
     lifetime.onTermination { session.stop() } // TODO: Wait for stop? Think about graceful teardown for the debug process.
     return session
   }
