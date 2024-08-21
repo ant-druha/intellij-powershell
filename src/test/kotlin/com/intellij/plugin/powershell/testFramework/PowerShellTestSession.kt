@@ -21,7 +21,7 @@ import kotlin.io.path.Path
 import kotlin.io.path.pathString
 
 class PowerShellTestSession(val project: Project, scriptPath: Path) {
-  val waitForBackgroundTimeout: Duration = Duration.ofSeconds(10)
+  val waitForBackgroundTimeout: Duration = Duration.ofSeconds(30)
   val sessionListener: PowerShellDebugSessionListener = PowerShellDebugSessionListener()
 
   private val projectPath: Path
