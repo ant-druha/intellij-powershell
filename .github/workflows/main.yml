@@ -18,6 +18,13 @@ jobs:
         image: [macos-12, ubuntu-22.04, windows-2022]
       fail-fast: false
     steps:
+      - if: matrix.image == 'ubuntu-22.04'
+        name: Free disk space
+        uses: jlumbroso/free-disk-space@v1.3.1
+        with:
+          tool-cache: false
+          large-packages: false
+
       - name: "Check out the sources"
         uses: actions/checkout@v4
 
