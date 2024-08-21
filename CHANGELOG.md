@@ -4,10 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased] (2.7.0)
+## [2.7.0] - 2024-08-21
 ### Changed
+- **Requirement update:** IntelliJ Platform 2024.2.0.2 is now the minimal supported version
 - Update PowerShellEditorServices from v3.18.1 to v3.20.1
-- Update junixsocket from v2.9.0 to v2.9.1
+- Update junixsocket library from v2.9.0 to v2.10.0
+- Update LSP4J library from v0.22.0 to v0.23.0
+
+### Added
+- **Debugger support** based on the debugger adapter protocol from PowerShellEditorServices.
+
+  Thanks to @Fantoom for the contribution.
 
 ## [2.6.1] - 2024-03-28
 ### Fixed
@@ -280,4 +287,5 @@ Initial editor and code completion support:
 [2.5.0]: https://github.com/ant-druha/intellij-powershell/compare/v2.4.0...v2.5.0
 [2.6.0]: https://github.com/ant-druha/intellij-powershell/compare/v2.5.0...v2.6.0
 [2.6.1]: https://github.com/ant-druha/intellij-powershell/compare/v2.6.0...v2.6.1
-[Unreleased]: https://github.com/ant-druha/intellij-powershell/compare/v2.6.1...HEAD
+[2.7.0]: https://github.com/ant-druha/intellij-powershell/compare/v2.6.1...v2.7.0
+[Unreleased]: https://github.com/ant-druha/intellij-powershell/compare/v2.7.0...HEAD
