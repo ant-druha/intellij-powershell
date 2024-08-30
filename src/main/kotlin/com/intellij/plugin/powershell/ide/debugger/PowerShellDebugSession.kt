@@ -139,6 +139,7 @@ class PowerShellDebugSession(
         breakpointMapEntry.value.forEach {
           val bp = responseMap[it.value.line]
           if (bp?.isVerified == true) {
+            session.setBreakpointVerified(it.value)
             logger.info("Set breakpoint at ${breakpointMapEntry.key}:${bp.line} successfully.")
           } else {
             session.setBreakpointInvalid(
