@@ -1,6 +1,6 @@
 [versions]
 intellij = "2024.2"
-intellijPreview = "2024.2.1"
+intellijPreview = "2024.2.3"
 junixsocket = "2.10.1"
 lsp4j = "0.23.1"
 
