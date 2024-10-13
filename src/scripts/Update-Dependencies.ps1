@@ -36,7 +36,7 @@ $pses = Invoke-RestMethod 'https://api.github.com/repos/PowerShell/PowerShellEdi
 function ReadLatestVersions
 {
   @{
-    PSScriptAnalyzer = [Version] $psScriptAnalyzer.tag_name
+    PSScriptAnalyzer = [Version] $psScriptAnalyzer.tag_name.Trim('v')
     PowerShellEditorServices = [Version] $pses.tag_name.Trim('v')
   }
 }
