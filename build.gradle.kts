@@ -41,7 +41,7 @@ repositories {
   mavenCentral()
   ivy {
     url = uri("https://github.com/PowerShell/PSScriptAnalyzer/releases/download/")
-    patternLayout { artifact("[revision]/[module].[revision].[ext]") }
+    patternLayout { artifact("v[revision]/[module].[revision].[ext]") }
     content { includeGroup("PSScriptAnalyzer") }
     metadataSources { artifact() }
   }
