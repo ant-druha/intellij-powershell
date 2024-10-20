@@ -1,8 +1,7 @@
 package com.intellij.plugin.powershell.ide.debugger
 
+import com.intellij.icons.AllIcons
 import com.intellij.openapi.diagnostic.logger
-import com.intellij.ui.IconManager
-import com.intellij.ui.PlatformIcons
 import com.intellij.util.io.await
 import com.intellij.xdebugger.XDebugSession
 import com.intellij.xdebugger.XExpression
@@ -13,7 +12,6 @@ import org.eclipse.lsp4j.debug.SetVariableArguments
 import org.eclipse.lsp4j.debug.Variable
 import org.eclipse.lsp4j.debug.VariablesArguments
 import org.eclipse.lsp4j.debug.services.IDebugProtocolServer
-import javax.swing.Icon
 
 class PowerShellDebuggerVariableValue(val variable: Variable, val parentReference: Int?,
                                       val server: IDebugProtocolServer,
@@ -34,8 +32,7 @@ class PowerShellDebuggerVariableValue(val variable: Variable, val parentReferenc
   }
 
   override fun computePresentation(node: XValueNode, place: XValuePlace) {
-    val icon: Icon = IconManager.getInstance().getPlatformIcon(PlatformIcons.Variable)
-    node.setPresentation(icon, variable.type, variable.value, variable.variablesReference != 0)
+    node.setPresentation(AllIcons.Nodes.Variable, variable.type, variable.value, variable.variablesReference != 0)
   }
 
   override fun computeChildren(node: XCompositeNode) {

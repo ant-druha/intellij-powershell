@@ -1,5 +1,6 @@
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 import org.jetbrains.intellij.platform.gradle.tasks.PrepareSandboxTask
+import org.jetbrains.intellij.platform.gradle.tasks.VerifyPluginTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.security.MessageDigest
 import java.util.zip.ZipFile
@@ -99,6 +100,7 @@ intellijPlatform {
       "-mute", "ForbiddenPluginIdPrefix",
       "-mute", "TemplateWordInPluginId"
     )
+    failureLevel.add(VerifyPluginTask.FailureLevel.INTERNAL_API_USAGES)
   }
 }
 
