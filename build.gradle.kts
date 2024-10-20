@@ -13,12 +13,6 @@ plugins {
   alias(libs.plugins.kotlin)
 }
 
-intellijPlatform {
-  pluginConfiguration {
-    name = "PowerShell"
-  }
-}
-
 sourceSets {
   main {
     java.srcDir("src/main/gen-parser")
@@ -68,6 +62,7 @@ dependencies {
     bundledPlugins("org.intellij.intelliLang", "org.jetbrains.plugins.terminal")
     instrumentationTools()
     testFramework(TestFrameworkType.Bundled)
+    pluginVerifier()
   }
 
   implementation(libs.bundles.junixsocket)
@@ -90,6 +85,21 @@ dependencies {
     version = psesVersion,
     ext = "zip"
   )
+}
+
+intellijPlatform {
+  pluginConfiguration {
+    name = "PowerShell"
+  }
+  pluginVerification {
+    ides {
+      recommended()
+    }
+    freeArgs.addAll(
+      "-mute", "ForbiddenPluginIdPrefix",
+      "-mute", "TemplateWordInPluginId"
+    )
+  }
 }
 
 configurations {
@@ -227,6 +237,7 @@ tasks {
 
   check {
     dependsOn(verifyDistributionSize)
+    dependsOn(verifyPlugin)
   }
 
   runIde {
