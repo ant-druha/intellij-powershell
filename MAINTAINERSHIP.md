@@ -8,7 +8,7 @@ To release a new version, follow these steps.
 
 1. Update the copyright year in the `README.md` file, if required.
 2. Choose the new version. It should consist of three numbers (i.e. `1.0.0`).
-3. Change the version number in the `build.gradle.kts` (`version = "…"`).
+3. Change the version number in the `gradle.properties` (`pluginVersion=…`).
 4. Make sure there's a properly formed version entry in the `CHANGELOG.md`.
 5. Merge these changes via a PR.
 6. Push a tag named `v<VERSION>` to GitHub.

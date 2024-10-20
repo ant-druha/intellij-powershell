@@ -30,8 +30,9 @@ sourceSets {
   }
 }
 
+val pluginVersion: String by ext.properties
 group = "com.intellij.plugin"
-version = "2.7.0"
+version = pluginVersion
 
 repositories {
   intellijPlatform {
