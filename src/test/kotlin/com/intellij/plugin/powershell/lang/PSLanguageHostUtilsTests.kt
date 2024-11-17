@@ -6,7 +6,7 @@ import com.intellij.plugin.powershell.isOnCiServer
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PowerShellEdition
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import com.intellij.util.io.await
+import kotlinx.coroutines.future.await
 import kotlinx.coroutines.runBlocking
 import java.nio.file.Path
 import kotlin.io.path.pathString

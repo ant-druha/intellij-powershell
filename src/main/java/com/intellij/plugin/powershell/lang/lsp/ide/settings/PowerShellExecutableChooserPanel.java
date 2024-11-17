@@ -47,9 +47,7 @@ public class PowerShellExecutableChooserPanel extends JComponent {
       }
     });
     FileChooserDescriptor fileChooserDescriptor = new FileChooserDescriptor(true, false, false, false, false, false);
-    psExecutablePathTextFieldChooser = FormUIUtil.createTextFieldWithBrowseButton(
-      MessagesBundle.message("powershell.executable.path.dialog.text"),
-      textField, fileChooserDescriptor);
+    psExecutablePathTextFieldChooser = FormUIUtil.createTextFieldWithBrowseButton(textField, fileChooserDescriptor);
   }
 
   private void updatePowerShellVersionLabel(@NotNull String powerShellExePath) {

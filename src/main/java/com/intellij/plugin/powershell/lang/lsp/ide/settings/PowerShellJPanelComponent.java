@@ -149,7 +149,6 @@ public class PowerShellJPanelComponent {
     myPathToPSExtensionLabel = new JBLabel(MessagesBundle.message("powershell.extension.path.form.label"));
     myPathToPSExtDirjTextField = new JBTextField(0);
     myPSExtensionPathTextField = FormUIUtil.createTextFieldWithBrowseButton(
-            MessagesBundle.message("powershell.editor.services.path.dialog.text"),
             myPathToPSExtDirjTextField,
             new FileChooserDescriptor(false, true, false, false, false, false) {
               @Override

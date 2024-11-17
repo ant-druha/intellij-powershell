@@ -26,7 +26,6 @@ import com.intellij.plugin.powershell.ide.debugger.PowerShellDebugSession
 import com.intellij.plugin.powershell.lang.debugger.PSDebugClient
 import com.intellij.terminal.TerminalExecutionConsole
 import com.intellij.util.execution.ParametersListUtil
-import com.intellij.util.io.await
 import com.intellij.xdebugger.*
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
 import com.jetbrains.rd.util.lifetime.Lifetime
@@ -34,6 +33,7 @@ import com.jetbrains.rd.util.threading.coroutines.adviseSuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
+import kotlinx.coroutines.future.await
 import kotlinx.coroutines.withContext
 import org.eclipse.lsp4j.debug.*
 import org.eclipse.lsp4j.debug.launch.DSPLauncher

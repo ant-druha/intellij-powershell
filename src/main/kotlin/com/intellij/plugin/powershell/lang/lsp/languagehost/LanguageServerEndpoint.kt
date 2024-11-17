@@ -31,8 +31,8 @@ import com.intellij.plugin.powershell.lang.lsp.ide.listeners.SelectionListenerIm
 import com.intellij.plugin.powershell.lang.lsp.ide.settings.PowerShellConfigurable
 import com.intellij.plugin.powershell.lang.lsp.util.getTextEditor
 import com.intellij.plugin.powershell.lang.lsp.util.isRemotePath
-import com.intellij.util.io.await
 import kotlinx.coroutines.*
+import kotlinx.coroutines.future.await
 import org.eclipse.lsp4j.*
 import org.eclipse.lsp4j.jsonrpc.messages.Either
 import org.eclipse.lsp4j.launch.LSPLauncher

@@ -59,7 +59,6 @@ object FormUIUtil {
 
   @JvmStatic
   fun createTextFieldWithBrowseButton(
-    description: String,
     field: JBTextField?,
     fileChooserDescriptor: FileChooserDescriptor
   ): TextFieldWithBrowseButton {
@@ -68,8 +67,6 @@ object FormUIUtil {
     val textField = textFieldWithBrowseButton.childComponent
     textField.setDisabledTextColor(UIUtil.getLabelDisabledForeground())
     textFieldWithBrowseButton.addBrowseFolderListener(
-      description,
-      null,
       null,
       fileChooserDescriptor,
       TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT

@@ -2,10 +2,8 @@ package com.intellij.plugin.powershell.ide.debugger
 
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.diagnostic.logger
-import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.plugin.powershell.ide.MessagesBundle
 import com.intellij.plugin.powershell.lang.debugger.PSDebugClient
-import com.intellij.util.io.await
 import com.intellij.util.text.nullize
 import com.intellij.xdebugger.XDebugSession
 import com.intellij.xdebugger.breakpoints.XBreakpointProperties
@@ -16,6 +14,7 @@ import com.jetbrains.rd.util.threading.coroutines.adviseSuspend
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.future.await
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -29,7 +28,7 @@ class PowerShellDebugSession(
   val coroutineScope: CoroutineScope
 ) {
 
-  public val sendKeyPress = Signal<Unit>()
+  val sendKeyPress = Signal<Unit>()
 
   private val breakpointMap = mutableMapOf<Path, MutableMap<Int, XLineBreakpoint<XBreakpointProperties<*>>>>()
   private val breakpointsMapMutex = Mutex()
