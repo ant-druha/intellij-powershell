@@ -4,11 +4,8 @@ import com.intellij.execution.DefaultExecutionResult
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.ExecutionResult
 import com.intellij.execution.Executor
-import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.configurations.PtyCommandLine
 import com.intellij.execution.configurations.RunProfileState
-import com.intellij.execution.executors.DefaultDebugExecutor
-import com.intellij.execution.executors.DefaultRunExecutor
 import com.intellij.execution.process.KillableProcessHandler
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
@@ -16,42 +13,23 @@ import com.intellij.execution.runners.ProgramRunner
 import com.intellij.execution.util.ProgramParametersUtil
 import com.intellij.openapi.application.readAction
 import com.intellij.openapi.diagnostic.logger
-import com.intellij.openapi.diagnostic.runAndLogException
 import com.intellij.openapi.options.advanced.AdvancedSettings
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.io.NioFiles.toPath
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.LocalFileSystem
-import com.intellij.openapi.vfs.VfsUtil
-import com.intellij.plugin.powershell.ide.PluginProjectRoot
-import com.intellij.plugin.powershell.ide.debugger.PowerShellBreakpointType
-import com.intellij.plugin.powershell.ide.debugger.PowerShellDebugSession
-import com.intellij.plugin.powershell.lang.debugger.PSDebugClient
+import com.intellij.plugin.powershell.ide.runAndLogException
 import com.intellij.plugin.powershell.lang.lsp.LSPInitMain
-import com.intellij.plugin.powershell.lang.lsp.languagehost.EditorServicesLanguageHostStarter
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PowerShellNotInstalled
 import com.intellij.terminal.TerminalExecutionConsole
-import com.intellij.util.io.await
 import com.intellij.util.text.nullize
-import com.intellij.xdebugger.XDebugSession
-import com.intellij.xdebugger.XDebuggerManager
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import org.eclipse.lsp4j.debug.*
-import org.eclipse.lsp4j.debug.launch.DSPLauncher
-import org.eclipse.lsp4j.debug.services.IDebugProtocolServer
-import org.eclipse.lsp4j.jsonrpc.Launcher
 import org.jetbrains.annotations.TestOnly
 import java.io.File
-import java.io.InputStream
-import java.io.OutputStream
 import java.nio.charset.Charset
 import java.nio.file.Path
-import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
-
 
 class PowerShellScriptCommandLineState(
   val runConfiguration: PowerShellRunConfiguration,
@@ -133,8 +111,6 @@ class PowerShellScriptCommandLineState(
     return DefaultExecutionResult(console, process)
   }
 }
-
-
 
 private fun getTerminalCharSet(): Charset {
   val name = AdvancedSettings.getString("terminal.character.encoding")

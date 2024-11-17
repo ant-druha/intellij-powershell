@@ -6,13 +6,13 @@ package com.intellij.plugin.powershell.lang.lsp.ide
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.logger
-import com.intellij.openapi.diagnostic.runAndLogException
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.removeUserData
 import com.intellij.openapi.util.text.StringUtil
+import com.intellij.plugin.powershell.ide.runAndLogException
 import com.intellij.plugin.powershell.lang.PowerShellLanguage
 import com.intellij.plugin.powershell.lang.lsp.ide.listeners.DocumentListenerImpl
 import com.intellij.plugin.powershell.lang.lsp.ide.listeners.EditorMouseListenerImpl
