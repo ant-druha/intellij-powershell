@@ -32,7 +32,7 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('gradlew*') }}
 
       - name: Read the changelog
-        uses: ForNeVeR/ChangelogAutomation.action@v1
+        uses: ForNeVeR/ChangelogAutomation.action@v2
         with:
           input: ./CHANGELOG.md
           output: ./changelog-section.md
