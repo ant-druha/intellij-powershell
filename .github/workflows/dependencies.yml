@@ -43,6 +43,7 @@ jobs:
           gh workflow run Main --ref $env:BRANCH_NAME &&
           gh workflow run Release --ref $env:BRANCH_NAME
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH_NAME: ${{ steps.update.outputs.branch-name }}
 
   powershell-modules:
@@ -78,4 +79,5 @@ jobs:
           gh workflow run Main --ref $env:BRANCH_NAME &&
           gh workflow run Release --ref $env:BRANCH_NAME
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH_NAME: ${{ steps.update.outputs.branch-name }}
