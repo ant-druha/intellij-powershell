@@ -36,6 +36,15 @@ jobs:
           title: ${{ steps.update.outputs.pr-title }}
           body-path: ${{ steps.update.outputs.pr-body-path }}
 
+      - if: steps.update.outputs.has-changes == 'true' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+        name: Trigger CI
+        shell: pwsh
+        run: >
+          gh workflow run Main --ref $env:BRANCH_NAME &&
+          gh workflow run Release --ref $env:BRANCH_NAME
+        env:
+          BRANCH_NAME: ${{ steps.update.outputs.branch-name }}
+
   powershell-modules:
     permissions:
       contents: write
@@ -61,3 +70,12 @@ jobs:
           commit-message: ${{ steps.update.outputs.commit-message }}
           title: ${{ steps.update.outputs.pr-title }}
           body-path: ${{ steps.update.outputs.pr-body-path }}
+
+      - if: steps.update.outputs.has-changes == 'true' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+        name: Trigger CI
+        shell: pwsh
+        run: >
+          gh workflow run Main --ref $env:BRANCH_NAME &&
+          gh workflow run Release --ref $env:BRANCH_NAME
+        env:
+          BRANCH_NAME: ${{ steps.update.outputs.branch-name }}

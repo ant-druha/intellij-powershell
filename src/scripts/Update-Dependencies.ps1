@@ -137,13 +137,6 @@ if ($hasChanges)
 "@
   }
   $prBody = @'
-## Maintainer Note
-> [!WARNING]
-> This PR will not trigger CI by default. Please close it and reopen manually to trigger the CI.
->
-> Unfortunately, this is a consequence of the current GitHub Action security model (by default, PRs created by bots
-> aren't allowed to trigger other bots).
-
 The updated packages' release notes follow below.
 
 '@ + $updateReleaseNoteStrings -join "`n"
