@@ -2,7 +2,7 @@
 intellij = "2024.3"
 intellijPreview = "2024.3"
 junixsocket = "2.10.1"
-lsp4j = "0.23.1"
+lsp4j = "0.24.0"
 
 [libraries]
 junit = "junit:junit:4.13.2"
