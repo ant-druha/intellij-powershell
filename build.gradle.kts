@@ -4,6 +4,7 @@ import org.jetbrains.intellij.platform.gradle.tasks.VerifyPluginTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.security.MessageDigest
 import java.util.zip.ZipFile
+import kotlin.io.path.pathString
 
 plugins {
   id("java")
@@ -61,8 +62,11 @@ dependencies {
   intellijPlatform {
     intellijIdeaCommunity(libs.versions.intellij)
     bundledPlugins("org.intellij.intelliLang", "org.jetbrains.plugins.terminal")
-    instrumentationTools()
-    testFramework(TestFrameworkType.Bundled)
+    bundledLibrary(provider {
+      // TODO: This is a workaround, remove in intellij-platform-gradle-plugin 2.2.2
+      project.intellijPlatform.platformPath.resolve("lib/testFramework.jar").pathString
+    })
+    testFramework(TestFrameworkType.Platform)
     pluginVerifier()
   }
 
