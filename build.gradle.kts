@@ -60,7 +60,7 @@ val powerShellEditorServices: Configuration by configurations.creating
 
 dependencies {
   intellijPlatform {
-    intellijIdeaCommunity(libs.versions.intellij)
+    intellijIdeaCommunity(libs.versions.intellij, useInstaller = !libs.versions.intellij.get().contains("SNAPSHOT"))
     bundledPlugins("org.intellij.intelliLang", "org.jetbrains.plugins.terminal")
     bundledLibrary(provider {
       // TODO[#340]: This is a workaround, remove in intellij-platform-gradle-plugin 2.2.2

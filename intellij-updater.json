@@ -3,9 +3,7 @@
     "file": "gradle/libs.versions.toml",
     "field": "intellij",
     "kind": "intellij-idea-community",
-    "versionFlavor": "release",
-    "versionConstraint": "latestWave",
-    "order": "oldest"
+    "versionFlavor": "eap"
   }, {
     "file": "gradle/libs.versions.toml",
     "field": "intellijPreview",
