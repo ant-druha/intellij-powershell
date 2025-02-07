@@ -11,6 +11,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
+import com.intellij.openapi.util.io.toNioPathOrNull
 import com.intellij.openapi.vfs.AsyncFileListener
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFileManager
@@ -38,7 +39,6 @@ import org.eclipse.lsp4j.jsonrpc.messages.Either
 import org.eclipse.lsp4j.launch.LSPLauncher
 import org.eclipse.lsp4j.services.LanguageServer
 import org.jetbrains.annotations.TestOnly
-import java.io.File
 import java.net.URI
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -98,7 +98,7 @@ class LanguageServerEndpoint(
       return
     }
     val file = FileDocumentManager.getInstance().getFile(editor.document) ?: return
-    val uri = VfsUtil.toUri(File(file.path))
+    val uri = file.path.toNioPathOrNull()?.toUri() ?: return
     @Suppress("DeferredResultUnused")
     connectedEditors.computeIfAbsent(uri) {
       coroutineScope.async {

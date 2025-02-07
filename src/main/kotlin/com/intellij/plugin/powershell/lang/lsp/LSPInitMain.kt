@@ -15,7 +15,7 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.project.ProjectManagerListener
-import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.openapi.util.io.toNioPathOrNull
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.plugin.powershell.PowerShellFileType
 import com.intellij.plugin.powershell.ide.PluginProjectRoot
@@ -24,7 +24,6 @@ import com.intellij.plugin.powershell.lang.lsp.languagehost.EditorServicesLangua
 import com.intellij.plugin.powershell.lang.lsp.languagehost.LanguageServerEndpoint
 import com.intellij.plugin.powershell.lang.lsp.languagehost.terminal.PowerShellConsoleTerminalRunner
 import com.intellij.plugin.powershell.lang.lsp.util.isRemotePath
-import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
 @State(name = "PowerShellSettings", storages = [Storage(value = "powerShellSettings.xml", roamingType = RoamingType.DISABLED)])
@@ -115,7 +114,7 @@ class LSPInitMain : PersistentStateComponent<LSPInitMain.PowerShellInfo>, Dispos
       val vfile = FileDocumentManager.getInstance().getFile(editor.document) ?: return
       if (vfile.fileType !is PowerShellFileType) return
       val server = findServer(vfile, project) ?: return
-      server.disconnectEditor(VfsUtil.toUri(File(vfile.path)))
+      server.disconnectEditor(vfile.path.toNioPathOrNull()?.toUri() ?: return)
       LOG.debug("Removed ${vfile.name} script from server: $server")
     }
 
