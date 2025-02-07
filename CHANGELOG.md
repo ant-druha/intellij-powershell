@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [2.9.0] - 2025-02-07
+### Changed
+- **Requirement update:** IntelliJ Platform 251.20015 is now the minimal supported version (only EAP builds for now).
+- Update PowerShellEditorServices from v3.20.1 to [v4.2.0](https://github.com/PowerShell/PowerShellEditorServices/releases/tag/v4.2.0).
+- Used library updates and minor code cleanup.
+
 ## [2.8.0] - 2024-10-20
 ### Added
 - Debugger: "verified" status for breakpoints that are successfully set. Thanks to @Fantoom for the contribution.
@@ -298,4 +304,5 @@ Initial editor and code completion support:
 [2.6.1]: https://github.com/ant-druha/intellij-powershell/compare/v2.6.0...v2.6.1
 [2.7.0]: https://github.com/ant-druha/intellij-powershell/compare/v2.6.1...v2.7.0
 [2.8.0]: https://github.com/ant-druha/intellij-powershell/compare/v2.7.0...v2.8.0
-[Unreleased]: https://github.com/ant-druha/intellij-powershell/compare/v2.8.0...HEAD
+[2.9.0]: https://github.com/ant-druha/intellij-powershell/compare/v2.8.0...v2.9.0
+[Unreleased]: https://github.com/ant-druha/intellij-powershell/compare/v2.9.0...HEAD
