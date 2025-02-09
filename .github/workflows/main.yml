@@ -18,7 +18,7 @@ jobs:
         image: [macos-14, ubuntu-24.04, windows-2022]
       fail-fast: false
     steps:
-      - if: matrix.image == 'ubuntu-24.04'
+      - if: runner.os == 'Linux'
         name: Free disk space
         uses: jlumbroso/free-disk-space@v1.3.1
         with:

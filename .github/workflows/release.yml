@@ -15,6 +15,12 @@ jobs:
   publish:
     runs-on: ubuntu-24.04
     steps:
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@v1.3.1
+        with:
+          tool-cache: false
+          large-packages: false
+
       - name: Read version from Git ref
         id: version
         shell: pwsh
