@@ -1,6 +1,6 @@
 [versions]
-intellij = "251.20015.29-EAP-SNAPSHOT"
-intellijPreview = "251.20015.29-EAP-SNAPSHOT"
+intellij = "251.23774.109-EAP-SNAPSHOT"
+intellijPreview = "251.23774.109-EAP-SNAPSHOT"
 junixsocket = "2.10.1"
 lsp4j = "0.24.0"
 
