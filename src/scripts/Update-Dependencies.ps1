@@ -146,7 +146,7 @@ if ($hasChanges)
 
 The updated packages' release notes follow below.
 
-'@ + $updateReleaseNoteStrings -join "`n"
+'@ + ($updateReleaseNoteStrings -join "`n`n")
 }
 
 ApplyUpdates $updates
