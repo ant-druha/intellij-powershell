@@ -114,7 +114,7 @@
 
     <editorFactoryListener implementation="com.intellij.plugin.powershell.lang.lsp.ide.listeners.EditorLSPListener"/>
 
-    <errorHandler implementation="com.intellij.plugin.powershell.ide.ErrorReportSubmitter"/>
+    <errorHandler implementation="com.intellij.diagnostic.JetBrainsMarketplaceErrorReportSubmitter"/>
 
     <notificationGroup displayType="STICKY_BALLOON" id="PowerShell.MissingExtension" hideFromSettings="true"/>
   </extensions>
