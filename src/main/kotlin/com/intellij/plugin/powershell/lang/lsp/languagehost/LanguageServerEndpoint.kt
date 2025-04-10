@@ -233,6 +233,7 @@ class LanguageServerEndpoint(
         return@job result.await()
       } catch (e: Exception) {
         when (e) {
+          is CancellationException -> throw e
           is PowerShellExtensionError -> {
             logger.warn("PowerShell extension error: ${e.message}")
             showPowerShellNotConfiguredNotification()
