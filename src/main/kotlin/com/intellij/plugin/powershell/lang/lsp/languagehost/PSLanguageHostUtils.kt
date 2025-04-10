@@ -81,6 +81,7 @@ private suspend fun readPowerShellVersion(exePath: String): PSVersionInfo {
 
       PSVersionInfo.parse(stdOutReader.await().trim())
     } catch (e: Exception) {
+      if(e is CancellationException) throw e
       PSLanguageHostUtils.LOG.warn("Command execution failed for ${commandLine.preparedCommandLine}", e)
       throw PowerShellControlFlowException(e.message, e.cause)
     } finally {
