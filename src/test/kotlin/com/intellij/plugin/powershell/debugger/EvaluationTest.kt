@@ -3,12 +3,17 @@ package com.intellij.plugin.powershell.debugger
 import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx
 import com.intellij.plugin.powershell.testFramework.DebuggerTestBase
 import com.intellij.plugin.powershell.testFramework.PowerShellTestSession
+import com.intellij.plugin.powershell.testFramework.runInEdt
+import com.intellij.testFramework.junit5.TestApplication
 import com.intellij.xdebugger.XDebuggerTestUtil
 import com.jetbrains.rd.util.lifetime.Lifetime
-import junit.framework.TestCase
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 
+@TestApplication
 class EvaluationTest: DebuggerTestBase() {
 
+  @Test
   fun testEvaluation() {
     runInEdt {
       val psiFile = copyAndOpenFile("debugger/testBreakpoint.ps1")
@@ -23,19 +28,19 @@ class EvaluationTest: DebuggerTestBase() {
       XDebuggerTestUtil.toggleBreakpoint(project, file, line)
       Lifetime.using { lt ->
         val debugSession = testSession.startDebugSession(lt)
-        assertTrue("Pause should be triggered in ${testSession.waitForBackgroundTimeout}", XDebuggerTestUtil.waitFor(
+        Assertions.assertTrue(XDebuggerTestUtil.waitFor(
           testSession.sessionListener.pausedSemaphore,
           testSession.waitForBackgroundTimeout.toMillis()
-        ))
+        ), "Pause should be triggered in ${testSession.waitForBackgroundTimeout}")
         val variableValue =
           XDebuggerTestUtil.evaluate(debugSession, expression, testSession.waitForBackgroundTimeout.toMillis()).first
         val variableValueNode = XDebuggerTestUtil.computePresentation(variableValue)
-        TestCase.assertEquals(expectedResult, variableValueNode.myValue)
+        Assertions.assertEquals(expectedResult, variableValueNode.myValue)
       }
     }
   }
 
-  override fun tearDownEdt() {
+  override fun tearDownInEdt() {
     FileEditorManagerEx.getInstanceEx(project).closeAllFiles()
   }
 }

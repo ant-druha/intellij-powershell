@@ -4,14 +4,18 @@ import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx
 import com.intellij.plugin.powershell.ide.debugger.PowerShellSuspendContext
 import com.intellij.plugin.powershell.testFramework.DebuggerTestBase
 import com.intellij.plugin.powershell.testFramework.PowerShellTestSession
-import com.intellij.testFramework.HeavyPlatformTestCase.assertTrue
+import com.intellij.plugin.powershell.testFramework.runInEdt
+import com.intellij.testFramework.junit5.TestApplication
 import com.intellij.xdebugger.XDebuggerTestUtil
 import com.intellij.xdebugger.XTestCompositeNode
 import com.jetbrains.rd.util.lifetime.Lifetime
-import junit.framework.TestCase
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 
+@TestApplication
 class BreakpointTest : DebuggerTestBase() {
 
+  @Test
   fun testBreakpoint() {
     runInEdt {
       val psiFile = copyAndOpenFile("debugger/testBreakpoint.ps1")
@@ -23,16 +27,19 @@ class BreakpointTest : DebuggerTestBase() {
       XDebuggerTestUtil.toggleBreakpoint(project, file, line)
       Lifetime.using { lt ->
         val debugSession = testSession.startDebugSession(lt)
-        assertTrue("Pause should be triggered in ${testSession.waitForBackgroundTimeout}", XDebuggerTestUtil.waitFor(
-          testSession.sessionListener.pausedSemaphore,
-          testSession.waitForBackgroundTimeout.toMillis()
-        ))
+        Assertions.assertTrue(
+          XDebuggerTestUtil.waitFor(
+            testSession.sessionListener.pausedSemaphore,
+            testSession.waitForBackgroundTimeout.toMillis()
+          ), "Pause should be triggered in ${testSession.waitForBackgroundTimeout}"
+        )
         val suspendContext = debugSession.suspendContext as PowerShellSuspendContext
-        TestCase.assertEquals(line, suspendContext.activeExecutionStack.topFrame?.sourcePosition?.line)
+        Assertions.assertEquals(line, suspendContext.activeExecutionStack.topFrame?.sourcePosition?.line)
       }
     }
   }
 
+  @Test
   fun testBreakpointTwoFiles() {
     runInEdt {
       val psiFile = copyAndOpenFile("debugger/testBreakpointTwoFiles.ps1")
@@ -47,20 +54,23 @@ class BreakpointTest : DebuggerTestBase() {
 
       Lifetime.using { lt ->
         val debugSession = testSession.startDebugSession(lt)
-        assertTrue("Pause should be triggered in ${testSession.waitForBackgroundTimeout}", XDebuggerTestUtil.waitFor(
-          testSession.sessionListener.pausedSemaphore,
-          testSession.waitForBackgroundTimeout.toMillis()
-        ))
+        Assertions.assertTrue(
+          XDebuggerTestUtil.waitFor(
+            testSession.sessionListener.pausedSemaphore,
+            testSession.waitForBackgroundTimeout.toMillis()
+          ), "Pause should be triggered in ${testSession.waitForBackgroundTimeout}"
+        )
         val suspendContext = debugSession.suspendContext as PowerShellSuspendContext
-        TestCase.assertEquals(
+        Assertions.assertEquals(
           psiSecondFile.virtualFile.toNioPath(),
           suspendContext.activeExecutionStack.topFrame?.sourcePosition?.file?.toNioPath()
         )
-        TestCase.assertEquals(line, suspendContext.activeExecutionStack.topFrame?.sourcePosition?.line)
+        Assertions.assertEquals(line, suspendContext.activeExecutionStack.topFrame?.sourcePosition?.line)
       }
     }
   }
 
+  @Test
   fun testConditionalBreakpoint()
   {
     runInEdt {
@@ -78,21 +88,23 @@ class BreakpointTest : DebuggerTestBase() {
       XDebuggerTestUtil.setBreakpointCondition(project, line, condition)
       Lifetime.using { lt ->
         val debugSession = testSession.startDebugSession(lt)
-        assertTrue("Pause should be triggered in ${testSession.waitForBackgroundTimeout}", XDebuggerTestUtil.waitFor(
-          testSession.sessionListener.pausedSemaphore,
-          testSession.waitForBackgroundTimeout.toMillis()
-        ))
+        Assertions.assertTrue(
+          XDebuggerTestUtil.waitFor(
+            testSession.sessionListener.pausedSemaphore,
+            testSession.waitForBackgroundTimeout.toMillis()
+          ), "Pause should be triggered in ${testSession.waitForBackgroundTimeout}"
+        )
         val suspendContext = debugSession.suspendContext as PowerShellSuspendContext
         val topFrame = suspendContext.activeExecutionStack.topFrame!!
         val children = XTestCompositeNode(topFrame).collectChildren()
         val variableValue = XDebuggerTestUtil.findVar(children, variableName)
         val variableValueNode = XDebuggerTestUtil.computePresentation(variableValue)
-        TestCase.assertEquals(value.toString(), variableValueNode.myValue)
+        Assertions.assertEquals(value.toString(), variableValueNode.myValue)
       }
     }
   }
 
-  override fun tearDownEdt() {
+  override fun tearDownInEdt() {
     FileEditorManagerEx.getInstanceEx(project).closeAllFiles()
   }
 }
