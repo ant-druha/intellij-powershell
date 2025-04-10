@@ -64,7 +64,6 @@ class PowerShellTestSession(val project: Project, scriptPath: Path) {
 }
 
 class PowerShellDebugSessionListener : XDebugSessionListener {
-
   // if greater than 0 → paused, resumed, stopped
   val pausedSemaphore = Semaphore(0)
   private val resumedSemaphore = Semaphore(0)
@@ -94,5 +93,4 @@ class PowerShellDebugSessionListener : XDebugSessionListener {
       return
     stoppedSemaphore.release()
   }
-
 }
