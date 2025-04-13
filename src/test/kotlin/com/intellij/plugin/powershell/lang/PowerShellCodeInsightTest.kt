@@ -2,17 +2,21 @@ package com.intellij.plugin.powershell.lang
 
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.plugin.powershell.psi.PowerShellStringLiteralExpression
+import com.intellij.plugin.powershell.testFramework.PowerShellCodeInsightTestBase
 import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import com.intellij.testFramework.junit5.TestApplication
+import org.junit.jupiter.api.Test
 import java.io.File
 
-class PowerShellCodeInsightTest : BasePlatformTestCase() {
+@TestApplication
+class PowerShellCodeInsightTest : PowerShellCodeInsightTestBase() {
 
   private val TEST_DATA_PATH = "src" + File.separatorChar + "test" + File.separatorChar + "resources" + File.separatorChar +
       "testData"
 
   override fun getTestDataPath() = TEST_DATA_PATH
 
+  @Test
   fun testDecodeExpandableString() {
     //quotes
     checkStringDecode("This is sample host \"\"double quoted\"\" string",
@@ -44,6 +48,7 @@ class PowerShellCodeInsightTest : BasePlatformTestCase() {
                       "$(dsdkkdkd) $(ddd) \" $(sss)sasa $(wqwq) \$eee $(")
   }
 
+  @Test
   fun testDecodeExpandableHereString() {
     //quotes
     decodeExpandableHereString("This is sample host \"string\" content",
@@ -83,6 +88,7 @@ class PowerShellCodeInsightTest : BasePlatformTestCase() {
                                "text1 `` \$foo `` \"`'text2")
   }
 
+  @Test
   fun testDecodeVerbatimString() {
     //quotes
     decodeVerbatimString("This is sample host \"string\" content",
@@ -105,6 +111,7 @@ class PowerShellCodeInsightTest : BasePlatformTestCase() {
   private fun decodeVerbatimHereString(stringContent: String, expectedOutText: String) = checkStringDecode(stringContent, expectedOutText, false, true)
   private fun decodeExpandableHereString(stringContent: String, expectedOutText: String) = checkStringDecode(stringContent, expectedOutText, true, true)
 
+  @Test
   fun testDecodeVerbatimHereString() {
     decodeVerbatimHereString("This is sample host \"string\" content",
                              "This is sample host \"string\" content")
@@ -112,7 +119,7 @@ class PowerShellCodeInsightTest : BasePlatformTestCase() {
                              "This is sample host 'string' content")
   }
 
-
+  @Test
   fun testContentChangeExpandableString() {
     //quotes
     checkInjectedText("var foo = \"text\";",
@@ -147,7 +154,7 @@ class PowerShellCodeInsightTest : BasePlatformTestCase() {
                       "`$(ddd) `\" `$(sss)sasa `$(wqwq) `\$eee `$(")
   }
 
-
+  @Test
   fun testContentChangeExpandableHereString() {
     //quotes
     updateExpandableHereString("var foo = \"text\";",
@@ -163,6 +170,7 @@ class PowerShellCodeInsightTest : BasePlatformTestCase() {
                                "text1 `\$newVar text2")
   }
 
+  @Test
   fun testContentChangeVerbatimString() {
     //quotes
     updateVerbatimString("var foo = \"text\";",
@@ -183,6 +191,7 @@ class PowerShellCodeInsightTest : BasePlatformTestCase() {
                          "test `\$foo escape")
   }
 
+  @Test
   fun testContentChangeVerbatimHereString() {
     //quotes
     updateVerbatimHereString("var foo = \"text\";",
@@ -203,8 +212,9 @@ class PowerShellCodeInsightTest : BasePlatformTestCase() {
                              "test escape \$foo chars")
   }
 
+  @Test
   fun testFolding() {
-    myFixture.testFolding("$testDataPath/codeinsight/folding.ps1")
+    codeInsightTestFixture.testFolding("${getTestDataPath()}/codeinsight/folding.ps1")
   }
 
   private fun updateExpandableHereString(newInjectedText: String, expectedStringContent: String) = checkInjectedText(newInjectedText, expectedStringContent, true, true)
@@ -214,9 +224,9 @@ class PowerShellCodeInsightTest : BasePlatformTestCase() {
   //external editor -> PowerShell string
   private fun checkInjectedText(newInjectedText: String, expectedStringContent: String, isExpandable: Boolean = true, isHere: Boolean = false, defaultText: String = "var foo = 1") {
     val string = createStringExpression(isHere, isExpandable, defaultText)
-    WriteCommandAction.writeCommandAction(project, myFixture.file).withName("Test checkInjectedText. New Text='$newInjectedText'").run<Throwable> {
+    WriteCommandAction.writeCommandAction(project, codeInsightTestFixture.file).withName("Test checkInjectedText. New Text='$newInjectedText'").run<Throwable> {
       string.updateText(newInjectedText)
-      val newString = PsiTreeUtil.findChildOfType(myFixture.file, PowerShellStringLiteralExpression::class.java) ?: error("file text='${myFixture.file}'")
+      val newString = PsiTreeUtil.findChildOfType(codeInsightTestFixture.file, PowerShellStringLiteralExpression::class.java) ?: error("file text='${codeInsightTestFixture.file}'")
       assert(newString.getStringContent() == expectedStringContent) { "expected=\t'$expectedStringContent'\nactual=\t\t'${newString.getStringContent()}'" }
     }
   }
@@ -245,7 +255,7 @@ class PowerShellCodeInsightTest : BasePlatformTestCase() {
   }
 
   private fun createStringExpression(nodeText: String): PowerShellStringLiteralExpression {
-    val file = myFixture.configureByText("foo.ps1", nodeText)
+    val file = codeInsightTestFixture.configureByText("foo.ps1", nodeText)
     return PsiTreeUtil.findChildOfType(file, PowerShellStringLiteralExpression::class.java) ?: error("text='$nodeText'")
   }
 
