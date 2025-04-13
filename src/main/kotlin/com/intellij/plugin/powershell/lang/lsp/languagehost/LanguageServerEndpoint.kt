@@ -395,6 +395,13 @@ class LanguageServerEndpoint(
       delay(50)
     }
   }
+
+  @TestOnly
+  suspend fun waitForEditorManagerCreated(filePath: Path) {
+    while (!connectedEditors.containsKey(filePath.toUri()) || connectedEditors[filePath.toUri()]?.job?.isCompleted == false) {
+      delay(50)
+    }
+  }
 }
 
 private val logger = logger<LanguageServerEndpoint>()

@@ -1,20 +1,31 @@
 package com.intellij.plugin.powershell.lang
 
 import com.intellij.openapi.actionSystem.IdeActions
-import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import com.intellij.plugin.powershell.testFramework.PowerShellCodeInsightTestBase
+import com.intellij.testFramework.junit5.TestApplication
+import org.junit.jupiter.api.Test
 
-class PowerShellCommenterTest : BasePlatformTestCase() {
+@TestApplication
+class PowerShellCommenterTest : PowerShellCodeInsightTestBase() {
 
+  @Test
   fun testCommentExtension() {
-    myFixture.configureByText("file.ps1", """
+    codeInsightTestFixture.configureByText(
+      "file.ps1", """
       <#<caret>
       #>
-    """.trimIndent())
-    myFixture.performEditorAction(IdeActions.ACTION_EDITOR_ENTER)
-    myFixture.checkResult("""
+    """.trimIndent()
+    )
+    waitForEditorManagerCreated(codeInsightTestFixture.file.virtualFile.toNioPath())
+    codeInsightTestFixture.performEditorAction(IdeActions.ACTION_EDITOR_ENTER)
+    waitForEditorManagerCreated(codeInsightTestFixture.file.virtualFile.toNioPath())
+    codeInsightTestFixture.checkResult(
+      """
       <#
       <caret>
       #>
-    """.trimIndent())
+    """.trimIndent()
+    )
+    waitForEditorManagerCreated(codeInsightTestFixture.file.virtualFile.toNioPath())
   }
 }
