@@ -19,7 +19,7 @@ import kotlinx.coroutines.withContext
 import org.jetbrains.concurrency.Promise
 
 /**
- * The main purpose of this runner is to call [RunProfileState.execute] or a background thread instead of a foreground
+ * The main purpose of this runner is to call [RunProfileState.execute] on a background thread instead of a foreground
  * one, as our [RunProfileState] implementation requires FS access that's only possible from the background.
  */
 class PowerShellProgramRunner : AsyncProgramRunner<RunnerSettings>() {
