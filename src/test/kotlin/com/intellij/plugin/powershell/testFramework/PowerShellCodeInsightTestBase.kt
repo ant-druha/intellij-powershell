@@ -1,7 +1,9 @@
 package com.intellij.plugin.powershell.testFramework
 
 import com.intellij.plugin.powershell.lang.lsp.LSPInitMain
+import com.intellij.testFramework.LightPlatformTestCase
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture
+import com.intellij.testFramework.fixtures.IdeaProjectTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
 import com.intellij.testFramework.fixtures.impl.TempDirTestFixtureImpl
 import com.intellij.testFramework.junit5.fixture.tempPathFixture
@@ -10,14 +12,16 @@ import kotlinx.coroutines.withTimeout
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestInfo
+import org.junit.jupiter.api.extension.ExtendWith
 import java.nio.file.Path
 import kotlin.time.Duration.Companion.seconds
 
+@ExtendWith(EdtInterceptor::class)
 open class PowerShellCodeInsightTestBase {
   val tempPathFixture = tempPathFixture()
   lateinit var tempPath: Path
   lateinit var codeInsightTestFixture: CodeInsightTestFixture
-
+  lateinit var ideaProjectTestFixture: IdeaProjectTestFixture
   val project get() = codeInsightTestFixture.project
 
   @BeforeEach
@@ -25,8 +29,8 @@ open class PowerShellCodeInsightTestBase {
     tempPath = tempPathFixture.get()
     val factory = IdeaTestFixtureFactory.getFixtureFactory()
     val fixtureBuilder = factory.createLightFixtureBuilder(null, testInfo.displayName)
-    val fixture = fixtureBuilder.getFixture()
-    codeInsightTestFixture = IdeaTestFixtureFactory.getFixtureFactory().createCodeInsightFixture(fixture,
+    ideaProjectTestFixture = fixtureBuilder.getFixture()
+    codeInsightTestFixture = IdeaTestFixtureFactory.getFixtureFactory().createCodeInsightFixture(ideaProjectTestFixture,
       TempDirTestFixtureImpl())
     codeInsightTestFixture.testDataPath = getTestDataPath()
     codeInsightTestFixture.setUp()
@@ -37,6 +41,7 @@ open class PowerShellCodeInsightTestBase {
     runInEdt {
       LSPInitMain.getInstance().dispose() // TODO: Remove this after LSPInitMain is refactored
       codeInsightTestFixture.tearDown()
+      LightPlatformTestCase.closeAndDeleteProject()
       tearDownInEdt()
     }
   }

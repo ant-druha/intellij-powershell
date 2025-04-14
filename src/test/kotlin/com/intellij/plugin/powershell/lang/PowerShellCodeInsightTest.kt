@@ -3,12 +3,14 @@ package com.intellij.plugin.powershell.lang
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.plugin.powershell.psi.PowerShellStringLiteralExpression
 import com.intellij.plugin.powershell.testFramework.PowerShellCodeInsightTestBase
+import com.intellij.plugin.powershell.testFramework.RunInEdt
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.testFramework.junit5.TestApplication
 import org.junit.jupiter.api.Test
 import java.io.File
 
 @TestApplication
+@RunInEdt
 class PowerShellCodeInsightTest : PowerShellCodeInsightTestBase() {
 
   private val TEST_DATA_PATH = "src" + File.separatorChar + "test" + File.separatorChar + "resources" + File.separatorChar +

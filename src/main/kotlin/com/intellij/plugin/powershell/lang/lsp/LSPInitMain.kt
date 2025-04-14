@@ -129,7 +129,12 @@ class LSPInitMain : PersistentStateComponent<LSPInitMain.PowerShellInfo>, Dispos
   }
 
   override fun dispose() {
-    psEditorLanguageServer.clear()
-    psConsoleLanguageServer.clear()
+    fun ConcurrentHashMap<Project, LanguageServerEndpoint>.shutdownAndClear() {
+      //forEach { it.value.shutdown() }
+      clear()
+    }
+
+    psEditorLanguageServer.shutdownAndClear()
+    psConsoleLanguageServer.shutdownAndClear()
   }
 }
