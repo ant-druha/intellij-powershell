@@ -1,17 +1,18 @@
 package com.intellij.plugin.powershell.lang.debugger
 
+import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.diagnostic.trace
 import com.jetbrains.rd.util.reactive.Signal
 import org.eclipse.lsp4j.debug.*
 import org.eclipse.lsp4j.debug.services.IDebugProtocolClient
 import org.eclipse.lsp4j.jsonrpc.services.JsonNotification
 import java.util.concurrent.CompletableFuture
-import com.intellij.openapi.diagnostic.logger
-import com.intellij.openapi.diagnostic.trace
 
 class PSDebugClient: IDebugProtocolClient {
 
   val debugStopped = Signal<StoppedEventArguments>()
   val sendKeyPress = Signal<Unit>()
+  val terminated = Signal<Unit>()
 
   override fun breakpoint(args: BreakpointEventArguments) {
     logger.trace { "BreakpointEventArguments: $args" }
@@ -34,9 +35,10 @@ class PSDebugClient: IDebugProtocolClient {
     super.exited(args)
   }
 
-  override fun terminated(args: TerminatedEventArguments) {
+  override fun terminated(args: TerminatedEventArguments?) {
     logger.trace { "TerminatedEventArguments: $args" }
     super.terminated(args)
+    terminated.fire(Unit)
   }
 
   override fun thread(args: ThreadEventArguments) {

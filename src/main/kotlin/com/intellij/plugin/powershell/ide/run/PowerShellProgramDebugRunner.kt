@@ -41,6 +41,7 @@ import org.eclipse.lsp4j.debug.services.IDebugProtocolServer
 import org.eclipse.lsp4j.jsonrpc.Launcher
 import org.jetbrains.concurrency.Promise
 import java.nio.file.Path
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.io.path.Path
 
 class PowerShellProgramDebugRunner : AsyncProgramRunner<RunnerSettings>() {
@@ -78,8 +79,26 @@ suspend fun bootstrapDebugSession(
   val inOutPair = processRunner.establishDebuggerConnection()
     ?: throw CantRunException(MessagesBundle.message("powershell.debugger.cantRunException"))
   val process = processRunner.getProcess() ?: error("Cannot get the debugger process.")
-  val handler = KillableProcessHandler(process, "PowerShellEditorService").apply {
-    setShouldKillProcessSoftly(false)
+  val handler = object : KillableProcessHandler(process, "PowerShellEditorService") {
+    // Here, we have to emulate graceful termination (exit code zero), since PowerShellEditorServices doesn't fully
+    // support it (in debug mode at least).
+    //
+    // The expected flow is:
+    // 1. We are asked to terminate gracefully. We track the attempt and return false (as if we refuse).
+    // 2. We are terminated in the hard mode, but we emulate the normal termination by returning a zero exit code.
+    //
+    // In case we weren't asked for graceful termination, then it means something else has killed the process, so we
+    // don't need to emulate graceful termination.
+
+    val gracefulTerminationRequested = AtomicBoolean()
+    override fun destroyProcessGracefully(): Boolean {
+      gracefulTerminationRequested.set(true)
+      return false // the graceful termination attempt is not successful, since it isn't supported
+    }
+
+    override fun notifyProcessTerminated(exitCode: Int) {
+      super.notifyProcessTerminated(if (gracefulTerminationRequested.get()) 0 else exitCode)
+    }
   }
   val console = TerminalExecutionConsole(project, handler)
   handler.startNotify()

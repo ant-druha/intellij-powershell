@@ -20,6 +20,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.eclipse.lsp4j.debug.*
 import org.eclipse.lsp4j.debug.services.IDebugProtocolServer
+import org.jetbrains.concurrency.await
 import java.nio.file.Path
 
 class PowerShellDebugSession(
@@ -40,6 +41,11 @@ class PowerShellDebugSession(
     }
     client.sendKeyPress.adviseSuspend(Lifetime.Eternal, Dispatchers.EDT) {
       sendKeyPress.fire(Unit)
+    }
+    client.terminated.adviseSuspend(Lifetime.Eternal, Dispatchers.IO) {
+      logger.info("Debug session has been terminated. Terminating debug server.")
+      session.debugProcess.stopAsync().await()
+      logger.info("Debug process had been terminated.")
     }
   }
 
