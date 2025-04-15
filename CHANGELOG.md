@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [2.10.0] - 2025-04-15
+### Changed
+- **Requirement update:** IntelliJ Platform 251.23774.318 is now the minimal supported version (only EAP builds for now).
+- Update PSScriptAnalyzer from v1.23.0 to [v1.24.0](https://github.com/PowerShell/PSScriptAnalyzer/releases/tag/1.24.0).
+- Update PowerShellEditorServices from v4.2.0 to [v4.3.0](https://github.com/PowerShell/PowerShellEditorServices/releases/tag/v4.3.0).
+
+### Fixed
+- [#323: Configurations with PowerShell "Before task" don't work in Debug](https://github.com/ant-druha/intellij-powershell/issues/323).
+- [#352](https://github.com/ant-druha/intellij-powershell/issues/352): fix an assertion thrown from settings in IntelliJ IDEA 2025.1. Thanks to @Fantoom for the contribution.
+
 ## [2.9.0] - 2025-02-07
 ### Changed
 - **Requirement update:** IntelliJ Platform 251.20015 is now the minimal supported version (only EAP builds for now).
@@ -305,4 +315,5 @@ Initial editor and code completion support:
 [2.7.0]: https://github.com/ant-druha/intellij-powershell/compare/v2.6.1...v2.7.0
 [2.8.0]: https://github.com/ant-druha/intellij-powershell/compare/v2.7.0...v2.8.0
 [2.9.0]: https://github.com/ant-druha/intellij-powershell/compare/v2.8.0...v2.9.0
-[Unreleased]: https://github.com/ant-druha/intellij-powershell/compare/v2.9.0...HEAD
+[2.10.0]: https://github.com/ant-druha/intellij-powershell/compare/v2.9.0...v2.10.0
+[Unreleased]: https://github.com/ant-druha/intellij-powershell/compare/v2.10.0...HEAD
