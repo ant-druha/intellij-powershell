@@ -2,6 +2,7 @@ import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 import org.jetbrains.intellij.platform.gradle.tasks.PrepareSandboxTask
 import org.jetbrains.intellij.platform.gradle.tasks.VerifyPluginTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.security.MessageDigest
 import java.util.zip.ZipFile
 
@@ -147,7 +148,7 @@ tasks {
     sourceCompatibility = "17"
     targetCompatibility = "17"
   }
-  withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+  withType<KotlinCompile> {
     dependsOn(generateLexer, generateParser)
 
     compilerOptions {
@@ -171,16 +172,13 @@ tasks {
     }
   }
 
-  val verifyPsScriptAnalyzer by registering {
-    dependsOn(psScriptAnalyzer)
+  fun PrepareSandboxTask.unpackPsScriptAnalyzer(outDir: Provider<String>) {
+    inputs.files(psScriptAnalyzer)
     inputs.property("hash", psScriptAnalyzerSha256Hash)
+
     doFirst {
       psScriptAnalyzer.singleFile.verifyHash(psScriptAnalyzerSha256Hash)
     }
-  }
-
-  fun PrepareSandboxTask.unpackPsScriptAnalyzer(outDir: Provider<String>) {
-    dependsOn(psScriptAnalyzer, verifyPsScriptAnalyzer)
 
     from(zipTree(psScriptAnalyzer.singleFile)) {
       into(outDir.map { "$it/PSScriptAnalyzer" })
@@ -193,16 +191,12 @@ tasks {
     }
   }
 
-  val verifyPowerShellEditorServices by registering {
-    dependsOn(powerShellEditorServices)
+  fun PrepareSandboxTask.unpackPowerShellEditorServices(outDir: Provider<String>) {
+    inputs.files(powerShellEditorServices)
     inputs.property("hash", psesSha256Hash)
     doFirst {
       powerShellEditorServices.singleFile.verifyHash(psesSha256Hash)
     }
-  }
-
-  fun PrepareSandboxTask.unpackPowerShellEditorServices(outDir: Provider<String>) {
-    dependsOn(powerShellEditorServices, verifyPowerShellEditorServices)
 
     from(zipTree(powerShellEditorServices.singleFile)) {
       into(outDir.map { "$it/" })
@@ -220,10 +214,15 @@ tasks {
   val maxUnpackedPluginBytes: String by project
   val verifyDistributionSize by registering {
     group = "verification"
-    dependsOn(buildPlugin)
+
+    val pluginArtifact = buildPlugin.flatMap { it.archiveFile }
+
+    inputs.file(pluginArtifact)
+    inputs.property("maxUnpackedPluginBytes", maxUnpackedPluginBytes)
+    outputs.upToDateWhen { true }
 
     doLast {
-      val artifact = buildPlugin.flatMap { it.archiveFile }.get().asFile
+      val artifact = pluginArtifact.get().asFile
       val unpackedSize = ZipFile(artifact).use { it.entries().asSequence().sumOf { e -> e.size } }
       val unpackedSizeMiB = "%.3f".format(unpackedSize / 1024.0 / 1024.0)
       if (unpackedSize > maxUnpackedPluginBytes.toLong()) {
