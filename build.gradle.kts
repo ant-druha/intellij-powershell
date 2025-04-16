@@ -67,15 +67,14 @@ dependencies {
     pluginVerifier()
   }
 
-  testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
-  testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.8.1")
-
   implementation(libs.bundles.junixsocket)
   implementation(libs.lsp4j)
   implementation(libs.lsp4jdebug)
   testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
-  testImplementation(libs.junit)
+  testImplementation(libs.junit.jupiter.api)
   testImplementation(libs.openTest4J)
+  testRuntimeOnly(libs.junit.jupiter.engine)
+  testRuntimeOnly(libs.junit.vintage.engine)
 
   psScriptAnalyzer(
     group = "PSScriptAnalyzer",
