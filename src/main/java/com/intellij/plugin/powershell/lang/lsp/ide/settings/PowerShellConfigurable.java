@@ -4,7 +4,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.plugin.powershell.lang.lsp.LSPInitMain;
+import com.intellij.plugin.powershell.lang.lsp.PowerShellSettings;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -49,8 +49,8 @@ public class PowerShellConfigurable implements SearchableConfigurable {
 
   @Override
   public void reset() {
-    LSPInitMain lspInitMain = LSPInitMain.getInstance();
-    LSPInitMain.PowerShellInfo powerShellInfo = lspInitMain.getState();
+    PowerShellSettings powerShellSettings = PowerShellSettings.getInstance();
+    PowerShellSettings.PowerShellInfo powerShellInfo = powerShellSettings.getState();
     String psEsPathFromSettings = powerShellInfo.getPowerShellExtensionPath();
     String exePathFromSettings = powerShellInfo.getPowerShellExePath();
     boolean isEnabledInSettings = powerShellInfo.isUseLanguageServer();
@@ -65,8 +65,8 @@ public class PowerShellConfigurable implements SearchableConfigurable {
     String psExtensionPath = getPSExtensionPathFromForm();
     String powerShellExePath = getPowerShellExePathFromForm();
     boolean isEnabled = getPSJpanel().getIsUseLanguageServer();
-    LSPInitMain lspInitMain = LSPInitMain.getInstance();
-    LSPInitMain.PowerShellInfo powerShellInfo = lspInitMain.getState();
+    PowerShellSettings powerShellSettings = PowerShellSettings.getInstance();
+    PowerShellSettings.PowerShellInfo powerShellInfo = powerShellSettings.getState();
     FormUIUtil.validatePowerShellExecutablePath(powerShellExePath);
     String powerShellVersion = getPSJpanel().getPowerShellVersionValue();
     if (StringUtil.isEmpty(powerShellVersion)) throw new ConfigurationException("Can not detect PowerShell version");

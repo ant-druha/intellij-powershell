@@ -1,7 +1,6 @@
 package com.intellij.plugin.powershell.testFramework
 
 import com.intellij.openapi.project.Project
-import com.intellij.plugin.powershell.lang.lsp.LSPInitMain
 import com.intellij.testFramework.junit5.fixture.projectFixture
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -28,7 +27,6 @@ abstract class PowerShellTestBase {
   @AfterEach
   fun tearDownEdt() {
     runInEdt {
-      LSPInitMain.getInstance().dispose() // TODO: Remove this after LSPInitMain is refactored
       tearDownInEdt()
     }
   }

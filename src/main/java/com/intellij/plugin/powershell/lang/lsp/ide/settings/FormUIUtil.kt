@@ -9,7 +9,7 @@ import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.plugin.powershell.ide.MessagesBundle
-import com.intellij.plugin.powershell.lang.lsp.LSPInitMain
+import com.intellij.plugin.powershell.lang.lsp.PowerShellSettings
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.getEditorServicesModuleVersion
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.getEditorServicesStartupScript
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.getPSExtensionModulesDir
@@ -76,5 +76,5 @@ object FormUIUtil {
   }
 
   val globalSettingsExecutablePath: String?
-    get() = LSPInitMain.getInstance().state.powerShellExePath
+    get() = PowerShellSettings.getInstance().state.powerShellExePath
 }

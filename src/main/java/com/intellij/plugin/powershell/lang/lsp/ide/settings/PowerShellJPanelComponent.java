@@ -8,7 +8,7 @@ import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.plugin.powershell.ide.MessagesBundle;
-import com.intellij.plugin.powershell.lang.lsp.LSPInitMain;
+import com.intellij.plugin.powershell.lang.lsp.PowerShellSettings;
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils;
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PowerShellNotInstalled;
 import com.intellij.ui.HyperlinkAdapter;
@@ -177,7 +177,7 @@ public class PowerShellJPanelComponent {
     Companion.setUseBundledPowerShellExtension(true);
   }
 
-  void fillPowerShellInfo(@NotNull LSPInitMain.PowerShellInfo powerShellInfo) {
+  void fillPowerShellInfo(@NotNull PowerShellSettings.PowerShellInfo powerShellInfo) {
     setEditorServicesVersionLabelValue(powerShellInfo.getEditorServicesModuleVersion());
     setPowerShellExtensionPath(powerShellInfo.getPowerShellExtensionPath());
     setPowerShellExePath(powerShellInfo.getPowerShellExePath());
