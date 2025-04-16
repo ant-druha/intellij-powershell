@@ -1,11 +1,14 @@
 [versions]
 intellij = "251.23774.318-EAP-SNAPSHOT"
 intellijPreview = "251.23774.318-EAP-SNAPSHOT"
+junit5 = "5.10.3"
 junixsocket = "2.10.1"
 lsp4j = "0.24.0"
 
 [libraries]
-junit = "org.junit.jupiter:junit-jupiter-api:5.10.3"
+junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit5" }
+junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit5" }
+junit-vintage-engine = { module = "org.junit.vintage:junit-vintage-engine", version.ref = "junit5" }
 junixsocket-common = { module = "com.kohlschutter.junixsocket:junixsocket-common", version.ref = "junixsocket" }
 junixsocket-native-common = { module = "com.kohlschutter.junixsocket:junixsocket-native-common", version.ref = "junixsocket" }
 lsp4j = {module = "org.eclipse.lsp4j:org.eclipse.lsp4j", version.ref = "lsp4j"}
