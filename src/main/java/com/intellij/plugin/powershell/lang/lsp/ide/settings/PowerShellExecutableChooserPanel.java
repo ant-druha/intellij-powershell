@@ -5,7 +5,7 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.plugin.powershell.ide.MessagesBundle;
-import com.intellij.plugin.powershell.lang.lsp.LSPInitMain;
+import com.intellij.plugin.powershell.lang.lsp.PowerShellSettings;
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils;
 import com.intellij.ui.components.JBTextField;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +23,7 @@ public class PowerShellExecutableChooserPanel extends JComponent {
   private JPanel myJpanel;
 
   public PowerShellExecutableChooserPanel(@Nullable String executablePath) {
-    String globalSettingsPath = LSPInitMain.getInstance().getState().getPowerShellExePath();
+    String globalSettingsPath = PowerShellSettings.getInstance().getState().getPowerShellExePath();
     updateExecutablePath(StringUtil.isEmpty(executablePath) ? globalSettingsPath : executablePath);
   }
 

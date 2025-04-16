@@ -1,6 +1,6 @@
 package com.intellij.plugin.powershell.testFramework
 
-import com.intellij.plugin.powershell.lang.lsp.LSPInitMain
+import com.intellij.plugin.powershell.lang.lsp.LanguageServer
 import com.intellij.testFramework.LightPlatformTestCase
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture
 import com.intellij.testFramework.fixtures.IdeaProjectTestFixture
@@ -39,7 +39,6 @@ open class PowerShellCodeInsightTestBase {
   @AfterEach
   fun tearDownEdt() {
     runInEdt {
-      LSPInitMain.getInstance().dispose() // TODO: Remove this after LSPInitMain is refactored
       codeInsightTestFixture.tearDown()
       LightPlatformTestCase.closeAndDeleteProject()
       tearDownInEdt()
@@ -53,7 +52,7 @@ open class PowerShellCodeInsightTestBase {
   fun waitForEditorConnects(path: Path) {
     runBlocking {
       withTimeout(20.seconds) {
-        LSPInitMain.getEditorLanguageServer(project).apply {
+        LanguageServer.getInstance(project).editorLanguageServer.value.apply {
           waitForInit()
           waitForEditorConnect(path)
         }
@@ -64,7 +63,7 @@ open class PowerShellCodeInsightTestBase {
   fun waitForEditorManagerCreated(path: Path) {
     runBlocking {
       withTimeout(20.seconds) {
-        LSPInitMain.getEditorLanguageServer(project).apply {
+        LanguageServer.getInstance(project).editorLanguageServer.value.apply {
           waitForEditorManagerCreated(path)
         }
       }

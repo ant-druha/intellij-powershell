@@ -21,7 +21,7 @@ import com.intellij.plugin.powershell.PowerShellIcons
 import com.intellij.plugin.powershell.ide.MessagesBundle
 import com.intellij.plugin.powershell.ide.run.checkExists
 import com.intellij.plugin.powershell.ide.run.escapePath
-import com.intellij.plugin.powershell.lang.lsp.LSPInitMain
+import com.intellij.plugin.powershell.lang.lsp.PowerShellSettings
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.BUNDLED_PSES_PATH
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.getEditorServicesModuleVersion
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PSLanguageHostUtils.getEditorServicesStartupScript
@@ -104,8 +104,8 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
       var result = cachedPowerShellExtensionDir
       if (StringUtil.isNotEmpty(result)) return result!!
 
-      val lspMain = LSPInitMain.getInstance()
-      result = lspMain.state.powerShellExtensionPath?.trim()
+      val settings = PowerShellSettings.getInstance()
+      result = settings.state.powerShellExtensionPath?.trim()
       if (StringUtil.isEmpty(result)) {
         result = BUNDLED_PSES_PATH
         isUseBundledPowerShellExtensionPath = true
@@ -206,8 +206,8 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
     }
     val sessionDetailsPath = FileUtil.toCanonicalPath(getSessionDetailsFile().canonicalPath)
     val logPath = createLogPath(psExtensionPath)
-    val lspInitMain = LSPInitMain.getInstance()
-    val psExecutable = lspInitMain.getPowerShellExecutable()
+    val settings = PowerShellSettings.getInstance()
+    val psExecutable = settings.getPowerShellExecutable()
 
     val psVersion = PSLanguageHostUtils.getPowerShellVersion(psExecutable).await()
 
