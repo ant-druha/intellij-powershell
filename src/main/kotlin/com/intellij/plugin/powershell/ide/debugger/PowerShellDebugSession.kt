@@ -22,6 +22,7 @@ import org.eclipse.lsp4j.debug.*
 import org.eclipse.lsp4j.debug.services.IDebugProtocolServer
 import org.jetbrains.concurrency.await
 import java.nio.file.Path
+import kotlin.io.path.pathString
 
 class PowerShellDebugSession(
   client: PSDebugClient, val server: IDebugProtocolServer,
@@ -50,11 +51,12 @@ class PowerShellDebugSession(
   }
 
   fun setBreakpoint(filePath: Path, breakpoint: XLineBreakpoint<XBreakpointProperties<*>>) {
+    val path = filePath.toRealPath()
     coroutineScope.launch(start = CoroutineStart.UNDISPATCHED) {
       breakpointsMapMutex.withLock {
-        if (!breakpointMap.containsKey(filePath))
-          breakpointMap[filePath] = mutableMapOf()
-        val bpMap = breakpointMap[filePath]!!
+        if (!breakpointMap.containsKey(path))
+          breakpointMap[path] = mutableMapOf()
+        val bpMap = breakpointMap[path]!!
         bpMap[breakpoint.line] = breakpoint
         sendBreakpointRequest()
       }
@@ -62,9 +64,10 @@ class PowerShellDebugSession(
   }
 
   fun removeBreakpoint(filePath: Path, breakpoint: XLineBreakpoint<XBreakpointProperties<*>>) {
+    val path = filePath.toRealPath()
     coroutineScope.launch(start = CoroutineStart.UNDISPATCHED) {
       breakpointsMapMutex.withLock {
-        val bpMap = breakpointMap[filePath] ?: return@launch
+        val bpMap = breakpointMap[path] ?: return@launch
         if (!bpMap.containsKey(breakpoint.line))
           return@launch
         bpMap.remove(breakpoint.line)
@@ -124,35 +127,35 @@ class PowerShellDebugSession(
   }
 
   private suspend fun sendBreakpointRequest(breakpointMap: Map<Path, MutableMap<Int, XLineBreakpoint<XBreakpointProperties<*>>>>) {
-    for (breakpointMapEntry in breakpointMap) {
+    for ((file, breakpointsInFile) in breakpointMap) {
       val breakpointArgs = SetBreakpointsArguments()
       val source = Source()
-      source.path = breakpointMapEntry.key.toString()
+      source.path = file.pathString
       breakpointArgs.source = source
 
-      breakpointArgs.breakpoints = breakpointMapEntry.value.map {
-        val bp = it.value
+      breakpointArgs.breakpoints = breakpointsInFile.map {
+        val breakpoint = it.value
         SourceBreakpoint().apply {
-          line = bp.line + 1 // ide breakpoints line numbering starts from 0, while PSES start from 1
-          condition = bp.conditionExpression?.expression
-          logMessage = bp.logExpressionObject?.expression
+          line = breakpoint.line + 1 // ide breakpoints line numbering starts from 0, while PSES start from 1
+          condition = breakpoint.conditionExpression?.expression
+          logMessage = breakpoint.logExpressionObject?.expression
         }
       }.toTypedArray()
       try {
         val setBreakpointsResponse = server.setBreakpoints(breakpointArgs).await()
         val responseMap = setBreakpointsResponse.breakpoints.associateBy { x -> x.line - 1 }
-        breakpointMapEntry.value.forEach {
+        breakpointsInFile.forEach {
           val bp = responseMap[it.value.line]
           if (bp?.isVerified == true) {
             session.setBreakpointVerified(it.value)
-            logger.info("Set breakpoint at ${breakpointMapEntry.key}:${bp.line} successfully.")
+            logger.info("Set breakpoint at $file:${bp.line} successfully.")
           } else {
             session.setBreakpointInvalid(
               it.value,
               bp?.message.nullize(nullizeSpaces = true)
                 ?: MessagesBundle.message("powershell.debugger.breakpoints.invalidBreakPoint")
             )
-            logger.info("Invalid breakpoint at ${breakpointMapEntry.key}:${bp?.line}: ${bp?.message}")
+            logger.info("Invalid breakpoint at $file:${bp?.line}: ${bp?.message}")
           }
         }
       } catch (e: Throwable) {
