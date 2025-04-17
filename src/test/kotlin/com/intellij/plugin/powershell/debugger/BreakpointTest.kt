@@ -62,7 +62,7 @@ class BreakpointTest : DebuggerTestBase() {
         )
         val suspendContext = debugSession.suspendContext as PowerShellSuspendContext
         Assertions.assertEquals(
-          psiSecondFile.virtualFile.toNioPath(),
+          psiSecondFile.virtualFile.canonicalFile?.toNioPath(),
           suspendContext.activeExecutionStack.topFrame?.sourcePosition?.file?.toNioPath()
         )
         Assertions.assertEquals(line, suspendContext.activeExecutionStack.topFrame?.sourcePosition?.line)
@@ -71,8 +71,7 @@ class BreakpointTest : DebuggerTestBase() {
   }
 
   @Test
-  fun testConditionalBreakpoint()
-  {
+  fun testConditionalBreakpoint() {
     runInEdt {
       val psiFile = copyAndOpenFile("debugger/testBreakpoint.ps1")
       val file = psiFile.virtualFile

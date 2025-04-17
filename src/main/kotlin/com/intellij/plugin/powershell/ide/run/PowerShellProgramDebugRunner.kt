@@ -16,7 +16,6 @@ import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.util.toPromise
-import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.plugin.powershell.ide.MessagesBundle
 import com.intellij.plugin.powershell.ide.PluginProjectRoot
 import com.intellij.plugin.powershell.ide.debugger.EditorServicesDebuggerHostStarter
@@ -43,6 +42,7 @@ import org.jetbrains.concurrency.Promise
 import java.nio.file.Path
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.io.path.Path
+import kotlin.io.path.pathString
 
 class PowerShellProgramDebugRunner : AsyncProgramRunner<RunnerSettings>() {
 
@@ -158,15 +158,13 @@ private suspend fun initializeBreakpoints(
 ) {
   if (!debugSession.areBreakpointsMuted()) {
     breakpoints.filter { it.sourcePosition != null && it.sourcePosition!!.file.exists() && it.sourcePosition!!.file.isValid && it.isEnabled }
-      .groupBy { VfsUtil.virtualToIoFile(it.sourcePosition!!.file).toURI().toASCIIString() }
-      .forEach { entry ->
-        val fileURL = entry.key
+      .groupBy { it.sourcePosition!!.file.toNioPath().toRealPath() }
+      .forEach { (file, breakpoints) ->
         val breakpointArgs = SetBreakpointsArguments()
         val source = Source()
-        source.path = fileURL
+        source.path = file.pathString
         breakpointArgs.source = source
-        val bps = entry.value
-        breakpointArgs.breakpoints = bps.map {
+        breakpointArgs.breakpoints = breakpoints.map {
           val bp = it
           SourceBreakpoint().apply {
             line = bp.line + 1 // ide breakpoints line numbering starts from 0, while PSES start from 1
@@ -185,12 +183,13 @@ private suspend fun launchDebuggee(scriptPath: Path, remoteProxy: IDebugProtocol
 
   val launchArgs: MutableMap<String, Any> = HashMap()
   launchArgs["terminal"] = "none"
-  launchArgs["script"] = scriptPath.toString()
+  val scriptPathString = scriptPath.toRealPath().pathString
+  launchArgs["script"] = scriptPathString
   launchArgs["noDebug"] = false
   launchArgs["__sessionId"] = "sessionId"
   launchArgs["Args"] = runtimeArgs
   launchArgs["Env"] = envs
-  logger.info("Starting script file \"$scriptPath\" in a debug session.")
+  logger.info("Starting script file \"$scriptPathString\" in a debug session.")
   remoteProxy.launch(launchArgs).await()
 }
 
