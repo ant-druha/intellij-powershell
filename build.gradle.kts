@@ -266,13 +266,11 @@ tasks {
     })
   }
 
-  val testPreview by intellijPlatformTesting.testIde.registering {
-    version = libs.versions.intellijPreview
-    useInstaller = false
-    task {
-      enabled = libs.versions.intellij.get() != libs.versions.intellijPreview.get()
+  if (libs.versions.intellij.get() != libs.versions.intellijPreview.get()) {
+    val testPreview by intellijPlatformTesting.testIde.registering {
+      version = libs.versions.intellijPreview
     }
-  }
 
-  check { dependsOn(testPreview.name) }
+    check { dependsOn(testPreview.name) }
+  }
 }
