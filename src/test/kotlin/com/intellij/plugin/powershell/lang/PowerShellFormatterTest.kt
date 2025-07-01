@@ -5,26 +5,29 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.CommandProcessor
 import com.intellij.openapi.util.TextRange
 import com.intellij.plugin.powershell.ide.editor.formatting.PowerShellCodeStyleSettings
+import com.intellij.plugin.powershell.testFramework.PowerShellCodeInsightTestBase
+import com.intellij.plugin.powershell.testFramework.RunInEdt
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.codeStyle.CodeStyleManager
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings
-import com.intellij.psi.formatter.FormatterTestCase
+import com.intellij.testFramework.junit5.TestApplication
 import com.intellij.util.IncorrectOperationException
-import junit.framework.TestCase
+import com.intellij.util.application
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
 
-class PowerShellFormatterTest : FormatterTestCase() {
+@TestApplication
+@RunInEdt
+class PowerShellFormatterTest : PowerShellCodeInsightTestBase() {
 
-  private val myTestDataDir = "src/test/resources/testData/"
-
-  override fun getBasePath(): String = "format"
-  override fun getFileExtension(): String = "ps1"
-  override fun getTestDataPath(): String = myTestDataDir
-
+  @Test
   fun testBlockIndent() {
     doTest("indents", "indents_res")
   }
 
+  @Test
   fun testBracesShiftedIndent() {
     val tempTestSettings = getCommonSettings()
     tempTestSettings.BRACE_STYLE = CommonCodeStyleSettings.NEXT_LINE_SHIFTED2
@@ -32,6 +35,7 @@ class PowerShellFormatterTest : FormatterTestCase() {
     doTest("indent_brace", "indent_brace_res")
   }
 
+  @Test
   fun testDependentBracePlacement() {
     val settings = getCommonSettings()
     settings.BRACE_STYLE = CommonCodeStyleSettings.NEXT_LINE_IF_WRAPPED
@@ -39,6 +43,7 @@ class PowerShellFormatterTest : FormatterTestCase() {
     doTest("braces1", "braces1_if_wrapped_res")
   }
 
+  @Test
   fun testPipelineWrap() {
     val psSettings = getPowerShellSettings()
     psSettings.PIPELINE_TAIL_WRAP = CommonCodeStyleSettings.WRAP_ALWAYS
@@ -46,6 +51,7 @@ class PowerShellFormatterTest : FormatterTestCase() {
     doTest("indent_brace", "indent_brace_pipeline_wrap_res")
   }
 
+  @Test
   fun testBlockParametersWrap() {
     doTest("wrap_block_parameters", "wrap_block_parameters_default_res")
     val psSettings = getPowerShellSettings()
@@ -54,16 +60,19 @@ class PowerShellFormatterTest : FormatterTestCase() {
     doTest("wrap_block_parameters", "wrap_block_parameters_res")
   }
 
+  @Test
   fun testBlockParameterIndent() {
     doTest("block_parameter_indent", "block_parameter_indent_res")
   }
 
+  @Test
   fun testDefault1() {
     val tempTestSettings = getCommonSettings()
     tempTestSettings.KEEP_LINE_BREAKS = false
     doTest("default1", "default1_res")
   }
 
+  @Test
   fun testChainedCallWrap() {
     val settings = getCommonSettings()
     settings.RIGHT_MARGIN = 60
@@ -74,12 +83,14 @@ class PowerShellFormatterTest : FormatterTestCase() {
     doTest("wrap_chained_call", "wrap_chained_call_if_long_first_wrap_res")
   }
 
+  @Test
   fun testNoSpacingForCompoundIdentifiers() {
     val settings = getCommonSettings()
     settings.SPACE_AROUND_MULTIPLICATIVE_OPERATORS = true
     doTest("compound_identifiers", "compound_identifiers_res")
   }
 
+  @Test
   fun testChainedCallWrapAlignment() {
     val settings = getCommonSettings()
     settings.RIGHT_MARGIN = 60
@@ -92,6 +103,7 @@ class PowerShellFormatterTest : FormatterTestCase() {
     doTest("wrap_chained_call", "wrap_chained_call_always_res")
   }
 
+  @Test
   fun testWrapBinaryExpr() {
     val settings = getCommonSettings()
     settings.RIGHT_MARGIN = 30
@@ -111,60 +123,61 @@ class PowerShellFormatterTest : FormatterTestCase() {
   }
 
 
+  @Test
   fun testBraces() {
     val before = "switch -regex -casesensitive (get-childitem | sort length) {\n" +
-        "    \" ^5\" {\n" +
-        "        \"length for \$_ started with 5\"; continue\n" +
-        "    }\n" +
-        "    { \$_.length >20000 } {\n" +
-        "        \"length of \$_ is greater than 20000\"\n" +
-        "    }\n" +
-        "    default {\n" +
-        "        \"Didn't match anything else...\"\n" +
-        "    }\n" +
-        "}\n" +
-        "\n" +
-        "function TrapTest {\n" +
-        "    trap {\n" +
-        "        \"Error found.\"\n" +
-        "    }\n" +
-        "    nonsenseString\n" +
-        "}\n" +
-        "\n" +
-        "class A {\n" +
-        "    doSomethingMethod() {\n" +
-        "\n" +
-        "    }\n" +
-        "}"
+      "    \" ^5\" {\n" +
+      "        \"length for \$_ started with 5\"; continue\n" +
+      "    }\n" +
+      "    { \$_.length >20000 } {\n" +
+      "        \"length of \$_ is greater than 20000\"\n" +
+      "    }\n" +
+      "    default {\n" +
+      "        \"Didn't match anything else...\"\n" +
+      "    }\n" +
+      "}\n" +
+      "\n" +
+      "function TrapTest {\n" +
+      "    trap {\n" +
+      "        \"Error found.\"\n" +
+      "    }\n" +
+      "    nonsenseString\n" +
+      "}\n" +
+      "\n" +
+      "class A {\n" +
+      "    doSomethingMethod() {\n" +
+      "\n" +
+      "    }\n" +
+      "}"
     val after = "switch -regex -casesensitive (get-childitem | sort length)\n" +
-        "{\n" +
-        "    \" ^5\" {\n" +
-        "        \"length for \$_ started with 5\"; continue\n" +
-        "    }\n" +
-        "    { \$_.length >20000 } {\n" +
-        "        \"length of \$_ is greater than 20000\"\n" +
-        "    }\n" +
-        "    default {\n" +
-        "        \"Didn't match anything else...\"\n" +
-        "    }\n" +
-        "}\n" +
-        "\n" +
-        "function TrapTest\n" +
-        "{\n" +
-        "    trap\n" +
-        "    {\n" +
-        "        \"Error found.\"\n" +
-        "    }\n" +
-        "    nonsenseString\n" +
-        "}\n" +
-        "\n" +
-        "class A\n" +
-        "{\n" +
-        "    doSomethingMethod()\n" +
-        "    {\n" +
-        "\n" +
-        "    }\n" +
-        "}"
+      "{\n" +
+      "    \" ^5\" {\n" +
+      "        \"length for \$_ started with 5\"; continue\n" +
+      "    }\n" +
+      "    { \$_.length >20000 } {\n" +
+      "        \"length of \$_ is greater than 20000\"\n" +
+      "    }\n" +
+      "    default {\n" +
+      "        \"Didn't match anything else...\"\n" +
+      "    }\n" +
+      "}\n" +
+      "\n" +
+      "function TrapTest\n" +
+      "{\n" +
+      "    trap\n" +
+      "    {\n" +
+      "        \"Error found.\"\n" +
+      "    }\n" +
+      "    nonsenseString\n" +
+      "}\n" +
+      "\n" +
+      "class A\n" +
+      "{\n" +
+      "    doSomethingMethod()\n" +
+      "    {\n" +
+      "\n" +
+      "    }\n" +
+      "}"
 
     doTextTest(before, after)
 
@@ -176,6 +189,7 @@ class PowerShellFormatterTest : FormatterTestCase() {
     doTextTest(after, before, false)
   }
 
+  @Test
   fun testWhitespaceDependentOperatorSpacing() {
     doTextTest(
       """
@@ -192,6 +206,7 @@ class PowerShellFormatterTest : FormatterTestCase() {
     )
   }
 
+  @Test
   fun testCommandLineArgumentSpacing() {
     val sample = """
       git log --pretty=format:'%Cred'
@@ -200,6 +215,7 @@ class PowerShellFormatterTest : FormatterTestCase() {
     doTextTest(sample, sample)
   }
 
+  @Test
   fun testNullCoalescingOperator() = doTextTest("\$foo = \$bar  ??\$baz", "\$foo = \$bar ?? \$baz")
 
   private fun doTextTest(text: String, textAfter: String, reformatAsText: Boolean = true, textRange: TextRange? = null) {
@@ -219,7 +235,7 @@ class PowerShellFormatterTest : FormatterTestCase() {
             CodeStyleManager.getInstance(project).reformat(file)
           }
         } catch (e: IncorrectOperationException) {
-          TestCase.assertTrue(e.localizedMessage, false)
+          assertTrue(false, e.localizedMessage)
         }
       }
     }, "", "")
@@ -231,7 +247,33 @@ class PowerShellFormatterTest : FormatterTestCase() {
 
   private fun createFileFromText(text: String) = PsiFileFactory.getInstance(project).createFileFromText(PowerShellLanguage.INSTANCE, text)
 
-  private fun getPowerShellSettings(): PowerShellCodeStyleSettings = settings.getCustomSettings(PowerShellCodeStyleSettings::class.java)
+  private fun getPowerShellSettings(): PowerShellCodeStyleSettings = CodeStyle.getSettings(project).getCustomSettings(PowerShellCodeStyleSettings::class.java)
 
   private fun getCommonSettings() =  CodeStyle.getLanguageSettings(createFileFromText(""), PowerShellLanguage.INSTANCE)
+
+  private val testDataPackage = "testData/format"
+  private val fileExtension = "ps1"
+
+  private fun doTest(originalFileNameBase: String, expectedFileNameBase: String) {
+    val originalFileName = "$originalFileNameBase.$fileExtension"
+    val resultingFileName = "$expectedFileNameBase.$fileExtension"
+
+    val classLoader = this::class.java.classLoader
+    val originalFile = classLoader.getResource("$testDataPackage/$originalFileName")!!
+    val resultingFile = classLoader.getResource("$testDataPackage/$resultingFileName")!!
+
+    val originalFileText = originalFile.readText().replace("\r\n", "\n")
+    val resultingFileText = resultingFile.readText().replace("\r\n", "\n")
+
+    codeInsightTestFixture.configureByText(originalFileName, originalFileText)
+    val document = codeInsightTestFixture.editor.document
+    assertEquals(originalFileText, document.text)
+
+    CommandProcessor.getInstance().executeCommand(project, {
+      application.runWriteAction {
+        CodeStyleManager.getInstance(project).reformat(codeInsightTestFixture.file)
+      }
+     }, "", null)
+    assertEquals(resultingFileText, document.text)
+  }
 }
