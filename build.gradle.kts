@@ -74,6 +74,8 @@ dependencies {
   testImplementation(libs.junit.jupiter.api)
   testImplementation(libs.openTest4J)
   testRuntimeOnly(libs.junit.jupiter.engine)
+  testRuntimeOnly(libs.junit.platform.engine)
+  testRuntimeOnly(libs.junit.platform.launcher)
   testRuntimeOnly(libs.junit.vintage.engine)
 
   psScriptAnalyzer(
