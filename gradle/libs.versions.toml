@@ -4,6 +4,7 @@ intellijPreview = "252.23892-EAP-CANDIDATE-SNAPSHOT"
 junit-platform = "1.13.2"
 junit5 = "5.13.2"
 junixsocket = "2.10.1"
+kotlin = "2.2.0"
 lsp4j = "0.24.0"
 
 [libraries]
@@ -26,4 +27,4 @@ changelog = "org.jetbrains.changelog:2.2.1"
 gradleJvmWrapper = "me.filippov.gradle.jvm.wrapper:0.14.0"
 grammarkit = "org.jetbrains.grammarkit:2022.3.2.2"
 intellijPlatform = "org.jetbrains.intellij.platform:2.6.0"
-kotlin = { id = "org.jetbrains.kotlin.jvm", version = "2.0.0" }
+kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
