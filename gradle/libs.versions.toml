@@ -1,5 +1,5 @@
 [versions]
-intellij = "2025.1"
+intellij = "252.23892-EAP-CANDIDATE-SNAPSHOT"
 intellijPreview = "252.23892-EAP-CANDIDATE-SNAPSHOT"
 junit-platform = "1.13.2"
 junit5 = "5.13.2"
