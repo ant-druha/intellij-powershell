@@ -1,7 +1,6 @@
 package com.intellij.plugin.powershell.ide.injection
 
 import com.intellij.lang.ASTNode
-import com.intellij.lang.injection.InjectedLanguageManager
 import com.intellij.lang.injection.MultiHostInjector
 import com.intellij.lang.injection.MultiHostRegistrar
 import com.intellij.openapi.util.TextRange
@@ -43,9 +42,8 @@ class PowerShellLanguageInjector : MultiHostInjector {
       val parts = splitLiteralToInjectionParts(baseInjection, context)
       val language = InjectorUtils.getLanguageByString(baseInjection.injectedLanguageId) ?: return
       InjectorUtils.registerInjection(language, file, parts.ranges, registrar)
-      InjectorUtils.registerSupport(support, false, context, language)
-      InjectorUtils.putInjectedFileUserData(context, language, InjectedLanguageManager.FRANKENSTEIN_INJECTION,
-                                            if (parts.isUnparsable) java.lang.Boolean.TRUE else null)
+      InjectorUtils.registerSupport(registrar, support, false)
+      registrar.frankensteinInjection(parts.isUnparsable)
     } else {
       InjectorUtils.registerInjectionSimple(context, baseInjection, support, registrar)
     }

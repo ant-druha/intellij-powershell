@@ -3,9 +3,9 @@ package com.intellij.plugin.powershell.lang.lsp.languagehost.terminal
 import com.intellij.execution.Executor
 import com.intellij.execution.TaskExecutor
 import com.intellij.execution.executors.DefaultRunExecutor
-import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessHandler
+import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.process.ProcessWaitFor
 import com.intellij.execution.ui.RunContentDescriptor
 import com.intellij.execution.ui.RunContentManager
@@ -181,7 +181,7 @@ class PSPtyProcessHandler(private val myPowerShellConsoleRunner: PowerShellConso
   private val myWaitFor: ProcessWaitFor = ProcessWaitFor(myProcess, this, presentableName)
 
   override fun startNotify() {
-    addProcessListener(object : ProcessAdapter() {
+    addProcessListener(object : ProcessListener {
       override fun startNotified(event: ProcessEvent) {
         try {
           myWaitFor.setTerminationCallback { integer -> notifyProcessTerminated(integer!!) }

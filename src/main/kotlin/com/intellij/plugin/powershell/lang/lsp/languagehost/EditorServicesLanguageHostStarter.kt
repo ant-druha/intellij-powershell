@@ -324,7 +324,7 @@ open class EditorServicesLanguageHostStarter(protected val myProject: Project) :
     val handler = object : OSProcessHandler(process, commandLine) {
       override fun readerOptions() = BaseOutputReader.Options.forMostlySilentProcess()
     }
-    handler.addProcessListener(object : ProcessAdapter() {
+    handler.addProcessListener(object : ProcessListener {
       private var isFirstLineProcessed = false
       private val decoder = AnsiEscapeDecoder()
       override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
