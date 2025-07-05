@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [2.11.0] - 2025-07-05
+### Changed
+- **Requirement update:** IntelliJ Platform 252.23591.19 (2025.2 EAP) is now the minimal supported version.
+- Minor internal refactoring for better compatibility with newer IntelliJ and general code improvement.
+
 ## [2.10.0] - 2025-04-15
 ### Changed
 - **Requirement update:** IntelliJ Platform 251.23774.318 is now the minimal supported version (only EAP builds for now).
@@ -316,4 +321,5 @@ Initial editor and code completion support:
 [2.8.0]: https://github.com/ant-druha/intellij-powershell/compare/v2.7.0...v2.8.0
 [2.9.0]: https://github.com/ant-druha/intellij-powershell/compare/v2.8.0...v2.9.0
 [2.10.0]: https://github.com/ant-druha/intellij-powershell/compare/v2.9.0...v2.10.0
-[Unreleased]: https://github.com/ant-druha/intellij-powershell/compare/v2.10.0...HEAD
+[2.11.0]: https://github.com/ant-druha/intellij-powershell/compare/v2.10.0...v2.11.0
+[Unreleased]: https://github.com/ant-druha/intellij-powershell/compare/v2.11.0...HEAD
