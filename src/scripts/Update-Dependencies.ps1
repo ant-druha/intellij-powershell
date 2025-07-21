@@ -4,7 +4,8 @@
 #>
 param (
   $SourceRoot = "$PSScriptRoot/../..",
-  $GradleProperties = "$SourceRoot/gradle.properties"
+  $GradleProperties = "$SourceRoot/gradle.properties",
+  [string] $AuthToken = $null
 )
 
 Set-StrictMode -Version Latest
@@ -29,9 +30,18 @@ function ReadCurrentVersions
   }
 }
 
+$requestHeaders = if ($AuthToken) {
+  @{ 'Authorization' = "Bearer $AuthToken" }
+} else {
+  $null
+}
+
 $psScriptAnalyzer = Invoke-RestMethod `
-    'https://api.github.com/repos/PowerShell/PSScriptAnalyzer/releases?per_page=1'
-$pses = Invoke-RestMethod 'https://api.github.com/repos/PowerShell/PowerShellEditorServices/releases?per_page=1'
+  -Headers $requestHeaders `
+  'https://api.github.com/repos/PowerShell/PSScriptAnalyzer/releases?per_page=1'
+$pses = Invoke-RestMethod `
+  -Headers $requestHeaders `
+  'https://api.github.com/repos/PowerShell/PowerShellEditorServices/releases?per_page=1'
 
 function ReadLatestVersions
 {

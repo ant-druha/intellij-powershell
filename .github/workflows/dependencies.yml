@@ -50,7 +50,9 @@ jobs:
       - id: update
         name: "Update the dependency versions"
         shell: pwsh
-        run: ./src/scripts/Update-Dependencies.ps1
+        run: ./src/scripts/Update-Dependencies.ps1 -AuthToken $env:GITHUB_TOKEN
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - if: steps.update.outputs.has-changes == 'true' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
         name: "Create a PR"
