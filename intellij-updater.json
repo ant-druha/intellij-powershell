@@ -3,7 +3,9 @@
     "file": "gradle/libs.versions.toml",
     "field": "intellij",
     "kind": "intellij-idea-community",
-    "versionFlavor": "eap"
+    "versionFlavor": "release",
+    "versionConstraint": "latestWave",
+    "order": "oldest"
   }, {
     "file": "gradle/libs.versions.toml",
     "field": "intellijPreview",
@@ -13,7 +15,7 @@
     "file": "gradle/libs.versions.toml",
     "field": "kotlin",
     "kind": "kotlin",
-    "versionFlavor": "eap"
+    "versionFlavor": "release"
   }],
   "prBodyPrefix": "## Maintainer Note\n> [!WARNING]\n> This PR will not trigger CI by default. Please **close it and reopen manually** to trigger the CI.\n>\n> Unfortunately, this is a consequence of the current GitHub Action security model (by default, PRs created automatically aren't allowed to trigger other automation)."
 }
