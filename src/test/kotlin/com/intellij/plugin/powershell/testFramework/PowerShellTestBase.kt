@@ -16,12 +16,8 @@ abstract class PowerShellTestBase {
     get() = Path(project.basePath!!)
 
   @BeforeEach
-  open fun setUp() {
+  fun setUp() {
     project = projectFixture.get()
-  }
-
-  @AfterEach
-  open fun tearDown() {
   }
 
   @AfterEach

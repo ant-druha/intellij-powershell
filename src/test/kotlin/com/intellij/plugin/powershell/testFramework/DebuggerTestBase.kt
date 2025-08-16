@@ -3,14 +3,24 @@ package com.intellij.plugin.powershell.testFramework
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.util.ThrowableComputable
 import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.plugin.powershell.lang.debugger.PSDebugClient
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
+import com.intellij.testFramework.TestLoggerFactory
+import com.intellij.testFramework.junit5.fixture.disposableFixture
+import org.junit.jupiter.api.BeforeEach
 import kotlin.io.path.Path
 import kotlin.io.path.createDirectories
 
-abstract class DebuggerTestBase: PowerShellTestBase() {
+abstract class DebuggerTestBase : PowerShellTestBase() {
 
+  private val disposable = disposableFixture()
   private val testData = "testData"
+
+  @BeforeEach
+  fun setUpDebuggerTestBase() {
+    TestLoggerFactory.enableTraceLogging(disposable.get(), PSDebugClient::class.java)
+  }
 
   protected fun copyAndOpenFile(nameRelativeToTestData: String): PsiFile {
     val fullName = "$testData/$nameRelativeToTestData"
