@@ -1,1 +1,1 @@
-rootProject.name = "PowerShell"
+rootProject.name = "intellij-powershell"
