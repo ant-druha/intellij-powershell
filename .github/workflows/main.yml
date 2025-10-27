@@ -43,14 +43,14 @@ jobs:
         run: ./gradlew build
 
       - name: 'Upload build reports'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ runner.os }}.reports
           path: build/reports
         if: ${{ always() }}
 
       - name: 'Upload test logs'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ runner.os }}.test-logs
           path: build/idea-sandbox/*/log-test
