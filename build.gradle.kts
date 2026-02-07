@@ -60,8 +60,11 @@ val powerShellEditorServices: Configuration by configurations.creating
 
 dependencies {
   intellijPlatform {
-    intellijIdeaCommunity(libs.versions.intellij, useInstaller = !libs.versions.intellij.get().contains("SNAPSHOT"))
-    bundledPlugins("org.intellij.intelliLang", "org.jetbrains.plugins.terminal")
+    intellijIdea(libs.versions.intellij) {
+      useInstaller = !libs.versions.intellij.get().contains("SNAPSHOT")
+    }
+    bundledPlugins("org.jetbrains.plugins.terminal")
+    bundledModule("intellij.platform.langInjection")
     testFramework(TestFrameworkType.Bundled)
     testFramework(TestFrameworkType.Platform)
     pluginVerifier()
@@ -153,14 +156,14 @@ tasks {
       compilerArgs.add("-Werror")
       encoding = "UTF-8"
     }
-    sourceCompatibility = "17"
-    targetCompatibility = "17"
+    sourceCompatibility = "21"
+    targetCompatibility = "21"
   }
   withType<KotlinCompile> {
     dependsOn(generateLexer, generateParser)
 
     compilerOptions {
-      jvmTarget.set(JvmTarget.JVM_17)
+      jvmTarget.set(JvmTarget.JVM_21)
       allWarningsAsErrors = true
     }
   }

@@ -178,7 +178,7 @@ class LanguageServerEndpoint(
     if (deferred != null) {
       coroutineScope.launch(start = CoroutineStart.UNDISPATCHED) {
         val manager = deferred.await()
-        manager?.removeListeners()
+        manager?.let(Disposer::dispose)
         manager?.documentClosed()
       }
     }

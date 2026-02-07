@@ -4,6 +4,7 @@
 package com.intellij.plugin.powershell.lang.lsp.ide
 
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.editor.Editor
@@ -36,7 +37,7 @@ class EditorEventManager(
   private val selectionListener: SelectionListenerImpl,
   private val requestManager: LSPRequestManager,
   serverOptions: ServerOptions
-) {
+) : Disposable.Default {
 
   private var isOpen: Boolean = false
   private val identifier = TextDocumentIdentifier(editorToURIString(editor))
@@ -59,10 +60,10 @@ class EditorEventManager(
   }
 
   fun registerListeners() {
-    editor.addEditorMouseListener(mouseListener)
-    editor.addEditorMouseMotionListener(mouseMotionListener)
-    editor.document.addDocumentListener(documentListener)
-    editor.selectionModel.addSelectionListener(selectionListener)
+    editor.addEditorMouseListener(mouseListener, this)
+    editor.addEditorMouseMotionListener(mouseMotionListener, this)
+    editor.document.addDocumentListener(documentListener, this)
+    editor.selectionModel.addSelectionListener(selectionListener, this)
   }
 
   suspend fun documentOpened() {
@@ -75,14 +76,6 @@ class EditorEventManager(
       }
     }
   }
-
-  fun removeListeners() {
-    editor.removeEditorMouseMotionListener(mouseMotionListener)
-    editor.document.removeDocumentListener(documentListener)
-    editor.removeEditorMouseListener(mouseListener)
-    editor.selectionModel.removeSelectionListener(selectionListener)
-  }
-
 
   suspend fun documentClosed() {
     if (isOpen) {
@@ -163,7 +156,8 @@ class EditorEventManager(
     saveDiagnostics(diagnostics)
     val restartAnalyzerRunnable = Runnable {
       val psiFile = PsiDocumentManager.getInstance(project).getPsiFile(editor.document)
-      if (psiFile != null) DaemonCodeAnalyzer.getInstance(project).restart(psiFile)
+      if (psiFile != null)
+        DaemonCodeAnalyzer.getInstance(project).restart(psiFile, "Diagnostic update request from LSP")
     }
     if (ApplicationManager.getApplication().isDispatchThread) {
       restartAnalyzerRunnable.run()
