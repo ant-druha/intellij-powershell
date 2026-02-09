@@ -12,7 +12,7 @@ on:
 jobs:
   main:
     runs-on: ${{ matrix.image }}
-    timeout-minutes: 30
+    timeout-minutes: 60
     strategy:
       matrix:
         image: [macos-15, ubuntu-24.04, windows-2025]
@@ -39,7 +39,11 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v5
 
+      - name: Assemble
+        run: ./gradlew assemble
+
       - name: Build
+        timeout-minutes: 30
         run: ./gradlew build
 
       - name: 'Upload build reports'
