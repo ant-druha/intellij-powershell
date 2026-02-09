@@ -38,91 +38,6 @@ for %%i in ("%APP_HOME%") do set APP_HOME=%%~fi
 @rem Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
 set DEFAULT_JVM_OPTS="-Xmx64m" "-Xms64m"
 
-@rem GRADLE JVM WRAPPER START MARKER
-
-setlocal
-set BUILD_DIR=%LOCALAPPDATA%\gradle-jvm
-
-for /f "tokens=3 delims= " %%A in ('reg query "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v "PROCESSOR_ARCHITECTURE"') do set WIN_ARCH=%%A
-if "%WIN_ARCH%" equ "AMD64" (
-    set JVM_TARGET_DIR=%BUILD_DIR%\jdk-21.0.5_windows-x64_bin-020647\
-    set JVM_URL=https://download.oracle.com/java/21/archive/jdk-21.0.5_windows-x64_bin.zip
-) else if "%WIN_ARCH%" equ "ARM64" (
-    set JVM_TARGET_DIR=%BUILD_DIR%\microsoft-jdk-21.0.6-windows-aarch64-351b9f\
-    set JVM_URL=https://aka.ms/download-jdk/microsoft-jdk-21.0.6-windows-aarch64.zip
-) else (
-    echo Unknown architecture %WIN_ARCH%
-    goto fail
-)
-
-set IS_TAR_GZ=0
-set JVM_TEMP_FILE=gradle-jvm.zip
-
-if /I "%JVM_URL:~-7%"==".tar.gz" (
-    set IS_TAR_GZ=1
-    set JVM_TEMP_FILE=gradle-jvm.tar.gz
-)
-
-set POWERSHELL=%SystemRoot%\system32\WindowsPowerShell\v1.0\powershell.exe
-
-if not exist "%JVM_TARGET_DIR%" MD "%JVM_TARGET_DIR%"
-
-if not exist "%JVM_TARGET_DIR%.flag" goto downloadAndExtractJvm
-
-set /p CURRENT_FLAG=<"%JVM_TARGET_DIR%.flag"
-if "%CURRENT_FLAG%" == "%JVM_URL%" goto continueWithJvm
-
-:downloadAndExtractJvm
-
-PUSHD "%BUILD_DIR%"
-if errorlevel 1 goto fail
-
-echo Downloading %JVM_URL% to %BUILD_DIR%\%JVM_TEMP_FILE%
-if exist "%JVM_TEMP_FILE%" DEL /F "%JVM_TEMP_FILE%"
-"%POWERSHELL%" -nologo -noprofile -Command "Set-StrictMode -Version 3.0; $ErrorActionPreference = \"Stop\"; (New-Object Net.WebClient).DownloadFile('%JVM_URL%', '%JVM_TEMP_FILE%')"
-if errorlevel 1 goto fail
-
-POPD
-
-RMDIR /S /Q "%JVM_TARGET_DIR%"
-if errorlevel 1 goto fail
-
-MKDIR "%JVM_TARGET_DIR%"
-if errorlevel 1 goto fail
-
-PUSHD "%JVM_TARGET_DIR%"
-if errorlevel 1 goto fail
-
-echo Extracting %BUILD_DIR%\%JVM_TEMP_FILE% to %JVM_TARGET_DIR%
-
-if "%IS_TAR_GZ%"=="1" (
-    tar xf "..\\%JVM_TEMP_FILE%"
-) else (
-    "%POWERSHELL%" -nologo -noprofile -command "Set-StrictMode -Version 3.0; $ErrorActionPreference = \"Stop\"; Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('..\\%JVM_TEMP_FILE%', '.');"
-)
-if errorlevel 1 goto fail
-
-DEL /F "..\%JVM_TEMP_FILE%"
-if errorlevel 1 goto fail
-
-POPD
-
-echo %JVM_URL%>"%JVM_TARGET_DIR%.flag"
-if errorlevel 1 goto fail
-
-:continueWithJvm
-
-set JAVA_HOME=
-for /d %%d in ("%JVM_TARGET_DIR%"*) do if exist "%%d\bin\java.exe" set JAVA_HOME=%%d
-if not exist "%JAVA_HOME%\bin\java.exe" (
-  echo Unable to find java.exe under %JVM_TARGET_DIR%
-  goto fail
-)
-
-endlocal & set JAVA_HOME=%JAVA_HOME%
-
-@rem GRADLE JVM WRAPPER END MARKER
-
 @rem Find java.exe
 if defined JAVA_HOME goto findJavaFromJavaHome
 
@@ -155,11 +70,10 @@ goto fail
 :execute
 @rem Setup the command line
 
-set CLASSPATH=%APP_HOME%\gradle\wrapper\gradle-wrapper.jar
 
 
 @rem Execute Gradle
-"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRADLE_OPTS% "-Dorg.gradle.appname=%APP_BASE_NAME%" -classpath "%CLASSPATH%" org.gradle.wrapper.GradleWrapperMain %*
+"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRADLE_OPTS% "-Dorg.gradle.appname=%APP_BASE_NAME%" -jar "%APP_HOME%\gradle\wrapper\gradle-wrapper.jar" %*
 
 :end
 @rem End local scope for the variables with windows NT shell
