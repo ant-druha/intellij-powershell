@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-# Copyright © 2015-2021 the original authors.
+# Copyright © 2015 the original authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -114,99 +114,7 @@ case "$( uname )" in                #(
   NONSTOP* )        nonstop=true ;;
 esac
 
-CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
 
-
-# GRADLE JVM WRAPPER START MARKER
-BUILD_DIR="${HOME}/.local/share/gradle-jvm"
-JVM_ARCH=$(uname -m)
-JVM_TEMP_FILE=$BUILD_DIR/gradle-jvm-temp.tar.gz
-if [ "$darwin" = "true" ]; then
-    case $JVM_ARCH in
-    x86_64)
-        JVM_URL=https://download.oracle.com/java/21/archive/jdk-21.0.5_macos-x64_bin.tar.gz
-        JVM_TARGET_DIR=$BUILD_DIR/jdk-21.0.5_macos-x64_bin-2fbf6d
-        ;;
-    arm64)
-        JVM_URL=https://download.oracle.com/java/21/archive/jdk-21.0.5_macos-aarch64_bin.tar.gz
-        JVM_TARGET_DIR=$BUILD_DIR/jdk-21.0.5_macos-aarch64_bin-d1143e
-        ;;
-    *) 
-        die "Unknown architecture $JVM_ARCH"
-        ;;
-    esac
-elif [ "$cygwin" = "true" ] || [ "$msys" = "true" ]; then
-    JVM_URL=https://download.oracle.com/java/21/archive/jdk-21.0.5_windows-x64_bin.zip
-    JVM_TARGET_DIR=$BUILD_DIR/jdk-21.0.5_windows-x64_bin-020647
-else
-    JVM_ARCH=$(linux$(getconf LONG_BIT) uname -m)
-     case $JVM_ARCH in
-        x86_64)
-            JVM_URL=https://download.oracle.com/java/21/archive/jdk-21.0.5_linux-x64_bin.tar.gz
-            JVM_TARGET_DIR=$BUILD_DIR/jdk-21.0.5_linux-x64_bin-aef79a
-            ;;
-        aarch64)
-            JVM_URL=https://download.oracle.com/java/21/archive/jdk-21.0.5_linux-aarch64_bin.tar.gz
-            JVM_TARGET_DIR=$BUILD_DIR/jdk-21.0.5_linux-aarch64_bin-8db84d
-            ;;
-        *) 
-            die "Unknown architecture $JVM_ARCH"
-            ;;
-        esac
-fi
-
-set -e
-
-if [ -e "$JVM_TARGET_DIR/.flag" ] && [ -n "$(ls "$JVM_TARGET_DIR")" ] && [ "x$(cat "$JVM_TARGET_DIR/.flag")" = "x${JVM_URL}" ]; then
-    # Everything is up-to-date in $JVM_TARGET_DIR, do nothing
-    true
-else
-  echo "Downloading $JVM_URL to $JVM_TEMP_FILE"
-
-  rm -f "$JVM_TEMP_FILE"
-  mkdir -p "$BUILD_DIR"
-  if command -v curl >/dev/null 2>&1; then
-      if [ -t 1 ]; then CURL_PROGRESS="--progress-bar"; else CURL_PROGRESS="--silent --show-error"; fi
-      # shellcheck disable=SC2086
-      curl $CURL_PROGRESS -L --output "${JVM_TEMP_FILE}" "$JVM_URL" 2>&1
-  elif command -v wget >/dev/null 2>&1; then
-      if [ -t 1 ]; then WGET_PROGRESS=""; else WGET_PROGRESS="-nv"; fi
-      wget $WGET_PROGRESS -O "${JVM_TEMP_FILE}" "$JVM_URL" 2>&1
-  else
-      die "ERROR: Please install wget or curl"
-  fi
-
-  echo "Extracting $JVM_TEMP_FILE to $JVM_TARGET_DIR"
-  rm -rf "$JVM_TARGET_DIR"
-  mkdir -p "$JVM_TARGET_DIR"
-
-  case "$JVM_URL" in
-    *".zip") unzip "$JVM_TEMP_FILE" -d "$JVM_TARGET_DIR" ;;
-    *) tar -x -f "$JVM_TEMP_FILE" -C "$JVM_TARGET_DIR" ;;
-  esac
-  
-  rm -f "$JVM_TEMP_FILE"
-
-  echo "$JVM_URL" >"$JVM_TARGET_DIR/.flag"
-fi
-
-JAVA_HOME=
-for d in "$JVM_TARGET_DIR" "$JVM_TARGET_DIR"/* "$JVM_TARGET_DIR"/Contents/Home "$JVM_TARGET_DIR"/*/Contents/Home; do
-  if [ -e "$d/bin/java" ]; then
-    JAVA_HOME="$d"
-  fi
-done
-
-if [ '!' -e "$JAVA_HOME/bin/java" ]; then
-  die "Unable to find bin/java under $JVM_TARGET_DIR"
-fi
-
-# Make it available for child processes
-export JAVA_HOME
-
-set +e
-
-# GRADLE JVM WRAPPER END MARKER
 
 # Determine the Java command to use to start the JVM.
 if [ -n "$JAVA_HOME" ] ; then
@@ -263,7 +171,6 @@ fi
 # For Cygwin or MSYS, switch paths to Windows format before running java
 if "$cygwin" || "$msys" ; then
     APP_HOME=$( cygpath --path --mixed "$APP_HOME" )
-    CLASSPATH=$( cygpath --path --mixed "$CLASSPATH" )
 
     JAVACMD=$( cygpath --unix "$JAVACMD" )
 
@@ -303,8 +210,7 @@ DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
 
 set -- \
         "-Dorg.gradle.appname=$APP_BASE_NAME" \
-        -classpath "$CLASSPATH" \
-        org.gradle.wrapper.GradleWrapperMain \
+        -jar "$APP_HOME/gradle/wrapper/gradle-wrapper.jar" \
         "$@"
 
 # Stop when "xargs" is not available.
