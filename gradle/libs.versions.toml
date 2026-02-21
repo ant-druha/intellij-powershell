@@ -1,10 +1,10 @@
 [versions]
 intellij = "2025.3"
-intellijPreview = "2025.3"
+intellijPreview = "261.21525.39-EAP"
 junit-platform = "6.0.2"
 junit5 = "5.13.4"
 junixsocket = "2.10.1"
-kotlin = "2.1.20"
+kotlin = "2.2.20"
 lsp4j = "0.24.0"
 
 [libraries]
