@@ -5,7 +5,7 @@ junit-platform = "6.0.2"
 junit5 = "5.13.4"
 junixsocket = "2.10.1"
 kotlin = "2.1.20"
-lsp4j = "0.24.0"
+lsp4j = "1.0.0"
 
 [libraries]
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit5" }
