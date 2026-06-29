@@ -1,4 +1,5 @@
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
+import org.jetbrains.intellij.platform.gradle.models.ProductRelease
 import org.jetbrains.intellij.platform.gradle.tasks.PrepareSandboxTask
 import org.jetbrains.intellij.platform.gradle.tasks.VerifyPluginTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -102,7 +103,13 @@ intellijPlatform {
   }
   pluginVerification {
     ides {
-      recommended()
+      select {
+        channels = listOf(
+          ProductRelease.Channel.RELEASE,
+          ProductRelease.Channel.EAP
+        )
+        untilBuild = providers.gradleProperty("untilBuildForVerification")
+      }
     }
     freeArgs.addAll(
       "-mute", "ForbiddenPluginIdPrefix",
@@ -259,8 +266,6 @@ tasks {
   }
 
   patchPluginXml {
-    untilBuild.set(provider { null })
-
     changeNotes.set(provider {
       changelog.renderItem(
         changelog
@@ -270,13 +275,5 @@ tasks {
         org.jetbrains.changelog.Changelog.OutputType.HTML
       )
     })
-  }
-
-  if (libs.versions.intellij.get() != libs.versions.intellijPreview.get()) {
-    val testPreview by intellijPlatformTesting.testIde.registering {
-      version = libs.versions.intellijPreview
-    }
-
-    check { dependsOn(testPreview.name) }
   }
 }

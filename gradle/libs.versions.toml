@@ -1,6 +1,5 @@
 [versions]
 intellij = "2025.3"
-intellijPreview = "2025.3"
 junit-platform = "6.0.2"
 junit5 = "5.13.4"
 junixsocket = "2.10.1"
