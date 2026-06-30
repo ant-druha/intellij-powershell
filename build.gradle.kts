@@ -154,7 +154,6 @@ tasks {
 
   withType<Test> {
     useJUnitPlatform()
-    jvmArgs("-Djbr.java.io.use.nio=false") // See #425 for the reason
   }
 
   withType<JavaCompile> {
