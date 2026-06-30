@@ -68,6 +68,8 @@ dependencies {
     bundledModule("intellij.platform.langInjection")
     testFramework(TestFrameworkType.Bundled)
     testFramework(TestFrameworkType.Platform)
+    testFramework(TestFrameworkType.JUnit5)
+    testFramework(TestFrameworkType.Plugin.Debugger)
     pluginVerifier()
   }
 

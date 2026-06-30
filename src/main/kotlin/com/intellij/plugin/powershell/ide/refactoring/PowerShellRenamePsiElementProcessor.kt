@@ -15,7 +15,7 @@ import com.intellij.refactoring.rename.RenamePsiElementProcessor
 
 class PowerShellRenamePsiElementProcessor : RenamePsiElementProcessor() {
   override fun canProcessElement(element: PsiElement): Boolean = element is PowerShellComponent
-  override fun findReferences(element: PsiElement, searchScope: SearchScope, searchInCommentsAndStrings: Boolean): MutableCollection<PsiReference> {
+  override fun findReferences(element: PsiElement, searchScope: SearchScope, searchInCommentsAndStrings: Boolean): Collection<PsiReference> {
     if (element is PowerShellComponent && nameHasSubExpression(element)) {//TODO[#192]: it's workaround to resort to findUsage handler because default index does not contain needed tokens
       val findManager = FindManager.getInstance(element.getProject()) as? FindManagerImpl
           ?: return super.findReferences(element, searchScope, searchInCommentsAndStrings)

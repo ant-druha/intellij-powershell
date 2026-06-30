@@ -21,7 +21,7 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.plugin.powershell.ide.runAndLogException
 import com.intellij.plugin.powershell.lang.lsp.PowerShellSettings
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PowerShellNotInstalled
-import com.intellij.terminal.TerminalExecutionConsole
+import com.intellij.terminal.TerminalExecutionConsoleBuilder
 import com.intellij.util.text.nullize
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -107,7 +107,9 @@ class PowerShellScriptCommandLineState(
 
   override fun execute(executor: Executor?, runner: ProgramRunner<*>): ExecutionResult {
     val process = startProcess()
-    val console = TerminalExecutionConsole(environment.project, process)
+    val console = TerminalExecutionConsoleBuilder(environment.project).build().apply {
+      attachToProcess(process)
+    }
     return DefaultExecutionResult(console, process)
   }
 }
