@@ -2,7 +2,6 @@ package com.intellij.plugin.powershell.testFramework
 
 import com.intellij.openapi.project.Project
 import com.intellij.plugin.powershell.lang.lsp.LanguageServer
-import com.intellij.testFramework.LightPlatformTestCase
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture
 import com.intellij.testFramework.fixtures.IdeaProjectTestFixture
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
@@ -43,7 +42,14 @@ open class PowerShellCodeInsightTestBase {
   fun tearDownEdt() {
     runInEdt {
       codeInsightTestFixture.tearDown()
-      LightPlatformTestCase.closeAndDeleteProject() // TODO: delete this
+
+      @Suppress("DEPRECATION")
+      // TODO: It's impossible to get rid of deprecated API use here: under the hood,
+      // com.intellij.testFramework.fixtures.IdeaTestFixtureFactory.createLightFixtureBuilder will use the
+      // LightPlatformTestCase, and we have to tear it down here. See a similar example in
+      // com.intellij.junit5.JUnit5CodeInsightTest in the intellij-community.
+      com.intellij.testFramework.LightPlatformTestCase.closeAndDeleteProject()
+
       tearDownInEdt()
     }
   }
