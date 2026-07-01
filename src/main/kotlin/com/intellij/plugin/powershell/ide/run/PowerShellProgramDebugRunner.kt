@@ -23,7 +23,7 @@ import com.intellij.plugin.powershell.ide.debugger.PowerShellBreakpointType
 import com.intellij.plugin.powershell.ide.debugger.PowerShellDebugProcess
 import com.intellij.plugin.powershell.ide.debugger.PowerShellDebugSession
 import com.intellij.plugin.powershell.lang.debugger.PSDebugClient
-import com.intellij.terminal.TerminalExecutionConsole
+import com.intellij.terminal.TerminalExecutionConsoleBuilder
 import com.intellij.util.execution.ParametersListUtil
 import com.intellij.xdebugger.*
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
@@ -61,8 +61,8 @@ class PowerShellProgramDebugRunner : AsyncProgramRunner<RunnerSettings>() {
         FileDocumentManager.getInstance().saveAllDocuments()
       }
       state.prepareExecution()
-      val session = bootstrapDebugSession(project, environment, state)
-      session.runContentDescriptor
+      val (_, runContentDescriptor) = bootstrapDebugSession(project, environment, state)
+      runContentDescriptor
     }.toPromise()
   }
 }
@@ -72,7 +72,7 @@ suspend fun bootstrapDebugSession(
   environment: ExecutionEnvironment,
   state: PowerShellScriptCommandLineState,
   listener: XDebugSessionListener? = null
-): XDebugSession {
+): Pair<XDebugSession, RunContentDescriptor?> {
   val debuggerManager = XDebuggerManager.getInstance(project)
 
   val processRunner = EditorServicesDebuggerHostStarter(project)
@@ -100,7 +100,9 @@ suspend fun bootstrapDebugSession(
       super.notifyProcessTerminated(if (gracefulTerminationRequested.get()) 0 else exitCode)
     }
   }
-  val console = TerminalExecutionConsole(project, handler)
+  val console = TerminalExecutionConsoleBuilder(project).build().apply {
+    attachToProcess(handler)
+  }
   handler.startNotify()
 
   val client = PSDebugClient()
@@ -117,30 +119,35 @@ suspend fun bootstrapDebugSession(
 
   remoteProxy.initialize(arguments).await()
 
-  val (session, breakpoints) = withContext(Dispatchers.EDT) {
-    val session = debuggerManager.startSession(environment, object : XDebugProcessStarter() {
-      @Throws(ExecutionException::class)
-      override fun start(session: XDebugSession): XDebugProcess {
-        listener?.let { session.addSessionListener(it) }
+  val starter = object : XDebugProcessStarter() {
+    @Throws(ExecutionException::class)
+    override fun start(session: XDebugSession): XDebugProcess {
+      listener?.let { session.addSessionListener(it) }
 
-        val scope = PluginProjectRoot.getInstance(project).coroutineScope
-        val debugSession = PowerShellDebugSession(client, remoteProxy, session, scope)
-        val executionResult = DefaultExecutionResult(console, handler)
-        debugSession.sendKeyPress.adviseSuspend(Lifetime.Eternal, Dispatchers.EDT) {
-          handler.processInput.write(0)
-          handler.processInput.flush()
-        }
-
-        return PowerShellDebugProcess(session, executionResult, debugSession)
+      val scope = PluginProjectRoot.getInstance(project).coroutineScope
+      val debugSession = PowerShellDebugSession(client, remoteProxy, session, scope)
+      val executionResult = DefaultExecutionResult(console, handler)
+      debugSession.sendKeyPress.adviseSuspend(Lifetime.Eternal, Dispatchers.EDT) {
+        handler.processInput.write(0)
+        handler.processInput.flush()
       }
-    })
 
-    val breakpoints = debuggerManager.breakpointManager.getBreakpoints(
-      PowerShellBreakpointType::class.java
-    )
-
-    Pair(session, breakpoints)
+      return PowerShellDebugProcess(session, executionResult, debugSession)
+    }
   }
+
+  val (session, runContentDescriptor) =
+    @Suppress("UnstableApiUsage")
+    run {
+      val result = debuggerManager.newSessionBuilder(starter)
+        .environment(environment)
+        .startSession()
+      Pair(result.session, result.runContentDescriptor)
+    }
+
+  val breakpoints = debuggerManager.breakpointManager.getBreakpoints(
+    PowerShellBreakpointType::class.java
+  )
 
   initializeBreakpoints(breakpoints, session, remoteProxy) // TODO: Not needed?
 
@@ -148,7 +155,7 @@ suspend fun bootstrapDebugSession(
   launchDebuggee(targetPath, remoteProxy, state.runConfiguration)
 
   remoteProxy.configurationDone(ConfigurationDoneArguments()).await()
-  return session
+  return Pair(session, runContentDescriptor)
 }
 
 private suspend fun initializeBreakpoints(
@@ -183,7 +190,7 @@ private suspend fun launchDebuggee(scriptPath: Path, remoteProxy: IDebugProtocol
 
   val launchArgs: MutableMap<String, Any> = HashMap()
   launchArgs["terminal"] = "none"
-  val scriptPathString = scriptPath.toRealPath().pathString
+  val scriptPathString = withContext(Dispatchers.IO) { scriptPath.toRealPath().pathString }
   launchArgs["script"] = scriptPathString
   launchArgs["noDebug"] = false
   launchArgs["__sessionId"] = "sessionId"

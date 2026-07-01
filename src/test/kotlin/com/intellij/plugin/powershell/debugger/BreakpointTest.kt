@@ -24,7 +24,7 @@ class BreakpointTest : DebuggerTestBase() {
       val fileLine = 5 // line in file, starting from 1
       val line = fileLine - 1 // breakpoint line, starting from 0
       val testSession = PowerShellTestSession(project, file.toNioPath())
-      XDebuggerTestUtil.toggleBreakpoint(project, file, line)
+      addPowerShellLineBreakpoint(file, line)
       Lifetime.using { lt ->
         val debugSession = testSession.startDebugSession(lt)
         Assertions.assertTrue(
@@ -50,7 +50,7 @@ class BreakpointTest : DebuggerTestBase() {
       val fileLine = 4 // line in file, starting from 1
       val line = fileLine - 1 // breakpoint line, starting from 0
       val testSession = PowerShellTestSession(project, file.toNioPath())
-      XDebuggerTestUtil.toggleBreakpoint(project, psiSecondFile.virtualFile, line)
+      addPowerShellLineBreakpoint(psiSecondFile.virtualFile, line)
 
       Lifetime.using { lt ->
         val debugSession = testSession.startDebugSession(lt)
@@ -83,7 +83,7 @@ class BreakpointTest : DebuggerTestBase() {
       val condition = "$variableName -eq $value"
 
       val testSession = PowerShellTestSession(project, file.toNioPath())
-      XDebuggerTestUtil.toggleBreakpoint(project, file, line)
+      addPowerShellLineBreakpoint(file, line)
       XDebuggerTestUtil.setBreakpointCondition(project, line, condition)
       Lifetime.using { lt ->
         val debugSession = testSession.startDebugSession(lt)

@@ -61,9 +61,9 @@ private suspend fun readPowerShellVersion(exePath: String): PSVersionInfo {
         runInterruptible { stream.reader().use { it.readText() } }
       }
 
-      val stdOutReader = readStream(process!!.inputStream)
-      val stdErrReader = readStream(process!!.errorStream)
-      val exitCode = process!!.awaitExit()
+      val stdOutReader = readStream(process.inputStream)
+      val stdErrReader = readStream(process.errorStream)
+      val exitCode = process.awaitExit()
       if (exitCode != 0) {
         val stdOut = stdOutReader.await()
         val stdErr = stdErrReader.await()

@@ -33,7 +33,7 @@ class VariableTest : DebuggerTestBase() {
       val value = 69
 
       val testSession = PowerShellTestSession(project, file.toNioPath())
-      XDebuggerTestUtil.toggleBreakpoint(project, file, line)
+      addPowerShellLineBreakpoint(file, line)
       Lifetime.using { lt ->
         val debugSession = testSession.startDebugSession(lt)
 
@@ -70,7 +70,7 @@ class VariableTest : DebuggerTestBase() {
       val testSession = PowerShellTestSession(project, file.toNioPath())
       val millis = testSession.waitForBackgroundTimeout.toMillis()
 
-      XDebuggerTestUtil.toggleBreakpoint(project, file, line)
+      addPowerShellLineBreakpoint(file, line)
       Lifetime.using { lt ->
         val debugSession = testSession.startDebugSession(lt)
 
@@ -115,8 +115,8 @@ class VariableTest : DebuggerTestBase() {
       val testSession = PowerShellTestSession(project, file.toNioPath())
       val millis = testSession.waitForBackgroundTimeout.toMillis()
 
-      XDebuggerTestUtil.toggleBreakpoint(project, file, line)
-      XDebuggerTestUtil.toggleBreakpoint(project, file, secondLine)
+      addPowerShellLineBreakpoint(file, line)
+      addPowerShellLineBreakpoint(file, secondLine)
 
       Lifetime.using { lt ->
         val debugSession = testSession.startDebugSession(lt)

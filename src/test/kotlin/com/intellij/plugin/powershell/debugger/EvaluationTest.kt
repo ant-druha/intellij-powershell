@@ -25,7 +25,7 @@ class EvaluationTest: DebuggerTestBase() {
       val expectedResult = "3"
 
       val testSession = PowerShellTestSession(project, file.toNioPath())
-      XDebuggerTestUtil.toggleBreakpoint(project, file, line)
+      addPowerShellLineBreakpoint(file, line)
       Lifetime.using { lt ->
         val debugSession = testSession.startDebugSession(lt)
         Assertions.assertTrue(XDebuggerTestUtil.waitFor(

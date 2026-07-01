@@ -32,7 +32,7 @@ class SyntheticPowerShellCodeBlock(private val mySubBlocks: MutableList<Block>, 
 
   override fun getTextRange(): TextRange = myBlockTextRange
 
-  override fun getSubBlocks(): MutableList<Block> = mySubBlocks
+  override fun getSubBlocks(): List<Block> = mySubBlocks
 
   override fun isIncomplete(): Boolean = subBlocks.size > 0 && subBlocks[subBlocks.size - 1].isIncomplete
 

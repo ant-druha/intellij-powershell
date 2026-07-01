@@ -3,11 +3,15 @@ package com.intellij.plugin.powershell.testFramework
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.util.ThrowableComputable
 import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.plugin.powershell.ide.debugger.PowerShellBreakpointType
 import com.intellij.plugin.powershell.lang.debugger.PSDebugClient
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.testFramework.TestLoggerFactory
 import com.intellij.testFramework.junit5.fixture.disposableFixture
+import com.intellij.xdebugger.XDebuggerManager
+import com.intellij.xdebugger.XDebuggerUtil
 import org.junit.jupiter.api.BeforeEach
 import kotlin.io.path.Path
 import kotlin.io.path.createDirectories
@@ -39,5 +43,17 @@ abstract class DebuggerTestBase : PowerShellTestBase() {
     })
 
     return PsiManager.getInstance(project).findFile(result) ?: error("Cannot find the PSI file for \"$result\".")
+  }
+
+  protected fun addPowerShellLineBreakpoint(file: VirtualFile, line: Int) {
+    val breakpointType = XDebuggerUtil.getInstance().findBreakpointType(PowerShellBreakpointType::class.java)
+      ?: error("Cannot find ${PowerShellBreakpointType::class.java.simpleName} in registered breakpoint types.")
+    val properties = breakpointType.createBreakpointProperties(file, line)
+    XDebuggerManager.getInstance(project).breakpointManager.addLineBreakpoint(
+      breakpointType,
+      file.url,
+      line,
+      properties
+    )
   }
 }

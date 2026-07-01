@@ -68,6 +68,8 @@ dependencies {
     bundledModule("intellij.platform.langInjection")
     testFramework(TestFrameworkType.Bundled)
     testFramework(TestFrameworkType.Platform)
+    testFramework(TestFrameworkType.JUnit5)
+    testFramework(TestFrameworkType.Plugin.Debugger)
     pluginVerifier()
   }
 
@@ -154,7 +156,6 @@ tasks {
 
   withType<Test> {
     useJUnitPlatform()
-    jvmArgs("-Djbr.java.io.use.nio=false") // See #425 for the reason
   }
 
   withType<JavaCompile> {

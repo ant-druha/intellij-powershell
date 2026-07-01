@@ -44,7 +44,7 @@ class PowerShellAnnotator : Annotator {
 
     val parameterNode = element.node
     if (parameterNode?.elementType !== PowerShellTypes.CMD_PARAMETER) return false
-    val parent = parameterNode?.treeParent ?: return false
+    val parent = parameterNode.treeParent ?: return false
     return parent.elementType === PowerShellTypes.FOREACH_STATEMENT || parent.elementType === PowerShellTypes.SWITCH_STATEMENT
   }
 

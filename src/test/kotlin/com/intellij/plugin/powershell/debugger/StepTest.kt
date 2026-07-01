@@ -24,7 +24,7 @@ class StepTest : DebuggerTestBase() {
       val line = fileLine - 1 // breakpoint line, starting from 0
 
       val testSession = PowerShellTestSession(project, file.toNioPath())
-      XDebuggerTestUtil.toggleBreakpoint(project, file, line)
+      addPowerShellLineBreakpoint(file, line)
       Lifetime.using { lt ->
         val debugSession = testSession.startDebugSession(lt)
 
@@ -63,7 +63,7 @@ class StepTest : DebuggerTestBase() {
       val stepInLine = 0
 
       val testSession = PowerShellTestSession(project, file.toNioPath())
-      XDebuggerTestUtil.toggleBreakpoint(project, file, line)
+      addPowerShellLineBreakpoint(file, line)
       Lifetime.using { lt ->
         val debugSession = testSession.startDebugSession(lt)
 
@@ -106,7 +106,7 @@ class StepTest : DebuggerTestBase() {
       val stepOutLine = stepOutFileLine - 1
 
       val testSession = PowerShellTestSession(project, file.toNioPath())
-      XDebuggerTestUtil.toggleBreakpoint(project, file, line)
+      addPowerShellLineBreakpoint(file, line)
       Lifetime.using { lt ->
         val debugSession = testSession.startDebugSession(lt)
         Assertions.assertTrue(
