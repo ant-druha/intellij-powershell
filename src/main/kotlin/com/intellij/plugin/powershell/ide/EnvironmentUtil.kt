@@ -36,3 +36,8 @@ fun findExecutableInPath(pathOrFileNameOrBaseName: String): Path? {
   // At this point, we didn't find any executable.
   return null
 }
+
+fun resolveExecutablePath(pathOrFileNameOrBaseName: String): String {
+  val executable = findExecutableInPath(pathOrFileNameOrBaseName) ?: return pathOrFileNameOrBaseName
+  return runCatching { executable.toRealPath().toString() }.getOrDefault(executable.toString())
+}

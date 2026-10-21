@@ -23,6 +23,7 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.io.NioFiles.toPath
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.plugin.powershell.ide.resolveExecutablePath
 import com.intellij.plugin.powershell.ide.runAndLogException
 import com.intellij.plugin.powershell.lang.lsp.PowerShellSettings
 import com.intellij.plugin.powershell.lang.lsp.languagehost.PowerShellNotInstalled
@@ -59,7 +60,7 @@ class PowerShellScriptCommandLineState(
   private fun startProcess(): ProcessHandler {
     try {
       val command = buildCommand(
-        runConfiguration.executablePath ?: PowerShellSettings.getInstance().getPowerShellExecutable(),
+        resolveExecutablePath(runConfiguration.executablePath ?: PowerShellSettings.getInstance().getPowerShellExecutable()),
         runConfiguration.scriptPath,
         runConfiguration.getCommandOptions(),
         runConfiguration.scriptParameters
