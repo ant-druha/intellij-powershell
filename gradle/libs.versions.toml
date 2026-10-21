@@ -4,7 +4,7 @@
 
 [versions]
 intellij = "2026.2"
-intellijPlatformGradle = "2.18.1"
+intellijPlatformGradle = "2.19.0"
 junit-platform = "6.1.3"
 junit5 = "6.1.3"
 kotlin = "2.4.0"
