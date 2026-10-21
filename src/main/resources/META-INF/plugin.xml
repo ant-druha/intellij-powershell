@@ -135,5 +135,8 @@
     <action id="NewPowerShellFile" class="com.intellij.plugin.powershell.ide.actions.NewPowerShellFileAction">
       <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFromTemplate"/>
     </action>
+    <action id="NewPowerShellModuleFile" class="com.intellij.plugin.powershell.ide.actions.NewPowerShellModuleFileAction">
+      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="NewPowerShellFile"/>
+    </action>
   </actions>
 </idea-plugin>
